@@ -1,0 +1,585 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.utils.evform &#8212; Evennia 0.9.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.utils.evform</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding=utf-8</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">EvForm - a way to create advanced ASCII forms</span>
+
+<span class="sd">This is intended for creating advanced ASCII game forms, such as a</span>
+<span class="sd">large pretty character sheet or info document.</span>
+
+<span class="sd">The system works on the basis of a readin template that is given in a</span>
+<span class="sd">separate Python file imported into the handler. This file contains</span>
+<span class="sd">some optional settings and a string mapping out the form. The template</span>
+<span class="sd">has markers in it to denounce fields to fill. The markers map the</span>
+<span class="sd">absolute size of the field and will be filled with an `evtable.EvCell`</span>
+<span class="sd">object when displaying the form.</span>
+
+<span class="sd">Example of input file `testform.py`:</span>
+
+<span class="sd">```python</span>
+<span class="sd">FORMCHAR = &quot;x&quot;</span>
+<span class="sd">TABLECHAR = &quot;c&quot;</span>
+
+<span class="sd">FORM = &#39;&#39;&#39;</span>
+<span class="sd">.------------------------------------------------.</span>
+<span class="sd">|                                                |</span>
+<span class="sd">|  Name: xxxxx1xxxxx    Player: xxxxxxx2xxxxxxx  |</span>
+<span class="sd">|        xxxxxxxxxxx                             |</span>
+<span class="sd">|                                                |</span>
+<span class="sd"> &gt;----------------------------------------------&lt;</span>
+<span class="sd">|                                                |</span>
+<span class="sd">| Desc:  xxxxxxxxxxx    STR: x4x    DEX: x5x     |</span>
+<span class="sd">|        xxxxx3xxxxx    INT: x6x    STA: x7x     |</span>
+<span class="sd">|        xxxxxxxxxxx    LUC: x8x    MAG: x9x     |</span>
+<span class="sd">|                                                |</span>
+<span class="sd"> &gt;----------------------------------------------&lt;</span>
+<span class="sd">|          |                                     |</span>
+<span class="sd">| cccccccc | ccccccccccccccccccccccccccccccccccc |</span>
+<span class="sd">| cccccccc | ccccccccccccccccccccccccccccccccccc |</span>
+<span class="sd">| cccAcccc | ccccccccccccccccccccccccccccccccccc |</span>
+<span class="sd">| cccccccc | ccccccccccccccccccccccccccccccccccc |</span>
+<span class="sd">| cccccccc | cccccccccccccccccBccccccccccccccccc |</span>
+<span class="sd">|          |                                     |</span>
+<span class="sd">-------------------------------------------------</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">```</span>
+
+<span class="sd">The first line of the `FORM` string is ignored. The forms and table</span>
+<span class="sd">markers must mark out complete, unbroken rectangles, each containing</span>
+<span class="sd">one embedded single-character identifier (so the smallest element</span>
+<span class="sd">possible is a 3-character wide form). The identifier can be any</span>
+<span class="sd">character except for the `FORM_CHAR` and `TABLE_CHAR` and some of the</span>
+<span class="sd">common ASCII-art elements, like space, `_` `|` `*` etc (see</span>
+<span class="sd">`INVALID_FORMCHARS` in this module). Form Rectangles can have any size,</span>
+<span class="sd">but must be separated from each other by at least one other</span>
+<span class="sd">character&#39;s width.</span>
+
+
+<span class="sd">Use as follows:</span>
+
+<span class="sd">```python</span>
+<span class="sd">    from evennia import EvForm, EvTable</span>
+
+<span class="sd">    # create a new form from the template</span>
+<span class="sd">    form = EvForm(&quot;path/to/testform.py&quot;)</span>
+
+<span class="sd">    (MudForm can also take a dictionary holding</span>
+<span class="sd">     the required keys FORMCHAR, TABLECHAR and FORM)</span>
+
+<span class="sd">    # add data to each tagged form cell</span>
+<span class="sd">    form.map(cells={1: &quot;Tom the Bouncer&quot;,</span>
+<span class="sd">                    2: &quot;Griatch&quot;,</span>
+<span class="sd">                    3: &quot;A sturdy fellow&quot;,</span>
+<span class="sd">                    4: 12,</span>
+<span class="sd">                    5: 10,</span>
+<span class="sd">                    6:  5,</span>
+<span class="sd">                    7: 18,</span>
+<span class="sd">                    8: 10,</span>
+<span class="sd">                    9:  3})</span>
+<span class="sd">    # create the EvTables</span>
+<span class="sd">    tableA = EvTable(&quot;HP&quot;,&quot;MV&quot;,&quot;MP&quot;,</span>
+<span class="sd">                               table=[[&quot;**&quot;], [&quot;*****&quot;], [&quot;***&quot;]],</span>
+<span class="sd">                               border=&quot;incols&quot;)</span>
+<span class="sd">    tableB = EvTable(&quot;Skill&quot;, &quot;Value&quot;, &quot;Exp&quot;,</span>
+<span class="sd">                               table=[[&quot;Shooting&quot;, &quot;Herbalism&quot;, &quot;Smithing&quot;],</span>
+<span class="sd">                                      [12,14,9],[&quot;550/1200&quot;, &quot;990/1400&quot;, &quot;205/900&quot;]],</span>
+<span class="sd">                               border=&quot;incols&quot;)</span>
+<span class="sd">    # add the tables to the proper ids in the form</span>
+<span class="sd">    form.map(tables={&quot;A&quot;: tableA,</span>
+<span class="sd">                     &quot;B&quot;: tableB})</span>
+
+<span class="sd">    print(form)</span>
+<span class="sd">```</span>
+
+<span class="sd">This produces the following result:</span>
+
+<span class="sd">```</span>
+<span class="sd">.------------------------------------------------.</span>
+<span class="sd">|                                                |</span>
+<span class="sd">|  Name: Tom the        Player: Griatch          |</span>
+<span class="sd">|        Bouncer                                 |</span>
+<span class="sd">|                                                |</span>
+<span class="sd"> &gt;----------------------------------------------&lt;</span>
+<span class="sd">|                                                |</span>
+<span class="sd">| Desc:  A sturdy       STR: 12     DEX: 10      |</span>
+<span class="sd">|        fellow         INT: 5      STA: 18      |</span>
+<span class="sd">|                       LUC: 10     MAG: 3       |</span>
+<span class="sd">|                                                |</span>
+<span class="sd"> &gt;----------------------------------------------&lt;</span>
+<span class="sd">|          |                                     |</span>
+<span class="sd">| HP|MV|MP | Skill      |Value      |Exp         |</span>
+<span class="sd">| ~~+~~+~~ | ~~~~~~~~~~~+~~~~~~~~~~~+~~~~~~~~~~~ |</span>
+<span class="sd">| **|**|** | Shooting   |12         |550/1200    |</span>
+<span class="sd">|   |**|*  | Herbalism  |14         |990/1400    |</span>
+<span class="sd">|   |* |   | Smithing   |9          |205/900     |</span>
+<span class="sd">|          |                                     |</span>
+<span class="sd"> ------------------------------------------------</span>
+<span class="sd">```</span>
+
+<span class="sd">The marked forms have been replaced with EvCells of text and with</span>
+<span class="sd">EvTables. The form can be updated by simply re-applying `form.map()`</span>
+<span class="sd">with the updated data.</span>
+
+<span class="sd">When working with the template ASCII file, you can use `form.reload()`</span>
+<span class="sd">to re-read the template and re-apply all existing mappings.</span>
+
+<span class="sd">Each component is restrained to the width and height specified by the</span>
+<span class="sd">template, so it will resize to fit (or crop text if the area is too</span>
+<span class="sd">small for it). If you try to fit a table into an area it cannot fit</span>
+<span class="sd">into (when including its borders and at least one line of text), the</span>
+<span class="sd">form will raise an error.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.evtable</span> <span class="k">import</span> <span class="n">EvCell</span><span class="p">,</span> <span class="n">EvTable</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">all_from_module</span><span class="p">,</span> <span class="n">to_str</span><span class="p">,</span> <span class="n">is_iter</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="k">import</span> <span class="n">ANSIString</span>
+
+<span class="c1"># non-valid form-identifying characters (which can thus be</span>
+<span class="c1"># used as separators between forms without being detected</span>
+<span class="c1"># as an identifier). These should be listed in regex form.</span>
+
+<span class="n">INVALID_FORMCHARS</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\s\/\|</span><span class="se">\\</span><span class="s2">\*\_\-\#\&lt;\&gt;\~\^\:\;\.\,&quot;</span>
+<span class="c1"># if there is an ansi-escape (||) we have to replace this with ||| to make sure</span>
+<span class="c1"># to properly escape down the line</span>
+<span class="n">_ANSI_ESCAPE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\|\|&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="_to_rect"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.evform._to_rect">[docs]</a><span class="k">def</span> <span class="nf">_to_rect</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Forces all lines to be as long as the longest</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        lines (list): list of `ANSIString`s</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (list): list of `ANSIString`s of</span>
+<span class="sd">        same length as the longest input line</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">maxl</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">line</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">maxl</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">))</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="_to_ansi"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.evform._to_ansi">[docs]</a><span class="k">def</span> <span class="nf">_to_ansi</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">regexable</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="s2">&quot;convert to ANSIString&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># since ansi will be parsed twice (here and in the normal ansi send), we have to</span>
+        <span class="c1"># escape the |-structure twice.</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">_ANSI_ESCAPE</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;||||&quot;</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">_to_ansi</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">regexable</span><span class="o">=</span><span class="n">regexable</span><span class="p">))</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+    <span class="k">elif</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">_to_ansi</span><span class="p">(</span><span class="n">o</span><span class="p">)</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">regexable</span><span class="o">=</span><span class="n">regexable</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="EvForm"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.evform.EvForm">[docs]</a><span class="k">class</span> <span class="nc">EvForm</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This object is instantiated with a text file and parses</span>
+<span class="sd">    it for rectangular form fields. It can then be fed a</span>
+<span class="sd">    mapping so as to populate the fields with fixed-width</span>
+<span class="sd">    EvCell or Tables.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EvForm.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.evform.EvForm.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cells</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tables</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initiate the form</span>
+
+<span class="sd">        Kwargs:</span>
+<span class="sd">            filename (str): Path to template file.</span>
+<span class="sd">            cells (dict): A dictionary mapping of {id:text}</span>
+<span class="sd">            tables (dict): A dictionary mapping of {id:EvTable}.</span>
+<span class="sd">            form (dict): A dictionary of {&quot;FORMCHAR&quot;:char,</span>
+<span class="sd">                                          &quot;TABLECHAR&quot;:char,</span>
+<span class="sd">                                          &quot;FORM&quot;:templatestring}</span>
+<span class="sd">                    if this is given, filename is not read.</span>
+<span class="sd">        Notes:</span>
+<span class="sd">            Other kwargs are fed as options to the EvCells and EvTables</span>
+<span class="sd">            (see `evtable.EvCell` and `evtable.EvTable` for more info).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_form_dict</span> <span class="o">=</span> <span class="n">form</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cells_mapping</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">dict</span><span class="p">((</span><span class="n">to_str</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">cells</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="k">if</span> <span class="n">cells</span> <span class="k">else</span> <span class="p">{}</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tables_mapping</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">dict</span><span class="p">((</span><span class="n">to_str</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">tables</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="k">if</span> <span class="n">tables</span> <span class="k">else</span> <span class="p">{}</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cellchar</span> <span class="o">=</span> <span class="s2">&quot;x&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tablechar</span> <span class="o">=</span> <span class="s2">&quot;c&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_form</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">form</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># clean kwargs (these cannot be overridden)</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;enforce_size&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;width&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;height&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="c1"># table/cell options</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="n">kwargs</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reload</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="EvForm._parse_rectangles"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.evform.EvForm._parse_rectangles">[docs]</a>    <span class="k">def</span> <span class="nf">_parse_rectangles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cellchar</span><span class="p">,</span> <span class="n">tablechar</span><span class="p">,</span> <span class="n">form</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse a form for rectangular formfields identified by formchar</span>
+<span class="sd">        enclosing an identifier.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># update options given at creation with new input - this</span>
+        <span class="c1"># allows e.g. self.map() to add custom settings for individual</span>
+        <span class="c1"># cells/tables</span>
+        <span class="n">custom_options</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">)</span>
+        <span class="n">custom_options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">nform</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
+
+        <span class="n">mapping</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">cell_coords</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">table_coords</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Locate the identifier tags and the horizontal end coords for all forms</span>
+        <span class="n">re_cellchar</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+            <span class="sa">r</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">+([^</span><span class="si">%s%s</span><span class="s2">]+)</span><span class="si">%s</span><span class="s2">+&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cellchar</span><span class="p">,</span> <span class="n">INVALID_FORMCHARS</span><span class="p">,</span> <span class="n">cellchar</span><span class="p">,</span> <span class="n">cellchar</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">re_tablechar</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+            <span class="sa">r</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">+([^</span><span class="si">%s%s</span><span class="s2">|+])</span><span class="si">%s</span><span class="s2">+&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">tablechar</span><span class="p">,</span> <span class="n">INVALID_FORMCHARS</span><span class="p">,</span> <span class="n">tablechar</span><span class="p">,</span> <span class="n">tablechar</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">iy</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">_to_ansi</span><span class="p">(</span><span class="n">form</span><span class="p">,</span> <span class="n">regexable</span><span class="o">=</span><span class="kc">True</span><span class="p">)):</span>
+            <span class="c1"># find cells</span>
+            <span class="n">ix0</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="n">re_cellchar</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">ix0</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                    <span class="c1"># get the width of the rectangle directly from the match</span>
+                    <span class="n">cell_coords</span><span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="p">[</span><span class="n">iy</span><span class="p">,</span> <span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="n">match</span><span class="o">.</span><span class="n">end</span><span class="p">()]</span>
+                    <span class="n">ix0</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="c1"># find tables</span>
+            <span class="n">ix0</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="n">re_tablechar</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">ix0</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                    <span class="c1"># get the width of the rectangle directly from the match</span>
+                    <span class="n">table_coords</span><span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="p">[</span><span class="n">iy</span><span class="p">,</span> <span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="n">match</span><span class="o">.</span><span class="n">end</span><span class="p">()]</span>
+                    <span class="n">ix0</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+        <span class="c1"># get rectangles and assign EvCells</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="n">iy</span><span class="p">,</span> <span class="n">leftix</span><span class="p">,</span> <span class="n">rightix</span><span class="p">)</span> <span class="ow">in</span> <span class="n">cell_coords</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># scan up to find top of rectangle</span>
+            <span class="n">dy_up</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">iy</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">iy</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">form</span><span class="p">[</span><span class="n">iy</span> <span class="o">-</span> <span class="n">i</span><span class="p">][</span><span class="n">ix</span><span class="p">]</span> <span class="o">==</span> <span class="n">cellchar</span> <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">leftix</span><span class="p">,</span> <span class="n">rightix</span><span class="p">)):</span>
+                        <span class="n">dy_up</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">break</span>
+            <span class="c1"># find bottom edge of rectangle</span>
+            <span class="n">dy_down</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">iy</span> <span class="o">&lt;</span> <span class="n">nform</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">nform</span> <span class="o">-</span> <span class="n">iy</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">form</span><span class="p">[</span><span class="n">iy</span> <span class="o">+</span> <span class="n">i</span><span class="p">][</span><span class="n">ix</span><span class="p">]</span> <span class="o">==</span> <span class="n">cellchar</span> <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">leftix</span><span class="p">,</span> <span class="n">rightix</span><span class="p">)):</span>
+                        <span class="n">dy_down</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">break</span>
+
+            <span class="c1">#  we have our rectangle. Calculate size of EvCell.</span>
+            <span class="n">iyup</span> <span class="o">=</span> <span class="n">iy</span> <span class="o">-</span> <span class="n">dy_up</span>
+            <span class="n">iydown</span> <span class="o">=</span> <span class="n">iy</span> <span class="o">+</span> <span class="n">dy_down</span>
+            <span class="n">width</span> <span class="o">=</span> <span class="n">rightix</span> <span class="o">-</span> <span class="n">leftix</span>
+            <span class="n">height</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">iyup</span> <span class="o">-</span> <span class="n">iydown</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+            <span class="c1"># we have all the coordinates we need. Create EvCell.</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cells_mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="c1"># if key == &quot;1&quot;:</span>
+
+            <span class="n">options</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;pad_left&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;pad_right&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;pad_top&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;pad_bottom&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;align&quot;</span><span class="p">:</span> <span class="s2">&quot;l&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;valign&quot;</span><span class="p">:</span> <span class="s2">&quot;t&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;enforce_size&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="n">options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">custom_options</span><span class="p">)</span>
+            <span class="c1"># if key==&quot;4&quot;:</span>
+
+            <span class="n">mapping</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">iyup</span><span class="p">,</span>
+                <span class="n">leftix</span><span class="p">,</span>
+                <span class="n">width</span><span class="p">,</span>
+                <span class="n">height</span><span class="p">,</span>
+                <span class="n">EvCell</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">),</span>
+            <span class="p">)</span>
+
+        <span class="c1"># get rectangles and assign Tables</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="n">iy</span><span class="p">,</span> <span class="n">leftix</span><span class="p">,</span> <span class="n">rightix</span><span class="p">)</span> <span class="ow">in</span> <span class="n">table_coords</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+            <span class="c1"># scan up to find top of rectangle</span>
+            <span class="n">dy_up</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">iy</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">iy</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">form</span><span class="p">[</span><span class="n">iy</span> <span class="o">-</span> <span class="n">i</span><span class="p">][</span><span class="n">ix</span><span class="p">]</span> <span class="o">==</span> <span class="n">tablechar</span> <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">leftix</span><span class="p">,</span> <span class="n">rightix</span><span class="p">)):</span>
+                        <span class="n">dy_up</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">break</span>
+            <span class="c1"># find bottom edge of rectangle</span>
+            <span class="n">dy_down</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">iy</span> <span class="o">&lt;</span> <span class="n">nform</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">nform</span> <span class="o">-</span> <span class="n">iy</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">form</span><span class="p">[</span><span class="n">iy</span> <span class="o">+</span> <span class="n">i</span><span class="p">][</span><span class="n">ix</span><span class="p">]</span> <span class="o">==</span> <span class="n">tablechar</span> <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">leftix</span><span class="p">,</span> <span class="n">rightix</span><span class="p">)):</span>
+                        <span class="n">dy_down</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">break</span>
+
+            <span class="c1">#  we have our rectangle. Calculate size of Table.</span>
+            <span class="n">iyup</span> <span class="o">=</span> <span class="n">iy</span> <span class="o">-</span> <span class="n">dy_up</span>
+            <span class="n">iydown</span> <span class="o">=</span> <span class="n">iy</span> <span class="o">+</span> <span class="n">dy_down</span>
+            <span class="n">width</span> <span class="o">=</span> <span class="n">rightix</span> <span class="o">-</span> <span class="n">leftix</span>
+            <span class="n">height</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">iyup</span> <span class="o">-</span> <span class="n">iydown</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+            <span class="c1"># we have all the coordinates we need. Create Table.</span>
+            <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tables_mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+            <span class="n">options</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;pad_left&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;pad_right&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;pad_top&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;pad_bottom&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;align&quot;</span><span class="p">:</span> <span class="s2">&quot;l&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;valign&quot;</span><span class="p">:</span> <span class="s2">&quot;t&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;enforce_size&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="n">options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">custom_options</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">table</span><span class="p">:</span>
+                <span class="n">table</span><span class="o">.</span><span class="n">reformat</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">table</span> <span class="o">=</span> <span class="n">EvTable</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
+            <span class="n">mapping</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">iyup</span><span class="p">,</span> <span class="n">leftix</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">table</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">mapping</span></div>
+
+<div class="viewcode-block" id="EvForm._populate_form"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.evform.EvForm._populate_form">[docs]</a>    <span class="k">def</span> <span class="nf">_populate_form</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_form</span><span class="p">,</span> <span class="n">mapping</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Insert cell contents into form at given locations</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">raw_form</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="n">iy0</span><span class="p">,</span> <span class="n">ix0</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">cell_or_table</span><span class="p">)</span> <span class="ow">in</span> <span class="n">mapping</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># rect is a list of &lt;height&gt; lines, each &lt;width&gt; wide</span>
+            <span class="n">rect</span> <span class="o">=</span> <span class="n">cell_or_table</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">il</span><span class="p">,</span> <span class="n">rectline</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rect</span><span class="p">):</span>
+                <span class="n">formline</span> <span class="o">=</span> <span class="n">form</span><span class="p">[</span><span class="n">iy0</span> <span class="o">+</span> <span class="n">il</span><span class="p">]</span>
+                <span class="c1"># insert new content, replacing old</span>
+                <span class="n">form</span><span class="p">[</span><span class="n">iy0</span> <span class="o">+</span> <span class="n">il</span><span class="p">]</span> <span class="o">=</span> <span class="n">formline</span><span class="p">[:</span><span class="n">ix0</span><span class="p">]</span> <span class="o">+</span> <span class="n">rectline</span> <span class="o">+</span> <span class="n">formline</span><span class="p">[</span><span class="n">ix0</span> <span class="o">+</span> <span class="n">width</span> <span class="p">:]</span>
+        <span class="k">return</span> <span class="n">form</span></div>
+
+<div class="viewcode-block" id="EvForm.map"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.evform.EvForm.map">[docs]</a>    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cells</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tables</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add mapping for form.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cells (dict): A dictionary of {identifier:celltext}</span>
+<span class="sd">            tables (dict): A dictionary of {identifier:table}</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            kwargs will be forwarded to tables/cells. See</span>
+<span class="sd">            `evtable.EvCell` and `evtable.EvTable` for info.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># clean kwargs (these cannot be overridden)</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;enforce_size&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;width&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;height&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">new_cells</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">to_str</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">cells</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="k">if</span> <span class="n">cells</span> <span class="k">else</span> <span class="p">{}</span>
+        <span class="n">new_tables</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">to_str</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">tables</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="k">if</span> <span class="n">tables</span> <span class="k">else</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cells_mapping</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_cells</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tables_mapping</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_tables</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reload</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="EvForm.reload"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.evform.EvForm.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates the form from a stored file name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            filename (str): The file to read from.</span>
+<span class="sd">            form (dict): A mapping for the form.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            Kwargs are passed through to Cel creation.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># clean kwargs (these cannot be overridden)</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;enforce_size&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;width&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;height&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">form</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_form_dict</span><span class="p">:</span>
+            <span class="n">datadict</span> <span class="o">=</span> <span class="n">form</span> <span class="k">if</span> <span class="n">form</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_form_dict</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_form_dict</span> <span class="o">=</span> <span class="n">datadict</span>
+        <span class="k">elif</span> <span class="n">filename</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span> <span class="k">if</span> <span class="n">filename</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span>
+            <span class="n">datadict</span> <span class="o">=</span> <span class="n">all_from_module</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">datadict</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">cellchar</span> <span class="o">=</span> <span class="n">to_str</span><span class="p">(</span><span class="n">datadict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;FORMCHAR&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cellchar</span> <span class="o">=</span> <span class="n">to_str</span><span class="p">(</span><span class="n">cellchar</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cellchar</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">cellchar</span><span class="p">)</span>
+        <span class="n">tablechar</span> <span class="o">=</span> <span class="n">datadict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TABLECHAR&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tablechar</span> <span class="o">=</span> <span class="n">tablechar</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tablechar</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">tablechar</span>
+
+        <span class="c1"># split into a list of list of lines. Form can be indexed with form[iy][ix]</span>
+        <span class="n">raw_form</span> <span class="o">=</span> <span class="n">_to_ansi</span><span class="p">(</span><span class="n">datadict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;FORM&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_form</span> <span class="o">=</span> <span class="n">_to_rect</span><span class="p">(</span><span class="n">raw_form</span><span class="p">)</span>
+
+        <span class="c1"># strip first line</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_form</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_form</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_form</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_form</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># parse and replace</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_rectangles</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cellchar</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tablechar</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_form</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">form</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_populate_form</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_form</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Prints the form&quot;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">form</span><span class="p">]))</span></div>
+
+
+<div class="viewcode-block" id="_test"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.evform._test">[docs]</a><span class="k">def</span> <span class="nf">_test</span><span class="p">():</span>
+    <span class="s2">&quot;test evform. This is used by the unittest system.&quot;</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">EvForm</span><span class="p">(</span><span class="s2">&quot;evennia.utils.tests.data.evform_example&quot;</span><span class="p">)</span>
+
+    <span class="c1"># add data to each tagged form cell</span>
+    <span class="n">form</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+        <span class="n">cells</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;AA&quot;</span><span class="p">:</span> <span class="s2">&quot;|gTom the Bouncer&quot;</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;|yGriatch&quot;</span><span class="p">,</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;A sturdy fellow&quot;</span><span class="p">,</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="mi">6</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+            <span class="mi">7</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span>
+            <span class="mi">8</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="mi">9</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="s2">&quot;F&quot;</span><span class="p">:</span> <span class="s2">&quot;rev 1&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+    <span class="c1"># create the EvTables</span>
+    <span class="n">tableA</span> <span class="o">=</span> <span class="n">EvTable</span><span class="p">(</span><span class="s2">&quot;HP&quot;</span><span class="p">,</span> <span class="s2">&quot;MV&quot;</span><span class="p">,</span> <span class="s2">&quot;MP&quot;</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="p">[[</span><span class="s2">&quot;**&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;*****&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;***&quot;</span><span class="p">]],</span> <span class="n">border</span><span class="o">=</span><span class="s2">&quot;incols&quot;</span><span class="p">)</span>
+    <span class="n">tableB</span> <span class="o">=</span> <span class="n">EvTable</span><span class="p">(</span>
+        <span class="s2">&quot;Skill&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Value&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Exp&quot;</span><span class="p">,</span>
+        <span class="n">table</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">[</span><span class="s2">&quot;Shooting&quot;</span><span class="p">,</span> <span class="s2">&quot;Herbalism&quot;</span><span class="p">,</span> <span class="s2">&quot;Smithing&quot;</span><span class="p">],</span>
+            <span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span>
+            <span class="p">[</span><span class="s2">&quot;550/1200&quot;</span><span class="p">,</span> <span class="s2">&quot;990/1400&quot;</span><span class="p">,</span> <span class="s2">&quot;205/900&quot;</span><span class="p">],</span>
+        <span class="p">],</span>
+        <span class="n">border</span><span class="o">=</span><span class="s2">&quot;incols&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># add the tables to the proper ids in the form</span>
+    <span class="n">form</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">tables</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="n">tableA</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="n">tableB</span><span class="p">})</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">form</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  <li><a href="../../evennia.html">evennia</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../../versions/1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="evform.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

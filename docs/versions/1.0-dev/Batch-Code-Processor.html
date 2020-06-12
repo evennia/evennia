@@ -1,0 +1,320 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Batch Code Processor &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="batch-code-processor">
+<h1>Batch Code Processor<a class="headerlink" href="#batch-code-processor" title="Permalink to this headline">¶</a></h1>
+<p>For an introduction and motivation to using batch processors, see <a class="reference internal" href="Batch-Processors.html"><span class="doc">here</span></a>. This page describes the Batch-<em>code</em> processor. The Batch-<em>command</em> one is covered <a class="reference internal" href="Batch-Command-Processor.html"><span class="doc">here</span></a>.</p>
+<div class="section" id="basic-usage">
+<h2>Basic Usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h2>
+<p>The batch-code processor is a superuser-only function, invoked by</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="o">&gt;</span> <span class="nd">@batchcode</span> <span class="n">path</span><span class="o">.</span><span class="n">to</span><span class="o">.</span><span class="n">batchcodefile</span>
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">path.to.batchcodefile</span></code> is the path to a <em>batch-code file</em>. Such a file should have a name ending in “<code class="docutils literal notranslate"><span class="pre">.py</span></code>” (but you shouldn’t include that in the path). The path is given like a python path relative to a folder you define to hold your batch files, set by <code class="docutils literal notranslate"><span class="pre">BATCH_IMPORT_PATH</span></code> in your settings. Default folder is (assuming your game is called “mygame”) <code class="docutils literal notranslate"><span class="pre">mygame/world/</span></code>. So if you want to run the example batch file in <code class="docutils literal notranslate"><span class="pre">mygame/world/batch_code.py</span></code>, you could simply use</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="o">&gt;</span> <span class="nd">@batchcode</span> <span class="n">batch_code</span>
+</pre></div>
+</div>
+<p>This will try to run through the entire batch file in one go. For more gradual, <em>interactive</em> control you can use the <code class="docutils literal notranslate"><span class="pre">/interactive</span></code> switch.  The switch <code class="docutils literal notranslate"><span class="pre">/debug</span></code> will put the processor in <em>debug</em> mode. Read below for more info.</p>
+</div>
+<div class="section" id="the-batch-file">
+<h2>The batch file<a class="headerlink" href="#the-batch-file" title="Permalink to this headline">¶</a></h2>
+<p>A batch-code file is a normal Python file. The difference is that since the batch processor loads and executes the file rather than importing it, you can reliably update the file, then call it again, over and over and see your changes without needing to <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> the server. This makes for easy testing. In the batch-code file you have also access to the following global variables:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">caller</span></code> - This is a reference to the object running the batchprocessor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DEBUG</span></code> - This is a boolean that lets you determine if this file is currently being run in debug-mode or not. See below how this can be useful.</p></li>
+</ul>
+<p>Running a plain Python file through the processor will just execute the file from beginning to end. If you want to get more control over the execution you can use the processor’s <em>interactive</em> mode. This runs certain code blocks on their own, rerunning only that part until you are happy with it. In order to do this you need to add special markers to your file to divide it up into smaller chunks. These take the form of comments, so the file remains valid Python.</p>
+<p>Here are the rules of syntax of the batch-code <code class="docutils literal notranslate"><span class="pre">*.py</span></code> file.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">#CODE</span></code> as the first on a line marks the start of a <em>code</em> block. It will last until the beginning of another marker or the end of the file. Code blocks contain functional python code. Each <code class="docutils literal notranslate"><span class="pre">#CODE</span></code> block will be run in complete isolation from other parts of the file, so make sure it’s self-contained.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">#HEADER</span></code> as the first on a line marks the start of a <em>header</em> block. It lasts until the next marker or the end of the file. This is intended to hold imports and variables you will need for all other blocks .All python code defined in a header block will always be inserted at the top of every <code class="docutils literal notranslate"><span class="pre">#CODE</span></code> blocks in the file. You may have more than one <code class="docutils literal notranslate"><span class="pre">#HEADER</span></code> block, but that is equivalent to having one big one. Note that you can’t exchange data between code blocks, so editing a header-variable in one code block won’t affect that variable in any other code block!</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">#INSERT</span> <span class="pre">path.to.file</span></code> will insert another batchcode (Python) file at that position.</p></li>
+<li><p>A <code class="docutils literal notranslate"><span class="pre">#</span></code> that is not starting a <code class="docutils literal notranslate"><span class="pre">#HEADER</span></code>, <code class="docutils literal notranslate"><span class="pre">#CODE</span></code> or <code class="docutils literal notranslate"><span class="pre">#INSERT</span></code> instruction is considered a comment.</p></li>
+<li><p>Inside a block, normal Python syntax rules apply. For the sake of indentation, each block acts as a separate python module.</p></li>
+</ul>
+<p>Below is a version of the example file found in <code class="docutils literal notranslate"><span class="pre">evennia/contrib/tutorial_examples/</span></code>.</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1">#</span>
+    <span class="c1"># This is an example batch-code build file for Evennia. </span>
+    <span class="c1">#</span>
+    
+    <span class="c1">#HEADER</span>
+    
+    <span class="c1"># This will be included in all other #CODE blocks</span>
+    
+    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span><span class="p">,</span> <span class="n">search_object</span>
+    <span class="kn">from</span> <span class="nn">evennia.contrib.tutorial_examples</span> <span class="kn">import</span> <span class="n">red_button</span>
+    <span class="kn">from</span> <span class="nn">typeclasses.objects</span> <span class="kn">import</span> <span class="n">Object</span>
+    
+    <span class="n">limbo</span> <span class="o">=</span> <span class="n">search_object</span><span class="p">(</span><span class="s1">&#39;Limbo&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    
+    
+    <span class="c1">#CODE </span>
+ 
+    <span class="n">red_button</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">red_button</span><span class="o">.</span><span class="n">RedButton</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Red button&quot;</span><span class="p">,</span> 
+                               <span class="n">location</span><span class="o">=</span><span class="n">limbo</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;button&quot;</span><span class="p">])</span>
+    
+    <span class="c1"># caller points to the one running the script</span>
+    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;A red button was created.&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># importing more code from another batch-code file</span>
+    <span class="c1">#INSERT batch_code_insert</span>
+    
+    <span class="c1">#CODE</span>
+    
+    <span class="n">table</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">Object</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Blue Table&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">limbo</span><span class="p">)</span>
+    <span class="n">chair</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">Object</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Blue Chair&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">limbo</span><span class="p">)</span>
+    
+    <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;A </span><span class="si">%s</span><span class="s2"> and </span><span class="si">%s</span><span class="s2"> were created.&quot;</span>
+    <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="n">chair</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; Since debug was active, &quot;</span> \
+             <span class="s2">&quot;they were deleted again.&quot;</span> 
+    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span> <span class="o">%</span> <span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">chair</span><span class="p">))</span>
+</pre></div>
+</td></tr></table></div>
+<p>This uses Evennia’s Python API to create three objects in sequence.</p>
+</div>
+<div class="section" id="debug-mode">
+<h2>Debug mode<a class="headerlink" href="#debug-mode" title="Permalink to this headline">¶</a></h2>
+<p>Try to run the example script with</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="o">&gt;</span> <span class="nd">@batchcode</span><span class="o">/</span><span class="n">debug</span> <span class="n">tutorial_examples</span><span class="o">.</span><span class="n">example_batch_code</span>
+</pre></div>
+</div>
+<p>The batch script will run to the end and tell you it completed. You will also get messages that the button and the two pieces of furniture were created.  Look around and you should see the button there. But you won’t see any chair nor a table! This is because we ran this with the <code class="docutils literal notranslate"><span class="pre">/debug</span></code> switch, which is directly visible as <code class="docutils literal notranslate"><span class="pre">DEBUG==True</span></code> inside the script. In the above example we handled this state by deleting the chair and table again.</p>
+<p>The debug mode is intended to be used when you test out a batchscript. Maybe you are looking for bugs in your code or try to see if things behave as they should. Running the script over and over would then create an ever-growing stack of chairs and tables, all with the same name. You would have to go back and painstakingly delete them later.</p>
+</div>
+<div class="section" id="interactive-mode">
+<h2>Interactive mode<a class="headerlink" href="#interactive-mode" title="Permalink to this headline">¶</a></h2>
+<p>Interactive mode works very similar to the <a class="reference internal" href="Batch-Command-Processor.html"><span class="doc">batch-command processor counterpart</span></a>. It allows you more step-wise control over how the batch file is executed. This is useful for debugging or for picking and choosing only particular blocks to run.  Use <code class="docutils literal notranslate"><span class="pre">&#64;batchcode</span></code> with the <code class="docutils literal notranslate"><span class="pre">/interactive</span></code> flag to enter interactive mode.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="o">&gt;</span> <span class="nd">@batchcode</span><span class="o">/</span><span class="n">interactive</span> <span class="n">tutorial_examples</span><span class="o">.</span><span class="n">batch_code</span>
+</pre></div>
+</div>
+<p>You should see the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">01</span><span class="o">/</span><span class="mi">02</span><span class="p">:</span> <span class="n">red_button</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">red_button</span><span class="o">.</span><span class="n">RedButton</span><span class="p">,</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>         <span class="p">(</span><span class="n">hh</span> <span class="k">for</span> <span class="n">help</span><span class="p">)</span> 
+</pre></div>
+</div>
+<p>This shows that you are on the first <code class="docutils literal notranslate"><span class="pre">#CODE</span></code> block, the first of only two commands in this batch file. Observe that the block has <em>not</em> actually been executed at this point!</p>
+<p>To take a look at the full code snippet you are about to run, use <code class="docutils literal notranslate"><span class="pre">ll</span></code> (a batch-processor version of <code class="docutils literal notranslate"><span class="pre">look</span></code>).</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">search</span>
+    <span class="kn">from</span> <span class="nn">evennia.contrib.tutorial_examples</span> <span class="kn">import</span> <span class="n">red_button</span>
+    <span class="kn">from</span> <span class="nn">typeclasses.objects</span> <span class="kn">import</span> <span class="n">Object</span>
+    
+    <span class="n">limbo</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">objects</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s1">&#39;Limbo&#39;</span><span class="p">,</span> <span class="n">global_search</span><span class="o">=</span><span class="bp">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">red_button</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="n">red_button</span><span class="o">.</span><span class="n">RedButton</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Red button&quot;</span><span class="p">,</span> 
+                                      <span class="n">location</span><span class="o">=</span><span class="n">limbo</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;button&quot;</span><span class="p">])</span>
+    
+    <span class="c1"># caller points to the one running the script</span>
+    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;A red button was created.&quot;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>Compare with the example code given earlier. Notice how the content of <code class="docutils literal notranslate"><span class="pre">#HEADER</span></code> has been pasted at the top of the <code class="docutils literal notranslate"><span class="pre">#CODE</span></code> block. Use <code class="docutils literal notranslate"><span class="pre">pp</span></code> to actually execute this block (this will create the button and give you a message). Use <code class="docutils literal notranslate"><span class="pre">nn</span></code> (next) to go to the next command. Use <code class="docutils literal notranslate"><span class="pre">hh</span></code> for a list of commands.</p>
+<p>If there are tracebacks, fix them in the batch file, then use <code class="docutils literal notranslate"><span class="pre">rr</span></code> to reload the file. You will still be at the same code block and can rerun it easily with <code class="docutils literal notranslate"><span class="pre">pp</span></code> as needed. This makes for a simple debug cycle. It also allows you to rerun individual troublesome blocks - as mentioned, in a large batch file this can be very useful (don’t forget the <code class="docutils literal notranslate"><span class="pre">/debug</span></code> mode either).</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">nn</span></code> and <code class="docutils literal notranslate"><span class="pre">bb</span></code> (next and back) to step through the file; e.g. <code class="docutils literal notranslate"><span class="pre">nn</span> <span class="pre">12</span></code> will jump 12 steps forward (without processing any blocks in between). All normal commands of Evennia should work too while working in interactive mode.</p>
+</div>
+<div class="section" id="limitations-and-caveats">
+<h2>Limitations and Caveats<a class="headerlink" href="#limitations-and-caveats" title="Permalink to this headline">¶</a></h2>
+<p>The batch-code processor is by far the most flexible way to build a world in Evennia. There are however some caveats you need to keep in mind.</p>
+<div class="section" id="safety">
+<h3>Safety<a class="headerlink" href="#safety" title="Permalink to this headline">¶</a></h3>
+<p>Or rather the lack of it. There is a reason only <em>superusers</em> are allowed to run the batch-code processor by default. The code-processor runs <strong>without any Evennia security checks</strong> and allows full access to Python. If an untrusted party could run the code-processor they could execute arbitrary python code on your machine, which is potentially a very dangerous thing.  If you want to allow other users to access the batch-code processor you should make sure to run Evennia as a separate and very limited-access user on your machine (i.e. in a ‘jail’). By comparison, the batch-command processor is much safer since the user running it is still ‘inside’ the game and can’t really do anything outside what the game commands allow them to.</p>
+</div>
+<div class="section" id="no-communication-between-code-blocks">
+<h3>No communication between code blocks<a class="headerlink" href="#no-communication-between-code-blocks" title="Permalink to this headline">¶</a></h3>
+<p>Global variables won’t work in code batch files, each block is executed as stand-alone environments. <code class="docutils literal notranslate"><span class="pre">#HEADER</span></code> blocks are literally pasted on top of each <code class="docutils literal notranslate"><span class="pre">#CODE</span></code> block so updating some header-variable in your block will not make that change available in another block. Whereas a python execution limitation, allowing this would also lead to very hard-to-debug code when using the interactive mode - this would be a classical example of “spaghetti code”.</p>
+<p>The main practical issue with this is when building e.g. a room in one code block and later want to connect that room with a room you built in the current block. There are two ways to do this:</p>
+<ul>
+<li><p>Perform a database search for the name of the room you created (since you cannot know in advance which dbref it got assigned). The problem is that a name may not be unique (you may have a lot of “A dark forest” rooms). There is an easy way to handle this though - use <a class="reference internal" href="Tags.html"><span class="doc">Tags</span></a> or <em>Aliases</em>. You can assign any number of tags and/or aliases to any object. Make sure that one of those tags or aliases is unique to the room (like “room56”) and you will henceforth be able to always uniquely search and find it later.</p></li>
+<li><p>Use the <code class="docutils literal notranslate"><span class="pre">caller</span></code> global property as an inter-block storage. For example, you could have a dictionary of room references in an <code class="docutils literal notranslate"><span class="pre">ndb</span></code>:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">#HEADER </span>
+<span class="k">if</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">all_rooms</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">all_rooms</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="c1">#CODE </span>
+<span class="c1"># create and store the castle</span>
+<span class="n">castle</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="s2">&quot;rooms.Room&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Castle&quot;</span><span class="p">)</span>
+<span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">all_rooms</span><span class="p">[</span><span class="s2">&quot;castle&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">castle</span>
+
+<span class="c1">#CODE </span>
+<span class="c1"># in another node we want to access the castle</span>
+<span class="n">castle</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">all_rooms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;castle&quot;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+</li>
+</ul>
+<p>Note how we check in <code class="docutils literal notranslate"><span class="pre">#HEADER</span></code> if <code class="docutils literal notranslate"><span class="pre">caller.ndb.all_rooms</span></code> doesn’t already exist before creating the dict. Remember that <code class="docutils literal notranslate"><span class="pre">#HEADER</span></code> is copied in front of every <code class="docutils literal notranslate"><span class="pre">#CODE</span></code> block. Without that <code class="docutils literal notranslate"><span class="pre">if</span></code> statement we’d be wiping the dict every block!</p>
+</div>
+<div class="section" id="don-t-treat-a-batchcode-file-like-any-python-file">
+<h3>Don’t treat a batchcode file like any Python file<a class="headerlink" href="#don-t-treat-a-batchcode-file-like-any-python-file" title="Permalink to this headline">¶</a></h3>
+<p>Despite being a valid Python file, a batchcode file should <em>only</em> be run by the batchcode processor. You should not do things like define Typeclasses or Commands in them, or import them into other code. Importing a module in Python will execute base level of the module, which in the case of your average batchcode file could mean creating a lot of new objects every time.</p>
+</div>
+<div class="section" id="don-t-let-code-rely-on-the-batch-file-s-real-file-path">
+<h3>Don’t let code rely on the batch-file’s real file path<a class="headerlink" href="#don-t-let-code-rely-on-the-batch-file-s-real-file-path" title="Permalink to this headline">¶</a></h3>
+<p>When you import things into your batchcode file, don’t use relative imports but always import with paths starting from the root of your game directory or evennia library. Code that relies on the batch file’s “actual” location <em>will fail</em>. Batch code files are read as text and the strings executed. When the code runs it has no knowledge of what file those strings where once a part of.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Batch Code Processor</a><ul>
+<li><a class="reference internal" href="#basic-usage">Basic Usage</a></li>
+<li><a class="reference internal" href="#the-batch-file">The batch file</a></li>
+<li><a class="reference internal" href="#debug-mode">Debug mode</a></li>
+<li><a class="reference internal" href="#interactive-mode">Interactive mode</a></li>
+<li><a class="reference internal" href="#limitations-and-caveats">Limitations and Caveats</a><ul>
+<li><a class="reference internal" href="#safety">Safety</a></li>
+<li><a class="reference internal" href="#no-communication-between-code-blocks">No communication between code blocks</a></li>
+<li><a class="reference internal" href="#don-t-treat-a-batchcode-file-like-any-python-file">Don’t treat a batchcode file like any Python file</a></li>
+<li><a class="reference internal" href="#don-t-let-code-rely-on-the-batch-file-s-real-file-path">Don’t let code rely on the batch-file’s real file path</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Batch-Code-Processor.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Batch-Code-Processor.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../versions/0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/Batch-Code-Processor.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,255 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Python basic introduction &#8212; Evennia 0.9.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="python-basic-introduction">
+<h1>Python basic introduction<a class="headerlink" href="#python-basic-introduction" title="Permalink to this headline">¶</a></h1>
+<p>This is the first part of our beginner’s guide to the basics of using Python with Evennia. It’s aimed at you with limited or no programming/Python experience. But also if you are an experienced programmer new to Evennia or Python you might still pick up a thing or two. It is by necessity brief and low on detail. There are countless Python guides and tutorials, books and videos out there for learning more in-depth - use them!</p>
+<p><strong>Contents:</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="/Python-basic-introduction.html#evennia-hello-world">Evennia Hello world</a></p></li>
+<li><p><a class="reference external" href="/Python-basic-introduction.html#importing-modules">Importing modules</a></p></li>
+<li><p><a class="reference external" href="/Python-basic-introduction.html#parsing-python-errors">Parsing Python errors</a></p></li>
+<li><p><a class="reference external" href="/Python-basic-introduction.html#our-first-function">Our first function</a></p></li>
+<li><p><a class="reference external" href="/Python-basic-introduction.html#looking-at-the-log">Looking at the log</a></p></li>
+<li><p>(continued in <a class="reference internal" href="Python-basic-tutorial-part-two.html"><span class="doc">part 2</span></a>)</p></li>
+</ul>
+<p>This quickstart assumes you have <a class="reference internal" href="Getting-Started.html"><span class="doc">gotten Evennia started</span></a>. You should make sure that you are able to see the output from the server in the console from which you started it. Log into the game either with a mud client on <code class="docutils literal notranslate"><span class="pre">localhost:4000</span></code> or by pointing a web browser to <code class="docutils literal notranslate"><span class="pre">localhost:4001/webclient</span></code>. Log in as your superuser (the user you created during install).</p>
+<p>Below, lines starting with a single <code class="docutils literal notranslate"><span class="pre">&gt;</span></code> means command input.</p>
+<div class="section" id="evennia-hello-world">
+<h2>Evennia Hello world<a class="headerlink" href="#evennia-hello-world" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">py</span></code> (or <code class="docutils literal notranslate"><span class="pre">!</span></code> which is an alias) command allows you as a superuser to run raw Python from in-game. From the game’s input line, enter the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You will see</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">)</span>
+<span class="n">Hello</span> <span class="n">World</span>
+</pre></div>
+</div>
+<p>To understand what is going on: some extra info: The <code class="docutils literal notranslate"><span class="pre">print(...)</span></code> <em>function</em> is the basic, in-built way to output text in Python. The quotes <code class="docutils literal notranslate"><span class="pre">&quot;...&quot;</span></code> means you are inputing a <em>string</em> (i.e. text). You could also have used single-quotes <code class="docutils literal notranslate"><span class="pre">'...'</span></code>, Python accepts both.</p>
+<p>The first return line (with <code class="docutils literal notranslate"><span class="pre">&gt;&gt;&gt;</span></code>) is just <code class="docutils literal notranslate"><span class="pre">py</span></code> echoing what you input (we won’t include that in the examples henceforth).</p>
+<blockquote>
+<div><p>Note: You may sometimes see people/docs refer to <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code> or other commands starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>. Evennia ignores <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> by default, so <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code> is the exact same thing as <code class="docutils literal notranslate"><span class="pre">py</span></code>.</p>
+</div></blockquote>
+<p>The <code class="docutils literal notranslate"><span class="pre">print</span></code> command is a standard Python structure. We can use that here in the <code class="docutils literal notranslate"><span class="pre">py</span></code> command, and it’s great for debugging and quick testing. But if you need to send a text to an actual player, <code class="docutils literal notranslate"><span class="pre">print</span></code> won’t do, because it doesn’t know <em>who</em> to send to. Try this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; py me.msg(&quot;Hello world!&quot;)
+Hello world!
+</pre></div>
+</div>
+<p>This looks the same as the <code class="docutils literal notranslate"><span class="pre">print</span></code> result, but we are now actually messaging a specific <em>object</em>, <code class="docutils literal notranslate"><span class="pre">me</span></code>. The <code class="docutils literal notranslate"><span class="pre">me</span></code> is something uniquely available in the <code class="docutils literal notranslate"><span class="pre">py</span></code> command (we could also use <code class="docutils literal notranslate"><span class="pre">self</span></code>, it’s an alias). It represents “us”, the ones calling the <code class="docutils literal notranslate"><span class="pre">py</span></code> command. The <code class="docutils literal notranslate"><span class="pre">me</span></code> is an example of an <em>Object instance</em>. Objects are fundamental in Python and Evennia. The <code class="docutils literal notranslate"><span class="pre">me</span></code> object not only represents the character we play in the game, it also contains a lot of useful resources for doing things with that Object. One such resource is <code class="docutils literal notranslate"><span class="pre">msg</span></code>. <code class="docutils literal notranslate"><span class="pre">msg</span></code> works like <code class="docutils literal notranslate"><span class="pre">print</span></code> except it sends the text to the object it is attached to. So if we, for example, had an object <code class="docutils literal notranslate"><span class="pre">you</span></code>, doing <code class="docutils literal notranslate"><span class="pre">you.msg(...)</span></code> would send a message to the object <code class="docutils literal notranslate"><span class="pre">you</span></code>.</p>
+<p>You access an Object’s resources by using the full-stop character <code class="docutils literal notranslate"><span class="pre">.</span></code>. So <code class="docutils literal notranslate"><span class="pre">self.msg</span></code> accesses the <code class="docutils literal notranslate"><span class="pre">msg</span></code> resource and then we call it like we did print, with our “Hello World!” greeting in parentheses.</p>
+<blockquote>
+<div><p>Important: something like <code class="docutils literal notranslate"><span class="pre">print(...)</span></code> we refer to as a <em>function</em>, while <code class="docutils literal notranslate"><span class="pre">msg(...)</span></code> which sits on an object is called a <em>method</em>.</p>
+</div></blockquote>
+<p>For now, <code class="docutils literal notranslate"><span class="pre">print</span></code> and <code class="docutils literal notranslate"><span class="pre">me.msg</span></code> behaves the same, just remember that you’re going to mostly be using the latter in the future. Try printing other things. Also try to include <code class="docutils literal notranslate"><span class="pre">|r</span></code> at the start of your string to make the output red in-game. Use <code class="docutils literal notranslate"><span class="pre">color</span></code> to learn more color tags.</p>
+</div>
+<div class="section" id="importing-modules">
+<h2>Importing modules<a class="headerlink" href="#importing-modules" title="Permalink to this headline">¶</a></h2>
+<p>Keep your game running, then open a text editor of your choice. If your game folder is called <code class="docutils literal notranslate"><span class="pre">mygame</span></code>, create a new text file <code class="docutils literal notranslate"><span class="pre">test.py</span></code> in the subfolder <code class="docutils literal notranslate"><span class="pre">mygame/world</span></code>. This is how the file structure should look:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mygame</span><span class="o">/</span>
+    <span class="n">world</span><span class="o">/</span>
+        <span class="n">test</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>For now, only add one line to <code class="docutils literal notranslate"><span class="pre">test.py</span></code>:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>Don’t forget to save the file. A file with the ending <code class="docutils literal notranslate"><span class="pre">.py</span></code> is referred to as a Python <em>module</em>. To use this in-game we have to <em>import</em> it. Try this:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="nd">@py</span> <span class="kn">import</span> <span class="nn">world.test</span>
+<span class="n">Hello</span> <span class="n">World</span>
+</pre></div>
+</td></tr></table></div>
+<p>If you make some error (we’ll cover how to handle errors below) you may need to run the <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> command for your changes to take effect.</p>
+<p>So importing <code class="docutils literal notranslate"><span class="pre">world.test</span></code> actually means importing <code class="docutils literal notranslate"><span class="pre">world/test.py</span></code>. Think of the period <code class="docutils literal notranslate"><span class="pre">.</span></code> as replacing <code class="docutils literal notranslate"><span class="pre">/</span></code> (or <code class="docutils literal notranslate"><span class="pre">\</span></code> for Windows) in your path. The <code class="docutils literal notranslate"><span class="pre">.py</span></code> ending of <code class="docutils literal notranslate"><span class="pre">test.py</span></code> is also never included in this “Python-path”, but <em>only</em> files with that ending can be imported this way. Where is <code class="docutils literal notranslate"><span class="pre">mygame</span></code> in that Python-path? The answer is that Evennia has already told Python that your <code class="docutils literal notranslate"><span class="pre">mygame</span></code> folder is a good place to look for imports. So we don’t include <code class="docutils literal notranslate"><span class="pre">mygame</span></code> in the path - Evennia handles this for us.</p>
+<p>When you import the module, the top “level” of it will execute. In this case, it will immediately print “Hello World”.</p>
+<blockquote>
+<div><p>If you look in the folder you’ll also often find new files ending with <code class="docutils literal notranslate"><span class="pre">.pyc</span></code>. These are compiled Python binaries that Python auto-creates when running code. Just ignore them, you should never edit those anyway.</p>
+</div></blockquote>
+<p>Now try to run this a second time:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="kn">import</span> <span class="nn">world.test</span>
+</pre></div>
+</td></tr></table></div>
+<p>You will <em>not</em> see any output  this second time or any subsequent times! This is not a bug. Rather it is because Python is being clever - it stores all imported modules and to be efficient it will avoid importing them more than once. So your <code class="docutils literal notranslate"><span class="pre">print</span></code> will only run the first time, when the module is first imported. To see it again you need to <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> first, so Python forgets about the module and has to import it again.</p>
+<p>We’ll get back to importing code in the second part of this tutorial. For now, let’s press on.</p>
+</div>
+<div class="section" id="parsing-python-errors">
+<h2>Parsing Python errors<a class="headerlink" href="#parsing-python-errors" title="Permalink to this headline">¶</a></h2>
+<p>Next, erase the single <code class="docutils literal notranslate"><span class="pre">print</span></code> statement you had in <code class="docutils literal notranslate"><span class="pre">test.py</span></code> and replace it with this instead:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">me</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>As you recall we used this from <code class="docutils literal notranslate"><span class="pre">py</span></code> earlier - it echoed “Hello World!” in-game.
+Save your file and <code class="docutils literal notranslate"><span class="pre">reload</span></code> your server - this makes sure Evennia sees the new version of your code. Try to import it from <code class="docutils literal notranslate"><span class="pre">py</span></code> in the same way as earlier:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">py</span> <span class="kn">import</span> <span class="nn">world.test</span>
+</pre></div>
+</td></tr></table></div>
+<p>No go - this time you get an error!</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">File</span> <span class="s2">&quot;./world/test.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+    <span class="n">me</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">)</span>
+<span class="ne">NameError</span><span class="p">:</span> <span class="n">name</span> <span class="s1">&#39;me&#39;</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">defined</span>
+</pre></div>
+</td></tr></table></div>
+<p>This is called a <em>traceback</em>. Python’s errors are very friendly and will most of the time tell you exactly what and where things are wrong. It’s important that you learn to parse tracebacks so you can fix your code. Let’s look at this one. A traceback is to be read from the <em>bottom up</em>. The last line is the error Python balked at, while the two lines above it details exactly where that error was encountered.</p>
+<ol class="simple">
+<li><p>An error of type <code class="docutils literal notranslate"><span class="pre">NameError</span></code> is the problem …</p></li>
+<li><p>… more specifically it is due to the variable <code class="docutils literal notranslate"><span class="pre">me</span></code> not being defined.</p></li>
+<li><p>This happened on the line <code class="docutils literal notranslate"><span class="pre">me.msg(&quot;Hello</span> <span class="pre">world!&quot;)</span></code> …</p></li>
+<li><p>… which is on line <code class="docutils literal notranslate"><span class="pre">1</span></code> of the file <code class="docutils literal notranslate"><span class="pre">./world/test.py</span></code>.</p></li>
+</ol>
+<p>In our case the traceback is short. There may be many more lines above it, tracking just how different modules called each other until it got to the faulty line. That can sometimes be useful information, but reading from the bottom is always a good start.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">NameError</span></code> we see here is due to a module being its own isolated thing. It knows nothing about the environment into which it is imported. It knew what <code class="docutils literal notranslate"><span class="pre">print</span></code> is because that is a special <a class="reference external" href="https://docs.python.org/2.5/ref/keywords.html">reserved Python keyword</a>. But <code class="docutils literal notranslate"><span class="pre">me</span></code> is <em>not</em> such a reserved word. As far as the module is concerned <code class="docutils literal notranslate"><span class="pre">me</span></code> is just there out of nowhere. Hence the <code class="docutils literal notranslate"><span class="pre">NameError</span></code>.</p>
+</div>
+<div class="section" id="our-first-function">
+<h2>Our first function<a class="headerlink" href="#our-first-function" title="Permalink to this headline">¶</a></h2>
+<p>Let’s see if we can resolve that <code class="docutils literal notranslate"><span class="pre">NameError</span></code> from the previous section. We know that <code class="docutils literal notranslate"><span class="pre">me</span></code> is defined at the time we use the <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code> command because if we do <code class="docutils literal notranslate"><span class="pre">py</span> <span class="pre">me.msg(&quot;Hello</span> <span class="pre">World!&quot;)</span></code> directly in-game it works fine. What if we could <em>send</em> that <code class="docutils literal notranslate"><span class="pre">me</span></code> to the <code class="docutils literal notranslate"><span class="pre">test.py</span></code> module so it knows what it is? One way to do this is with a <em>function</em>.</p>
+<p>Change your <code class="docutils literal notranslate"><span class="pre">mygame/world/test.py</span></code> file to look like this:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">hello_world</span><span class="p">(</span><span class="n">who</span><span class="p">):</span>
+    <span class="n">who</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>Now that we are moving onto multi-line Python code, there are some important things to remember:</p>
+<ul class="simple">
+<li><p>Capitalization matters in Python. It must be <code class="docutils literal notranslate"><span class="pre">def</span></code> and not <code class="docutils literal notranslate"><span class="pre">DEF</span></code>, <code class="docutils literal notranslate"><span class="pre">who</span></code> is not the same as <code class="docutils literal notranslate"><span class="pre">Who</span></code> etc.</p></li>
+<li><p>Indentation matters in Python. The second line must be indented or it’s not valid code. You should also use a consistent indentation length. We <em>strongly</em> recommend that you set up your editor to always indent <em>4 spaces</em> (<strong>not</strong> a single tab-character) when you press the TAB key - it will make your life a lot easier.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">def</span></code> is short for “define” and defines a <em>function</em> (or a <em>method</em>, if sitting on an object). This is a <a class="reference external" href="https://docs.python.org/2.5/ref/keywords.html">reserved Python keyword</a>; try not to use these words anywhere else.</p></li>
+<li><p>A function name can not have spaces but otherwise we could have called it almost anything. We call it <code class="docutils literal notranslate"><span class="pre">hello_world</span></code>. Evennia follows <a class="reference external" href="https://github.com/evennia/evennia/blob/master/CODING_STYLE.md#a-quick-list-of-code-style-points">Python’s standard naming style</a> with lowercase letters and underscores. Use this style for now.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">who</span></code> is what we call the <em>argument</em> to our function. Arguments are variables we pass to the function. We could have named it anything and we could also have multiple arguments separated by commas. What <code class="docutils literal notranslate"><span class="pre">who</span></code> is depends on what we pass to this function when we <em>call</em> it later (hint: we’ll pass <code class="docutils literal notranslate"><span class="pre">me</span></code> to it).</p></li>
+<li><p>The colon (<code class="docutils literal notranslate"><span class="pre">:</span></code>) at the end of the first line indicates that the header of the function is complete.</p></li>
+<li><p>The indentation marks the beginning of the actual operating code of the function (the function’s <em>body</em>). If we wanted more lines to belong to this function those lines would all have to have to start at this indentation level.</p></li>
+<li><p>In the function body we take the <code class="docutils literal notranslate"><span class="pre">who</span></code> argument and treat it as we would have treated <code class="docutils literal notranslate"><span class="pre">me</span></code> earlier - we expect it to have a <code class="docutils literal notranslate"><span class="pre">.msg</span></code> method we can use to send “Hello World” to.</p></li>
+</ul>
+<p>First, <code class="docutils literal notranslate"><span class="pre">reload</span></code> your game to make it aware of the updated Python module. Now we have defined our first function, let’s use it.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">reload</span>
+<span class="o">&gt;</span> <span class="n">py</span> <span class="kn">import</span> <span class="nn">world.test</span>
+</pre></div>
+</div>
+<p>Nothing happened! That is because the function in our module won’t do anything just by importing it. It will only act when we <em>call</em> it. We will need to enter the module we just imported and do so.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; py import world.test ; world.test.hello_world(me)
+Hello world!
+</pre></div>
+</div>
+<p>There is our “Hello World”! The <code class="docutils literal notranslate"><span class="pre">;</span></code> is the way to put multiple Python-statements on one line.</p>
+<blockquote>
+<div><p>Some MUD clients use <code class="docutils literal notranslate"><span class="pre">;</span></code> for their own purposes to separate client-inputs. If so you’ll get a <code class="docutils literal notranslate"><span class="pre">NameError</span></code> stating that <code class="docutils literal notranslate"><span class="pre">world</span></code> is not defined. Check so you understand why this is! Change the use of <code class="docutils literal notranslate"><span class="pre">;</span></code> in your client or use the Evennia web client if this is a problem.</p>
+</div></blockquote>
+<p>In the second statement we access the module path we imported (<code class="docutils literal notranslate"><span class="pre">world.test</span></code>) and reach for the <code class="docutils literal notranslate"><span class="pre">hello_world</span></code> function within. We <em>call</em> the function with <code class="docutils literal notranslate"><span class="pre">me</span></code>, which becomes the <code class="docutils literal notranslate"><span class="pre">who</span></code> variable we use inside the <code class="docutils literal notranslate"><span class="pre">hello_function</span></code>.</p>
+<blockquote>
+<div><p>As an exercise, try to pass something else into <code class="docutils literal notranslate"><span class="pre">hello_world</span></code>. Try for example to pass <em>who</em> as the number <code class="docutils literal notranslate"><span class="pre">5</span></code> or the simple string <code class="docutils literal notranslate"><span class="pre">&quot;foo&quot;</span></code>. You’ll get errors that they don’t have the attribute <code class="docutils literal notranslate"><span class="pre">msg</span></code>. As we’ve seen, <code class="docutils literal notranslate"><span class="pre">me</span></code> <em>does</em> make <code class="docutils literal notranslate"><span class="pre">msg</span></code> available which is why it works (you’ll learn more about Objects like <code class="docutils literal notranslate"><span class="pre">me</span></code> in the next part of this tutorial). If you are familiar with other programming languages you may be tempted to start <em>validating</em> <code class="docutils literal notranslate"><span class="pre">who</span></code> to make sure it works as expected. This is usually not recommended in Python which suggests it’s better to <a class="reference external" href="https://docs.python.org/2/tutorial/errors.html">handle</a> the error if it happens rather than to make a lot of code to prevent it from happening. See also <a class="reference external" href="https://en.wikipedia.org/wiki/Duck_typing">duck typing</a>.</p>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="looking-at-the-log">
+<h1>Looking at the log<a class="headerlink" href="#looking-at-the-log" title="Permalink to this headline">¶</a></h1>
+<p>As you start to explore Evennia, it’s important that you know where to look when things go wrong. While using the friendly <code class="docutils literal notranslate"><span class="pre">py</span></code> command you’ll see errors directly in-game. But if something goes wrong in your code while the game runs, you must know where to find the <em>log</em>.</p>
+<p>Open a terminal (or go back to the terminal you started Evennia in), make sure your <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code> is active and that you are standing in your game directory (the one created with <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">--init</span></code> during installation). Enter</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="o">--</span><span class="n">log</span>
+</pre></div>
+</div>
+<p>(or <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">-l</span></code>)</p>
+<p>This will show the log. New entries will show up in real time. Whenever you want to leave the log, enter  <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code> or <code class="docutils literal notranslate"><span class="pre">Cmd-C</span></code> depending on your system. As a game dev it is important to look at the log output when working in Evennia - many errors will only appear with full details here. You may sometimes have to scroll up in the history if you miss it.</p>
+<p>This tutorial is continued in <a class="reference internal" href="Python-basic-tutorial-part-two.html"><span class="doc">Part 2</span></a>, where we’ll start learning about objects and to explore the Evennia library.</p>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Python basic introduction</a><ul>
+<li><a class="reference internal" href="#evennia-hello-world">Evennia Hello world</a></li>
+<li><a class="reference internal" href="#importing-modules">Importing modules</a></li>
+<li><a class="reference internal" href="#parsing-python-errors">Parsing Python errors</a></li>
+<li><a class="reference internal" href="#our-first-function">Our first function</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#looking-at-the-log">Looking at the log</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Python-basic-introduction.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../versions/1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Python-basic-introduction.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/Python-basic-introduction.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

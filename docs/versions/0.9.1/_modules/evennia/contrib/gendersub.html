@@ -1,0 +1,238 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.contrib.gendersub &#8212; Evennia 0.9.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.gendersub</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Gendersub</span>
+
+<span class="sd">Griatch 2015</span>
+
+<span class="sd">This is a simple gender-aware Character class for allowing users to</span>
+<span class="sd">insert custom markers in their text to indicate gender-aware</span>
+<span class="sd">messaging. It relies on a modified msg() and is meant as an</span>
+<span class="sd">inspiration and starting point to how to do stuff like this.</span>
+
+<span class="sd">An object can have the following genders:</span>
+<span class="sd"> - male (he/his)</span>
+<span class="sd"> - female (her/hers)</span>
+<span class="sd"> - neutral (it/its)</span>
+<span class="sd"> - ambiguous (they/them/their/theirs)</span>
+
+<span class="sd">When in use, messages can contain special tags to indicate pronouns gendered</span>
+<span class="sd">based on the one being addressed. Capitalization will be retained.</span>
+
+<span class="sd">- `|s`, `|S`: Subjective form: he, she, it, He, She, It, They</span>
+<span class="sd">- `|o`, `|O`: Objective form: him, her, it, Him, Her, It, Them</span>
+<span class="sd">- `|p`, `|P`: Possessive form: his, her, its, His, Her, Its, Their</span>
+<span class="sd">- `|a`, `|A`: Absolute Possessive form: his, hers, its, His, Hers, Its, Theirs</span>
+
+<span class="sd">For example,</span>
+
+<span class="sd">```</span>
+<span class="sd">char.msg(&quot;%s falls on |p face with a thud.&quot; % char.key)</span>
+<span class="sd">&quot;Tom falls on his face with a thud&quot;</span>
+<span class="sd">```</span>
+
+<span class="sd">The default gender is &quot;ambiguous&quot; (they/them/their/theirs).</span>
+
+<span class="sd">To use, have DefaultCharacter inherit from this, or change</span>
+<span class="sd">setting.DEFAULT_CHARACTER to point to this class.</span>
+
+<span class="sd">The `@gender` command is used to set the gender. It needs to be added to the</span>
+<span class="sd">default cmdset before it becomes available.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">DefaultCharacter</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">Command</span>
+
+<span class="c1"># gender maps</span>
+
+<span class="n">_GENDER_PRONOUN_MAP</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;male&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="s2">&quot;he&quot;</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">:</span> <span class="s2">&quot;him&quot;</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="s2">&quot;his&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="s2">&quot;his&quot;</span><span class="p">},</span>
+    <span class="s2">&quot;female&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="s2">&quot;she&quot;</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">:</span> <span class="s2">&quot;her&quot;</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="s2">&quot;her&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="s2">&quot;hers&quot;</span><span class="p">},</span>
+    <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="s2">&quot;it&quot;</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">:</span> <span class="s2">&quot;it&quot;</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="s2">&quot;its&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="s2">&quot;its&quot;</span><span class="p">},</span>
+    <span class="s2">&quot;ambiguous&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="s2">&quot;they&quot;</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">:</span> <span class="s2">&quot;them&quot;</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="s2">&quot;their&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="s2">&quot;theirs&quot;</span><span class="p">},</span>
+<span class="p">}</span>
+<span class="n">_RE_GENDER_PRONOUN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(?&lt;!\|)\|(?!\|)[sSoOpPaA]&quot;</span><span class="p">)</span>
+
+<span class="c1"># in-game command for setting the gender</span>
+
+
+<div class="viewcode-block" id="SetGender"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.gendersub.SetGender">[docs]</a><span class="k">class</span> <span class="nc">SetGender</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sets gender on yourself</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      @gender male||female||neutral||ambiguous</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@gender&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="s2">&quot;@sex&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;call:all()&quot;</span>
+
+<div class="viewcode-block" id="SetGender.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.gendersub.SetGender.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Implements the command.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="n">arg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">arg</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;male&quot;</span><span class="p">,</span> <span class="s2">&quot;female&quot;</span><span class="p">,</span> <span class="s2">&quot;neutral&quot;</span><span class="p">,</span> <span class="s2">&quot;ambiguous&quot;</span><span class="p">):</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: @gender male||female||neutral||ambiguous&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">gender</span> <span class="o">=</span> <span class="n">arg</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Your gender was set to </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">arg</span><span class="p">)</span></div></div>
+
+
+<span class="c1"># Gender-aware character class</span>
+
+
+<div class="viewcode-block" id="GenderCharacter"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.gendersub.GenderCharacter">[docs]</a><span class="k">class</span> <span class="nc">GenderCharacter</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a Character class aware of gender.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="GenderCharacter.at_object_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.gendersub.GenderCharacter.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called once when the object is created.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_object_creation</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">gender</span> <span class="o">=</span> <span class="s2">&quot;ambiguous&quot;</span></div>
+
+<div class="viewcode-block" id="GenderCharacter._get_pronoun"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.gendersub.GenderCharacter._get_pronoun">[docs]</a>    <span class="k">def</span> <span class="nf">_get_pronoun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">regex_match</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get pronoun from the pronoun marker in the text. This is used as</span>
+<span class="sd">        the callable for the re.sub function.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            regex_match (MatchObject): the regular expression match.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            - `|s`, `|S`: Subjective form: he, she, it, He, She, It, They</span>
+<span class="sd">            - `|o`, `|O`: Objective form: him, her, it, Him, Her, It, Them</span>
+<span class="sd">            - `|p`, `|P`: Possessive form: his, her, its, His, Her, Its, Their</span>
+<span class="sd">            - `|a`, `|A`: Absolute Possessive form: his, hers, its, His, Hers, Its, Theirs</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">typ</span> <span class="o">=</span> <span class="n">regex_match</span><span class="o">.</span><span class="n">group</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># &quot;s&quot;, &quot;O&quot; etc</span>
+        <span class="n">gender</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;gender&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;ambiguous&quot;</span><span class="p">)</span>
+        <span class="n">gender</span> <span class="o">=</span> <span class="n">gender</span> <span class="k">if</span> <span class="n">gender</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;male&quot;</span><span class="p">,</span> <span class="s2">&quot;female&quot;</span><span class="p">,</span> <span class="s2">&quot;neutral&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;ambiguous&quot;</span>
+        <span class="n">pronoun</span> <span class="o">=</span> <span class="n">_GENDER_PRONOUN_MAP</span><span class="p">[</span><span class="n">gender</span><span class="p">][</span><span class="n">typ</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
+        <span class="k">return</span> <span class="n">pronoun</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">if</span> <span class="n">typ</span><span class="o">.</span><span class="n">isupper</span><span class="p">()</span> <span class="k">else</span> <span class="n">pronoun</span></div>
+
+<div class="viewcode-block" id="GenderCharacter.msg"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.gendersub.GenderCharacter.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Emits something to a session attached to the object.</span>
+<span class="sd">        Overloads the default msg() implementation to include</span>
+<span class="sd">        gender-aware markers in output.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text (str or tuple, optional): The message to send. This</span>
+<span class="sd">                is treated internally like any send-command, so its</span>
+<span class="sd">                value can be a tuple if sending multiple arguments to</span>
+<span class="sd">                the `text` oob command.</span>
+<span class="sd">            from_obj (obj, optional): object that is sending. If</span>
+<span class="sd">                given, at_msg_send will be called</span>
+<span class="sd">            session (Session or list, optional): session or list of</span>
+<span class="sd">                sessions to relay to, if any. If set, will</span>
+<span class="sd">                force send regardless of MULTISESSION_MODE.</span>
+<span class="sd">        Notes:</span>
+<span class="sd">            `at_msg_receive` will be called on this Object.</span>
+<span class="sd">            All extra kwargs will be passed on to the protocol.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">text</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_RE_GENDER_PRONOUN</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_pronoun</span><span class="p">,</span> <span class="n">text</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="o">*</span><span class="n">text</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_RE_GENDER_PRONOUN</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_pronoun</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">from_obj</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  <li><a href="../../evennia.html">evennia</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../../versions/1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="gendersub.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

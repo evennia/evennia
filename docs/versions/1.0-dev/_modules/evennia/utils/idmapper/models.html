@@ -1,0 +1,758 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.utils.idmapper.models &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.utils.idmapper.models</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Django ID mapper</span>
+
+<span class="sd">Modified for Evennia by making sure that no model references</span>
+<span class="sd">leave caching unexpectedly (no use of WeakRefs).</span>
+
+<span class="sd">Also adds `cache_size()` for monitoring the size of the cache.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">gc</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">weakref</span> <span class="k">import</span> <span class="n">WeakValueDictionary</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.reactor</span> <span class="k">import</span> <span class="n">callFromThread</span>
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="k">import</span> <span class="n">ObjectDoesNotExist</span><span class="p">,</span> <span class="n">FieldError</span>
+<span class="kn">from</span> <span class="nn">django.db.models.signals</span> <span class="k">import</span> <span class="n">post_save</span>
+<span class="kn">from</span> <span class="nn">django.db.models.base</span> <span class="k">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">ModelBase</span>
+<span class="kn">from</span> <span class="nn">django.db.models.signals</span> <span class="k">import</span> <span class="n">pre_delete</span><span class="p">,</span> <span class="n">post_migrate</span>
+<span class="kn">from</span> <span class="nn">django.db.utils</span> <span class="k">import</span> <span class="n">DatabaseError</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">dbref</span><span class="p">,</span> <span class="n">get_evennia_pids</span><span class="p">,</span> <span class="n">to_str</span>
+
+<span class="kn">from</span> <span class="nn">.manager</span> <span class="k">import</span> <span class="n">SharedMemoryManager</span>
+
+<span class="n">AUTO_FLUSH_MIN_INTERVAL</span> <span class="o">=</span> <span class="mf">60.0</span> <span class="o">*</span> <span class="mi">5</span>  <span class="c1"># at least 5 mins between cache flushes</span>
+
+<span class="n">_GA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__getattribute__</span>
+<span class="n">_SA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span>
+<span class="n">_DA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__delattr__</span>
+<span class="n">_MONITOR_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1"># References to db-updated objects are stored here so the</span>
+<span class="c1"># main process can be informed to re-cache itself.</span>
+<span class="n">PROC_MODIFIED_COUNT</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">PROC_MODIFIED_OBJS</span> <span class="o">=</span> <span class="n">WeakValueDictionary</span><span class="p">()</span>
+
+<span class="c1"># get info about the current process and thread; determine if our</span>
+<span class="c1"># current pid is different from the server PID (i.e.  # if we are in a</span>
+<span class="c1"># subprocess or not)</span>
+<span class="n">_SELF_PID</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">()</span>
+<span class="n">_SERVER_PID</span><span class="p">,</span> <span class="n">_PORTAL_PID</span> <span class="o">=</span> <span class="n">get_evennia_pids</span><span class="p">()</span>
+<span class="n">_IS_SUBPROCESS</span> <span class="o">=</span> <span class="p">(</span><span class="n">_SERVER_PID</span> <span class="ow">and</span> <span class="n">_PORTAL_PID</span><span class="p">)</span> <span class="ow">and</span> <span class="n">_SELF_PID</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">_SERVER_PID</span><span class="p">,</span> <span class="n">_PORTAL_PID</span><span class="p">)</span>
+<span class="n">_IS_MAIN_THREAD</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">currentThread</span><span class="p">()</span><span class="o">.</span><span class="n">getName</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;MainThread&quot;</span>
+
+
+<div class="viewcode-block" id="SharedMemoryModelBase"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.html#evennia.utils.idmapper.models.SharedMemoryModelBase">[docs]</a><span class="k">class</span> <span class="nc">SharedMemoryModelBase</span><span class="p">(</span><span class="n">ModelBase</span><span class="p">):</span>
+    <span class="c1"># CL: upstream had a __new__ method that skipped ModelBase&#39;s __new__ if</span>
+    <span class="c1"># SharedMemoryModelBase was not in the model class&#39;s ancestors. It&#39;s not</span>
+    <span class="c1"># clear what was the intended purpose, but skipping ModelBase.__new__</span>
+    <span class="c1"># broke things; in particular, default manager inheritance.</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        this method will either create an instance (by calling the default implementation)</span>
+<span class="sd">        or try to retrieve one from the class-wide cache by inferring the pk value from</span>
+<span class="sd">        `args` and `kwargs`. If instance caching is enabled for this class, the cache is</span>
+<span class="sd">        populated whenever possible (ie when it is possible to infer the pk value).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">new_instance</span><span class="p">():</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">SharedMemoryModelBase</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">instance_key</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_cache_key</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># depending on the arguments, we might not be able to infer the PK, so in that case we create a new instance</span>
+        <span class="k">if</span> <span class="n">instance_key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">new_instance</span><span class="p">()</span>
+        <span class="n">cached_instance</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_cached_instance</span><span class="p">(</span><span class="n">instance_key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cached_instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cached_instance</span> <span class="o">=</span> <span class="n">new_instance</span><span class="p">()</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">cache_instance</span><span class="p">(</span><span class="n">cached_instance</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cached_instance</span>
+
+<div class="viewcode-block" id="SharedMemoryModelBase._prepare"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.html#evennia.utils.idmapper.models.SharedMemoryModelBase._prepare">[docs]</a>    <span class="k">def</span> <span class="nf">_prepare</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepare the cache, making sure that proxies of the same db base</span>
+<span class="sd">        share the same cache.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># the dbmodel is either the proxy base or ourselves</span>
+        <span class="n">dbmodel</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">concrete_model</span> <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">proxy</span> <span class="k">else</span> <span class="bp">cls</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">__dbclass__</span> <span class="o">=</span> <span class="n">dbmodel</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dbmodel</span><span class="p">,</span> <span class="s2">&quot;__instance_cache__&quot;</span><span class="p">):</span>
+            <span class="c1"># we store __instance_cache__ only on the dbmodel base</span>
+            <span class="n">dbmodel</span><span class="o">.</span><span class="n">__instance_cache__</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_prepare</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">attrs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Field shortcut creation:</span>
+
+<span class="sd">        Takes field names `db_*` and creates property wrappers named</span>
+<span class="sd">        without the `db_` prefix. So db_key -&gt; key</span>
+
+<span class="sd">        This wrapper happens on the class level, so there is no</span>
+<span class="sd">        overhead when creating objects.  If a class already has a</span>
+<span class="sd">        wrapper of the given name, the automatic creation is skipped.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            Remember to document this auto-wrapping in the class</span>
+<span class="sd">            header, this could seem very much like magic to the user</span>
+<span class="sd">            otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;typename&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;__module__&quot;</span><span class="p">],</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;_is_deleted&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># set up the typeclass handling only if a variable _is_typeclass is set on the class</span>
+        <span class="k">def</span> <span class="nf">create_wrapper</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">wrappername</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">foreignkey</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="s2">&quot;Helper method to create property wrappers with unique names (must be in separate call)&quot;</span>
+
+            <span class="k">def</span> <span class="nf">_get</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
+                <span class="s2">&quot;Wrapper for getting database field&quot;</span>
+                <span class="k">if</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;_is_deleted&quot;</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="n">ObjectDoesNotExist</span><span class="p">(</span>
+                        <span class="s2">&quot;Cannot access </span><span class="si">%s</span><span class="s2">: Hosting object was already deleted.&quot;</span> <span class="o">%</span> <span class="n">fname</span>
+                    <span class="p">)</span>
+                <span class="k">return</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">)</span>
+
+            <span class="k">def</span> <span class="nf">_get_foreign</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
+                <span class="s2">&quot;Wrapper for returning foreignkey fields&quot;</span>
+                <span class="k">if</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;_is_deleted&quot;</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="n">ObjectDoesNotExist</span><span class="p">(</span>
+                        <span class="s2">&quot;Cannot access </span><span class="si">%s</span><span class="s2">: Hosting object was already deleted.&quot;</span> <span class="o">%</span> <span class="n">fname</span>
+                    <span class="p">)</span>
+                <span class="k">return</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">)</span>
+
+            <span class="k">def</span> <span class="nf">_set_nonedit</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+                <span class="s2">&quot;Wrapper for blocking editing of field&quot;</span>
+                <span class="k">raise</span> <span class="n">FieldError</span><span class="p">(</span><span class="s2">&quot;Field </span><span class="si">%s</span><span class="s2"> cannot be edited.&quot;</span> <span class="o">%</span> <span class="n">fname</span><span class="p">)</span>
+
+            <span class="k">def</span> <span class="nf">_set</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+                <span class="s2">&quot;Wrapper for setting database field&quot;</span>
+                <span class="k">if</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;_is_deleted&quot;</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="n">ObjectDoesNotExist</span><span class="p">(</span>
+                        <span class="s2">&quot;Cannot set </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">: Hosting object was already deleted!&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="n">_SA</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                <span class="c1"># only use explicit update_fields in save if we actually have a</span>
+                <span class="c1"># primary key assigned already (won&#39;t be set when first creating object)</span>
+                <span class="n">update_fields</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="p">[</span><span class="n">fname</span><span class="p">]</span> <span class="k">if</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;_get_pk_val&quot;</span><span class="p">)(</span><span class="n">_GA</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;_meta&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="p">)</span>
+                <span class="n">_GA</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;save&quot;</span><span class="p">)(</span><span class="n">update_fields</span><span class="o">=</span><span class="n">update_fields</span><span class="p">)</span>
+
+            <span class="k">def</span> <span class="nf">_set_foreign</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+                <span class="s2">&quot;Setter only used on foreign key relations, allows setting with #dbref&quot;</span>
+                <span class="k">if</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;_is_deleted&quot;</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="n">ObjectDoesNotExist</span><span class="p">(</span>
+                        <span class="s2">&quot;Cannot set </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">: Hosting object was already deleted!&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">to_str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">or</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">):</span>
+                        <span class="c1"># we also allow setting using dbrefs, if so we try to load the matching object.</span>
+                        <span class="c1"># (we assume the object is of the same type as the class holding the field, if</span>
+                        <span class="c1"># not a custom handler must be used for that field)</span>
+                        <span class="n">dbid</span> <span class="o">=</span> <span class="n">dbref</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">reqhash</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">dbid</span><span class="p">:</span>
+                            <span class="n">model</span> <span class="o">=</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;_meta&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get_field</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span><span class="o">.</span><span class="n">model</span>
+                            <span class="k">try</span><span class="p">:</span>
+                                <span class="n">value</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">_default_manager</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">dbid</span><span class="p">)</span>
+                            <span class="k">except</span> <span class="n">ObjectDoesNotExist</span><span class="p">:</span>
+                                <span class="c1"># maybe it is just a name that happens to look like a dbid</span>
+                                <span class="k">pass</span>
+                <span class="n">_SA</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                <span class="c1"># only use explicit update_fields in save if we actually have a</span>
+                <span class="c1"># primary key assigned already (won&#39;t be set when first creating object)</span>
+                <span class="n">update_fields</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="p">[</span><span class="n">fname</span><span class="p">]</span> <span class="k">if</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;_get_pk_val&quot;</span><span class="p">)(</span><span class="n">_GA</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;_meta&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="p">)</span>
+                <span class="n">_GA</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;save&quot;</span><span class="p">)(</span><span class="n">update_fields</span><span class="o">=</span><span class="n">update_fields</span><span class="p">)</span>
+
+            <span class="k">def</span> <span class="nf">_del_nonedit</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
+                <span class="s2">&quot;wrapper for not allowing deletion&quot;</span>
+                <span class="k">raise</span> <span class="n">FieldError</span><span class="p">(</span><span class="s2">&quot;Field </span><span class="si">%s</span><span class="s2"> cannot be edited.&quot;</span> <span class="o">%</span> <span class="n">fname</span><span class="p">)</span>
+
+            <span class="k">def</span> <span class="nf">_del</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
+                <span class="s2">&quot;Wrapper for clearing database field - sets it to None&quot;</span>
+                <span class="n">_SA</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="n">update_fields</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="p">[</span><span class="n">fname</span><span class="p">]</span> <span class="k">if</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;_get_pk_val&quot;</span><span class="p">)(</span><span class="n">_GA</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;_meta&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="p">)</span>
+                <span class="n">_GA</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;save&quot;</span><span class="p">)(</span><span class="n">update_fields</span><span class="o">=</span><span class="n">update_fields</span><span class="p">)</span>
+
+            <span class="c1"># wrapper factories</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">editable</span><span class="p">:</span>
+
+                <span class="k">def</span> <span class="nf">fget</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">_get</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">)</span>
+
+                <span class="k">def</span> <span class="nf">fset</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">_set_nonedit</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">foreignkey</span><span class="p">:</span>
+
+                <span class="k">def</span> <span class="nf">fget</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">_get_foreign</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">)</span>
+
+                <span class="k">def</span> <span class="nf">fset</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">_set_foreign</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="k">def</span> <span class="nf">fget</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">_get</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">)</span>
+
+                <span class="k">def</span> <span class="nf">fset</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">_set</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+
+            <span class="k">def</span> <span class="nf">fdel</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">_del</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">)</span> <span class="k">if</span> <span class="n">editable</span> <span class="k">else</span> <span class="n">_del_nonedit</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">)</span>
+
+            <span class="c1"># set docstrings for auto-doc</span>
+            <span class="n">fget</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;A wrapper for getting database field `</span><span class="si">%s</span><span class="s2">`.&quot;</span> <span class="o">%</span> <span class="n">fieldname</span>
+            <span class="n">fset</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;A wrapper for setting (and saving) database field `</span><span class="si">%s</span><span class="s2">`.&quot;</span> <span class="o">%</span> <span class="n">fieldname</span>
+            <span class="n">fdel</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;A wrapper for deleting database field `</span><span class="si">%s</span><span class="s2">`.&quot;</span> <span class="o">%</span> <span class="n">fieldname</span>
+            <span class="c1"># assigning</span>
+            <span class="n">attrs</span><span class="p">[</span><span class="n">wrappername</span><span class="p">]</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="p">,</span> <span class="n">fset</span><span class="p">,</span> <span class="n">fdel</span><span class="p">)</span>
+            <span class="c1"># type(cls).__setattr__(cls, wrappername, property(fget, fset, fdel))#, doc))</span>
+
+        <span class="c1"># exclude some models that should not auto-create wrapper fields</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;ServerConfig&quot;</span><span class="p">,</span> <span class="s2">&quot;TypeNick&quot;</span><span class="p">):</span>
+            <span class="k">return</span>
+        <span class="c1"># dynamically create the wrapper properties for all fields not already handled</span>
+        <span class="c1"># (manytomanyfields are always handlers)</span>
+        <span class="k">for</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">fname</span><span class="p">,</span> <span class="n">field</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">attrs</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+            <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;db_&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">field</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">!=</span> <span class="s2">&quot;ManyToManyField&quot;</span>
+        <span class="p">):</span>
+            <span class="n">foreignkey</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">field</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;ForeignKey&quot;</span>
+            <span class="n">wrappername</span> <span class="o">=</span> <span class="s2">&quot;dbid&quot;</span> <span class="k">if</span> <span class="n">fieldname</span> <span class="o">==</span> <span class="s2">&quot;id&quot;</span> <span class="k">else</span> <span class="n">fieldname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;db_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">wrappername</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
+                <span class="c1"># makes sure not to overload manually created wrappers on the model</span>
+                <span class="n">create_wrapper</span><span class="p">(</span>
+                    <span class="bp">cls</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">wrappername</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="n">field</span><span class="o">.</span><span class="n">editable</span><span class="p">,</span> <span class="n">foreignkey</span><span class="o">=</span><span class="n">foreignkey</span>
+                <span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">attrs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SharedMemoryModel"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.html#evennia.utils.idmapper.models.SharedMemoryModel">[docs]</a><span class="k">class</span> <span class="nc">SharedMemoryModel</span><span class="p">(</span><span class="n">Model</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">SharedMemoryModelBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for idmapped objects. Inherit from `this`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">objects</span> <span class="o">=</span> <span class="n">SharedMemoryManager</span><span class="p">()</span>
+
+<div class="viewcode-block" id="SharedMemoryModel.Meta"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.html#evennia.utils.idmapper.models.SharedMemoryModel.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="n">abstract</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="SharedMemoryModel._get_cache_key"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.html#evennia.utils.idmapper.models.SharedMemoryModel._get_cache_key">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_get_cache_key</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method is used by the caching subsystem to infer the PK</span>
+<span class="sd">        value from the constructor arguments.  It is used to decide if</span>
+<span class="sd">        an instance has to be built or is already in the cache.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># Quick hack for my composites work for now.</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_meta</span><span class="p">,</span> <span class="s2">&quot;pks&quot;</span><span class="p">):</span>
+            <span class="n">pk</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">pks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pk</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">pk</span>
+        <span class="c1"># get the index of the pk in the class fields. this should be calculated *once*, but isn&#39;t atm</span>
+        <span class="n">pk_position</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">pk</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">pk_position</span><span class="p">:</span>
+            <span class="c1"># if it&#39;s in the args, we can get it easily by index</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="n">pk_position</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">pk</span><span class="o">.</span><span class="n">attname</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="c1"># retrieve the pk value. Note that we use attname instead of name, to handle the case where the pk is a</span>
+            <span class="c1"># a ForeignKey.</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">pk</span><span class="o">.</span><span class="n">attname</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">pk</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">pk</span><span class="o">.</span><span class="n">attname</span> <span class="ow">and</span> <span class="n">pk</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="c1"># ok we couldn&#39;t find the value, but maybe it&#39;s a FK and we can find the corresponding object instead</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">pk</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">Model</span><span class="p">):</span>
+            <span class="c1"># if the pk value happens to be a model instance (which can happen wich a FK), we&#39;d rather use its own pk as the key</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">_get_pk_val</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="SharedMemoryModel.get_cached_instance"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.html#evennia.utils.idmapper.models.SharedMemoryModel.get_cached_instance">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_cached_instance</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to retrieve a cached instance by pk value. Returns None</span>
+<span class="sd">        when not found (which will always be the case when caching is</span>
+<span class="sd">        disabled for this class). Please note that the lookup will be</span>
+<span class="sd">        done even when instance caching is disabled.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__dbclass__</span><span class="o">.</span><span class="n">__instance_cache__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SharedMemoryModel.cache_instance"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.html#evennia.utils.idmapper.models.SharedMemoryModel.cache_instance">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">cache_instance</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to store an instance in the cache.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            instance (Class instance): the instance to cache.</span>
+<span class="sd">            new (bool, optional): this is the first time this instance is</span>
+<span class="sd">                cached (i.e. this is not an update operation like after a</span>
+<span class="sd">                db save).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pk</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">_get_pk_val</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">pk</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">__dbclass__</span><span class="o">.</span><span class="n">__instance_cache__</span><span class="p">[</span><span class="n">pk</span><span class="p">]</span> <span class="o">=</span> <span class="n">instance</span>
+            <span class="k">if</span> <span class="n">new</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># trigger the at_init hook only</span>
+                    <span class="c1"># at first initialization</span>
+                    <span class="n">instance</span><span class="o">.</span><span class="n">at_init</span><span class="p">()</span>
+                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                    <span class="c1"># The at_init hook is not assigned to all entities</span>
+                    <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="SharedMemoryModel.get_all_cached_instances"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.html#evennia.utils.idmapper.models.SharedMemoryModel.get_all_cached_instances">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_all_cached_instances</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the objects so far cached by idmapper for this class.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">__dbclass__</span><span class="o">.</span><span class="n">__instance_cache__</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="SharedMemoryModel._flush_cached_by_key"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.html#evennia.utils.idmapper.models.SharedMemoryModel._flush_cached_by_key">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_flush_cached_by_key</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove the cached reference.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">force</span> <span class="ow">or</span> <span class="bp">cls</span><span class="o">.</span><span class="n">at_idmapper_flush</span><span class="p">():</span>
+                <span class="k">del</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__dbclass__</span><span class="o">.</span><span class="n">__instance_cache__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_dbclass__</span><span class="o">.</span><span class="n">__instance_cache__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">refresh_from_db</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="c1"># No need to remove if cache doesn&#39;t contain it already</span>
+            <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="SharedMemoryModel.flush_cached_instance"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.html#evennia.utils.idmapper.models.SharedMemoryModel.flush_cached_instance">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">flush_cached_instance</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to flush an instance from the cache. The instance will</span>
+<span class="sd">        always be flushed from the cache, since this is most likely</span>
+<span class="sd">        called from delete(), and we want to make sure we don&#39;t cache</span>
+<span class="sd">        dead objects.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_flush_cached_by_key</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">_get_pk_val</span><span class="p">(),</span> <span class="n">force</span><span class="o">=</span><span class="n">force</span><span class="p">)</span></div>
+
+    <span class="c1"># flush_cached_instance = classmethod(flush_cached_instance)</span>
+
+<div class="viewcode-block" id="SharedMemoryModel.flush_instance_cache"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.html#evennia.utils.idmapper.models.SharedMemoryModel.flush_instance_cache">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">flush_instance_cache</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This will clean safe objects from the cache. Use `force`</span>
+<span class="sd">        keyword to remove all objects, safe or not.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">force</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">__dbclass__</span><span class="o">.</span><span class="n">__instance_cache__</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">__dbclass__</span><span class="o">.</span><span class="n">__instance_cache__</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__dbclass__</span><span class="o">.</span><span class="n">__instance_cache__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">at_idmapper_flush</span><span class="p">()</span>
+            <span class="p">)</span></div>
+
+    <span class="c1"># flush_instance_cache = classmethod(flush_instance_cache)</span>
+
+    <span class="c1"># per-instance methods</span>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># this is required to maintain hashing</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="SharedMemoryModel.at_idmapper_flush"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.html#evennia.utils.idmapper.models.SharedMemoryModel.at_idmapper_flush">[docs]</a>    <span class="k">def</span> <span class="nf">at_idmapper_flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is called when the idmapper cache is flushed and</span>
+<span class="sd">        allows customized actions when this happens.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            do_flush (bool): If True, flush this object as normal. If</span>
+<span class="sd">                False, don&#39;t flush and expect this object to handle</span>
+<span class="sd">                the flushing on its own.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="SharedMemoryModel.flush_from_cache"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.html#evennia.utils.idmapper.models.SharedMemoryModel.flush_from_cache">[docs]</a>    <span class="k">def</span> <span class="nf">flush_from_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Flush this instance from the instance cache. Use</span>
+<span class="sd">        `force` to override the result of at_idmapper_flush() for the object.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_pk_val</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">pk</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">force</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">at_idmapper_flush</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">__dbclass__</span><span class="o">.</span><span class="n">__instance_cache__</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SharedMemoryModel.delete"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.html#evennia.utils.idmapper.models.SharedMemoryModel.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Delete the object, clearing cache.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flush_from_cache</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_deleted</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SharedMemoryModel.save"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.html#evennia.utils.idmapper.models.SharedMemoryModel.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Central database save operation.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            Arguments as per Django documentation.</span>
+<span class="sd">            Calls `self.at_&lt;fieldname&gt;_postsave(new)`</span>
+<span class="sd">            (this is a wrapper set by oobhandler:</span>
+<span class="sd">            self._oob_at_&lt;fieldname&gt;_postsave())</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">global</span> <span class="n">_MONITOR_HANDLER</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_MONITOR_HANDLER</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">evennia.scripts.monitorhandler</span> <span class="k">import</span> <span class="n">MONITOR_HANDLER</span> <span class="k">as</span> <span class="n">_MONITOR_HANDLER</span>
+
+        <span class="k">if</span> <span class="n">_IS_SUBPROCESS</span><span class="p">:</span>
+            <span class="c1"># we keep a store of objects modified in subprocesses so</span>
+            <span class="c1"># we know to update their caches in the central process</span>
+            <span class="k">global</span> <span class="n">PROC_MODIFIED_COUNT</span><span class="p">,</span> <span class="n">PROC_MODIFIED_OBJS</span>
+            <span class="n">PROC_MODIFIED_COUNT</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">PROC_MODIFIED_OBJS</span><span class="p">[</span><span class="n">PROC_MODIFIED_COUNT</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
+
+        <span class="k">if</span> <span class="n">_IS_MAIN_THREAD</span><span class="p">:</span>
+            <span class="c1"># in main thread - normal operation</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">DatabaseError</span><span class="p">:</span>
+                <span class="c1"># we handle the &#39;update_fields did not update any rows&#39; error that</span>
+                <span class="c1"># may happen due to timing issues with attributes</span>
+                <span class="n">ufields_removed</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;update_fields&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">ufields_removed</span><span class="p">:</span>
+                    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># in another thread; make sure to save in reactor thread</span>
+            <span class="k">def</span> <span class="nf">_save_callback</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+            <span class="n">callFromThread</span><span class="p">(</span><span class="n">_save_callback</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">:</span>
+            <span class="c1"># this can happen if some of the startup methods immediately</span>
+            <span class="c1"># delete the object (an example are Scripts that start and die immediately)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># update field-update hooks and eventual OOB watchers</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="s2">&quot;update_fields&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;update_fields&quot;</span><span class="p">]:</span>
+            <span class="c1"># get field objects from their names</span>
+            <span class="n">update_fields</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">get_field</span><span class="p">(</span><span class="n">fieldname</span><span class="p">)</span> <span class="k">for</span> <span class="n">fieldname</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;update_fields&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># meta.fields are already field objects; get them all</span>
+            <span class="n">new</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">update_fields</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">fields</span>
+        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">update_fields</span><span class="p">:</span>
+            <span class="n">fieldname</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span>
+            <span class="c1"># trigger eventual monitors</span>
+            <span class="n">_MONITOR_HANDLER</span><span class="o">.</span><span class="n">at_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">)</span>
+            <span class="c1"># if a hook is defined it must be named exactly on this form</span>
+            <span class="n">hookname</span> <span class="o">=</span> <span class="s2">&quot;at_</span><span class="si">%s</span><span class="s2">_postsave&quot;</span> <span class="o">%</span> <span class="n">fieldname</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hookname</span><span class="p">)</span> <span class="ow">and</span> <span class="n">callable</span><span class="p">(</span><span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hookname</span><span class="p">)):</span>
+                <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hookname</span><span class="p">)(</span><span class="n">new</span><span class="p">)</span>
+
+        <span class="c1">#            # if a trackerhandler is set on this object, update it with the</span>
+        <span class="c1">#            # fieldname and the new value</span>
+        <span class="c1">#            fieldtracker = &quot;_oob_at_%s_postsave&quot; % fieldname</span>
+        <span class="c1">#            if hasattr(self, fieldtracker):</span>
+        <span class="c1">#                _GA(self, fieldtracker)(fieldname)</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="WeakSharedMemoryModelBase"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.html#evennia.utils.idmapper.models.WeakSharedMemoryModelBase">[docs]</a><span class="k">class</span> <span class="nc">WeakSharedMemoryModelBase</span><span class="p">(</span><span class="n">SharedMemoryModelBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Uses a WeakValue dictionary for caching instead of a regular one.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="WeakSharedMemoryModelBase._prepare"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.html#evennia.utils.idmapper.models.WeakSharedMemoryModelBase._prepare">[docs]</a>    <span class="k">def</span> <span class="nf">_prepare</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_prepare</span><span class="p">()</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">__dbclass__</span><span class="o">.</span><span class="n">__instance_cache__</span> <span class="o">=</span> <span class="n">WeakValueDictionary</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="WeakSharedMemoryModel"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.html#evennia.utils.idmapper.models.WeakSharedMemoryModel">[docs]</a><span class="k">class</span> <span class="nc">WeakSharedMemoryModel</span><span class="p">(</span><span class="n">SharedMemoryModel</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">WeakSharedMemoryModelBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Uses a WeakValue dictionary for caching instead of a regular one</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="WeakSharedMemoryModel.Meta"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.html#evennia.utils.idmapper.models.WeakSharedMemoryModel.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="n">abstract</span> <span class="o">=</span> <span class="kc">True</span></div></div>
+
+
+<div class="viewcode-block" id="flush_cache"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.html#evennia.utils.idmapper.models.flush_cache">[docs]</a><span class="k">def</span> <span class="nf">flush_cache</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Flush idmapper cache. When doing so the cache will fire the</span>
+<span class="sd">    at_idmapper_flush hook to allow the object to optionally handle</span>
+<span class="sd">    its own flushing.</span>
+
+<span class="sd">    Uses a signal so we make sure to catch cascades.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">class_hierarchy</span><span class="p">(</span><span class="n">clslist</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Recursively yield a class hierarchy&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">clslist</span><span class="p">:</span>
+            <span class="n">subclass_list</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">subclass_list</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">subcls</span> <span class="ow">in</span> <span class="n">class_hierarchy</span><span class="p">(</span><span class="n">subclass_list</span><span class="p">):</span>
+                    <span class="k">yield</span> <span class="n">subcls</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="bp">cls</span>
+
+    <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">class_hierarchy</span><span class="p">([</span><span class="n">SharedMemoryModel</span><span class="p">]):</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">flush_instance_cache</span><span class="p">()</span>
+    <span class="c1"># run the python garbage collector</span>
+    <span class="k">return</span> <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span></div>
+
+
+<span class="c1"># request_finished.connect(flush_cache)</span>
+<span class="n">post_migrate</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">flush_cache</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="flush_cached_instance"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.html#evennia.utils.idmapper.models.flush_cached_instance">[docs]</a><span class="k">def</span> <span class="nf">flush_cached_instance</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Flush the idmapper cache only for a given instance.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># XXX: Is this the best way to make sure we can flush?</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="s2">&quot;flush_cached_instance&quot;</span><span class="p">):</span>
+        <span class="k">return</span>
+    <span class="n">sender</span><span class="o">.</span><span class="n">flush_cached_instance</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<span class="n">pre_delete</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">flush_cached_instance</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="update_cached_instance"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.html#evennia.utils.idmapper.models.update_cached_instance">[docs]</a><span class="k">def</span> <span class="nf">update_cached_instance</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Re-cache the given instance in the idmapper cache.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="s2">&quot;cache_instance&quot;</span><span class="p">):</span>
+        <span class="k">return</span>
+    <span class="n">sender</span><span class="o">.</span><span class="n">cache_instance</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span></div>
+
+
+<span class="n">post_save</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">update_cached_instance</span><span class="p">)</span>
+
+
+<span class="n">LAST_FLUSH</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="conditional_flush"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.html#evennia.utils.idmapper.models.conditional_flush">[docs]</a><span class="k">def</span> <span class="nf">conditional_flush</span><span class="p">(</span><span class="n">max_rmem</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Flush the cache if the estimated memory usage exceeds `max_rmem`.</span>
+
+<span class="sd">    The flusher has a timeout to avoid flushing over and over</span>
+<span class="sd">    in particular situations (this means that for some setups</span>
+<span class="sd">    the memory usage will exceed the requirement and a server with</span>
+<span class="sd">    more memory is probably required for the given game).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        max_rmem (int): memory-usage estimation-treshold after which</span>
+<span class="sd">            cache is flushed.</span>
+<span class="sd">        force (bool, optional): forces a flush, regardless of timeout.</span>
+<span class="sd">            Defaults to `False`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">LAST_FLUSH</span>
+
+    <span class="k">def</span> <span class="nf">mem2cachesize</span><span class="p">(</span><span class="n">desired_rmem</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Estimate the size of the idmapper cache based on the memory</span>
+<span class="sd">        desired. This is used to optionally cap the cache size.</span>
+
+<span class="sd">        desired_rmem - memory in MB (minimum 50MB)</span>
+
+<span class="sd">        The formula is empirically estimated from usage tests (Linux)</span>
+<span class="sd">        and is</span>
+<span class="sd">            Ncache = RMEM - 35.0 / 0.0157</span>
+<span class="sd">        where RMEM is given in MB and Ncache is the size of the cache</span>
+<span class="sd">        for this memory usage. VMEM tends to be about 100MB higher</span>
+<span class="sd">        than RMEM for large memory usage.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">vmem</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">desired_rmem</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">)</span>
+        <span class="n">Ncache</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">vmem</span><span class="p">)</span> <span class="o">-</span> <span class="mf">35.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">0.0157</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Ncache</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">max_rmem</span><span class="p">:</span>
+        <span class="c1"># auto-flush is disabled</span>
+        <span class="k">return</span>
+
+    <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">LAST_FLUSH</span><span class="p">:</span>
+        <span class="c1"># server is just starting</span>
+        <span class="n">LAST_FLUSH</span> <span class="o">=</span> <span class="n">now</span>
+        <span class="k">return</span>
+
+    <span class="k">if</span> <span class="p">((</span><span class="n">now</span> <span class="o">-</span> <span class="n">LAST_FLUSH</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">AUTO_FLUSH_MIN_INTERVAL</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
+        <span class="c1"># too soon after last flush.</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log_warn</span><span class="p">(</span>
+            <span class="s2">&quot;Warning: Idmapper flush called more than &quot;</span>
+            <span class="s2">&quot;once in </span><span class="si">%s</span><span class="s2"> min interval. Check memory usage.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">AUTO_FLUSH_MIN_INTERVAL</span> <span class="o">/</span> <span class="mf">60.0</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;nt&quot;</span><span class="p">:</span>
+        <span class="c1"># we can&#39;t look for mem info in Windows at the moment</span>
+        <span class="k">return</span>
+
+    <span class="c1"># check actual memory usage</span>
+    <span class="n">Ncache_max</span> <span class="o">=</span> <span class="n">mem2cachesize</span><span class="p">(</span><span class="n">max_rmem</span><span class="p">)</span>
+    <span class="n">Ncache</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">cache_size</span><span class="p">()</span>
+    <span class="n">actual_rmem</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="nb">float</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">popen</span><span class="p">(</span><span class="s2">&quot;ps -p </span><span class="si">%d</span><span class="s2"> -o </span><span class="si">%s</span><span class="s2"> | tail -1&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">(),</span> <span class="s2">&quot;rss&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">read</span><span class="p">())</span> <span class="o">/</span> <span class="mf">1000.0</span>
+    <span class="p">)</span>  <span class="c1"># resident memory</span>
+
+    <span class="k">if</span> <span class="n">Ncache</span> <span class="o">&gt;=</span> <span class="n">Ncache_max</span> <span class="ow">and</span> <span class="n">actual_rmem</span> <span class="o">&gt;</span> <span class="n">max_rmem</span> <span class="o">*</span> <span class="mf">0.9</span><span class="p">:</span>
+        <span class="c1"># flush cache when number of objects in cache is big enough and our</span>
+        <span class="c1"># actual memory use is within 10% of our set max</span>
+        <span class="n">flush_cache</span><span class="p">()</span>
+        <span class="n">LAST_FLUSH</span> <span class="o">=</span> <span class="n">now</span></div>
+
+
+<div class="viewcode-block" id="cache_size"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.html#evennia.utils.idmapper.models.cache_size">[docs]</a><span class="k">def</span> <span class="nf">cache_size</span><span class="p">(</span><span class="n">mb</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate statistics about the cache.</span>
+
+<span class="sd">    Note: we cannot get reliable memory statistics from the cache -</span>
+<span class="sd">    whereas we could do `getsizof` each object in cache, the result is</span>
+<span class="sd">    highly imprecise and for a large number of objects the result is</span>
+<span class="sd">    many times larger than the actual memory usage of the entire server;</span>
+<span class="sd">    Python is clearly reusing memory behind the scenes that we cannot</span>
+<span class="sd">    catch in an easy way here.  Ideas are appreciated. /Griatch</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      total_num, {objclass:total_num, ...}</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">numtotal</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># use mutable to keep reference through recursion</span>
+    <span class="n">classdict</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">get_recurse</span><span class="p">(</span><span class="n">submodels</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">submodel</span> <span class="ow">in</span> <span class="n">submodels</span><span class="p">:</span>
+            <span class="n">subclasses</span> <span class="o">=</span> <span class="n">submodel</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">subclasses</span><span class="p">:</span>
+                <span class="n">num</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">submodel</span><span class="o">.</span><span class="n">get_all_cached_instances</span><span class="p">())</span>
+                <span class="n">numtotal</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">num</span>
+                <span class="n">classdict</span><span class="p">[</span><span class="n">submodel</span><span class="o">.</span><span class="n">__dbclass__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span> <span class="o">=</span> <span class="n">num</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">get_recurse</span><span class="p">(</span><span class="n">subclasses</span><span class="p">)</span>
+
+    <span class="n">get_recurse</span><span class="p">(</span><span class="n">SharedMemoryModel</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">numtotal</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">classdict</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../../evennia.html">evennia</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="models.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../../versions/0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

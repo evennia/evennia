@@ -1,0 +1,128 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Learn Python for Evennia The Hard Way &#8212; Evennia 0.9.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="learn-python-for-evennia-the-hard-way">
+<h1>Learn Python for Evennia The Hard Way<a class="headerlink" href="#learn-python-for-evennia-the-hard-way" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="work-in-progress-do-not-use">
+<h1>WORK IN PROGRESS - DO NOT USE<a class="headerlink" href="#work-in-progress-do-not-use" title="Permalink to this headline">¶</a></h1>
+<p>Evennia provides a great foundation to build your very own MU* whether you have programming experience or none at all. Whilst Evennia has a number of in-game building commands and tutorials available to get you started, when approaching game systems of any complexity it is advisable to have the basics of Python under your belt before jumping into the code. There are many Python tutorials freely available online however this page focuses on Learn Python the Hard Way (LPTHW) by Zed Shaw. This tutorial takes you through the basics of Python and progresses you to creating your very own online text based game. Whilst completing the course feel free to install Evennia and try out some of our beginner tutorials. On completion you can return to this page, which will act as an overview to the concepts separating your online text based game and the inner-workings of Evennia.
+-The latter portion of the tutorial focuses working your engine into a webpage and is not strictly required for development in Evennia.</p>
+<div class="section" id="exercise-23">
+<h2>Exercise 23<a class="headerlink" href="#exercise-23" title="Permalink to this headline">¶</a></h2>
+<p>You may have returned here when you were invited to read some code. If you haven’t already, you should now have the knowledge necessary to install Evennia. Head over to the Getting Started page for install instructions. You can also try some of our tutorials to get you started on working with Evennia.</p>
+</div>
+<div class="section" id="bridging-the-gap">
+<h2>Bridging the gap.<a class="headerlink" href="#bridging-the-gap" title="Permalink to this headline">¶</a></h2>
+<p>If you have successfully completed the Learn Python the Hard Way tutorial you should now have a simple browser based Interactive Fiction engine which looks similar to this.
+This engine is built using a single interactive object type, the Room class. The Room class holds a description of itself that is presented to the user and a list of hardcoded commands which if selected correctly will present you with the next rooms’ description and commands. Whilst your game only has one interactive object, MU* have many more: Swords and shields, potions and scrolls or even laser guns and robots. Even the player has an in-game representation in the form of your character. Each of these examples are represented by their own object with their own description that can be presented to the user.</p>
+<p>A basic object in Evennia has a number of default functions but perhaps most important is the idea of location. In your text engine you receive a description of a room but you are not really in the room because you have no in-game representation. However, in Evennia when you enter a Dungeon you ARE in the dungeon. That is to say your character.location = Dungeon whilst the Dungeon.contents now has a spunky young adventurer added to it. In turn, your character.contents may have amongst it a number of swords and potions to help you on your adventure and their location would be you.</p>
+<p>In reality each of these “objects” are just an entry in your Evennia projects database which keeps track of all these attributes, such as location and contents. Making changes to those attributes and the rules in which they are changed is the most fundamental perspective of how your game works. We define those rules in the objects Typeclass. The Typeclass is a Python class with a special connection to the games database which changes values for us through various class methods. Let’s look at your characters Typeclass rules for changing location.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>         1. `self.at_before_move(destination)` (if this returns False, move is aborted)
+         2. `self.announce_move_from(destination)`
+         3. (move happens here)
+         4. `self.announce_move_to(source_location)`
+         5. `self.at_after_move(source_location)`
+</pre></div>
+</div>
+<p>First we check if it’s okay to leave our current location, then we tell everyone there that we’re leaving. We move locations and tell everyone at our new location that we’ve arrived before checking we’re okay to be there. By default stages 1 and 5 are empty ready for us to add some rules. We’ll leave an explanation as to how to make those changes for the tutorial section, but imagine if you were an astronaut. A smart astronaut might stop at step 1 to remember to put his helmet on whilst a slower astronaut might realise he’s forgotten in step 5 before shortly after ceasing to be an astronaut.</p>
+<p>With all these objects and all this moving around it raises another problem. In your text engine the commands available to the player were hard-coded to the room. That means if we have commands we always want available to the player we’ll need to have those commands hard-coded on every single room. What about an armoury? When all the swords are gone the command to take a sword would still remain causing confusion. Evennia solves this problem by giving each object the ability to hold commands. Rooms can have commands attached to them specific to that location, like climbing a tree; Players can have commands which are always available to them, like ‘look’, ‘get’ and ‘say’; and objects can have commands attached to them which unlock when taking possession of it, like attack commands when obtaining a weapon.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Learn Python for Evennia The Hard Way</a></li>
+<li><a class="reference internal" href="#work-in-progress-do-not-use">WORK IN PROGRESS - DO NOT USE</a><ul>
+<li><a class="reference internal" href="#exercise-23">Exercise 23</a></li>
+<li><a class="reference internal" href="#bridging-the-gap">Bridging the gap.</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Learn-Python-for-Evennia-The-Hard-Way.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../versions/1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Learn-Python-for-Evennia-The-Hard-Way.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/Learn-Python-for-Evennia-The-Hard-Way.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

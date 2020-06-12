@@ -1,0 +1,213 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Installing on Android &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="installing-on-android">
+<h1>Installing on Android<a class="headerlink" href="#installing-on-android" title="Permalink to this headline">¶</a></h1>
+<p>This page describes how to install and run the Evennia server on an Android phone. This will involve
+installing a slew of third-party programs from the Google Play store, so make sure you are okay with
+this before starting.</p>
+<div class="section" id="install-termux">
+<h2>Install Termux<a class="headerlink" href="#install-termux" title="Permalink to this headline">¶</a></h2>
+<p>The first thing to do is install a terminal emulator that allows a “full” version of linux to be run. Note that Android is essentially running on top of linux so if you have a rooted phone, you may be able to skip this step. You <em>don’t</em> require a rooted phone to install Evennia though.</p>
+<p>Assuming we do not have root, we will install <a class="reference external" href="https://play.google.com/store/apps/details?id=com.termux&amp;hl=en">Termux</a>.
+Termux provides a base installation of Linux essentials, including apt and Python, and makes them available under a writeable directory. It also gives us a terminal where we can enter commands. By default, Android doesn’t give you permissions to the root folder, so Termux pretends that its own installation directory is the root directory.</p>
+<p>Termux will set up a base system for us on first launch, but we will need to install some prerequisites for Evennia. Commands you should run in Termux will look like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cat file.txt
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">$</span></code> symbol is your prompt - do not include it when running commands.</p>
+</div>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>To install some of the libraries Evennia requires, namely Pillow and Twisted, we have to first install some packages they depend on. In Termux, run the following</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pkg install -y clang git zlib ndk-sysroot libjpeg-turbo libcrypt python
+</pre></div>
+</div>
+<p>Termux ships with Python 3, perfect. Python 3 has venv (virtualenv) and pip (Python’s module installer) built-in.</p>
+<p>So, let’s set up our virtualenv. This keeps the Python packages we install separate from the system versions.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd
+$ python3 -m venv evenv
+</pre></div>
+</div>
+<p>This will create a new folder, called <code class="docutils literal notranslate"><span class="pre">evenv</span></code>, containing the new python executable.
+Next, let’s activate our new virtualenv. Every time you want to work on Evennia, you need to run the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ source evenv/bin/activate
+</pre></div>
+</div>
+<p>Your prompt will change to look like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(evenv) $
+</pre></div>
+</div>
+<p>Update the updaters and installers in the venv: pip, setuptools and wheel.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">pip</span> <span class="n">setuptools</span> <span class="n">wheel</span>
+</pre></div>
+</div>
+<div class="section" id="installing-evennia">
+<h3>Installing Evennia<a class="headerlink" href="#installing-evennia" title="Permalink to this headline">¶</a></h3>
+<p>Now that we have everything in place, we’re ready to download and install Evennia itself.</p>
+<p>Mysterious incantations</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">LDFLAGS</span><span class="o">=</span><span class="s2">&quot;-L/data/data/com.termux/files/usr/lib/&quot;</span>
+<span class="n">export</span> <span class="n">CFLAGS</span><span class="o">=</span><span class="s2">&quot;-I/data/data/com.termux/files/usr/include/&quot;</span>
+</pre></div>
+</div>
+<p>(these tell clang, the C compiler, where to find the bits for zlib when building Pillow)</p>
+<p>Install the latest Evennia in a way that lets you edit the source</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(evenv) $ pip install --upgrade -e &#39;git+https://github.com/evennia/evennia#egg=evennia&#39; 
+</pre></div>
+</div>
+<p>This step will possibly take quite a while - we are downloading Evennia and are then installing it, building all of the requirements for Evennia to run. If you run into trouble on this step, please see <a class="reference external" href="/Installing-on-Android.html#troubleshooting">Troubleshooting</a>.</p>
+<p>You can go to the dir where Evennia is installed with <code class="docutils literal notranslate"><span class="pre">cd</span> <span class="pre">$VIRTUAL_ENV/src/evennia</span></code>. <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">grep</span> <span class="pre">(something)</span></code> can be handy, as can <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">diff</span></code></p>
+</div>
+<div class="section" id="final-steps">
+<h3>Final steps<a class="headerlink" href="#final-steps" title="Permalink to this headline">¶</a></h3>
+<p>At this point, Evennia is installed on your phone! You can now continue with the original <a class="reference internal" href="Getting-Started.html"><span class="doc">Getting Started</span></a> instruction, we repeat them here for clarity.</p>
+<p>To start a new game:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(evenv) $ evennia --init mygame
+(evenv) $ ls
+mygame evenv
+</pre></div>
+</div>
+<p>To start the game for the first time:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(evenv) $ cd mygame
+(evenv) $ evennia migrate
+(evenv) $ evennia start
+</pre></div>
+</div>
+<p>Your game should now be running! Open a web browser at http://localhost:4001 or point a telnet client to localhost:4000 and log in with the user you created.</p>
+</div>
+</div>
+<div class="section" id="running-evennia">
+<h2>Running Evennia<a class="headerlink" href="#running-evennia" title="Permalink to this headline">¶</a></h2>
+<p>When you wish to run Evennia, get into your Termux console and make sure you have activated your virtualenv as well as are in your game’s directory. You can then run evennia start as normal.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd ~ &amp;&amp; source evenv/bin/activate
+(evenv) $ cd mygame
+(evenv) $ evennia start
+</pre></div>
+</div>
+<p>You may wish to look at the <a class="reference external" href="/Getting-Started.html#linux-install">Linux Instructions</a> for more.</p>
+</div>
+<div class="section" id="caveats">
+<h2>Caveats<a class="headerlink" href="#caveats" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Android’s os module doesn’t support certain functions - in particular getloadavg. Thusly, running the command &#64;server in-game will throw an exception. So far, there is no fix for this problem.</p></li>
+<li><p>As you might expect, performance is not amazing.</p></li>
+<li><p>Android is fairly aggressive about memory handling, and you may find that your server process is killed if your phone is heavily taxed. Termux seems to keep a notification up to discourage this.</p></li>
+</ul>
+</div>
+<div class="section" id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h2>
+<p>As time goes by and errors are reported, this section will be added to.</p>
+<p>Some steps to try anyway:</p>
+<ul class="simple">
+<li><p>Make sure your packages are up-to-date, try running <code class="docutils literal notranslate"><span class="pre">pkg</span> <span class="pre">update</span> <span class="pre">&amp;&amp;</span> <span class="pre">pkg</span> <span class="pre">upgrade</span> <span class="pre">-y</span></code></p></li>
+<li><p>Make sure you’ve installed the clang package. If not, try <code class="docutils literal notranslate"><span class="pre">pkg</span> <span class="pre">install</span> <span class="pre">clang</span> <span class="pre">-y</span></code></p></li>
+<li><p>Make sure you’re in the right directory. `cd ~/mygame</p></li>
+<li><p>Make sure you’ve sourced your virtualenv. type <code class="docutils literal notranslate"><span class="pre">cd</span> <span class="pre">&amp;&amp;</span> <span class="pre">source</span> <span class="pre">evenv/bin/activate</span></code></p></li>
+<li><p>See if a shell will start: <code class="docutils literal notranslate"><span class="pre">cd</span> <span class="pre">~/mygame</span> <span class="pre">;</span> <span class="pre">evennia</span> <span class="pre">shell</span></code></p></li>
+<li><p>Look at the log files in ~/mygame/server/logs/</p></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Installing on Android</a><ul>
+<li><a class="reference internal" href="#install-termux">Install Termux</a></li>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a><ul>
+<li><a class="reference internal" href="#installing-evennia">Installing Evennia</a></li>
+<li><a class="reference internal" href="#final-steps">Final steps</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#running-evennia">Running Evennia</a></li>
+<li><a class="reference internal" href="#caveats">Caveats</a></li>
+<li><a class="reference internal" href="#troubleshooting">Troubleshooting</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Installing-on-Android.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Installing-on-Android.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../versions/0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/Installing-on-Android.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
