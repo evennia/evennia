@@ -12,9 +12,9 @@ fi
 
 git checkout gh-pages
 
-rm -Rf versions
-mv build/html/versions .
-git add versions
+rm -Rf docs/*
+cp -Rf build/html/* docs/
+git add docs/*
 
 git commit -a -m "Updated HTML docs"
 echo "Skipping deployment"
