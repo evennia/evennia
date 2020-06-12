@@ -12,9 +12,12 @@ fi
 
 git checkout gh-pages
 
+mv build ..
+cd ..
 rm -Rf docs/*
 cp -Rf build/html/* docs/
 git add docs/*
+rm -Rf build
 
 git commit -a -m "Updated HTML docs"
 echo "Skipping deployment"
