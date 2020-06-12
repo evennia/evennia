@@ -1,0 +1,223 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>OOB &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="oob">
+<h1>OOB<a class="headerlink" href="#oob" title="Permalink to this headline">¶</a></h1>
+<p>OOB, or Out-Of-Band, means sending data between Evennia and the user’s client without the user prompting it or necessarily being aware that it’s being passed. Common uses would be to update client health-bars, handle client button-presses or to display certain tagged text in a different window pane.</p>
+<div class="section" id="briefly-on-input-outputcommands">
+<h2>Briefly on input/outputcommands<a class="headerlink" href="#briefly-on-input-outputcommands" title="Permalink to this headline">¶</a></h2>
+<p>Inside Evennia, all server-client communication happens in the same way (so plain text is also an ‘OOB message’ as far as Evennia is concerned). The message follows the <a class="reference internal" href="Messagepath.html"><span class="doc">Message Path</span></a>. You should read up on that if you are unfamiliar with it. As the message travels along the path it has a standardized internal form: a tuple with a string, a tuple and a dict:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="s2">&quot;cmdname&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">args</span><span class="p">),</span> <span class="p">{</span><span class="n">kwargs</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>This is often referred to as an <em>inputcommand</em> or <em>outputcommand</em>, depending on the direction it’s traveling. The end point for an inputcommand, (the ‘Evennia-end’ of the message path) is a matching <a class="reference internal" href="Inputfuncs.html"><span class="doc">Inputfunc</span></a>. This function is called as <code class="docutils literal notranslate"><span class="pre">cmdname(session,</span> <span class="pre">*args,</span> <span class="pre">**kwargs)</span></code> where <code class="docutils literal notranslate"><span class="pre">session</span></code> is the Session-source of the command. Inputfuncs can easily be added by the developer to support/map client commands to actions inside Evennia (see the <a class="reference internal" href="Inputfuncs.html"><span class="doc">inputfunc</span></a> page for more details).</p>
+<p>When a message is outgoing (at the ‘Client-end’ of the message path) the outputcommand is handled by a matching <em>Outputfunc</em>. This is responsible for converting the internal Evennia representation to a form suitable to send over the wire to the Client. Outputfuncs are hard-coded. Which is chosen and how it processes the outgoing data depends on the nature of the client it’s connected to. The only time one would want to add new outputfuncs is as part of developing support for a new Evennia <a class="reference internal" href="Custom-Protocols.html"><span class="doc">Protocol</span></a>.</p>
+</div>
+<div class="section" id="sending-and-receiving-an-oob-message">
+<h2>Sending and receiving an OOB message<a class="headerlink" href="#sending-and-receiving-an-oob-message" title="Permalink to this headline">¶</a></h2>
+<p>Sending is simple. You just use the normal <code class="docutils literal notranslate"><span class="pre">msg</span></code> method of the object whose session you want to send to. For example in a Command:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">cmdname</span><span class="o">=</span><span class="p">((</span><span class="n">args</span><span class="p">,</span> <span class="o">...</span><span class="p">),</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span><span class="p">,</span> <span class="o">...</span><span class="p">}))</span>
+</pre></div>
+</td></tr></table></div>
+<p>A special case is the <code class="docutils literal notranslate"><span class="pre">text</span></code> input/outputfunc. It’s so common that it’s the default of the <code class="docutils literal notranslate"><span class="pre">msg</span></code> method. So these are equivalent:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Hello&quot;</span><span class="p">)</span>
+    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;Hello&quot;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>You don’t have to specify the full output/input definition. So for example, if your particular command only needs kwargs, you can skip the <code class="docutils literal notranslate"><span class="pre">(args)</span></code> part. Like in the <code class="docutils literal notranslate"><span class="pre">text</span></code> case you can skip writing the tuple if there is only one arg … and so on - the input is pretty flexible. If there are no args at all you need to give the empty tuple <code class="docutils literal notranslate"><span class="pre">msg(cmdname=(,)</span></code> (giving <code class="docutils literal notranslate"><span class="pre">None</span></code> would mean a single argument <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
+<p>Which commands you can send depends on the client. If the client does not support an explicit OOB protocol (like many old/legacy MUD clients) Evennia can only send <code class="docutils literal notranslate"><span class="pre">text</span></code> to them and will quietly drop any other types of outputfuncs.</p>
+<blockquote>
+<div><p>Remember that a given message may go to multiple clients with different capabilities. So unless you turn off telnet completely and only rely on the webclient, you should never rely on non-<code class="docutils literal notranslate"><span class="pre">text</span></code> OOB messages always reaching all targets.</p>
+</div></blockquote>
+<p><a class="reference internal" href="Inputfuncs.html"><span class="doc">Inputfuncs</span></a> lists the default inputfuncs available to handle incoming OOB messages. To accept more you need to add more inputfuncs (see that page for more info).</p>
+</div>
+<div class="section" id="supported-oob-protocols">
+<h2>Supported OOB protocols<a class="headerlink" href="#supported-oob-protocols" title="Permalink to this headline">¶</a></h2>
+<p>Evennia supports clients using one of the following protocols:</p>
+<div class="section" id="telnet">
+<h3>Telnet<a class="headerlink" href="#telnet" title="Permalink to this headline">¶</a></h3>
+<p>By default telnet (and telnet+SSL) supports only the plain <code class="docutils literal notranslate"><span class="pre">text</span></code> outputcommand. Evennia however detects if the Client supports one of two MUD-specific OOB <em>extensions</em> to the standard telnet protocol - GMCP or MSDP. Evennia supports both simultaneously and will switch to the protocol the client uses. If the client supports both, GMCP will be used.</p>
+<blockquote>
+<div><p>Note that for Telnet, <code class="docutils literal notranslate"><span class="pre">text</span></code> has a special status as the “in-band” operation. So the <code class="docutils literal notranslate"><span class="pre">text</span></code> outputcommand sends the <code class="docutils literal notranslate"><span class="pre">text</span></code> argument directly over the wire, without going through the OOB translations described below.</p>
+</div></blockquote>
+<div class="section" id="telnet-gmcp">
+<h4>Telnet + GMCP<a class="headerlink" href="#telnet-gmcp" title="Permalink to this headline">¶</a></h4>
+<p><a class="reference external" href="http://www.gammon.com.au/gmcp">GMCP</a>, the <em>Generic Mud Communication Protocol</em> sends data on the form <code class="docutils literal notranslate"><span class="pre">cmdname</span> <span class="pre">+</span> <span class="pre">JSONdata</span></code>. Here the cmdname is expected to be on the form “Package.Subpackage”. There could also be additional Sub-sub packages etc. The names of these ‘packages’ and ‘subpackages’ are not that well standardized beyond what individual MUDs or companies have chosen to go with over the years. You can decide on your own package names, but here are what others are using:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://www.aardwolf.com/wiki/index.php/Clients/GMCP">Aardwolf GMCP</a></p></li>
+<li><p><a class="reference external" href="http://discworld.starturtle.net/lpc/playing/documentation.c?path=/concepts/gmcp">Discworld GMCP</a></p></li>
+<li><p><a class="reference external" href="http://www.outland.org/infusions/wiclear/index.php?title=MUD%20Protocols&amp;lang=en">Avatar GMCP</a></p></li>
+<li><p><a class="reference external" href="http://nexus.ironrealms.com/GMCP">IRE games GMCP</a></p></li>
+</ul>
+<p>Evennia will translate underscores to <code class="docutils literal notranslate"><span class="pre">.</span></code> and capitalize to fit the specification. So the outputcommand <code class="docutils literal notranslate"><span class="pre">foo_bar</span></code> will become a GMCP command-name <code class="docutils literal notranslate"><span class="pre">Foo.Bar</span></code>. A GMCP command “Foo.Bar” will be come <code class="docutils literal notranslate"><span class="pre">foo_bar</span></code>. To send a GMCP command that turns into an Evennia inputcommand without an underscore, use the <code class="docutils literal notranslate"><span class="pre">Core</span></code> package. So <code class="docutils literal notranslate"><span class="pre">Core.Cmdname</span></code> becomes just <code class="docutils literal notranslate"><span class="pre">cmdname</span></code> in Evennia and vice versa.</p>
+<p>On the wire, a GMCP instruction for <code class="docutils literal notranslate"><span class="pre">(&quot;cmdname&quot;,</span> <span class="pre">(&quot;arg&quot;,),</span> <span class="pre">{})</span></code> will look like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">IAC</span> <span class="n">SB</span> <span class="n">GMCP</span> <span class="s2">&quot;cmdname&quot;</span> <span class="s2">&quot;arg&quot;</span> <span class="n">IAC</span> <span class="n">SE</span>
+</pre></div>
+</div>
+<p>where all the capitalized words are telnet character constants specified in <code class="docutils literal notranslate"><span class="pre">evennia/server/portal/telnet_oob.py</span></code>. These are parsed/added by the protocol and we don’t include these in the listings below.</p>
+</div>
+</div>
+</div>
+<div class="section" id="input-outputfunc-gmcp-command">
+<h2>Input/Outputfunc | GMCP-Command<a class="headerlink" href="#input-outputfunc-gmcp-command" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">[cmd_name,</span> <span class="pre">[],</span> <span class="pre">{}]</span></code>  |  Cmd.Name
+<code class="docutils literal notranslate"><span class="pre">[cmd_name,</span> <span class="pre">[arg],</span> <span class="pre">{}]</span></code> |      Cmd.Name arg
+<code class="docutils literal notranslate"><span class="pre">[cmd_na_me,</span> <span class="pre">[args],{}]</span></code>  |     Cmd.Na.Me [args]
+<code class="docutils literal notranslate"><span class="pre">[cmd_name,</span> <span class="pre">[],</span> <span class="pre">{kwargs}]</span></code> |    Cmd.Name {kwargs}
+<code class="docutils literal notranslate"><span class="pre">[cmdname,</span> <span class="pre">[args,</span> <span class="pre">{kwargs}]</span></code> | Core.Cmdname [[args],{kwargs}]</p>
+<p>Since Evennia already supplies default inputfuncs that don’t match the names expected by the most common GMCP implementations we have a few hard-coded mappings for those:</p>
+</div>
+<div class="section" id="gmcp-command-name-input-outputfunc-name">
+<h2>GMCP command name | Input/Outputfunc name<a class="headerlink" href="#gmcp-command-name-input-outputfunc-name" title="Permalink to this headline">¶</a></h2>
+<p>“Core.Hello” | “client_options”
+“Core.Supports.Get” | “client_options”
+“Core.Commands.Get” | “get_inputfuncs”
+“Char.Value.Get” | “get_value”
+“Char.Repeat.Update” | “repeat”
+“Char.Monitor.Update” | “monitor”</p>
+<div class="section" id="telnet-msdp">
+<h3>Telnet + MSDP<a class="headerlink" href="#telnet-msdp" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://tintin.sourceforge.net/msdp/">MSDP</a>, the <em>Mud Server Data Protocol</em>, is a competing standard to GMCP. The MSDP protocol page specifies a range of “recommended” available MSDP command names. Evennia does <em>not</em> support those - since MSDP doesn’t specify a special format for its command names (like GMCP does) the client can and should just call the internal Evennia inputfunc by its actual name.</p>
+<p>MSDP uses Telnet character constants to package various structured data over the wire. MSDP supports strings, arrays (lists) and tables (dicts). These are used to define the cmdname, args and kwargs needed. When sending MSDP for <code class="docutils literal notranslate"><span class="pre">(&quot;cmdname&quot;,</span> <span class="pre">(&quot;arg&quot;,),</span> <span class="pre">{})</span></code> the resulting MSDP instruction will look like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">IAC</span> <span class="n">SB</span> <span class="n">MSDP</span> <span class="n">VAR</span> <span class="n">cmdname</span> <span class="n">VAL</span> <span class="n">arg</span> <span class="n">IAC</span> <span class="n">SE</span>
+</pre></div>
+</div>
+<p>The various available MSDP constants like <code class="docutils literal notranslate"><span class="pre">VAR</span></code> (variable), <code class="docutils literal notranslate"><span class="pre">VAL</span></code> (value), <code class="docutils literal notranslate"><span class="pre">ARRAYOPEN</span></code>/<code class="docutils literal notranslate"><span class="pre">ARRAYCLOSE</span></code> and <code class="docutils literal notranslate"><span class="pre">TABLEOPEN</span></code>/<code class="docutils literal notranslate"><span class="pre">TABLECLOSE</span></code> are specified in <code class="docutils literal notranslate"><span class="pre">evennia/server/portal/telnet_oob</span></code>.</p>
+</div>
+</div>
+<div class="section" id="outputfunc-inputfunc-msdp-instruction">
+<h2>Outputfunc/Inputfunc | MSDP instruction<a class="headerlink" href="#outputfunc-inputfunc-msdp-instruction" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">[cmdname,</span> <span class="pre">[],</span> <span class="pre">{}]</span></code> | VAR cmdname VAL
+<code class="docutils literal notranslate"><span class="pre">[cmdname,</span> <span class="pre">[arg],</span> <span class="pre">{}]</span></code> | VAR cmdname VAL arg
+<code class="docutils literal notranslate"><span class="pre">[cmdname,</span> <span class="pre">[args],{}]</span></code>  | VAR cmdname VAL ARRAYOPEN VAL arg VAL arg … ARRAYCLOSE
+<code class="docutils literal notranslate"><span class="pre">[cmdname,</span> <span class="pre">[],</span> <span class="pre">{kwargs}]</span></code>  | VAR cmdname VAL TABLEOPEN VAR key VAL val … TABLECLOSE
+<code class="docutils literal notranslate"><span class="pre">[cmdname,</span> <span class="pre">[args],</span> <span class="pre">{kwargs}]</span></code> | VAR cmdname VAL ARRAYOPEN VAL arg VAL arg … ARRAYCLOSE VAR cmdname VAL TABLEOPEN VAR key VAL val … TABLECLOSE</p>
+<p>Observe that <code class="docutils literal notranslate"><span class="pre">VAR</span> <span class="pre">...</span> <span class="pre">VAL</span></code> always identifies cmdnames, so if there are multiple arrays/dicts tagged with the same cmdname they will be appended to the args, kwargs of that inputfunc. Vice-versa, a different <code class="docutils literal notranslate"><span class="pre">VAR</span> <span class="pre">...</span> <span class="pre">VAL</span></code> (outside a table) will come out as a second, different command input.</p>
+<div class="section" id="ssh">
+<h3>SSH<a class="headerlink" href="#ssh" title="Permalink to this headline">¶</a></h3>
+<p>SSH only supports the <code class="docutils literal notranslate"><span class="pre">text</span></code> input/outputcommand.</p>
+</div>
+<div class="section" id="web-client">
+<h3>Web client<a class="headerlink" href="#web-client" title="Permalink to this headline">¶</a></h3>
+<p>Our web client uses pure JSON structures for all its communication, including <code class="docutils literal notranslate"><span class="pre">text</span></code>. This maps directly to the Evennia internal output/inputcommand, including eventual empty args/kwargs. So the same example <code class="docutils literal notranslate"><span class="pre">(&quot;cmdname&quot;,</span> <span class="pre">(&quot;arg&quot;,),</span> <span class="pre">{})</span></code> will be sent/received as a valid JSON structure</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="s2">&quot;cmdname, [&quot;</span><span class="n">arg</span><span class="s2">&quot;], </span><span class="si">{}</span><span class="s2">]</span>
+</pre></div>
+</div>
+<p>Since JSON is native to Javascript, this becomes very easy for the webclient to handle.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">OOB</a><ul>
+<li><a class="reference internal" href="#briefly-on-input-outputcommands">Briefly on input/outputcommands</a></li>
+<li><a class="reference internal" href="#sending-and-receiving-an-oob-message">Sending and receiving an OOB message</a></li>
+<li><a class="reference internal" href="#supported-oob-protocols">Supported OOB protocols</a><ul>
+<li><a class="reference internal" href="#telnet">Telnet</a><ul>
+<li><a class="reference internal" href="#telnet-gmcp">Telnet + GMCP</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#input-outputfunc-gmcp-command">Input/Outputfunc | GMCP-Command</a></li>
+<li><a class="reference internal" href="#gmcp-command-name-input-outputfunc-name">GMCP command name | Input/Outputfunc name</a><ul>
+<li><a class="reference internal" href="#telnet-msdp">Telnet + MSDP</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outputfunc-inputfunc-msdp-instruction">Outputfunc/Inputfunc | MSDP instruction</a><ul>
+<li><a class="reference internal" href="#ssh">SSH</a></li>
+<li><a class="reference internal" href="#web-client">Web client</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/OOB.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="OOB.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../versions/0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/OOB.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

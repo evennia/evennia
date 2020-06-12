@@ -1,0 +1,156 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.contrib.tutorial_examples.tests &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.tutorial_examples.tests</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">mock</span> <span class="k">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
+
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="k">import</span> <span class="n">EvenniaTest</span>
+
+<span class="kn">from</span> <span class="nn">.bodyfunctions</span> <span class="k">import</span> <span class="n">BodyFunctions</span>
+
+
+<div class="viewcode-block" id="TestBodyFunctions"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.tests.TestBodyFunctions">[docs]</a><span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorial_examples.bodyfunctions.random&quot;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">TestBodyFunctions</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
+    <span class="n">script_typeclass</span> <span class="o">=</span> <span class="n">BodyFunctions</span>
+
+<div class="viewcode-block" id="TestBodyFunctions.setUp"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.tests.TestBodyFunctions.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TestBodyFunctions</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span></div>
+
+<div class="viewcode-block" id="TestBodyFunctions.tearDown"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.tests.TestBodyFunctions.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TestBodyFunctions</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span>
+        <span class="c1"># if we forget to stop the script, DirtyReactorAggregateError will be raised</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TestBodyFunctions.test_at_repeat"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.tests.TestBodyFunctions.test_at_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">test_at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_random</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;test that no message will be sent when below the 66% threshold&quot;&quot;&quot;</span>
+        <span class="n">mock_random</span><span class="o">.</span><span class="n">random</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">old_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="o">.</span><span class="n">send_random_message</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="o">.</span><span class="n">send_random_message</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="o">.</span><span class="n">at_repeat</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="o">.</span><span class="n">send_random_message</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span>
+        <span class="c1"># test that random message will be sent</span>
+        <span class="n">mock_random</span><span class="o">.</span><span class="n">random</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="o">.</span><span class="n">at_repeat</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="o">.</span><span class="n">send_random_message</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="o">.</span><span class="n">send_random_message</span> <span class="o">=</span> <span class="n">old_func</span></div>
+
+<div class="viewcode-block" id="TestBodyFunctions.test_send_random_message"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.tests.TestBodyFunctions.test_send_random_message">[docs]</a>    <span class="k">def</span> <span class="nf">test_send_random_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_random</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test that correct message is sent for each random value&quot;&quot;&quot;</span>
+        <span class="n">old_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">msg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+        <span class="c1"># test each of the values</span>
+        <span class="n">mock_random</span><span class="o">.</span><span class="n">random</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="o">.</span><span class="n">send_random_message</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;You tap your foot, looking around.&quot;</span><span class="p">)</span>
+        <span class="n">mock_random</span><span class="o">.</span><span class="n">random</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mf">0.15</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="o">.</span><span class="n">send_random_message</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;You have an itch. Hard to reach too.&quot;</span><span class="p">)</span>
+        <span class="n">mock_random</span><span class="o">.</span><span class="n">random</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="o">.</span><span class="n">send_random_message</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
+            <span class="s2">&quot;You think you hear someone behind you. ... &quot;</span> <span class="s2">&quot;but when you look there&#39;s noone there.&quot;</span>
+        <span class="p">)</span>
+        <span class="n">mock_random</span><span class="o">.</span><span class="n">random</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mf">0.35</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="o">.</span><span class="n">send_random_message</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;You inspect your fingernails. Nothing to report.&quot;</span><span class="p">)</span>
+        <span class="n">mock_random</span><span class="o">.</span><span class="n">random</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mf">0.45</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="o">.</span><span class="n">send_random_message</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;You cough discreetly into your hand.&quot;</span><span class="p">)</span>
+        <span class="n">mock_random</span><span class="o">.</span><span class="n">random</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mf">0.55</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="o">.</span><span class="n">send_random_message</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;You scratch your head, looking around.&quot;</span><span class="p">)</span>
+        <span class="n">mock_random</span><span class="o">.</span><span class="n">random</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mf">0.65</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="o">.</span><span class="n">send_random_message</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;You blink, forgetting what it was you were going to do.&quot;</span><span class="p">)</span>
+        <span class="n">mock_random</span><span class="o">.</span><span class="n">random</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mf">0.75</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="o">.</span><span class="n">send_random_message</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;You feel lonely all of a sudden.&quot;</span><span class="p">)</span>
+        <span class="n">mock_random</span><span class="o">.</span><span class="n">random</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mf">0.85</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="o">.</span><span class="n">send_random_message</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;You get a great idea. Of course you won&#39;t tell anyone.&quot;</span><span class="p">)</span>
+        <span class="n">mock_random</span><span class="o">.</span><span class="n">random</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mf">0.95</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="o">.</span><span class="n">send_random_message</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;You suddenly realize how much you love Evennia!&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">old_func</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../../evennia.html">evennia</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="tests.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../../versions/0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,563 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.server.portal.irc &#8212; Evennia 0.9.1 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.server.portal.irc</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This connects to an IRC network/channel and launches an &#39;bot&#39; onto it.</span>
+<span class="sd">The bot then pipes what is being said between the IRC channel and one or</span>
+<span class="sd">more Evennia channels.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">twisted.application</span> <span class="k">import</span> <span class="n">internet</span>
+<span class="kn">from</span> <span class="nn">twisted.words.protocols</span> <span class="k">import</span> <span class="n">irc</span>
+<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="k">import</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">reactor</span>
+<span class="kn">from</span> <span class="nn">evennia.server.session</span> <span class="k">import</span> <span class="n">Session</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">ansi</span>
+
+
+<span class="c1"># IRC colors</span>
+
+<span class="n">IRC_BOLD</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\002</span><span class="s2">&quot;</span>
+<span class="n">IRC_COLOR</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\003</span><span class="s2">&quot;</span>
+<span class="n">IRC_RESET</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\017</span><span class="s2">&quot;</span>
+<span class="n">IRC_ITALIC</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\026</span><span class="s2">&quot;</span>
+<span class="n">IRC_INVERT</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\x16</span><span class="s2">&quot;</span>
+<span class="n">IRC_NORMAL</span> <span class="o">=</span> <span class="s2">&quot;99&quot;</span>
+<span class="n">IRC_UNDERLINE</span> <span class="o">=</span> <span class="s2">&quot;37&quot;</span>
+
+<span class="n">IRC_WHITE</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>
+<span class="n">IRC_BLACK</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
+<span class="n">IRC_DBLUE</span> <span class="o">=</span> <span class="s2">&quot;2&quot;</span>
+<span class="n">IRC_DGREEN</span> <span class="o">=</span> <span class="s2">&quot;3&quot;</span>
+<span class="n">IRC_RED</span> <span class="o">=</span> <span class="s2">&quot;4&quot;</span>
+<span class="n">IRC_DRED</span> <span class="o">=</span> <span class="s2">&quot;5&quot;</span>
+<span class="n">IRC_DMAGENTA</span> <span class="o">=</span> <span class="s2">&quot;6&quot;</span>
+<span class="n">IRC_DYELLOW</span> <span class="o">=</span> <span class="s2">&quot;7&quot;</span>
+<span class="n">IRC_YELLOW</span> <span class="o">=</span> <span class="s2">&quot;8&quot;</span>
+<span class="n">IRC_GREEN</span> <span class="o">=</span> <span class="s2">&quot;9&quot;</span>
+<span class="n">IRC_DCYAN</span> <span class="o">=</span> <span class="s2">&quot;10&quot;</span>
+<span class="n">IRC_CYAN</span> <span class="o">=</span> <span class="s2">&quot;11&quot;</span>
+<span class="n">IRC_BLUE</span> <span class="o">=</span> <span class="s2">&quot;12&quot;</span>
+<span class="n">IRC_MAGENTA</span> <span class="o">=</span> <span class="s2">&quot;13&quot;</span>
+<span class="n">IRC_DGREY</span> <span class="o">=</span> <span class="s2">&quot;14&quot;</span>
+<span class="n">IRC_GREY</span> <span class="o">=</span> <span class="s2">&quot;15&quot;</span>
+
+<span class="c1"># obsolete test:</span>
+
+<span class="c1"># test evennia-&gt;irc:</span>
+<span class="c1"># |rred |ggreen |yyellow |bblue |mmagenta |ccyan |wwhite |xdgrey</span>
+<span class="c1"># |Rdred |Gdgreen |Ydyellow |Bdblue |Mdmagenta |Cdcyan |Wlgrey |Xblack</span>
+<span class="c1"># |[rredbg |[ggreenbg |[yyellowbg |[bbluebg |[mmagentabg |[ccyanbg |[wlgreybg |[xblackbg</span>
+
+<span class="c1"># test irc-&gt;evennia</span>
+<span class="c1"># Use Ctrl+C &lt;num&gt; to produce mIRC colors in e.g. irssi</span>
+
+<span class="n">IRC_COLOR_MAP</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="p">(</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|n&quot;</span><span class="p">,</span> <span class="n">IRC_COLOR</span> <span class="o">+</span> <span class="n">IRC_NORMAL</span><span class="p">),</span>  <span class="c1"># normal mode</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|H&quot;</span><span class="p">,</span> <span class="n">IRC_RESET</span><span class="p">),</span>  <span class="c1"># un-highlight</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|/&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">),</span>  <span class="c1"># line break</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|t&quot;</span><span class="p">,</span> <span class="s2">&quot;    &quot;</span><span class="p">),</span>  <span class="c1"># tab</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|-&quot;</span><span class="p">,</span> <span class="s2">&quot;    &quot;</span><span class="p">),</span>  <span class="c1"># fixed tab</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|_&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">),</span>  <span class="c1"># space</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|*&quot;</span><span class="p">,</span> <span class="n">IRC_INVERT</span><span class="p">),</span>  <span class="c1"># invert</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|^&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>  <span class="c1"># blinking text</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|h&quot;</span><span class="p">,</span> <span class="n">IRC_BOLD</span><span class="p">),</span>  <span class="c1"># highlight, use bold instead</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|r&quot;</span><span class="p">,</span> <span class="n">IRC_COLOR</span> <span class="o">+</span> <span class="n">IRC_RED</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|g&quot;</span><span class="p">,</span> <span class="n">IRC_COLOR</span> <span class="o">+</span> <span class="n">IRC_GREEN</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|y&quot;</span><span class="p">,</span> <span class="n">IRC_COLOR</span> <span class="o">+</span> <span class="n">IRC_YELLOW</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|b&quot;</span><span class="p">,</span> <span class="n">IRC_COLOR</span> <span class="o">+</span> <span class="n">IRC_BLUE</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|m&quot;</span><span class="p">,</span> <span class="n">IRC_COLOR</span> <span class="o">+</span> <span class="n">IRC_MAGENTA</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|c&quot;</span><span class="p">,</span> <span class="n">IRC_COLOR</span> <span class="o">+</span> <span class="n">IRC_CYAN</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|w&quot;</span><span class="p">,</span> <span class="n">IRC_COLOR</span> <span class="o">+</span> <span class="n">IRC_WHITE</span><span class="p">),</span>  <span class="c1"># pure white</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|x&quot;</span><span class="p">,</span> <span class="n">IRC_COLOR</span> <span class="o">+</span> <span class="n">IRC_DGREY</span><span class="p">),</span>  <span class="c1"># dark grey</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|R&quot;</span><span class="p">,</span> <span class="n">IRC_COLOR</span> <span class="o">+</span> <span class="n">IRC_DRED</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|G&quot;</span><span class="p">,</span> <span class="n">IRC_COLOR</span> <span class="o">+</span> <span class="n">IRC_DGREEN</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|Y&quot;</span><span class="p">,</span> <span class="n">IRC_COLOR</span> <span class="o">+</span> <span class="n">IRC_DYELLOW</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|B&quot;</span><span class="p">,</span> <span class="n">IRC_COLOR</span> <span class="o">+</span> <span class="n">IRC_DBLUE</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|M&quot;</span><span class="p">,</span> <span class="n">IRC_COLOR</span> <span class="o">+</span> <span class="n">IRC_DMAGENTA</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|C&quot;</span><span class="p">,</span> <span class="n">IRC_COLOR</span> <span class="o">+</span> <span class="n">IRC_DCYAN</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|W&quot;</span><span class="p">,</span> <span class="n">IRC_COLOR</span> <span class="o">+</span> <span class="n">IRC_GREY</span><span class="p">),</span>  <span class="c1"># light grey</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|X&quot;</span><span class="p">,</span> <span class="n">IRC_COLOR</span> <span class="o">+</span> <span class="n">IRC_BLACK</span><span class="p">),</span>  <span class="c1"># pure black</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|[r&quot;</span><span class="p">,</span> <span class="n">IRC_COLOR</span> <span class="o">+</span> <span class="n">IRC_NORMAL</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="n">IRC_DRED</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|[g&quot;</span><span class="p">,</span> <span class="n">IRC_COLOR</span> <span class="o">+</span> <span class="n">IRC_NORMAL</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="n">IRC_DGREEN</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|[y&quot;</span><span class="p">,</span> <span class="n">IRC_COLOR</span> <span class="o">+</span> <span class="n">IRC_NORMAL</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="n">IRC_DYELLOW</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|[b&quot;</span><span class="p">,</span> <span class="n">IRC_COLOR</span> <span class="o">+</span> <span class="n">IRC_NORMAL</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="n">IRC_DBLUE</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|[m&quot;</span><span class="p">,</span> <span class="n">IRC_COLOR</span> <span class="o">+</span> <span class="n">IRC_NORMAL</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="n">IRC_DMAGENTA</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|[c&quot;</span><span class="p">,</span> <span class="n">IRC_COLOR</span> <span class="o">+</span> <span class="n">IRC_NORMAL</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="n">IRC_DCYAN</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|[w&quot;</span><span class="p">,</span> <span class="n">IRC_COLOR</span> <span class="o">+</span> <span class="n">IRC_NORMAL</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="n">IRC_GREY</span><span class="p">),</span>  <span class="c1"># light grey background</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|[x&quot;</span><span class="p">,</span> <span class="n">IRC_COLOR</span> <span class="o">+</span> <span class="n">IRC_NORMAL</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="n">IRC_BLACK</span><span class="p">),</span>  <span class="c1"># pure black background</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+<span class="c1"># ansi-&gt;irc</span>
+<span class="n">RE_ANSI_COLOR</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">IRC_COLOR_MAP</span><span class="o">.</span><span class="n">keys</span><span class="p">()]),</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+<span class="n">RE_MXP</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\|lc(.*?)\|lt(.*?)\|le&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+<span class="n">RE_ANSI_ESCAPES</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="s2">&quot;{{&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%%</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\\\\</span><span class="s2">&quot;</span><span class="p">)),</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+<span class="c1"># irc-&gt;ansi</span>
+<span class="n">_CLR_LIST</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">IRC_COLOR_MAP</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">if</span> <span class="n">val</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+<span class="p">]</span>
+<span class="n">_CLR_LIST</span> <span class="o">=</span> <span class="n">_CLR_LIST</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span> <span class="o">+</span> <span class="n">_CLR_LIST</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">RE_IRC_COLOR</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_CLR_LIST</span><span class="p">),</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+<span class="n">ANSI_COLOR_MAP</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">IRC_COLOR_MAP</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+
+<div class="viewcode-block" id="parse_ansi_to_irc"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.irc.parse_ansi_to_irc">[docs]</a><span class="k">def</span> <span class="nf">parse_ansi_to_irc</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse |-type syntax and replace with IRC color markers</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        string (str): String to parse for ANSI colors.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        parsed_string (str): String with replaced ANSI colors.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_sub_to_irc</span><span class="p">(</span><span class="n">ansi_match</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">IRC_COLOR_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ansi_match</span><span class="o">.</span><span class="n">group</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">in_string</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_str</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+    <span class="n">parsed_string</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">parts</span> <span class="o">=</span> <span class="n">RE_ANSI_ESCAPES</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">in_string</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot; &quot;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">part</span><span class="p">,</span> <span class="n">sep</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">parts</span><span class="p">[::</span><span class="mi">2</span><span class="p">],</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]):</span>
+        <span class="n">pstring</span> <span class="o">=</span> <span class="n">RE_ANSI_COLOR</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">_sub_to_irc</span><span class="p">,</span> <span class="n">part</span><span class="p">)</span>
+        <span class="n">parsed_string</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pstring</span><span class="p">,</span> <span class="n">sep</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()))</span>
+    <span class="c1"># strip mxp</span>
+    <span class="n">parsed_string</span> <span class="o">=</span> <span class="n">RE_MXP</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\2&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parsed_string</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">parsed_string</span></div>
+
+
+<div class="viewcode-block" id="parse_irc_to_ansi"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.irc.parse_irc_to_ansi">[docs]</a><span class="k">def</span> <span class="nf">parse_irc_to_ansi</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse IRC mIRC color syntax and replace with Evennia ANSI color markers</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        string (str): String to parse for IRC colors.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        parsed_string (str): String with replaced IRC colors.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_sub_to_ansi</span><span class="p">(</span><span class="n">irc_match</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ANSI_COLOR_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">irc_match</span><span class="o">.</span><span class="n">group</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">in_string</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_str</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+    <span class="n">pstring</span> <span class="o">=</span> <span class="n">RE_IRC_COLOR</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">_sub_to_ansi</span><span class="p">,</span> <span class="n">in_string</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pstring</span></div>
+
+
+<span class="c1"># IRC bot</span>
+
+
+<div class="viewcode-block" id="IRCBot"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.irc.IRCBot">[docs]</a><span class="k">class</span> <span class="nc">IRCBot</span><span class="p">(</span><span class="n">irc</span><span class="o">.</span><span class="n">IRCClient</span><span class="p">,</span> <span class="n">Session</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An IRC bot that tracks activity in a channel as well</span>
+<span class="sd">    as sends text to it when prompted</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">lineRate</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="c1"># assigned by factory at creation</span>
+
+    <span class="n">nickname</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">factory</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">channel</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">sourceURL</span> <span class="o">=</span> <span class="s2">&quot;http://code.evennia.com&quot;</span>
+
+<div class="viewcode-block" id="IRCBot.signedOn"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.irc.IRCBot.signedOn">[docs]</a>    <span class="k">def</span> <span class="nf">signedOn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is called when we successfully connect to the network. We</span>
+<span class="sd">        make sure to now register with the game as a full session.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stopping</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">bot</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="n">address</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">@</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_session</span><span class="p">(</span><span class="s2">&quot;ircbot&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">sessionhandler</span><span class="p">)</span>
+        <span class="c1"># we link back to our bot and log in</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">uid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logged_in</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span>
+            <span class="s2">&quot;IRC bot &#39;</span><span class="si">%s</span><span class="s2">&#39; connected to </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2">.&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nickname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="IRCBot.disconnect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.irc.IRCBot.disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called by sessionhandler to disconnect this protocol.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            reason (str): Motivation for the disconnect.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stopping</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">loseConnection</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="IRCBot.at_login"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.irc.IRCBot.at_login">[docs]</a>    <span class="k">def</span> <span class="nf">at_login</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="IRCBot.privmsg"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.irc.IRCBot.privmsg">[docs]</a>    <span class="k">def</span> <span class="nf">privmsg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when the connected channel receives a message.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            user (str): User name sending the message.</span>
+<span class="sd">            channel (str): Channel name seeing the message.</span>
+<span class="sd">            msg (str): The message arriving from channel.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">channel</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">nickname</span><span class="p">:</span>
+            <span class="c1"># private message</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;!&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">msg</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;privmsg&quot;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">msg</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;***&quot;</span><span class="p">):</span>
+            <span class="c1"># channel message</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;!&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="n">ansi</span><span class="o">.</span><span class="n">raw</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">msg</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;msg&quot;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IRCBot.action"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.irc.IRCBot.action">[docs]</a>    <span class="k">def</span> <span class="nf">action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when an action is detected in channel.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            user (str): User name sending the message.</span>
+<span class="sd">            channel (str): Channel name seeing the message.</span>
+<span class="sd">            msg (str): The message arriving from channel.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">msg</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;**&quot;</span><span class="p">):</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;!&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">msg</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;action&quot;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IRCBot.get_nicklist"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.irc.IRCBot.get_nicklist">[docs]</a>    <span class="k">def</span> <span class="nf">get_nicklist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve name list from the channel. The return</span>
+<span class="sd">        is handled by the catch methods below.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">nicklist</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sendLine</span><span class="p">(</span><span class="s2">&quot;NAMES </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IRCBot.irc_RPL_NAMREPLY"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.irc.IRCBot.irc_RPL_NAMREPLY">[docs]</a>    <span class="k">def</span> <span class="nf">irc_RPL_NAMREPLY</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;&quot;Handles IRC NAME request returns (nicklist)&quot;&quot;&quot;</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">channel</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nicklist</span> <span class="o">+=</span> <span class="n">params</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IRCBot.irc_RPL_ENDOFNAMES"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.irc.IRCBot.irc_RPL_ENDOFNAMES">[docs]</a>    <span class="k">def</span> <span class="nf">irc_RPL_ENDOFNAMES</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when the nicklist has finished being returned.&quot;&quot;&quot;</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">channel</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span>
+            <span class="n">text</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;nicklist&quot;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s2">&quot;server&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span> <span class="n">nicklist</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nicklist</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nicklist</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="IRCBot.pong"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.irc.IRCBot.pong">[docs]</a>    <span class="k">def</span> <span class="nf">pong</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called with the return timing from a PING.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            user (str): Name of user</span>
+<span class="sd">            time (float): Ping time in secs.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;ping&quot;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s2">&quot;server&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">,</span> <span class="n">timing</span><span class="o">=</span><span class="n">time</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IRCBot.data_in"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.irc.IRCBot.data_in">[docs]</a>    <span class="k">def</span> <span class="nf">data_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Data IRC -&gt; Server.</span>
+
+<span class="sd">        Kwargs:</span>
+<span class="sd">            text (str): Ingoing text.</span>
+<span class="sd">            kwargs (any): Other data from protocol.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bot_data_in</span><span class="o">=</span><span class="p">[</span><span class="n">parse_irc_to_ansi</span><span class="p">(</span><span class="n">text</span><span class="p">),</span> <span class="n">kwargs</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="IRCBot.send_channel"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.irc.IRCBot.send_channel">[docs]</a>    <span class="k">def</span> <span class="nf">send_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send channel text to IRC channel (visible to all). Note that</span>
+<span class="sd">        we don&#39;t handle the &quot;text&quot; send (it&#39;s rerouted to send_default</span>
+<span class="sd">        which does nothing) - this is because the IRC bot is a normal</span>
+<span class="sd">        session and would otherwise report anything that happens to it</span>
+<span class="sd">        to the IRC channel (such as it seeing server reload messages).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text (str): Outgoing text</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">args</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">text</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">parse_ansi_to_irc</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">say</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IRCBot.send_privmsg"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.irc.IRCBot.send_privmsg">[docs]</a>    <span class="k">def</span> <span class="nf">send_privmsg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send message only to specific user.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text (str): Outgoing text.</span>
+
+<span class="sd">        Kwargs:</span>
+<span class="sd">            user (str): the nick to send</span>
+<span class="sd">                privately to.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">args</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">text</span> <span class="ow">and</span> <span class="n">user</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">parse_ansi_to_irc</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IRCBot.send_request_nicklist"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.irc.IRCBot.send_request_nicklist">[docs]</a>    <span class="k">def</span> <span class="nf">send_request_nicklist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send a request for the channel nicklist. The return (handled</span>
+<span class="sd">        by `self.irc_RPL_ENDOFNAMES`) will be sent back as a message</span>
+<span class="sd">        with type `nicklist&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_nicklist</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="IRCBot.send_ping"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.irc.IRCBot.send_ping">[docs]</a>    <span class="k">def</span> <span class="nf">send_ping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send a ping. The return (handled by `self.pong`) will be sent</span>
+<span class="sd">        back as a message of type &#39;ping&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ping</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nickname</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IRCBot.send_reconnect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.irc.IRCBot.send_reconnect">[docs]</a>    <span class="k">def</span> <span class="nf">send_reconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The server instructs us to rebuild the connection by force,</span>
+<span class="sd">        probably because the client silently lost connection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">reconnect</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="IRCBot.send_default"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.irc.IRCBot.send_default">[docs]</a>    <span class="k">def</span> <span class="nf">send_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ignore other types of sends.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="IRCBotFactory"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.irc.IRCBotFactory">[docs]</a><span class="k">class</span> <span class="nc">IRCBotFactory</span><span class="p">(</span><span class="n">protocol</span><span class="o">.</span><span class="n">ReconnectingClientFactory</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates instances of IRCBot, connecting with a staggered</span>
+<span class="sd">    increase in delay</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># scaling reconnect time</span>
+    <span class="n">initialDelay</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">factor</span> <span class="o">=</span> <span class="mf">1.5</span>
+    <span class="n">maxDelay</span> <span class="o">=</span> <span class="mi">60</span>
+
+<div class="viewcode-block" id="IRCBotFactory.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.irc.IRCBotFactory.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">sessionhandler</span><span class="p">,</span>
+        <span class="n">uid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">botname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">channel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">port</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">ssl</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Storing some important protocol properties.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            sessionhandler (SessionHandler): Reference to the main Sessionhandler.</span>
+
+<span class="sd">        Kwargs:</span>
+<span class="sd">            uid (int): Bot user id.</span>
+<span class="sd">            botname (str): Bot name (seen in IRC channel).</span>
+<span class="sd">            channel (str): IRC channel to connect to.</span>
+<span class="sd">            network (str): Network address to connect to.</span>
+<span class="sd">            port (str): Port of the network.</span>
+<span class="sd">            ssl (bool): Indicates SSL connection.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span> <span class="o">=</span> <span class="n">sessionhandler</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uid</span> <span class="o">=</span> <span class="n">uid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nickname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">botname</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">network</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">network</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ssl</span> <span class="o">=</span> <span class="n">ssl</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bot</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nicklists</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+<div class="viewcode-block" id="IRCBotFactory.buildProtocol"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.irc.IRCBotFactory.buildProtocol">[docs]</a>    <span class="k">def</span> <span class="nf">buildProtocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build the protocol and assign it some properties.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            addr (str): Not used; using factory data.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">protocol</span> <span class="o">=</span> <span class="n">IRCBot</span><span class="p">()</span>
+        <span class="n">protocol</span><span class="o">.</span><span class="n">factory</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="n">protocol</span><span class="o">.</span><span class="n">nickname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nickname</span>
+        <span class="n">protocol</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span>
+        <span class="n">protocol</span><span class="o">.</span><span class="n">network</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span>
+        <span class="n">protocol</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span>
+        <span class="n">protocol</span><span class="o">.</span><span class="n">ssl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssl</span>
+        <span class="n">protocol</span><span class="o">.</span><span class="n">nicklist</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">protocol</span></div>
+
+<div class="viewcode-block" id="IRCBotFactory.startedConnecting"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.irc.IRCBotFactory.startedConnecting">[docs]</a>    <span class="k">def</span> <span class="nf">startedConnecting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tracks reconnections for debugging.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            connector (Connector): Represents the connection.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s2">&quot;(re)connecting to </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IRCBotFactory.clientConnectionFailed"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.irc.IRCBotFactory.clientConnectionFailed">[docs]</a>    <span class="k">def</span> <span class="nf">clientConnectionFailed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when Client failed to connect.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            connector (Connection): Represents the connection.</span>
+<span class="sd">            reason (str): The reason for the failure.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">retry</span><span class="p">(</span><span class="n">connector</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IRCBotFactory.clientConnectionLost"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.irc.IRCBotFactory.clientConnectionLost">[docs]</a>    <span class="k">def</span> <span class="nf">clientConnectionLost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when Client loses connection.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            connector (Connection): Represents the connection.</span>
+<span class="sd">            reason (str): The reason for the failure.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bot</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bot</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">stopping</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">retry</span><span class="p">(</span><span class="n">connector</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IRCBotFactory.reconnect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.irc.IRCBotFactory.reconnect">[docs]</a>    <span class="k">def</span> <span class="nf">reconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Force a reconnection of the bot protocol. This requires</span>
+<span class="sd">        de-registering the session and then reattaching a new one,</span>
+<span class="sd">        otherwise you end up with an ever growing number of bot</span>
+<span class="sd">        sessions.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">stopping</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">loseConnection</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">server_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="IRCBotFactory.start"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.irc.IRCBotFactory.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Connect session to sessionhandler.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssl</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="k">import</span> <span class="n">ssl</span>
+
+                    <span class="n">service</span> <span class="o">=</span> <span class="n">reactor</span><span class="o">.</span><span class="n">connectSSL</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">),</span> <span class="bp">self</span><span class="p">,</span> <span class="n">ssl</span><span class="o">.</span><span class="n">ClientContextFactory</span><span class="p">()</span>
+                    <span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="s2">&quot;To use SSL, the PyOpenSSL module must be installed.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">service</span> <span class="o">=</span> <span class="n">internet</span><span class="o">.</span><span class="n">TCPClient</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">services</span><span class="o">.</span><span class="n">addService</span><span class="p">(</span><span class="n">service</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../../evennia.html">evennia</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../../../versions/1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="irc.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

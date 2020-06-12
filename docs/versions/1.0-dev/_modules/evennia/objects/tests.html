@@ -1,0 +1,274 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.objects.tests &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.objects.tests</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="k">import</span> <span class="n">EvenniaTest</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">DefaultRoom</span><span class="p">,</span> <span class="n">DefaultExit</span>
+<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="k">import</span> <span class="n">ObjectDB</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">create</span>
+
+
+<div class="viewcode-block" id="DefaultObjectTest"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.tests.DefaultObjectTest">[docs]</a><span class="k">class</span> <span class="nc">DefaultObjectTest</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
+
+    <span class="n">ip</span> <span class="o">=</span> <span class="s2">&quot;212.216.139.14&quot;</span>
+
+<div class="viewcode-block" id="DefaultObjectTest.test_object_create"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.tests.DefaultObjectTest.test_object_create">[docs]</a>    <span class="k">def</span> <span class="nf">test_object_create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;A home for a grouch.&quot;</span>
+        <span class="n">home</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">dbref</span>
+
+        <span class="n">obj</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">DefaultObject</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="s2">&quot;trashcan&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ip</span><span class="p">,</span> <span class="n">home</span><span class="o">=</span><span class="n">home</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">description</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">creator_ip</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ip</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">db_home</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DefaultObjectTest.test_character_create"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.tests.DefaultObjectTest.test_character_create">[docs]</a>    <span class="k">def</span> <span class="nf">test_character_create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;A furry green monster, reeking of garbage.&quot;</span>
+        <span class="n">home</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">dbref</span>
+
+        <span class="n">obj</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">DefaultCharacter</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="s2">&quot;oscar&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ip</span><span class="p">,</span> <span class="n">home</span><span class="o">=</span><span class="n">home</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">description</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">creator_ip</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ip</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">db_home</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DefaultObjectTest.test_character_create_noaccount"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.tests.DefaultObjectTest.test_character_create_noaccount">[docs]</a>    <span class="k">def</span> <span class="nf">test_character_create_noaccount</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">obj</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">DefaultCharacter</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;oscar&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">home</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">dbref</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">db_home</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DefaultObjectTest.test_character_create_weirdname"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.tests.DefaultObjectTest.test_character_create_weirdname">[docs]</a>    <span class="k">def</span> <span class="nf">test_character_create_weirdname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">obj</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">DefaultCharacter</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="s2">&quot;SigurðurÞórarinsson&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="n">home</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">dbref</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;SigurXurXorarinsson&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DefaultObjectTest.test_room_create"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.tests.DefaultObjectTest.test_room_create">[docs]</a>    <span class="k">def</span> <span class="nf">test_room_create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;A dimly-lit alley behind the local Chinese restaurant.&quot;</span>
+        <span class="n">obj</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">DefaultRoom</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;alley&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ip</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">description</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">creator_ip</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ip</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DefaultObjectTest.test_exit_create"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.tests.DefaultObjectTest.test_exit_create">[docs]</a>    <span class="k">def</span> <span class="nf">test_exit_create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;The steaming depths of the dumpster, ripe with refuse in various states of decomposition.&quot;</span>
+        <span class="n">obj</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">DefaultExit</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="s2">&quot;in&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">room2</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ip</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">description</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">creator_ip</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ip</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DefaultObjectTest.test_urls"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.tests.DefaultObjectTest.test_urls">[docs]</a>    <span class="k">def</span> <span class="nf">test_urls</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Make sure objects are returning URLs&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="s2">&quot;admin&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">web_get_admin_url</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="s2">&quot;admin&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">web_get_admin_url</span><span class="p">())</span></div></div>
+
+
+<div class="viewcode-block" id="TestObjectManager"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.tests.TestObjectManager">[docs]</a><span class="k">class</span> <span class="nc">TestObjectManager</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
+    <span class="s2">&quot;Test object manager methods&quot;</span>
+
+<div class="viewcode-block" id="TestObjectManager.test_get_object_with_account"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.tests.TestObjectManager.test_get_object_with_account">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_object_with_account</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_object_with_account</span><span class="p">(</span><span class="s2">&quot;TestAccount&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">)</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_object_with_account</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">dbref</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">)</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_object_with_account</span><span class="p">(</span><span class="s2">&quot;#123456&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_object_with_account</span><span class="p">(</span><span class="s2">&quot;TestAccou&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_object_with_account</span><span class="p">(</span><span class="s2">&quot;TestAccou&quot;</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">query</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">))</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_object_with_account</span><span class="p">(</span>
+            <span class="s2">&quot;TestAccou&quot;</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">],</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">query</span><span class="p">),</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="TestObjectManager.test_get_objs_with_key_and_typeclass"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.tests.TestObjectManager.test_get_objs_with_key_and_typeclass">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_objs_with_key_and_typeclass</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_objs_with_key_and_typeclass</span><span class="p">(</span>
+            <span class="s2">&quot;Char&quot;</span><span class="p">,</span> <span class="s2">&quot;evennia.objects.objects.DefaultCharacter&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">query</span><span class="p">),</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">])</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_objs_with_key_and_typeclass</span><span class="p">(</span>
+            <span class="s2">&quot;Char&quot;</span><span class="p">,</span> <span class="s2">&quot;evennia.objects.objects.DefaultObject&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_objs_with_key_and_typeclass</span><span class="p">(</span>
+            <span class="s2">&quot;NotFound&quot;</span><span class="p">,</span> <span class="s2">&quot;evennia.objects.objects.DefaultCharacter&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_objs_with_key_and_typeclass</span><span class="p">(</span>
+            <span class="s2">&quot;Char&quot;</span><span class="p">,</span> <span class="s2">&quot;evennia.objects.objects.DefaultCharacter&quot;</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">query</span><span class="p">),</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="TestObjectManager.test_get_objs_with_attr"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.tests.TestObjectManager.test_get_objs_with_attr">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_objs_with_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">testattr</span> <span class="o">=</span> <span class="s2">&quot;testval1&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_objs_with_attr</span><span class="p">(</span><span class="s2">&quot;testattr&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">query</span><span class="p">),</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">])</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_objs_with_attr</span><span class="p">(</span><span class="s2">&quot;testattr&quot;</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">query</span><span class="p">),</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">])</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_objs_with_attr</span><span class="p">(</span><span class="s2">&quot;NotFound&quot;</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">query</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestObjectManager.test_copy_object"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.tests.TestObjectManager.test_copy_object">[docs]</a>    <span class="k">def</span> <span class="nf">test_copy_object</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Test that all attributes and tags properly copy across objects&quot;</span>
+
+        <span class="c1"># Add some tags</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;plugh&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;adventure&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;xyzzy&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Add some attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;phrase&quot;</span><span class="p">,</span> <span class="s2">&quot;plugh&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;adventure&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;phrase&quot;</span><span class="p">,</span> <span class="s2">&quot;xyzzy&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Create object copy</span>
+        <span class="n">obj2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># Make sure each of the tags were replicated</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="s2">&quot;plugh&quot;</span> <span class="ow">in</span> <span class="n">obj2</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="s2">&quot;plugh&quot;</span> <span class="ow">in</span> <span class="n">obj2</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;adventure&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="s2">&quot;xyzzy&quot;</span> <span class="ow">in</span> <span class="n">obj2</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
+
+        <span class="c1"># Make sure each of the attributes were replicated</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">obj2</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;phrase&quot;</span><span class="p">),</span> <span class="s2">&quot;xyzzy&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;phrase&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;adventure&quot;</span><span class="p">),</span> <span class="s2">&quot;plugh&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">obj2</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;phrase&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;adventure&quot;</span><span class="p">),</span> <span class="s2">&quot;plugh&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TestContentHandler"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.tests.TestContentHandler">[docs]</a><span class="k">class</span> <span class="nc">TestContentHandler</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
+    <span class="s2">&quot;Test the ContentHandler (obj.contents)&quot;</span>
+
+<div class="viewcode-block" id="TestContentHandler.test_object_create_remove"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.tests.TestContentHandler.test_object_create_remove">[docs]</a>    <span class="k">def</span> <span class="nf">test_object_create_remove</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create/destroy object&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj2</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
+
+        <span class="n">obj3</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;obj3&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">obj3</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
+
+        <span class="n">obj3</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">obj3</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestContentHandler.test_object_move"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.tests.TestContentHandler.test_object_move">[docs]</a>    <span class="k">def</span> <span class="nf">test_object_move</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Move object from room to room in various ways&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
+        <span class="c1"># use move_to hook</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">room2</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
+
+        <span class="c1"># move back via direct setting of .location</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">room2</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestContentHandler.test_content_type"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.tests.TestContentHandler.test_content_type">[docs]</a>    <span class="k">def</span> <span class="nf">test_content_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">contents_get</span><span class="p">()),</span>
+            <span class="nb">set</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">]),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;object&quot;</span><span class="p">)),</span> <span class="nb">set</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="p">])</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;character&quot;</span><span class="p">)),</span> <span class="nb">set</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">])</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;exit&quot;</span><span class="p">)),</span> <span class="nb">set</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">]))</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  <li><a href="../../evennia.html">evennia</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="tests.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../versions/0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

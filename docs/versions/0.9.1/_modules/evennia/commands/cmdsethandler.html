@@ -1,0 +1,752 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.commands.cmdsethandler &#8212; Evennia 0.9.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.commands.cmdsethandler</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">CmdSethandler</span>
+
+<span class="sd">The Cmdsethandler tracks an object&#39;s &#39;Current CmdSet&#39;, which is the</span>
+<span class="sd">current merged sum of all CmdSets added to it.</span>
+
+<span class="sd">A CmdSet constitues a set of commands. The CmdSet works as a special</span>
+<span class="sd">intelligent container that, when added to other CmdSet make sure that</span>
+<span class="sd">same-name commands are treated correctly (usually so there are no</span>
+<span class="sd">doublets).  This temporary but up-to-date merger of CmdSet is jointly</span>
+<span class="sd">called the Current Cmset. It is this Current CmdSet that the</span>
+<span class="sd">commandhandler looks through whenever an account enters a command (it</span>
+<span class="sd">also adds CmdSets from objects in the room in real-time). All account</span>
+<span class="sd">objects have a &#39;default cmdset&#39; containing all the normal in-game mud</span>
+<span class="sd">commands (look etc).</span>
+
+<span class="sd">So what is all this cmdset complexity good for?</span>
+
+<span class="sd">In its simplest form, a CmdSet has no commands, only a key name. In</span>
+<span class="sd">this case the cmdset&#39;s use is up to each individual game - it can be</span>
+<span class="sd">used by an AI module for example (mobs in cmdset &#39;roam&#39; move from room</span>
+<span class="sd">to room, in cmdset &#39;attack&#39; they enter combat with accounts).</span>
+
+<span class="sd">Defining commands in cmdsets offer some further powerful game-design</span>
+<span class="sd">consequences however. Here are some examples:</span>
+
+<span class="sd">As mentioned above, all accounts always have at least the Default</span>
+<span class="sd">CmdSet.  This contains the set of all normal-use commands in-game,</span>
+<span class="sd">stuff like look and @desc etc. Now assume our players end up in a dark</span>
+<span class="sd">room. You don&#39;t want the player to be able to do much in that dark</span>
+<span class="sd">room unless they light a candle. You could handle this by changing all</span>
+<span class="sd">your normal commands to check if the player is in a dark room. This</span>
+<span class="sd">rapidly goes unwieldly and error prone. Instead you just define a</span>
+<span class="sd">cmdset with only those commands you want to be available in the &#39;dark&#39;</span>
+<span class="sd">cmdset - maybe a modified look command and a &#39;light candle&#39; command -</span>
+<span class="sd">and have this completely replace the default cmdset.</span>
+
+<span class="sd">Another example: Say you want your players to be able to go</span>
+<span class="sd">fishing. You could implement this as a &#39;fish&#39; command that fails</span>
+<span class="sd">whenever the account has no fishing rod. Easy enough.  But what if you</span>
+<span class="sd">want to make fishing more complex - maybe you want four-five different</span>
+<span class="sd">commands for throwing your line, reeling in, etc? Most players won&#39;t</span>
+<span class="sd">(we assume) have fishing gear, and having all those detailed commands</span>
+<span class="sd">is cluttering up the command list. And what if you want to use the</span>
+<span class="sd">&#39;throw&#39; command also for throwing rocks etc instead of &#39;using it up&#39;</span>
+<span class="sd">for a minor thing like fishing?</span>
+
+<span class="sd">So instead you put all those detailed fishing commands into their own</span>
+<span class="sd">CommandSet called &#39;Fishing&#39;. Whenever the player gives the command</span>
+<span class="sd">&#39;fish&#39; (presumably the code checks there is also water nearby), only</span>
+<span class="sd">THEN this CommandSet is added to the Cmdhandler of the account. The</span>
+<span class="sd">&#39;throw&#39; command (which normally throws rocks) is replaced by the</span>
+<span class="sd">custom &#39;fishing variant&#39; of throw. What has happened is that the</span>
+<span class="sd">Fishing CommandSet was merged on top of the Default ones, and due to</span>
+<span class="sd">how we defined it, its command overrules the default ones.</span>
+
+<span class="sd">When we are tired of fishing, we give the &#39;go home&#39; command (or</span>
+<span class="sd">whatever) and the Cmdhandler simply removes the fishing CommandSet</span>
+<span class="sd">so that we are back at defaults (and can throw rocks again).</span>
+
+<span class="sd">Since any number of CommandSets can be piled on top of each other, you</span>
+<span class="sd">can then implement separate sets for different situations. For</span>
+<span class="sd">example, you can have a &#39;On a boat&#39; set, onto which you then tack on</span>
+<span class="sd">the &#39;Fishing&#39; set. Fishing from a boat? No problem!</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">traceback</span> <span class="k">import</span> <span class="n">format_exc</span>
+<span class="kn">from</span> <span class="nn">importlib</span> <span class="k">import</span> <span class="n">import_module</span>
+<span class="kn">from</span> <span class="nn">inspect</span> <span class="k">import</span> <span class="n">trace</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.cmdset</span> <span class="k">import</span> <span class="n">CmdSet</span>
+<span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="k">import</span> <span class="n">ServerConfig</span>
+
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="k">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;import_cmdset&quot;</span><span class="p">,</span> <span class="s2">&quot;CmdSetHandler&quot;</span><span class="p">)</span>
+
+<span class="n">_CACHED_CMDSETS</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">_CMDSET_PATHS</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">make_iter</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">CMDSET_PATHS</span><span class="p">)</span>
+<span class="n">_IN_GAME_ERRORS</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">IN_GAME_ERRORS</span>
+<span class="n">_CMDSET_FALLBACKS</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CMDSET_FALLBACKS</span>
+
+
+<span class="c1"># Output strings</span>
+
+<span class="n">_ERROR_CMDSET_IMPORT</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
+    <span class="sd">&quot;&quot;&quot;{traceback}</span>
+<span class="sd">Error loading cmdset &#39;{path}&#39;</span>
+<span class="sd">(Traceback was logged {timestamp})&quot;&quot;&quot;</span>
+<span class="p">)</span>
+
+<span class="n">_ERROR_CMDSET_KEYERROR</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
+    <span class="sd">&quot;&quot;&quot;Error loading cmdset: No cmdset class &#39;{classname}&#39; in &#39;{path}&#39;.</span>
+<span class="sd">(Traceback was logged {timestamp})&quot;&quot;&quot;</span>
+<span class="p">)</span>
+
+<span class="n">_ERROR_CMDSET_SYNTAXERROR</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
+    <span class="sd">&quot;&quot;&quot;{traceback}</span>
+<span class="sd">SyntaxError encountered when loading cmdset &#39;{path}&#39;.</span>
+<span class="sd">(Traceback was logged {timestamp})&quot;&quot;&quot;</span>
+<span class="p">)</span>
+
+<span class="n">_ERROR_CMDSET_EXCEPTION</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
+    <span class="sd">&quot;&quot;&quot;{traceback}</span>
+<span class="sd">Compile/Run error when loading cmdset &#39;{path}&#39;.&quot;,</span>
+<span class="sd">(Traceback was logged {timestamp})&quot;&quot;&quot;</span>
+<span class="p">)</span>
+
+<span class="n">_ERROR_CMDSET_FALLBACK</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Error encountered for cmdset at path &#39;{path}&#39;.</span>
+<span class="sd">Replacing with fallback &#39;{fallback_path}&#39;.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="p">)</span>
+
+<span class="n">_ERROR_CMDSET_NO_FALLBACK</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;Fallback path &#39;</span><span class="si">{fallback_path}</span><span class="s2">&#39; failed to generate a cmdset.&quot;&quot;&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">_ErrorCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a special cmdset used to report errors.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;_CMDSET_ERROR&quot;</span>
+    <span class="n">errmessage</span> <span class="o">=</span> <span class="s2">&quot;Error when loading cmdset.&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">_EmptyCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This cmdset represents an empty cmdset</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;_EMPTY_CMDSET&quot;</span>
+    <span class="n">priority</span> <span class="o">=</span> <span class="o">-</span><span class="mi">101</span>
+    <span class="n">mergetype</span> <span class="o">=</span> <span class="s2">&quot;Union&quot;</span>
+
+
+<div class="viewcode-block" id="import_cmdset"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdsethandler.import_cmdset">[docs]</a><span class="k">def</span> <span class="nf">import_cmdset</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">cmdsetobj</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_logging</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This helper function is used by the cmdsethandler to load a cmdset</span>
+<span class="sd">    instance from a python module, given a python_path. It&#39;s usually accessed</span>
+<span class="sd">    through the cmdsethandler&#39;s add() and add_default() methods.</span>
+<span class="sd">    path - This is the full path to the cmdset object on python dot-form</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        path (str): The path to the command set to load.</span>
+<span class="sd">        cmdsetobj (CmdSet): The database object/typeclass on which this cmdset is to be</span>
+<span class="sd">            assigned (this can be also channels and exits, as well as accounts</span>
+<span class="sd">            but there will always be such an object)</span>
+<span class="sd">        emit_to_obj (Object, optional): If given, error is emitted to</span>
+<span class="sd">            this object (in addition to logging)</span>
+<span class="sd">        no_logging (bool, optional): Don&#39;t log/send error messages.</span>
+<span class="sd">            This can be useful if import_cmdset is just used to check if</span>
+<span class="sd">            this is a valid python path or not.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        cmdset (CmdSet): The imported command set. If an error was</span>
+<span class="sd">            encountered, `commands.cmdsethandler._ErrorCmdSet` is returned</span>
+<span class="sd">            for the benefit of the handler.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">python_paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">path</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span>
+        <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span> <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="n">_CMDSET_PATHS</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="n">errstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">python_path</span> <span class="ow">in</span> <span class="n">python_paths</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
+            <span class="n">modpath</span><span class="p">,</span> <span class="n">classname</span> <span class="o">=</span> <span class="n">python_path</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;The path &#39;</span><span class="si">%s</span><span class="s2">&#39; is not on the form modulepath.ClassName&quot;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># first try to get from cache</span>
+            <span class="n">cmdsetclass</span> <span class="o">=</span> <span class="n">_CACHED_CMDSETS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">python_path</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">cmdsetclass</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">module</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="n">modpath</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="s2">&quot;evennia&quot;</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">trace</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                        <span class="c1"># error in module, make sure to not hide it.</span>
+                        <span class="n">dum</span><span class="p">,</span> <span class="n">dum</span><span class="p">,</span> <span class="n">tb</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()</span>
+                        <span class="k">raise</span> <span class="n">exc</span><span class="o">.</span><span class="n">with_traceback</span><span class="p">(</span><span class="n">tb</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># try next suggested path</span>
+                        <span class="n">errstring</span> <span class="o">+=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">(Unsuccessfully tried &#39;</span><span class="si">{path}</span><span class="s2">&#39;).&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">path</span><span class="o">=</span><span class="n">python_path</span>
+                        <span class="p">)</span>
+                        <span class="k">continue</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">cmdsetclass</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">classname</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">trace</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                        <span class="c1"># Attribute error within module, don&#39;t hide it</span>
+                        <span class="n">dum</span><span class="p">,</span> <span class="n">dum</span><span class="p">,</span> <span class="n">tb</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()</span>
+                        <span class="k">raise</span> <span class="n">exc</span><span class="o">.</span><span class="n">with_traceback</span><span class="p">(</span><span class="n">tb</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">errstring</span> <span class="o">+=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">(Unsuccessfully tried &#39;</span><span class="si">{path}</span><span class="s2">&#39;).&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">path</span><span class="o">=</span><span class="n">python_path</span>
+                        <span class="p">)</span>
+                        <span class="k">continue</span>
+                <span class="n">_CACHED_CMDSETS</span><span class="p">[</span><span class="n">python_path</span><span class="p">]</span> <span class="o">=</span> <span class="n">cmdsetclass</span>
+
+            <span class="c1"># instantiate the cmdset (and catch its errors)</span>
+            <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">cmdsetclass</span><span class="p">):</span>
+                <span class="n">cmdsetclass</span> <span class="o">=</span> <span class="n">cmdsetclass</span><span class="p">(</span><span class="n">cmdsetobj</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">cmdsetclass</span>
+        <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
+            <span class="n">errstring</span> <span class="o">+=</span> <span class="n">_ERROR_CMDSET_IMPORT</span>
+            <span class="k">if</span> <span class="n">_IN_GAME_ERRORS</span><span class="p">:</span>
+                <span class="n">errstring</span> <span class="o">=</span> <span class="n">errstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">path</span><span class="o">=</span><span class="n">python_path</span><span class="p">,</span> <span class="n">traceback</span><span class="o">=</span><span class="n">format_exc</span><span class="p">(),</span> <span class="n">timestamp</span><span class="o">=</span><span class="n">logger</span><span class="o">.</span><span class="n">timeformat</span><span class="p">()</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">errstring</span> <span class="o">=</span> <span class="n">errstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">path</span><span class="o">=</span><span class="n">python_path</span><span class="p">,</span> <span class="n">traceback</span><span class="o">=</span><span class="n">err</span><span class="p">,</span> <span class="n">timestamp</span><span class="o">=</span><span class="n">logger</span><span class="o">.</span><span class="n">timeformat</span><span class="p">()</span>
+                <span class="p">)</span>
+            <span class="k">break</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
+            <span class="n">errstring</span> <span class="o">+=</span> <span class="n">_ERROR_CMDSET_KEYERROR</span>
+            <span class="n">errstring</span> <span class="o">=</span> <span class="n">errstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">classname</span><span class="o">=</span><span class="n">classname</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">python_path</span><span class="p">,</span> <span class="n">timestamp</span><span class="o">=</span><span class="n">logger</span><span class="o">.</span><span class="n">timeformat</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="k">break</span>
+        <span class="k">except</span> <span class="ne">SyntaxError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
+            <span class="n">errstring</span> <span class="o">+=</span> <span class="n">_ERROR_CMDSET_SYNTAXERROR</span>
+            <span class="k">if</span> <span class="n">_IN_GAME_ERRORS</span><span class="p">:</span>
+                <span class="n">errstring</span> <span class="o">=</span> <span class="n">errstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">path</span><span class="o">=</span><span class="n">python_path</span><span class="p">,</span> <span class="n">traceback</span><span class="o">=</span><span class="n">format_exc</span><span class="p">(),</span> <span class="n">timestamp</span><span class="o">=</span><span class="n">logger</span><span class="o">.</span><span class="n">timeformat</span><span class="p">()</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">errstring</span> <span class="o">=</span> <span class="n">errstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">path</span><span class="o">=</span><span class="n">python_path</span><span class="p">,</span> <span class="n">traceback</span><span class="o">=</span><span class="n">err</span><span class="p">,</span> <span class="n">timestamp</span><span class="o">=</span><span class="n">logger</span><span class="o">.</span><span class="n">timeformat</span><span class="p">()</span>
+                <span class="p">)</span>
+            <span class="k">break</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
+            <span class="n">errstring</span> <span class="o">+=</span> <span class="n">_ERROR_CMDSET_EXCEPTION</span>
+            <span class="k">if</span> <span class="n">_IN_GAME_ERRORS</span><span class="p">:</span>
+                <span class="n">errstring</span> <span class="o">=</span> <span class="n">errstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">path</span><span class="o">=</span><span class="n">python_path</span><span class="p">,</span> <span class="n">traceback</span><span class="o">=</span><span class="n">format_exc</span><span class="p">(),</span> <span class="n">timestamp</span><span class="o">=</span><span class="n">logger</span><span class="o">.</span><span class="n">timeformat</span><span class="p">()</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">errstring</span> <span class="o">=</span> <span class="n">errstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">path</span><span class="o">=</span><span class="n">python_path</span><span class="p">,</span> <span class="n">traceback</span><span class="o">=</span><span class="n">err</span><span class="p">,</span> <span class="n">timestamp</span><span class="o">=</span><span class="n">logger</span><span class="o">.</span><span class="n">timeformat</span><span class="p">()</span>
+                <span class="p">)</span>
+            <span class="k">break</span>
+
+    <span class="k">if</span> <span class="n">errstring</span><span class="p">:</span>
+        <span class="c1"># returning an empty error cmdset</span>
+        <span class="n">errstring</span> <span class="o">=</span> <span class="n">errstring</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">no_logging</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">errstring</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">emit_to_obj</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;server_starting_mode&quot;</span><span class="p">):</span>
+                <span class="n">emit_to_obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">errstring</span><span class="p">)</span>
+        <span class="n">err_cmdset</span> <span class="o">=</span> <span class="n">_ErrorCmdSet</span><span class="p">()</span>
+        <span class="n">err_cmdset</span><span class="o">.</span><span class="n">errmessage</span> <span class="o">=</span> <span class="n">errstring</span>
+        <span class="k">return</span> <span class="n">err_cmdset</span>
+    <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># undefined error</span></div>
+
+
+<span class="c1"># classes</span>
+
+
+<div class="viewcode-block" id="CmdSetHandler"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdsethandler.CmdSetHandler">[docs]</a><span class="k">class</span> <span class="nc">CmdSetHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The CmdSetHandler is always stored on an object, this object is supplied</span>
+<span class="sd">    as an argument.</span>
+
+<span class="sd">    The &#39;current&#39; cmdset is the merged set currently active for this object.</span>
+<span class="sd">    This is the set the game engine will retrieve when determining which</span>
+<span class="sd">    commands are available to the object. The cmdset_stack holds a history of</span>
+<span class="sd">    all CmdSets to allow the handler to remove/add cmdsets at will. Doing so</span>
+<span class="sd">    will re-calculate the &#39;current&#39; cmdset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CmdSetHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdsethandler.CmdSetHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">init_true</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method is called whenever an object is recreated.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (Object): An reference to the game object this handler</span>
+<span class="sd">                belongs to.</span>
+<span class="sd">            init_true (bool, optional): Set when the handler is initializing</span>
+<span class="sd">                and loads the current cmdset.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
+
+        <span class="c1"># the id of the &quot;merged&quot; current cmdset for easy access.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># this holds the &quot;merged&quot; current command set</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># this holds a history of CommandSets</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span> <span class="o">=</span> <span class="p">[</span><span class="n">_EmptyCmdSet</span><span class="p">(</span><span class="n">cmdsetobj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)]</span>
+        <span class="c1"># this tracks which mergetypes are actually in play in the stack</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mergetype_stack</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Union&quot;</span><span class="p">]</span>
+
+        <span class="c1"># the subset of the cmdset_paths that are to be stored in the database</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">permanent_paths</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">init_true</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">init_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># is then called from the object __init__.</span></div>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Display current commands</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">mergelist</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># We have more than one cmdset in stack; list them all</span>
+            <span class="k">for</span> <span class="n">snum</span><span class="p">,</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="p">):</span>
+                <span class="n">mergetype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mergetype_stack</span><span class="p">[</span><span class="n">snum</span><span class="p">]</span>
+                <span class="n">permstring</span> <span class="o">=</span> <span class="s2">&quot;non-perm&quot;</span>
+                <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">permanent</span><span class="p">:</span>
+                    <span class="n">permstring</span> <span class="o">=</span> <span class="s2">&quot;perm&quot;</span>
+                <span class="k">if</span> <span class="n">mergetype</span> <span class="o">!=</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">mergetype</span><span class="p">:</span>
+                    <span class="n">mergetype</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">^&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">mergetype</span><span class="p">)</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> </span><span class="si">%i</span><span class="s2">: &lt;</span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">, prio </span><span class="si">%i</span><span class="s2">, </span><span class="si">%s</span><span class="s2">)&gt;: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="n">snum</span><span class="p">,</span>
+                    <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+                    <span class="n">mergetype</span><span class="p">,</span>
+                    <span class="n">cmdset</span><span class="o">.</span><span class="n">priority</span><span class="p">,</span>
+                    <span class="n">permstring</span><span class="p">,</span>
+                    <span class="n">cmdset</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">mergelist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">snum</span><span class="p">))</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="c1"># Display the currently active cmdset, limited by self.obj&#39;s permissions</span>
+        <span class="n">mergetype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mergetype_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">mergetype</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">mergetype</span><span class="p">:</span>
+            <span class="n">merged_on</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">key</span>
+            <span class="n">mergetype</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;custom </span><span class="si">{mergetype}</span><span class="s2"> on cmdset &#39;</span><span class="si">{cmdset}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="n">mergetype</span> <span class="o">=</span> <span class="n">mergetype</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mergetype</span><span class="o">=</span><span class="n">mergetype</span><span class="p">,</span> <span class="n">cmdset</span><span class="o">=</span><span class="n">merged_on</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mergelist</span><span class="p">:</span>
+            <span class="n">tmpstring</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot; &lt;Merged </span><span class="si">{mergelist}</span><span class="s2"> </span><span class="si">{mergetype}</span><span class="s2">, prio </span><span class="si">{prio}</span><span class="s2">&gt;: </span><span class="si">{current}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="n">tmpstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">mergelist</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mergelist</span><span class="p">),</span>
+                <span class="n">mergetype</span><span class="o">=</span><span class="n">mergetype</span><span class="p">,</span>
+                <span class="n">prio</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">priority</span><span class="p">,</span>
+                <span class="n">current</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">permstring</span> <span class="o">=</span> <span class="s2">&quot;non-perm&quot;</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">permanent</span><span class="p">:</span>
+                <span class="n">permstring</span> <span class="o">=</span> <span class="s2">&quot;perm&quot;</span>
+            <span class="n">tmpstring</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot; &lt;</span><span class="si">{key}</span><span class="s2"> (</span><span class="si">{mergetype}</span><span class="s2">, prio </span><span class="si">{prio}</span><span class="s2">, </span><span class="si">{permstring}</span><span class="s2">)&gt;:</span><span class="se">\n</span><span class="s2"> </span><span class="si">{keylist}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="n">tmpstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+                <span class="n">mergetype</span><span class="o">=</span><span class="n">mergetype</span><span class="p">,</span>
+                <span class="n">prio</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">priority</span><span class="p">,</span>
+                <span class="n">permstring</span><span class="o">=</span><span class="n">permstring</span><span class="p">,</span>
+                <span class="n">keylist</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cmd</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">o</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">key</span><span class="p">)),</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">string</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+<div class="viewcode-block" id="CmdSetHandler._import_cmdset"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdsethandler.CmdSetHandler._import_cmdset">[docs]</a>    <span class="k">def</span> <span class="nf">_import_cmdset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset_path</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method wrapper for import_cmdset; Loads a cmdset from a</span>
+<span class="sd">        module.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cmdset_path (str): The python path to an cmdset object.</span>
+<span class="sd">            emit_to_obj (Object): The object to send error messages to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            cmdset (Cmdset): The imported cmdset.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">emit_to_obj</span><span class="p">:</span>
+            <span class="n">emit_to_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span>
+        <span class="k">return</span> <span class="n">import_cmdset</span><span class="p">(</span><span class="n">cmdset_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CmdSetHandler.update"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdsethandler.CmdSetHandler.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Re-adds all sets in the handler to have an updated current</span>
+<span class="sd">        set.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            init_mode (bool, optional): Used automatically right after</span>
+<span class="sd">                this handler was created; it imports all permanent cmdsets</span>
+<span class="sd">                from the database.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">init_mode</span><span class="p">:</span>
+            <span class="c1"># reimport all permanent cmdsets</span>
+            <span class="n">storage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset_storage</span>
+            <span class="k">if</span> <span class="n">storage</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">pos</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">storage</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">pos</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span> <span class="o">=</span> <span class="p">[</span><span class="n">_EmptyCmdSet</span><span class="p">(</span><span class="n">cmdsetobj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)]</span>
+                    <span class="k">elif</span> <span class="n">path</span><span class="p">:</span>
+                        <span class="n">cmdset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_import_cmdset</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">cmdset</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;_CMDSET_ERROR&quot;</span><span class="p">:</span>
+                                <span class="c1"># If a cmdset fails to load, check if we have a fallback path to use</span>
+                                <span class="n">fallback_path</span> <span class="o">=</span> <span class="n">_CMDSET_FALLBACKS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                                <span class="k">if</span> <span class="n">fallback_path</span><span class="p">:</span>
+                                    <span class="n">err</span> <span class="o">=</span> <span class="n">_ERROR_CMDSET_FALLBACK</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                        <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">fallback_path</span><span class="o">=</span><span class="n">fallback_path</span>
+                                    <span class="p">)</span>
+                                    <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+                                    <span class="k">if</span> <span class="n">_IN_GAME_ERRORS</span><span class="p">:</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+                                    <span class="n">cmdset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_import_cmdset</span><span class="p">(</span><span class="n">fallback_path</span><span class="p">)</span>
+                                <span class="c1"># If no cmdset is returned from the fallback, we can&#39;t go further</span>
+                                <span class="k">if</span> <span class="ow">not</span> <span class="n">cmdset</span><span class="p">:</span>
+                                    <span class="n">err</span> <span class="o">=</span> <span class="n">_ERROR_CMDSET_NO_FALLBACK</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                        <span class="n">fallback_path</span><span class="o">=</span><span class="n">fallback_path</span>
+                                    <span class="p">)</span>
+                                    <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+                                    <span class="k">if</span> <span class="n">_IN_GAME_ERRORS</span><span class="p">:</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+                                    <span class="k">continue</span>
+                            <span class="n">cmdset</span><span class="o">.</span><span class="n">permanent</span> <span class="o">=</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;_CMDSET_ERROR&quot;</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cmdset</span><span class="p">)</span>
+
+        <span class="c1"># merge the stack into a new merged cmdset</span>
+        <span class="n">new_current</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mergetype_stack</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># for cmdset&#39;s &#39;+&#39; operator, order matters.</span>
+                <span class="n">new_current</span> <span class="o">=</span> <span class="n">cmdset</span> <span class="o">+</span> <span class="n">new_current</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mergetype_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_current</span><span class="o">.</span><span class="n">actual_mergetype</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="n">new_current</span></div>
+
+<div class="viewcode-block" id="CmdSetHandler.add"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdsethandler.CmdSetHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_cmdset</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a cmdset to the handler, on top of the old ones, unless it</span>
+<span class="sd">        is set as the default one (it will then end up at the bottom of the stack)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cmdset (CmdSet or str): Can be a cmdset object or the python path</span>
+<span class="sd">                to such an object.</span>
+<span class="sd">            emit_to_obj (Object, optional): An object to receive error messages.</span>
+<span class="sd">            permanent (bool, optional): This cmdset will remain across a server reboot.</span>
+<span class="sd">            default_cmdset (Cmdset, optional): Insert this to replace the</span>
+<span class="sd">                default cmdset position (there is only one such position,</span>
+<span class="sd">                always at the bottom of the stack).</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">          An interesting feature of this method is if you were to send</span>
+<span class="sd">          it an *already instantiated cmdset* (i.e. not a class), the</span>
+<span class="sd">          current cmdsethandler&#39;s obj attribute will then *not* be</span>
+<span class="sd">          transferred over to this already instantiated set (this is</span>
+<span class="sd">          because it might be used elsewhere and can cause strange</span>
+<span class="sd">          effects).  This means you could in principle have the</span>
+<span class="sd">          handler launch command sets tied to a *different* object</span>
+<span class="sd">          than the handler. Not sure when this would be useful, but</span>
+<span class="sd">          it&#39;s a &#39;quirk&#39; that has to be documented.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">cmdset</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">utils</span><span class="o">.</span><span class="n">inherits_from</span><span class="p">(</span><span class="n">cmdset</span><span class="p">,</span> <span class="n">CmdSet</span><span class="p">)):</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Only CmdSets can be added to the cmdsethandler!&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">cmdset</span><span class="p">):</span>
+            <span class="n">cmdset</span> <span class="o">=</span> <span class="n">cmdset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cmdset</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c1"># this is (maybe) a python path. Try to import from cache.</span>
+            <span class="n">cmdset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_import_cmdset</span><span class="p">(</span><span class="n">cmdset</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cmdset</span> <span class="ow">and</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;_CMDSET_ERROR&quot;</span><span class="p">:</span>
+            <span class="n">cmdset</span><span class="o">.</span><span class="n">permanent</span> <span class="o">=</span> <span class="n">permanent</span>
+            <span class="k">if</span> <span class="n">permanent</span> <span class="ow">and</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;_CMDSET_ERROR&quot;</span><span class="p">:</span>
+                <span class="c1"># store the path permanently</span>
+                <span class="n">storage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset_storage</span> <span class="ow">or</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">default_cmdset</span><span class="p">:</span>
+                    <span class="n">storage</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">path</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">storage</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cmdset</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset_storage</span> <span class="o">=</span> <span class="n">storage</span>
+            <span class="k">if</span> <span class="n">default_cmdset</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">cmdset</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cmdset</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CmdSetHandler.add_default"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdsethandler.CmdSetHandler.add_default">[docs]</a>    <span class="k">def</span> <span class="nf">add_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Shortcut for adding a default cmdset.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cmdset (Cmdset): The Cmdset to add.</span>
+<span class="sd">            emit_to_obj (Object, optional): Gets error messages</span>
+<span class="sd">            permanent (bool, optional): The new Cmdset should survive a server reboot.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cmdset</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="n">emit_to_obj</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="n">permanent</span><span class="p">,</span> <span class="n">default_cmdset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CmdSetHandler.remove"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdsethandler.CmdSetHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_cmdset</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove a cmdset from the  handler.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cmdset (CommandSet or str, optional): This can can be supplied either as a cmdset-key,</span>
+<span class="sd">                an instance of the CmdSet or a python path to the cmdset.</span>
+<span class="sd">                If no key is given, the last cmdset in the stack is</span>
+<span class="sd">                removed. Whenever the cmdset_stack changes, the cmdset is</span>
+<span class="sd">                updated. If default_cmdset is set, this argument is ignored.</span>
+<span class="sd">            default_cmdset (bool, optional): If set, this will remove the</span>
+<span class="sd">                default cmdset (at the bottom of the stack).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">default_cmdset</span><span class="p">:</span>
+            <span class="c1"># remove the default cmdset only</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="p">:</span>
+                <span class="n">cmdset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">permanent</span><span class="p">:</span>
+                    <span class="n">storage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset_storage</span> <span class="ow">or</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span>
+                    <span class="n">storage</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset_storage</span> <span class="o">=</span> <span class="n">storage</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">_EmptyCmdSet</span><span class="p">(</span><span class="n">cmdsetobj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span> <span class="o">=</span> <span class="p">[</span><span class="n">_EmptyCmdSet</span><span class="p">(</span><span class="n">cmdsetobj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c1"># don&#39;t allow deleting default cmdsets here.</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">cmdset</span><span class="p">:</span>
+            <span class="c1"># remove the last one in the stack</span>
+            <span class="n">cmdset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">permanent</span><span class="p">:</span>
+                <span class="n">storage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset_storage</span>
+                <span class="n">storage</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset_storage</span> <span class="o">=</span> <span class="n">storage</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># try it as a callable</span>
+            <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">cmdset</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cmdset</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">):</span>
+                <span class="n">delcmdsets</span> <span class="o">=</span> <span class="p">[</span><span class="n">cset</span> <span class="k">for</span> <span class="n">cset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">cset</span><span class="o">.</span><span class="n">path</span> <span class="o">==</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">path</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># try it as a path or key</span>
+                <span class="n">delcmdsets</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">cset</span>
+                    <span class="k">for</span> <span class="n">cset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+                    <span class="k">if</span> <span class="n">cset</span><span class="o">.</span><span class="n">path</span> <span class="o">==</span> <span class="n">cmdset</span> <span class="ow">or</span> <span class="n">cset</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">cmdset</span>
+                <span class="p">]</span>
+            <span class="n">storage</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">cset</span><span class="o">.</span><span class="n">permanent</span> <span class="k">for</span> <span class="n">cset</span> <span class="ow">in</span> <span class="n">delcmdsets</span><span class="p">):</span>
+                <span class="c1"># only hit database if there&#39;s need to</span>
+                <span class="n">storage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset_storage</span>
+                <span class="n">updated</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">for</span> <span class="n">cset</span> <span class="ow">in</span> <span class="n">delcmdsets</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">cset</span><span class="o">.</span><span class="n">permanent</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">storage</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">cset</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+                            <span class="n">updated</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                            <span class="c1"># nothing to remove</span>
+                            <span class="k">pass</span>
+                <span class="k">if</span> <span class="n">updated</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset_storage</span> <span class="o">=</span> <span class="n">storage</span>
+            <span class="k">for</span> <span class="n">cset</span> <span class="ow">in</span> <span class="n">delcmdsets</span><span class="p">:</span>
+                <span class="c1"># clean the in-memory stack</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">cset</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="c1"># nothing to remove</span>
+                    <span class="k">pass</span>
+        <span class="c1"># re-sync the cmdsethandler.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+
+    <span class="c1"># legacy alias</span>
+    <span class="n">delete</span> <span class="o">=</span> <span class="n">remove</span>
+
+<div class="viewcode-block" id="CmdSetHandler.remove_default"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdsethandler.CmdSetHandler.remove_default">[docs]</a>    <span class="k">def</span> <span class="nf">remove_default</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This explicitly deletes only the default cmdset.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">default_cmdset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+    <span class="c1"># legacy alias</span>
+    <span class="n">delete_default</span> <span class="o">=</span> <span class="n">remove_default</span>
+
+<div class="viewcode-block" id="CmdSetHandler.get"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdsethandler.CmdSetHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get all cmdsets.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            cmdsets (list): All the command sets currently in the handler.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span></div>
+
+    <span class="c1"># backwards-compatible alias</span>
+    <span class="nb">all</span> <span class="o">=</span> <span class="n">get</span>
+
+<div class="viewcode-block" id="CmdSetHandler.clear"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdsethandler.CmdSetHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes all Command Sets from the handler except the default one</span>
+<span class="sd">        (use `self.remove_default` to remove that).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="n">storage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset_storage</span>
+        <span class="k">if</span> <span class="n">storage</span><span class="p">:</span>
+            <span class="n">storage</span> <span class="o">=</span> <span class="n">storage</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset_storage</span> <span class="o">=</span> <span class="n">storage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CmdSetHandler.has"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdsethandler.CmdSetHandler.has">[docs]</a>    <span class="k">def</span> <span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">must_be_default</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        checks so the cmdsethandler contains a given cmdset</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cmdset (str or Cmdset): Cmdset key, pythonpath or</span>
+<span class="sd">                Cmdset to check the existence for.</span>
+<span class="sd">            must_be_default (bool, optional): Only return True if</span>
+<span class="sd">                the checked cmdset is the default one.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            has_cmdset (bool): Whether or not the cmdset is in the handler.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">cmdset</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cmdset</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">):</span>
+            <span class="c1"># try it as a callable</span>
+            <span class="k">if</span> <span class="n">must_be_default</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">path</span> <span class="o">==</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">any</span><span class="p">([</span><span class="n">cset</span> <span class="k">for</span> <span class="n">cset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span> <span class="k">if</span> <span class="n">cset</span><span class="o">.</span><span class="n">path</span> <span class="o">==</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">path</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># try it as a path or key</span>
+            <span class="k">if</span> <span class="n">must_be_default</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span> <span class="ow">and</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">cmdset</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">path</span> <span class="o">==</span> <span class="n">cmdset</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">any</span><span class="p">(</span>
+                    <span class="p">[</span>
+                        <span class="n">cset</span>
+                        <span class="k">for</span> <span class="n">cset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span>
+                        <span class="k">if</span> <span class="n">cset</span><span class="o">.</span><span class="n">path</span> <span class="o">==</span> <span class="n">cmdset</span> <span class="ow">or</span> <span class="n">cset</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">cmdset</span>
+                    <span class="p">]</span>
+                <span class="p">)</span></div>
+
+    <span class="c1"># backwards-compatability alias</span>
+    <span class="n">has_cmdset</span> <span class="o">=</span> <span class="n">has</span>
+
+<div class="viewcode-block" id="CmdSetHandler.reset"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdsethandler.CmdSetHandler.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Force reload of all cmdsets in handler. This should be called</span>
+<span class="sd">        after _CACHED_CMDSETS have been cleared (normally this is</span>
+<span class="sd">        handled automatically by @reload).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_cmdset_stack</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;_EMPTY_CMDSET&quot;</span><span class="p">:</span>
+                <span class="n">new_cmdset_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cmdset</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_cmdset_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_import_cmdset</span><span class="p">(</span><span class="n">cmdset</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span> <span class="o">=</span> <span class="n">new_cmdset_stack</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  <li><a href="../../evennia.html">evennia</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../../versions/1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="cmdsethandler.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

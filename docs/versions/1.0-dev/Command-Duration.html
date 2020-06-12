@@ -1,0 +1,672 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Command Duration &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="command-duration">
+<h1>Command Duration<a class="headerlink" href="#command-duration" title="Permalink to this headline">¶</a></h1>
+<p>Before reading this tutorial, if you haven’t done so already, you might want to
+read <a class="reference internal" href="Commands.html"><span class="doc">the documentation on commands</span></a> to get a basic understanding of
+how commands work in Evennia.</p>
+<p>In some types of games a command should not start and finish immediately.
+Loading a crossbow might take a bit of time to do - time you don’t have when
+the enemy comes rushing at you. Crafting that armour will not be immediate
+either. For some types of games the very act of moving or changing pose all
+comes with a certain time associated with it.</p>
+<div class="section" id="the-simple-way-to-pause-commands-with-yield">
+<h2>The simple way to pause commands with yield<a class="headerlink" href="#the-simple-way-to-pause-commands-with-yield" title="Permalink to this headline">¶</a></h2>
+<p>Evennia allows a shortcut in syntax to create simple pauses in commands.  This
+syntax uses the <code class="docutils literal notranslate"><span class="pre">yield</span></code> keyword.  The <code class="docutils literal notranslate"><span class="pre">yield</span></code> keyword is used in Python to
+create generators, although you don’t need to know what generators are to use
+this syntax.  A short example will probably make it clear:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CmdTest</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A test command just to test waiting.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">        test</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Before ten seconds...&quot;</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="mi">10</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Afterwards.&quot;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<blockquote>
+<div><p>Important: The <code class="docutils literal notranslate"><span class="pre">yield</span></code> functionality will <em>only</em> work in the <code class="docutils literal notranslate"><span class="pre">func</span></code> method of
+Commands. It only works because Evennia has especially
+catered for it in Commands. If you want the same functionality elsewhere you
+must use the <a class="reference external" href="/Async-Process.html#The-&#64;interactive-decorator">interactive decorator</a>.</p>
+</div></blockquote>
+<p>The important line is the <code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">10</span></code>.  It tells Evennia to “pause” the command
+and to wait for 10 seconds to execute the rest.  If you add this command and
+run it, you’ll see the first message, then, after a pause of ten seconds, the
+next message.  You can use <code class="docutils literal notranslate"><span class="pre">yield</span></code> several times in your command.</p>
+<p>This syntax will not “freeze” all commands.  While the command is “pausing”,
+you can execute other commands (or even call the same command again).  And
+other players aren’t frozen either.</p>
+<blockquote>
+<div><p>Note: this will not save anything in the database.  If you reload the game
+while a command is “paused”, it will not resume after the server has
+reloaded.</p>
+</div></blockquote>
+</div>
+<div class="section" id="the-more-advanced-way-with-utils-delay">
+<h2>The more advanced way with utils.delay<a class="headerlink" href="#the-more-advanced-way-with-utils-delay" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">yield</span></code> syntax is easy to read, easy to understand, easy to use.  But it’s not that flexible if you want more advanced options.  Learning to use alternatives might be much worth it in the end.</p>
+<p>Below is a simple command example for adding a duration for a command to finish.</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span><span class="p">,</span> <span class="n">utils</span>
+    
+<span class="k">class</span> <span class="nc">CmdEcho</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    wait for an echo</span>
+<span class="sd">    </span>
+<span class="sd">    Usage: </span>
+<span class="sd">      echo &lt;string&gt;</span>
+<span class="sd">    </span>
+<span class="sd">    Calls and waits for an echo</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;echo&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+    
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">         This is called at the initial shout.            </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You shout &#39;</span><span class="si">%s</span><span class="s2">&#39; and wait for an echo ...&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="c1"># this waits non-blocking for 10 seconds, then calls self.echo</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">echo</span><span class="p">)</span> <span class="c1"># call echo after 10 seconds</span>
+    
+    <span class="k">def</span> <span class="nf">echo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Called after 10 seconds.&quot;</span>
+        <span class="n">shout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You hear an echo: </span><span class="si">%s</span><span class="s2"> ... </span><span class="si">%s</span><span class="s2"> ... </span><span class="si">%s</span><span class="s2">&quot;</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="n">string</span> <span class="o">%</span> <span class="p">(</span><span class="n">shout</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">shout</span><span class="o">.</span><span class="n">capitalize</span><span class="p">(),</span> <span class="n">shout</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>Import this new echo command into the default command set and reload the server. You will find that it will take 10 seconds before you see your shout coming back. You will also find that this is a <em>non-blocking</em> effect; you can issue other commands in the interim and the game will go on as usual. The echo will come back to you in its own time.</p>
+<div class="section" id="about-utils-delay">
+<h3>About utils.delay()<a class="headerlink" href="#about-utils-delay" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">utils.delay(timedelay,</span> <span class="pre">callback,</span> <span class="pre">persistent=False,</span> <span class="pre">*args,</span> <span class="pre">**kwargs)</span></code> is a useful function.  It will wait <code class="docutils literal notranslate"><span class="pre">timedelay</span></code> seconds, then call the <code class="docutils literal notranslate"><span class="pre">callback</span></code> function, optionally passing to it the arguments provided to utils.delay by way of *args and/or **kwargs`.</p>
+<blockquote>
+<div><p>Note: The callback argument should be provided with a python path to the desired function, for instance <code class="docutils literal notranslate"><span class="pre">my_object.my_function</span></code> instead of <code class="docutils literal notranslate"><span class="pre">my_object.my_function()</span></code>. Otherwise my_function would get called and run immediately upon attempting to pass it to the delay function.
+If you want to provide arguments for utils.delay to use, when calling your callback function, you have to do it separatly, for instance using the utils.delay *args and/or **kwargs, as mentioned above.</p>
+</div></blockquote>
+<blockquote>
+<div><p>If you are not familiar with the syntax <code class="docutils literal notranslate"><span class="pre">*args</span></code> and <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>, <a class="reference external" href="https://docs.python.org/2/tutorial/controlflow.html#arbitrary-argument-lists">see the Python documentation here</a>.</p>
+</div></blockquote>
+<p>Looking at it you might think that <code class="docutils literal notranslate"><span class="pre">utils.delay(10,</span> <span class="pre">callback)</span></code> in the code above is just an alternative to some more familiar thing like <code class="docutils literal notranslate"><span class="pre">time.sleep(10)</span></code>. This is <em>not</em> the case. If you do <code class="docutils literal notranslate"><span class="pre">time.sleep(10)</span></code> you will in fact freeze the <em>entire server</em> for ten seconds! The <code class="docutils literal notranslate"><span class="pre">utils.delay()</span></code>is a thin wrapper around a Twisted <a class="reference external" href="http://twistedmatrix.com/documents/11.0.0/core/howto/defer.html">Deferred</a> that will delay execution until 10 seconds have passed, but will do so asynchronously, without bothering anyone else (not even you - you can continue to do stuff normally while it waits to continue).</p>
+<p>The point to remember here is that the <code class="docutils literal notranslate"><span class="pre">delay()</span></code> call will not “pause” at that point when it is called (the way <code class="docutils literal notranslate"><span class="pre">yield</span></code> does in the previous section). The lines after the <code class="docutils literal notranslate"><span class="pre">delay()</span></code> call will actually execute <em>right away</em>. What you must do is to tell it which function to call <em>after the time has passed</em> (its “callback”). This may sound strange at first, but it is normal practice in asynchronous systems. You can also link such calls together as seen below:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span><span class="p">,</span> <span class="n">utils</span>
+    
+<span class="k">class</span> <span class="nc">CmdEcho</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    waits for an echo</span>
+<span class="sd">    </span>
+<span class="sd">    Usage: </span>
+<span class="sd">      echo &lt;string&gt;</span>
+<span class="sd">    </span>
+<span class="sd">    Calls and waits for an echo</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;echo&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+    
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;This sets off a chain of delayed calls&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You shout &#39;</span><span class="si">%s</span><span class="s2">&#39;, waiting for an echo ...&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="c1"># wait 2 seconds before calling self.echo1</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">echo1</span><span class="p">)</span>
+    
+    <span class="c1"># callback chain, started above</span>
+    <span class="k">def</span> <span class="nf">echo1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;First echo&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;... </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
+        <span class="c1"># wait 2 seconds for the next one</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">echo2</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">echo2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Second echo&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;... </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">capitalize</span><span class="p">())</span>
+        <span class="c1"># wait another 2 seconds</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">echo3</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">echo3</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Last echo&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;... </span><span class="si">%s</span><span class="s2"> ...&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+</pre></div>
+</td></tr></table></div>
+<p>The above version will have the echoes arrive one after another, each separated by a two second delay.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; echo Hello!
+... HELLO!
+... Hello!
+... hello! ...
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="blocking-commands">
+<h2>Blocking commands<a class="headerlink" href="#blocking-commands" title="Permalink to this headline">¶</a></h2>
+<p>As mentioned, a great thing about the delay introduced by <code class="docutils literal notranslate"><span class="pre">yield</span></code> or <code class="docutils literal notranslate"><span class="pre">utils.delay()</span></code> is that it does not block. It just goes on in the background and you are free to play normally in the interim. In some cases this is not what you want however. Some commands should simply “block” other commands while they are running. If you are in the process of crafting a helmet you shouldn’t be able to also start crafting a shield at the same time, or if you just did a huge power-swing with your weapon you should not be able to do it again immediately.</p>
+<p>The simplest way of implementing blocking is to use the technique covered in the <a class="reference internal" href="Command-Cooldown.html"><span class="doc">Command Cooldown</span></a> tutorial. In that tutorial we implemented cooldowns by having the Command store the current time. Next time the Command was called, we compared the current time to the stored time to determine if enough time had passed for a renewed use. This is a <em>very</em> efficient, reliable and passive solution. The drawback is that there is nothing to tell the Player when enough time has passed unless they keep trying.</p>
+<p>Here is an example where we will use <code class="docutils literal notranslate"><span class="pre">utils.delay</span></code> to tell the player when the cooldown has passed:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">default_cmds</span>
+    
+<span class="k">class</span> <span class="nc">CmdBigSwing</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    swing your weapon in a big way</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      swing &lt;target&gt;</span>
+<span class="sd">    </span>
+<span class="sd">    Makes a mighty swing. Doing so will make you vulnerable</span>
+<span class="sd">    to counter-attacks before you can recover. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;bigswing&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+    
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Makes the swing&quot;</span> 
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">off_balance</span><span class="p">:</span>
+            <span class="c1"># we are still off-balance.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are off balance and need time to recover!&quot;</span><span class="p">)</span>
+            <span class="k">return</span>      
+      
+        <span class="c1"># [attack/hit code goes here ...]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You swing big! You are off balance now.&quot;</span><span class="p">)</span>   
+
+        <span class="c1"># set the off-balance flag</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">off_balance</span> <span class="o">=</span> <span class="bp">True</span>
+            
+        <span class="c1"># wait 8 seconds before we can recover. During this time </span>
+        <span class="c1"># we won&#39;t be able to swing again due to the check at the top.        </span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">recover</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">recover</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;This will be called after 8 secs&quot;</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">off_balance</span>            
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You regain your balance.&quot;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>Note how, after the cooldown, the user will get a message telling them they are now ready for another swing.</p>
+<p>By storing the <code class="docutils literal notranslate"><span class="pre">off_balance</span></code> flag on the character (rather than on, say, the Command instance itself) it can be accessed by other Commands too. Other attacks may also not work when you are off balance. You could also have an enemy Command check your <code class="docutils literal notranslate"><span class="pre">off_balance</span></code> status to gain bonuses, to take another example.</p>
+</div>
+<div class="section" id="abortable-commands">
+<h2>Abortable commands<a class="headerlink" href="#abortable-commands" title="Permalink to this headline">¶</a></h2>
+<p>One can imagine that you will want to abort a long-running command before it has a time to finish. If you are in the middle of crafting your armor you will probably want to stop doing that when a monster enters your smithy.</p>
+<p>You can implement this in the same way as you do the “blocking” command above, just in reverse. Below is an example of a crafting command that can be aborted by starting a fight:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">default_cmds</span>
+    
+<span class="k">class</span> <span class="nc">CmdCraftArmour</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Craft armour</span>
+<span class="sd">    </span>
+<span class="sd">    Usage:</span>
+<span class="sd">       craft &lt;name of armour&gt;</span>
+<span class="sd">    </span>
+<span class="sd">    This will craft a suit of armour, assuming you</span>
+<span class="sd">    have all the components and tools. Doing some</span>
+<span class="sd">    other action (such as attacking someone) will </span>
+<span class="sd">    abort the crafting process. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;craft&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+    
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;starts crafting&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">is_crafting</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are already crafting!&quot;</span><span class="p">)</span>
+            <span class="k">return</span> 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_fighting</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t start to craft &quot;</span>
+                            <span class="s2">&quot;in the middle of a fight!&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+            
+        <span class="c1"># [Crafting code, checking of components, skills etc]          </span>
+
+        <span class="c1"># Start crafting</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">is_crafting</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You start crafting ...&quot;</span><span class="p">)</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">step1</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">_is_fighting</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;checks if we are in a fight.&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">is_fighting</span><span class="p">:</span>                
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">is_crafting</span> 
+            <span class="k">return</span> <span class="bp">True</span>
+      
+    <span class="k">def</span> <span class="nf">step1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;first step of armour construction&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_fighting</span><span class="p">():</span> 
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You create the first part of the armour.&quot;</span><span class="p">)</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">step2</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">step2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;second step of armour construction&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_fighting</span><span class="p">():</span> 
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You create the second part of the armour.&quot;</span><span class="p">)</span>            
+        <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="n">step3</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">step3</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;last step of armour construction&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_fighting</span><span class="p">():</span>
+            <span class="k">return</span>          
+    
+        <span class="c1"># [code for creating the armour object etc]</span>
+
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">is_crafting</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You finalize your armour.&quot;</span><span class="p">)</span>
+    
+    
+<span class="c1"># example of a command that aborts crafting</span>
+    
+<span class="k">class</span> <span class="nc">CmdAttack</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    attack someone</span>
+<span class="sd">    </span>
+<span class="sd">    Usage:</span>
+<span class="sd">        attack &lt;target&gt;</span>
+<span class="sd">    </span>
+<span class="sd">    Try to cause harm to someone. This will abort</span>
+<span class="sd">    eventual crafting you may be currently doing. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;attack&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hit&quot;</span><span class="p">,</span> <span class="s2">&quot;stab&quot;</span><span class="p">]</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+    
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Implements the command&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">is_fighting</span> <span class="o">=</span> <span class="bp">True</span>
+    
+        <span class="c1"># [...]</span>
+</pre></div>
+</td></tr></table></div>
+<p>The above code creates a delayed crafting command that will gradually create the armour. If the <code class="docutils literal notranslate"><span class="pre">attack</span></code> command is issued during this process it will set a flag that causes the crafting to be quietly canceled next time it tries to update.</p>
+</div>
+<div class="section" id="persistent-delays">
+<h2>Persistent delays<a class="headerlink" href="#persistent-delays" title="Permalink to this headline">¶</a></h2>
+<p>In the latter examples above we used <code class="docutils literal notranslate"><span class="pre">.ndb</span></code> storage. This is fast and easy but it will reset all cooldowns/blocks/crafting etc if you reload the server. If you don’t want that you can replace <code class="docutils literal notranslate"><span class="pre">.ndb</span></code> with <code class="docutils literal notranslate"><span class="pre">.db</span></code>. But even this won’t help because the <code class="docutils literal notranslate"><span class="pre">yield</span></code> keyword is not persisent and nor is the use of <code class="docutils literal notranslate"><span class="pre">delay</span></code> shown above. To resolve this you can use <code class="docutils literal notranslate"><span class="pre">delay</span></code> with the <code class="docutils literal notranslate"><span class="pre">persistent=True</span></code> keyword. But wait! Making something persistent will add some extra complications, because now you must make sure Evennia can properly store things to the database.</p>
+<p>Here is the original echo-command reworked to function with persistence:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span><span class="p">,</span> <span class="n">utils</span>
+    
+<span class="c1"># this is now in the outermost scope and takes two args! </span>
+<span class="k">def</span> <span class="nf">echo</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="s2">&quot;Called after 10 seconds.&quot;</span>
+    <span class="n">shout</span> <span class="o">=</span> <span class="n">args</span>
+    <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You hear an echo: </span><span class="si">%s</span><span class="s2"> ... </span><span class="si">%s</span><span class="s2"> ... </span><span class="si">%s</span><span class="s2">&quot;</span>
+    <span class="n">string</span> <span class="o">=</span> <span class="n">string</span> <span class="o">%</span> <span class="p">(</span><span class="n">shout</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">shout</span><span class="o">.</span><span class="n">capitalize</span><span class="p">(),</span> <span class="n">shout</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">CmdEcho</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    wait for an echo</span>
+<span class="sd">    </span>
+<span class="sd">    Usage: </span>
+<span class="sd">      echo &lt;string&gt;</span>
+<span class="sd">    </span>
+<span class="sd">    Calls and waits for an echo</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;echo&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+    
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">         This is called at the initial shout.            </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You shout &#39;</span><span class="si">%s</span><span class="s2">&#39; and wait for an echo ...&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="c1"># this waits non-blocking for 10 seconds, then calls echo(self.caller, self.args)</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">echo</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="c1"># changes! </span>
+    
+</pre></div>
+</td></tr></table></div>
+<p>Above you notice two changes:</p>
+<ul class="simple">
+<li><p>The callback (<code class="docutils literal notranslate"><span class="pre">echo</span></code>) was moved out of the class and became its own stand-alone function in the outermost scope of the module. It also now takes <code class="docutils literal notranslate"><span class="pre">caller</span></code> and <code class="docutils literal notranslate"><span class="pre">args</span></code> as arguments (it doesn’t have access to them directly since this is now a stand-alone function).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">utils.delay</span></code> specifies the <code class="docutils literal notranslate"><span class="pre">echo</span></code> function (not <code class="docutils literal notranslate"><span class="pre">self.echo</span></code> - it’s no longer a method!) and sends <code class="docutils literal notranslate"><span class="pre">self.caller</span></code> and <code class="docutils literal notranslate"><span class="pre">self.args</span></code> as arguments for it to use. We also set <code class="docutils literal notranslate"><span class="pre">persistent=True</span></code>.</p></li>
+</ul>
+<p>The reason for this change is because Evennia needs to <code class="docutils literal notranslate"><span class="pre">pickle</span></code> the callback into storage and it cannot do this correctly when the method sits on the command class. Now this behave the same as the first version except if you reload (or even shut down) the server mid-delay it will still fire the callback when the server comes back up (it will resume the countdown and ignore the downtime).</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Command Duration</a><ul>
+<li><a class="reference internal" href="#the-simple-way-to-pause-commands-with-yield">The simple way to pause commands with yield</a></li>
+<li><a class="reference internal" href="#the-more-advanced-way-with-utils-delay">The more advanced way with utils.delay</a><ul>
+<li><a class="reference internal" href="#about-utils-delay">About utils.delay()</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#blocking-commands">Blocking commands</a></li>
+<li><a class="reference internal" href="#abortable-commands">Abortable commands</a></li>
+<li><a class="reference internal" href="#persistent-delays">Persistent delays</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Command-Duration.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Command-Duration.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../versions/0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/Command-Duration.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

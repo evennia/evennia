@@ -1,0 +1,266 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.scripts.models &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.scripts.models</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Scripts are entities that perform some sort of action, either only</span>
+<span class="sd">once or repeatedly. They can be directly linked to a particular</span>
+<span class="sd">Evennia Object or be stand-alonw (in the latter case it is considered</span>
+<span class="sd">a &#39;global&#39; script). Scripts can indicate both actions related to the</span>
+<span class="sd">game world as well as pure behind-the-scenes events and effects.</span>
+<span class="sd">Everything that has a time component in the game (i.e. is not</span>
+<span class="sd">hard-coded at startup or directly created/controlled by players) is</span>
+<span class="sd">handled by Scripts.</span>
+
+<span class="sd">Scripts have to check for themselves that they should be applied at a</span>
+<span class="sd">particular moment of time; this is handled by the is_valid() hook.</span>
+<span class="sd">Scripts can also implement at_start and at_end hooks for preparing and</span>
+<span class="sd">cleaning whatever effect they have had on the game object.</span>
+
+<span class="sd">Common examples of uses of Scripts:</span>
+
+<span class="sd">- Load the default cmdset to the account object&#39;s cmdhandler</span>
+<span class="sd">  when logging in.</span>
+<span class="sd">- Switch to a different state, such as entering a text editor,</span>
+<span class="sd">  start combat or enter a dark room.</span>
+<span class="sd">- Merge a new cmdset with the default one for changing which</span>
+<span class="sd">  commands are available at a particular time</span>
+<span class="sd">- Give the account/object a time-limited bonus/effect</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="k">import</span> <span class="n">ObjectDoesNotExist</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="k">import</span> <span class="n">TypedObject</span>
+<span class="kn">from</span> <span class="nn">evennia.scripts.manager</span> <span class="k">import</span> <span class="n">ScriptDBManager</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">dbref</span><span class="p">,</span> <span class="n">to_str</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;ScriptDB&quot;</span><span class="p">,)</span>
+<span class="n">_GA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__getattribute__</span>
+<span class="n">_SA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span>
+
+
+<span class="c1"># ------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1"># ScriptDB</span>
+<span class="c1">#</span>
+<span class="c1"># ------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="ScriptDB"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.admin.ScriptDB">[docs]</a><span class="k">class</span> <span class="nc">ScriptDB</span><span class="p">(</span><span class="n">TypedObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The Script database representation.</span>
+
+<span class="sd">    The TypedObject supplies the following (inherited) properties:</span>
+<span class="sd">      key - main name</span>
+<span class="sd">      name - alias for key</span>
+<span class="sd">      typeclass_path - the path to the decorating typeclass</span>
+<span class="sd">      typeclass - auto-linked typeclass</span>
+<span class="sd">      date_created - time stamp of object creation</span>
+<span class="sd">      permissions - perm strings</span>
+<span class="sd">      dbref - #id of object</span>
+<span class="sd">      db - persistent attribute storage</span>
+<span class="sd">      ndb - non-persistent attribute storage</span>
+
+<span class="sd">    The ScriptDB adds the following properties:</span>
+<span class="sd">      desc - optional description of script</span>
+<span class="sd">      obj - the object the script is linked to, if any</span>
+<span class="sd">      account - the account the script is linked to (exclusive with obj)</span>
+<span class="sd">      interval - how often script should run</span>
+<span class="sd">      start_delay - if the script should start repeating right away</span>
+<span class="sd">      repeats - how many times the script should repeat</span>
+<span class="sd">      persistent - if script should survive a server reboot</span>
+<span class="sd">      is_active - bool if script is currently running</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># ScriptDB Database Model setup</span>
+    <span class="c1">#</span>
+    <span class="c1"># These database fields are all set using their corresponding properties,</span>
+    <span class="c1"># named same as the field, but withtou the db_* prefix.</span>
+
+    <span class="c1"># inherited fields (from TypedObject):</span>
+    <span class="c1"># db_key, db_typeclass_path, db_date_created, db_permissions</span>
+
+    <span class="c1"># optional description.</span>
+    <span class="n">db_desc</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># A reference to the database object affected by this Script, if any.</span>
+    <span class="n">db_obj</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
+        <span class="s2">&quot;objects.ObjectDB&quot;</span><span class="p">,</span>
+        <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;scripted object&quot;</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;the object to store this script on, if not a global script.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">db_account</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
+        <span class="s2">&quot;accounts.AccountDB&quot;</span><span class="p">,</span>
+        <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;scripted account&quot;</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;the account to store this script on (should not be set if db_obj is set)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># how often to run Script (secs). -1 means there is no timer</span>
+    <span class="n">db_interval</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span>
+        <span class="s2">&quot;interval&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;how often to repeat script, in seconds. -1 means off.&quot;</span>
+    <span class="p">)</span>
+    <span class="c1"># start script right away or wait interval seconds first</span>
+    <span class="n">db_start_delay</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span>
+        <span class="s2">&quot;start delay&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;pause interval seconds before starting.&quot;</span>
+    <span class="p">)</span>
+    <span class="c1"># how many times this script is to be repeated, if interval!=0.</span>
+    <span class="n">db_repeats</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="s2">&quot;number of repeats&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;0 means off.&quot;</span><span class="p">)</span>
+    <span class="c1"># defines if this script should survive a reboot or not</span>
+    <span class="n">db_persistent</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="s2">&quot;survive server reboot&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># defines if this script has already been started in this session</span>
+    <span class="n">db_is_active</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="s2">&quot;script active&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># Database manager</span>
+    <span class="n">objects</span> <span class="o">=</span> <span class="n">ScriptDBManager</span><span class="p">()</span>
+
+    <span class="c1"># defaults</span>
+    <span class="n">__settingsclasspath__</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_SCRIPT_TYPECLASS</span>
+    <span class="n">__defaultclasspath__</span> <span class="o">=</span> <span class="s2">&quot;evennia.scripts.scripts.DefaultScript&quot;</span>
+    <span class="n">__applabel__</span> <span class="o">=</span> <span class="s2">&quot;scripts&quot;</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="s2">&quot;Define Django meta options&quot;</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Script&quot;</span>
+
+    <span class="c1">#</span>
+    <span class="c1">#</span>
+    <span class="c1"># ScriptDB class properties</span>
+    <span class="c1">#</span>
+    <span class="c1">#</span>
+
+    <span class="c1"># obj property</span>
+    <span class="k">def</span> <span class="nf">__get_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Property wrapper that homogenizes access to either the</span>
+<span class="sd">        db_account or db_obj field, using the same object property</span>
+<span class="sd">        name.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;db_account&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;db_obj&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">obj</span>
+
+    <span class="k">def</span> <span class="nf">__set_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set account or obj to their right database field. If</span>
+<span class="sd">        a dbref is given, assume ObjectDB.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">_GA</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;dbobj&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="c1"># deprecated ...</span>
+            <span class="k">pass</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
+            <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="k">import</span> <span class="n">ObjectDB</span>
+
+            <span class="n">value</span> <span class="o">=</span> <span class="n">to_str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">or</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">):</span>
+                <span class="n">dbid</span> <span class="o">=</span> <span class="n">dbref</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">reqhash</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">dbid</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">value</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">dbid</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="n">ObjectDoesNotExist</span><span class="p">:</span>
+                        <span class="c1"># maybe it is just a name that happens to look like a dbid</span>
+                        <span class="k">pass</span>
+        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;AccountDB&quot;</span><span class="p">:</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="s2">&quot;db_account&quot;</span>
+            <span class="n">_SA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="s2">&quot;db_obj&quot;</span>
+            <span class="n">_SA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="c1"># saving the field</span>
+        <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;save&quot;</span><span class="p">)(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="n">fname</span><span class="p">])</span>
+
+    <span class="n">obj</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_obj</span><span class="p">,</span> <span class="n">__set_obj</span><span class="p">)</span>
+    <span class="nb">object</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_obj</span><span class="p">,</span> <span class="n">__set_obj</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  <li><a href="../../evennia.html">evennia</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="models.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../versions/0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, The Evennia developer community.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
