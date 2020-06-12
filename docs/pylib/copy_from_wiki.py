@@ -18,13 +18,13 @@ import re
 import datetime 
 
 _RE_MD_LINK = re.compile(r"\[(?P<txt>[\w -\[\]]+?)\]\((?P<url>.+?)\)", re.I + re.S + re.U)
-_RE_REF_LINK = re.compile(r"\[[\w -\[\]]+?\]\(.+?\)", re.I + re.S + re.U)
+_RE_REF_LINK = re.compile(r"\[[\w -\[\]]*?\]\(.+?\)", re.I + re.S + re.U)
 
 _RE_CLEAN = re.compile(r"\|-+?|-+\|", re.I + re.S + re.U)
 
 _IGNORE_FILES = (
     "_Sidebar.md",
-    "Wiki-Index.md"
+    # "Wiki-Index.md"
 )
 
 _INDEX_PREFIX = f"""
@@ -82,6 +82,7 @@ _REF_REMAP = {
     "[![Developer-Central][icon_devel]](Developer-Central)": "![Developer-Central][icon_devel]",
     "[![tutorial][icon_tutorial]](Tutorials)": "![Tutorials][icon_tutorial]",
     "[![API][icon_api]](evennia)": "![API][icon_api]",
+    "[](Wiki-front-page.)": "",
 }
 
 
@@ -148,17 +149,18 @@ def _sub_link(match):
     if url.startswith(_OLD_WIKI_URL):
         # old wiki is an url on the form https://<wikiurl>/wiki/TextTags#header
         # we don't refer to the old wiki but use internal mapping.
-        url_conv = url[_OLD_WIKI_URL_LEN:]
-        url_conv = re.sub(r"%20", "-", url_conv)
-        if url_conv.endswith("/_edit"):
-            # this is actually a bug in the wiki format
-            url_conv = url_conv[:-6]
-        if url_conv.startswith("evennia"):
-            # this is an api link
-            url_conv = _CODE_PREFIX + url_conv
+        if len(url) != len(_OLD_WIKI_URL):
+            url_conv = url[_OLD_WIKI_URL_LEN:]
+            url_conv = re.sub(r"%20", "-", url_conv)
+            if url_conv.endswith("/_edit"):
+                # this is actually a bug in the wiki format
+                url_conv = url_conv[:-6]
+            if url_conv.startswith("evennia"):
+                # this is an api link
+                url_conv = _CODE_PREFIX + url_conv
 
-        print(f" Converting wiki-url: {url} -> {url_conv}")
-        url = url_conv
+            print(f" Converting wiki-url: {url} -> {url_conv}")
+            url = url_conv
 
     if not url and anchor:
         # this happens on same-file #labels in wiki
@@ -234,6 +236,11 @@ def convert_links(files, outdir):
 
             if is_index:
                 text = _INDEX_PREFIX + text 
+                lines = text.split("\n")
+                lines = (lines[:-11]
+                         + [" - The [TOC](toc) lists all regular documentation pages.\n\n"]
+                         + lines[-11:])
+                text = "\n".join(lines)
 
             _CURRENT_TITLE = title.replace(" ", "-")
             text = _RE_CLEAN.sub("", text)
