@@ -20,17 +20,10 @@ if not _no_autodoc:
     GAME_DIR = os.environ.get("EVGAMEDIR")
 
     if not (EV_ROOT and GAME_DIR):
-<<<<<<< HEAD
         err = ("The EVDIR and EVGAMEDIR environment variables must be set to "
               "the absolute paths to the evennia/ repo and an initialized "
               "evennia gamedir respectively.")
         raise RuntimeError(err)
-=======
-        print("The EVDIR and EVGAMEDIR environment variables must be set to "
-              "the absolute paths to the evennia/ repo and an initialized "
-              "evennia gamedir respectively.")
-        raise RuntimeError()
->>>>>>> master
 
     print("Evennia root: {}, Game dir: {}".format(EV_ROOT, GAME_DIR))
 
@@ -55,11 +48,7 @@ copyright = '2020, The Evennia developer community'
 author = 'The Evennia developer community'
 
 # The full version, including alpha/beta/rc tags
-<<<<<<< HEAD
 release = '1.0-dev'
-=======
-release = '0.9.1'
->>>>>>> master
 
 # -- General configuration ---------------------------------------------------
 
@@ -151,15 +140,10 @@ html_theme = 'alabaster'
 # sphinx-multiversion config
 
 smv_tag_whitelist = r"^$"
-<<<<<<< HEAD
-smv_branch_whitelist = r"^master$|^develop$"
 # which branches to include in multi-version docs
-# - master, develop and vX.X branches 
+# - master, develop and vX.X branches
 smv_branch_whitelist = r"^master$|^develop$|^v[0-9\.]+?$"
-=======
 # smv_branch_whitelist = r"^static-file-docs$|^static-file-dev$"
-smv_branch_whitelist = r"^master$|^v1.0$"
->>>>>>> master
 smv_outputdir_format = "versions" + sep + "{config.release}"
 
 
