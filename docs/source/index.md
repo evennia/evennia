@@ -1,5 +1,17 @@
-# Home
 
+
+
+# VERSION WARNING
+
+> This is the experimental static v0.9 documentation of Evennia, _automatically_ generated from the 
+> [evennia wiki]() at 2020-06-12 21:01:35.429785.
+> There are known conversion issues which  will _not_ be addressed in this version - refer to 
+> the original wiki if you have trouble.
+>
+> Manual conversion and cleanup will instead happen during development of the upcoming v1.0
+> version of this static documentation. 
+
+[](Wiki-front-page.)
 # Evennia Documentation
 
 This is the manual of [Evennia](http://www.evennia.com), the open source Python `MU*` creation system.
@@ -11,9 +23,8 @@ suggestion box][form]!
 There is [a lengthier introduction](Evennia-Introduction) to read. You might also want to read about
 [how to get and give help](How-To-Get-And-Give-Help).
 
-
 | ![Getting Started][icon_new]| ![Admin Docs][icon_admin] | ![Builder Docs][icon_builder] | ![Developer-Central][icon_devel] | ![Tutorials][icon_tutorial] | [![API][icon_API]](api:evennia) |
-|-----------------|----------------------|--------------------------|----------------------|----------------------------|--------------------|
+
 |[Getting Started](Getting-Started)| [Admin Docs](Administrative-Docs) | [Builder Docs](Builder-Docs) | [Developer Central](Developer-Central) | [Tutorials & Examples](Tutorials) | [API](api:evennia) |
 
 - The [Getting Started](Getting-Started) page helps installing and starting Evennia for the first time.

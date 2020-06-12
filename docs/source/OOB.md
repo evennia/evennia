@@ -63,7 +63,7 @@ On the wire, a GMCP instruction for `("cmdname", ("arg",), {})` will look like t
 where all the capitalized words are telnet character constants specified in `evennia/server/portal/telnet_oob.py`. These are parsed/added by the protocol and we don't include these in the listings below. 
 
 Input/Outputfunc | GMCP-Command
------------------|------------------
+------------------
 `[cmd_name, [], {}]`  |  Cmd.Name
 `[cmd_name, [arg], {}]` |      Cmd.Name arg
 `[cmd_na_me, [args],{}]`  |     Cmd.Na.Me [args]
@@ -73,7 +73,7 @@ Input/Outputfunc | GMCP-Command
 Since Evennia already supplies default inputfuncs that don't match the names expected by the most common GMCP implementations we have a few hard-coded mappings for those:
 
 GMCP command name | Input/Outputfunc name
--------------------|-----------------
+-----------------
 "Core.Hello" | "client_options" 
 "Core.Supports.Get" | "client_options" 
 "Core.Commands.Get" | "get_inputfuncs" 
@@ -92,7 +92,7 @@ MSDP uses Telnet character constants to package various structured data over the
 The various available MSDP constants like `VAR` (variable), `VAL` (value), `ARRAYOPEN`/`ARRAYCLOSE` and `TABLEOPEN`/`TABLECLOSE` are specified in `evennia/server/portal/telnet_oob`. 
 
 Outputfunc/Inputfunc | MSDP instruction
----------------------|-------------------------
+-------------------------
 `[cmdname, [], {}]` | VAR cmdname VAL
 `[cmdname, [arg], {}]` | VAR cmdname VAL arg
 `[cmdname, [args],{}]`  | VAR cmdname VAL ARRAYOPEN VAL arg VAL arg ... ARRAYCLOSE
