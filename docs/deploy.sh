@@ -19,12 +19,11 @@ git checkout gh-pages
 ls -Q | grep -v build | xargs rm -Rf
 
 cp -Rf build/html/* .
-# docs/build is in .gitignore so will not be included
-git add .
-git st
-
 # TODO automate this? 
 ln -s 1.0-dev latest
+
+# docs/build is in .gitignore so will not be included
+git add .
 
 git commit -a -m "Updated HTML docs"
 
