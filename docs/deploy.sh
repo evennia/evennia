@@ -18,7 +18,7 @@ git checkout gh-pages
 # remove all but the build dir
 ls -Q | grep -v build | xargs rm -Rf
 
-cp -Rf build/html/versions/* .
+cp -Rf build/html/* .
 # docs/build is in .gitignore so will not be included
 git add .
 git st
