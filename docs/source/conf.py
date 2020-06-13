@@ -143,8 +143,7 @@ smv_tag_whitelist = r"^$"
 # which branches to include in multi-version docs
 # - master, develop and vX.X branches
 smv_branch_whitelist = r"^master$|^develop$|^v[0-9\.]+?$"
-# smv_branch_whitelist = r"^static-file-docs$|^static-file-dev$"
-smv_outputdir_format = "versions" + sep + "{config.release}"
+smv_outputdir_format = "{config.release}"
 
 
 # recommonmark
