@@ -12,13 +12,15 @@ fi
 
 # get the deployment branch
 git checkout gh-pages
+# at this point we should be inside the docs/ folder of the gh-pages branch,
+# with the build/ directory available since this is not in git
 
-mv build ..
-# the docs/ folder is named the same in both branches so we need to step out of 
-# it to not confuse what's what.
-cd ..
-rm -Rf docs/*
-cp -Rf build/html/versions/* docs/
+# remove all but the build dir
+ls -Q | grep -v build | xargs rm -Rf
+
+mv build/html/versions/* .
+# docs/build is in .gitignore so will not be included
+git add .
 
 # TODO automate this? 
 ln -s 1.0-dev docs/latest
