@@ -33,4 +33,4 @@ git push origin gh-pages
 # get back to previous branch 
 git checkout -
 
-echo "Deployed to https://evennia.github.io/evennia-docs."
+echo "Deployed to https://evennia.github.io/evennia/"
