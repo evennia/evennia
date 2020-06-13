@@ -79,7 +79,7 @@ method. Otherwise all text will be returned to all connected sessions.</p>
 
 <dl class="attribute">
 <dt id="evennia.commands.default.account.CmdOOCLook.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['ls', 'l']</em><a class="headerlink" href="#evennia.commands.default.account.CmdOOCLook.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['l', 'ls']</em><a class="headerlink" href="#evennia.commands.default.account.CmdOOCLook.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -110,7 +110,7 @@ method. Otherwise all text will be returned to all connected sessions.</p>
 
 <dl class="attribute">
 <dt id="evennia.commands.default.account.CmdOOCLook.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'ls l', 'category': 'general', 'key': 'look', 'tags': '', 'text': '\n    look while out-of-character\n\n    Usage:\n      look\n\n    Look in the ooc state.\n    '}</em><a class="headerlink" href="#evennia.commands.default.account.CmdOOCLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'l ls', 'category': 'general', 'key': 'look', 'tags': '', 'text': '\n    look while out-of-character\n\n    Usage:\n      look\n\n    Look in the ooc state.\n    '}</em><a class="headerlink" href="#evennia.commands.default.account.CmdOOCLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -133,7 +133,7 @@ account. In principle &lt;character&gt; can be any in-game object as long
 as you the account have access right to puppet it.</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.account.CmdIC._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('puppet', 'ic')</em><a class="headerlink" href="#evennia.commands.default.account.CmdIC._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('ic', 'puppet')</em><a class="headerlink" href="#evennia.commands.default.account.CmdIC._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -598,7 +598,7 @@ doing</p>
 also for those with all permissions.</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.account.CmdWho._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('who', 'doing')</em><a class="headerlink" href="#evennia.commands.default.account.CmdWho._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('doing', 'who')</em><a class="headerlink" href="#evennia.commands.default.account.CmdWho._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -762,7 +762,7 @@ use a higher-permission Character to escalate their permission level.
 Use the unquell command to revert back to normal operation.</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.account.CmdQuell._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('unquell', 'quell')</em><a class="headerlink" href="#evennia.commands.default.account.CmdQuell._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('quell', 'unquell')</em><a class="headerlink" href="#evennia.commands.default.account.CmdQuell._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -1192,7 +1192,7 @@ limited forms of emit, for sending to rooms and
 to accounts respectively.</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.admin.CmdEmit._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('pemit', 'emit', 'remit')</em><a class="headerlink" href="#evennia.commands.default.admin.CmdEmit._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('emit', 'pemit', 'remit')</em><a class="headerlink" href="#evennia.commands.default.admin.CmdEmit._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -1318,7 +1318,7 @@ account -  set permission on an account (same as adding * to name)</p>
 or account. If no permission is given, list all permissions on &lt;object&gt;.</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.admin.CmdPerm._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('perm', 'setperm')</em><a class="headerlink" href="#evennia.commands.default.admin.CmdPerm._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('setperm', 'perm')</em><a class="headerlink" href="#evennia.commands.default.admin.CmdPerm._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -2382,7 +2382,7 @@ created back from the new room unless the /oneway switch is given.
 For more flexibility and power in creating rooms, use dig.</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.building.CmdTunnel._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('tunnel', 'tun')</em><a class="headerlink" href="#evennia.commands.default.building.CmdTunnel._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('tun', 'tunnel')</em><a class="headerlink" href="#evennia.commands.default.building.CmdTunnel._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -3042,7 +3042,7 @@ module is searched from the default typeclass directory, as defined in the
 server settings.</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.building.CmdTypeclass._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('parent', 'typeclass', 'swap', 'type', 'update')</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('parent', 'type', 'typeclass', 'update', 'swap')</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -3052,7 +3052,7 @@ server settings.</p>
 
 <dl class="attribute">
 <dt id="evennia.commands.default.building.CmdTypeclass.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['type', 'update', 'swap', 'parent']</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['update', 'parent', 'swap', 'type']</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -3083,7 +3083,7 @@ server settings.</p>
 
 <dl class="attribute">
 <dt id="evennia.commands.default.building.CmdTypeclass.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'type update swap parent', 'category': 'building', 'key': 'typeclass', 'tags': '', 'text': &quot;\n    set or change an object's typeclass\n\n    Usage:\n      typeclass[/switch] &lt;object&gt; [= typeclass.path]\n      typeclass/prototype &lt;object&gt; = prototype_key\n\n      typeclass/list/show [typeclass.path]\n      swap - this is a shorthand for using /force/reset flags.\n      update - this is a shorthand for using the /force/reload flag.\n\n    Switch:\n      show, examine - display the current typeclass of object (default) or, if\n            given a typeclass path, show the docstring of that typeclass.\n      update - *only* re-run at_object_creation on this object\n              meaning locks or other properties set later may remain.\n      reset - clean out *all* the attributes and properties on the\n              object - basically making this a new clean object.\n      force - change to the typeclass also if the object\n              already has a typeclass of the same name.\n      list - show available typeclasses. Only typeclasses in modules actually\n             imported or used from somewhere in the code will show up here\n             (those typeclasses are still available if you know the path)\n      prototype - clean and overwrite the object with the specified\n               prototype key - effectively making a whole new object.\n\n    Example:\n      type button = examples.red_button.RedButton\n      type/prototype button=a red button\n\n    If the typeclass_path is not given, the current object's typeclass is\n    assumed.\n\n    View or set an object's typeclass. If setting, the creation hooks of the\n    new typeclass will be run on the object. If you have clashing properties on\n    the old class, use /reset. By default you are protected from changing to a\n    typeclass of the same name as the one you already have - use /force to\n    override this protection.\n\n    The given typeclass must be identified by its location using python\n    dot-notation pointing to the correct module and class. If no typeclass is\n    given (or a wrong typeclass is given). Errors in the path or new typeclass\n    will lead to the old typeclass being kept. The location of the typeclass\n    module is searched from the default typeclass directory, as defined in the\n    server settings.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'update parent swap type', 'category': 'building', 'key': 'typeclass', 'tags': '', 'text': &quot;\n    set or change an object's typeclass\n\n    Usage:\n      typeclass[/switch] &lt;object&gt; [= typeclass.path]\n      typeclass/prototype &lt;object&gt; = prototype_key\n\n      typeclass/list/show [typeclass.path]\n      swap - this is a shorthand for using /force/reset flags.\n      update - this is a shorthand for using the /force/reload flag.\n\n    Switch:\n      show, examine - display the current typeclass of object (default) or, if\n            given a typeclass path, show the docstring of that typeclass.\n      update - *only* re-run at_object_creation on this object\n              meaning locks or other properties set later may remain.\n      reset - clean out *all* the attributes and properties on the\n              object - basically making this a new clean object.\n      force - change to the typeclass also if the object\n              already has a typeclass of the same name.\n      list - show available typeclasses. Only typeclasses in modules actually\n             imported or used from somewhere in the code will show up here\n             (those typeclasses are still available if you know the path)\n      prototype - clean and overwrite the object with the specified\n               prototype key - effectively making a whole new object.\n\n    Example:\n      type button = examples.red_button.RedButton\n      type/prototype button=a red button\n\n    If the typeclass_path is not given, the current object's typeclass is\n    assumed.\n\n    View or set an object's typeclass. If setting, the creation hooks of the\n    new typeclass will be run on the object. If you have clashing properties on\n    the old class, use /reset. By default you are protected from changing to a\n    typeclass of the same name as the one you already have - use /force to\n    override this protection.\n\n    The given typeclass must be identified by its location using python\n    dot-notation pointing to the correct module and class. If no typeclass is\n    given (or a wrong typeclass is given). Errors in the path or new typeclass\n    will lead to the old typeclass being kept. The location of the typeclass\n    module is searched from the default typeclass directory, as defined in the\n    server settings.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -3256,7 +3256,7 @@ If object is not specified, the current location is examined.</p>
 <p>Append a * before the search string to examine an account.</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.building.CmdExamine._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('exam', 'ex', 'examine')</em><a class="headerlink" href="#evennia.commands.default.building.CmdExamine._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('examine', 'exam', 'ex')</em><a class="headerlink" href="#evennia.commands.default.building.CmdExamine._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -3271,7 +3271,7 @@ If object is not specified, the current location is examined.</p>
 
 <dl class="attribute">
 <dt id="evennia.commands.default.building.CmdExamine.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['exam', 'ex']</em><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['ex', 'exam']</em><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -3327,7 +3327,7 @@ non-persistent data stored on object</p>
 
 <dl class="attribute">
 <dt id="evennia.commands.default.building.CmdExamine.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'exam ex', 'category': 'building', 'key': 'examine', 'tags': '', 'text': '\n    get detailed information about an object\n\n    Usage:\n      examine [&lt;object&gt;[/attrname]]\n      examine [*&lt;account&gt;[/attrname]]\n\n    Switch:\n      account - examine an Account (same as adding *)\n      object - examine an Object (useful when OOC)\n\n    The examine command shows detailed game info about an\n    object and optionally a specific attribute on it.\n    If object is not specified, the current location is examined.\n\n    Append a * before the search string to examine an account.\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'ex exam', 'category': 'building', 'key': 'examine', 'tags': '', 'text': '\n    get detailed information about an object\n\n    Usage:\n      examine [&lt;object&gt;[/attrname]]\n      examine [*&lt;account&gt;[/attrname]]\n\n    Switch:\n      account - examine an Account (same as adding *)\n      object - examine an Object (useful when OOC)\n\n    The examine command shows detailed game info about an\n    object and optionally a specific attribute on it.\n    If object is not specified, the current location is examined.\n\n    Append a * before the search string to examine an account.\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -3592,7 +3592,7 @@ should be used with restrain - tags on their own are usually
 enough to for most grouping schemes.</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.building.CmdTag._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('tag', 'tags')</em><a class="headerlink" href="#evennia.commands.default.building.CmdTag._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('tags', 'tag')</em><a class="headerlink" href="#evennia.commands.default.building.CmdTag._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -4007,7 +4007,7 @@ name. Subsequent calls of this command can be used to add multiple
 aliases to an already joined channel.</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.comms.CmdAddCom._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('chanalias', 'addcom', 'aliaschan')</em><a class="headerlink" href="#evennia.commands.default.comms.CmdAddCom._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('aliaschan', 'chanalias', 'addcom')</em><a class="headerlink" href="#evennia.commands.default.comms.CmdAddCom._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -4022,7 +4022,7 @@ aliases to an already joined channel.</p>
 
 <dl class="attribute">
 <dt id="evennia.commands.default.comms.CmdAddCom.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['chanalias', 'aliaschan']</em><a class="headerlink" href="#evennia.commands.default.comms.CmdAddCom.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['aliaschan', 'chanalias']</em><a class="headerlink" href="#evennia.commands.default.comms.CmdAddCom.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -4053,7 +4053,7 @@ aliases to an already joined channel.</p>
 
 <dl class="attribute">
 <dt id="evennia.commands.default.comms.CmdAddCom.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'chanalias aliaschan', 'category': 'comms', 'key': 'addcom', 'tags': '', 'text': '\n    add a channel alias and/or subscribe to a channel\n\n    Usage:\n       addcom [alias=] &lt;channel&gt;\n\n    Joins a given channel. If alias is given, this will allow you to\n    refer to the channel by this alias rather than the full channel\n    name. Subsequent calls of this command can be used to add multiple\n    aliases to an already joined channel.\n    '}</em><a class="headerlink" href="#evennia.commands.default.comms.CmdAddCom.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'aliaschan chanalias', 'category': 'comms', 'key': 'addcom', 'tags': '', 'text': '\n    add a channel alias and/or subscribe to a channel\n\n    Usage:\n       addcom [alias=] &lt;channel&gt;\n\n    Joins a given channel. If alias is given, this will allow you to\n    refer to the channel by this alias rather than the full channel\n    name. Subsequent calls of this command can be used to add multiple\n    aliases to an already joined channel.\n    '}</em><a class="headerlink" href="#evennia.commands.default.comms.CmdAddCom.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -4074,7 +4074,7 @@ unsubscribe. If the ‘all’ switch is used, remove all aliases
 for that channel.</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.comms.CmdDelCom._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('delchanalias', 'delcom', 'delaliaschan')</em><a class="headerlink" href="#evennia.commands.default.comms.CmdDelCom._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('delaliaschan', 'delcom', 'delchanalias')</em><a class="headerlink" href="#evennia.commands.default.comms.CmdDelCom._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -4089,7 +4089,7 @@ for that channel.</p>
 
 <dl class="attribute">
 <dt id="evennia.commands.default.comms.CmdDelCom.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['delchanalias', 'delaliaschan']</em><a class="headerlink" href="#evennia.commands.default.comms.CmdDelCom.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['delaliaschan', 'delchanalias']</em><a class="headerlink" href="#evennia.commands.default.comms.CmdDelCom.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -4120,7 +4120,7 @@ for that channel.</p>
 
 <dl class="attribute">
 <dt id="evennia.commands.default.comms.CmdDelCom.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'delchanalias delaliaschan', 'category': 'comms', 'key': 'delcom', 'tags': '', 'text': &quot;\n    remove a channel alias and/or unsubscribe from channel\n\n    Usage:\n       delcom &lt;alias or channel&gt;\n       delcom/all &lt;channel&gt;\n\n    If the full channel name is given, unsubscribe from the\n    channel. If an alias is given, remove the alias but don't\n    unsubscribe. If the 'all' switch is used, remove all aliases\n    for that channel.\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.comms.CmdDelCom.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'delaliaschan delchanalias', 'category': 'comms', 'key': 'delcom', 'tags': '', 'text': &quot;\n    remove a channel alias and/or unsubscribe from channel\n\n    Usage:\n       delcom &lt;alias or channel&gt;\n       delcom/all &lt;channel&gt;\n\n    If the full channel name is given, unsubscribe from the\n    channel. If an alias is given, remove the alias but don't\n    unsubscribe. If the 'all' switch is used, remove all aliases\n    for that channel.\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.comms.CmdDelCom.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -4207,7 +4207,7 @@ Use ‘comlist’ to only view your current channel subscriptions.
 Use addcom/delcom to join and leave channels</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.comms.CmdChannels._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('channellist', 'channels', 'clist', 'comlist', 'all channels', 'chanlist')</em><a class="headerlink" href="#evennia.commands.default.comms.CmdChannels._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('comlist', 'clist', 'channels', 'all channels', 'channellist', 'chanlist')</em><a class="headerlink" href="#evennia.commands.default.comms.CmdChannels._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -4222,7 +4222,7 @@ Use addcom/delcom to join and leave channels</p>
 
 <dl class="attribute">
 <dt id="evennia.commands.default.comms.CmdChannels.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['channellist', 'clist', 'comlist', 'all channels', 'chanlist']</em><a class="headerlink" href="#evennia.commands.default.comms.CmdChannels.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['comlist', 'clist', 'all channels', 'channellist', 'chanlist']</em><a class="headerlink" href="#evennia.commands.default.comms.CmdChannels.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -4253,7 +4253,7 @@ Use addcom/delcom to join and leave channels</p>
 
 <dl class="attribute">
 <dt id="evennia.commands.default.comms.CmdChannels.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'channellist clist comlist all channels chanlist', 'category': 'comms', 'key': 'channels', 'tags': '', 'text': &quot;\n    list all channels available to you\n\n    Usage:\n      channels\n      clist\n      comlist\n\n    Lists all channels available to you, whether you listen to them or not.\n    Use 'comlist' to only view your current channel subscriptions.\n    Use addcom/delcom to join and leave channels\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.comms.CmdChannels.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'comlist clist all channels channellist chanlist', 'category': 'comms', 'key': 'channels', 'tags': '', 'text': &quot;\n    list all channels available to you\n\n    Usage:\n      channels\n      clist\n      comlist\n\n    Lists all channels available to you, whether you listen to them or not.\n    Use 'comlist' to only view your current channel subscriptions.\n    Use addcom/delcom to join and leave channels\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.comms.CmdChannels.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -4408,7 +4408,7 @@ they control it. It does not show the user’s name unless they
 provide the /sendername switch.</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.comms.CmdCemit._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('cmsg', 'cemit')</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCemit._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('cemit', 'cmsg')</em><a class="headerlink" href="#evennia.commands.default.comms.CmdCemit._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -4539,7 +4539,7 @@ provide the /sendername switch.</p>
 <p>Creates a new channel owned by you.</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.comms.CmdChannelCreate._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('channelcreate', 'ccreate')</em><a class="headerlink" href="#evennia.commands.default.comms.CmdChannelCreate._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('ccreate', 'channelcreate')</em><a class="headerlink" href="#evennia.commands.default.comms.CmdChannelCreate._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -4736,7 +4736,7 @@ list - show your last &lt;number&gt; of tells/pages (default)</p>
 argument is given, you will get a list of your latest messages.</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.comms.CmdPage._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('page', 'tell')</em><a class="headerlink" href="#evennia.commands.default.comms.CmdPage._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('tell', 'page')</em><a class="headerlink" href="#evennia.commands.default.comms.CmdPage._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -5062,7 +5062,7 @@ look <a href="#id101"><span class="problematic" id="id102">*</span></a>&lt;accou
 
 <dl class="attribute">
 <dt id="evennia.commands.default.general.CmdLook.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['ls', 'l']</em><a class="headerlink" href="#evennia.commands.default.general.CmdLook.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['l', 'ls']</em><a class="headerlink" href="#evennia.commands.default.general.CmdLook.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -5098,7 +5098,7 @@ look <a href="#id101"><span class="problematic" id="id102">*</span></a>&lt;accou
 
 <dl class="attribute">
 <dt id="evennia.commands.default.general.CmdLook.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'ls l', 'category': 'general', 'key': 'look', 'tags': '', 'text': '\n    look at location or object\n\n    Usage:\n      look\n      look &lt;obj&gt;\n      look *&lt;account&gt;\n\n    Observes your location or objects in your vicinity.\n    '}</em><a class="headerlink" href="#evennia.commands.default.general.CmdLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'l ls', 'category': 'general', 'key': 'look', 'tags': '', 'text': '\n    look at location or object\n\n    Usage:\n      look\n      look &lt;obj&gt;\n      look *&lt;account&gt;\n\n    Observes your location or objects in your vicinity.\n    '}</em><a class="headerlink" href="#evennia.commands.default.general.CmdLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -5150,7 +5150,7 @@ are only available to you. If you want to permanently add keywords to an object
 for everyone to use, you need build privileges and the alias command.</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.general.CmdNick._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('nicks', 'nick', 'nickname')</em><a class="headerlink" href="#evennia.commands.default.general.CmdNick._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('nick', 'nickname', 'nicks')</em><a class="headerlink" href="#evennia.commands.default.general.CmdNick._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -5160,7 +5160,7 @@ for everyone to use, you need build privileges and the alias command.</p>
 
 <dl class="attribute">
 <dt id="evennia.commands.default.general.CmdNick.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['nicks', 'nickname']</em><a class="headerlink" href="#evennia.commands.default.general.CmdNick.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['nickname', 'nicks']</em><a class="headerlink" href="#evennia.commands.default.general.CmdNick.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -5197,7 +5197,7 @@ for everyone to use, you need build privileges and the alias command.</p>
 
 <dl class="attribute">
 <dt id="evennia.commands.default.general.CmdNick.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'nicks nickname', 'category': 'general', 'key': 'nick', 'tags': '', 'text': '\n    define a personal alias/nick by defining a string to\n    match and replace it with another on the fly\n\n    Usage:\n      nick[/switches] &lt;string&gt; [= [replacement_string]]\n      nick[/switches] &lt;template&gt; = &lt;replacement_template&gt;\n      nick/delete &lt;string&gt; or number\n      nicks\n\n    Switches:\n      inputline - replace on the inputline (default)\n      object    - replace on object-lookup\n      account   - replace on account-lookup\n      list      - show all defined aliases (also &quot;nicks&quot; works)\n      delete    - remove nick by index in /list\n      clearall  - clear all nicks\n\n    Examples:\n      nick hi = say Hello, I\'m Sarah!\n      nick/object tom = the tall man\n      nick build $1 $2 = create/drop $1;$2\n      nick tell $1 $2=page $1=$2\n      nick tm?$1=page tallman=$1\n      nick tm\\=$1=page tallman=$1\n\n    A \'nick\' is a personal string replacement. Use $1, $2, ... to catch arguments.\n    Put the last $-marker without an ending space to catch all remaining text. You\n    can also use unix-glob matching for the left-hand side &lt;string&gt;:\n\n        * - matches everything\n        ? - matches 0 or 1 single characters\n        [abcd] - matches these chars in any order\n        [!abcd] - matches everything not among these chars\n        \\= - escape literal \'=\' you want in your &lt;string&gt;\n\n    Note that no objects are actually renamed or changed by this command - your nicks\n    are only available to you. If you want to permanently add keywords to an object\n    for everyone to use, you need build privileges and the alias command.\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.general.CmdNick.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'nickname nicks', 'category': 'general', 'key': 'nick', 'tags': '', 'text': '\n    define a personal alias/nick by defining a string to\n    match and replace it with another on the fly\n\n    Usage:\n      nick[/switches] &lt;string&gt; [= [replacement_string]]\n      nick[/switches] &lt;template&gt; = &lt;replacement_template&gt;\n      nick/delete &lt;string&gt; or number\n      nicks\n\n    Switches:\n      inputline - replace on the inputline (default)\n      object    - replace on object-lookup\n      account   - replace on account-lookup\n      list      - show all defined aliases (also &quot;nicks&quot; works)\n      delete    - remove nick by index in /list\n      clearall  - clear all nicks\n\n    Examples:\n      nick hi = say Hello, I\'m Sarah!\n      nick/object tom = the tall man\n      nick build $1 $2 = create/drop $1;$2\n      nick tell $1 $2=page $1=$2\n      nick tm?$1=page tallman=$1\n      nick tm\\=$1=page tallman=$1\n\n    A \'nick\' is a personal string replacement. Use $1, $2, ... to catch arguments.\n    Put the last $-marker without an ending space to catch all remaining text. You\n    can also use unix-glob matching for the left-hand side &lt;string&gt;:\n\n        * - matches everything\n        ? - matches 0 or 1 single characters\n        [abcd] - matches these chars in any order\n        [!abcd] - matches everything not among these chars\n        \\= - escape literal \'=\' you want in your &lt;string&gt;\n\n    Note that no objects are actually renamed or changed by this command - your nicks\n    are only available to you. If you want to permanently add keywords to an object\n    for everyone to use, you need build privileges and the alias command.\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.general.CmdNick.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -5220,7 +5220,7 @@ inv</p>
 <p>Shows your inventory.</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.general.CmdInventory._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('inv', 'i', 'inventory')</em><a class="headerlink" href="#evennia.commands.default.general.CmdInventory._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('inv', 'inventory', 'i')</em><a class="headerlink" href="#evennia.commands.default.general.CmdInventory._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -5545,7 +5545,7 @@ placing it in their inventory.</p>
 <p>Talk to those in your current location.</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.general.CmdSay._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = (&quot;'&quot;, '&quot;', 'say')</em><a class="headerlink" href="#evennia.commands.default.general.CmdSay._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('say', '&quot;', &quot;'&quot;)</em><a class="headerlink" href="#evennia.commands.default.general.CmdSay._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -5555,7 +5555,7 @@ placing it in their inventory.</p>
 
 <dl class="attribute">
 <dt id="evennia.commands.default.general.CmdSay.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = [&quot;'&quot;, '&quot;']</em><a class="headerlink" href="#evennia.commands.default.general.CmdSay.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['&quot;', &quot;'&quot;]</em><a class="headerlink" href="#evennia.commands.default.general.CmdSay.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -5586,7 +5586,7 @@ placing it in their inventory.</p>
 
 <dl class="attribute">
 <dt id="evennia.commands.default.general.CmdSay.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '\' &quot;', 'category': 'general', 'key': 'say', 'tags': '', 'text': '\n    speak as your character\n\n    Usage:\n      say &lt;message&gt;\n\n    Talk to those in your current location.\n    '}</em><a class="headerlink" href="#evennia.commands.default.general.CmdSay.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&quot; \'', 'category': 'general', 'key': 'say', 'tags': '', 'text': '\n    speak as your character\n\n    Usage:\n      say &lt;message&gt;\n\n    Talk to those in your current location.\n    '}</em><a class="headerlink" href="#evennia.commands.default.general.CmdSay.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -5671,7 +5671,7 @@ pose’s &lt;pose text&gt;</p>
 automatically begin with your name.</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.general.CmdPose._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('emote', 'pose', ':')</em><a class="headerlink" href="#evennia.commands.default.general.CmdPose._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('pose', 'emote', ':')</em><a class="headerlink" href="#evennia.commands.default.general.CmdPose._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -5740,7 +5740,7 @@ space.</p>
 which permission groups you are a member of.</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.general.CmdAccess._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('access', 'hierarchy', 'groups')</em><a class="headerlink" href="#evennia.commands.default.general.CmdAccess._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('groups', 'hierarchy', 'access')</em><a class="headerlink" href="#evennia.commands.default.general.CmdAccess._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -6605,7 +6605,7 @@ affected. Non-persistent scripts will survive a reload (use
 reset to purge) and at_reload() hooks will be called.</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.system.CmdReload._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('reload', 'restart')</em><a class="headerlink" href="#evennia.commands.default.system.CmdReload._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('restart', 'reload')</em><a class="headerlink" href="#evennia.commands.default.system.CmdReload._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -6672,7 +6672,7 @@ be called and any non-database saved scripts, ndb-attributes,
 cmdsets etc will be wiped.</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.system.CmdReset._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('reboot', 'reset')</em><a class="headerlink" href="#evennia.commands.default.system.CmdReset._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('reset', 'reboot')</em><a class="headerlink" href="#evennia.commands.default.system.CmdReset._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -6970,7 +6970,7 @@ a list of &lt;nr&gt; latest objects in database. If not
 given, &lt;nr&gt; defaults to 10.</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.system.CmdObjects._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('listobjects', 'stats', 'listobjs', 'objects', 'db')</em><a class="headerlink" href="#evennia.commands.default.system.CmdObjects._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('objects', 'listobjs', 'db', 'listobjects', 'stats')</em><a class="headerlink" href="#evennia.commands.default.system.CmdObjects._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -6980,7 +6980,7 @@ given, &lt;nr&gt; defaults to 10.</p>
 
 <dl class="attribute">
 <dt id="evennia.commands.default.system.CmdObjects.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['listobjects', 'db', 'listobjs', 'stats']</em><a class="headerlink" href="#evennia.commands.default.system.CmdObjects.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['listobjects', 'stats', 'listobjs', 'db']</em><a class="headerlink" href="#evennia.commands.default.system.CmdObjects.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -7011,7 +7011,7 @@ given, &lt;nr&gt; defaults to 10.</p>
 
 <dl class="attribute">
 <dt id="evennia.commands.default.system.CmdObjects.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'listobjects db listobjs stats', 'category': 'system', 'key': 'objects', 'tags': '', 'text': '\n    statistics on objects in the database\n\n    Usage:\n      objects [&lt;nr&gt;]\n\n    Gives statictics on objects in database as well as\n    a list of &lt;nr&gt; latest objects in database. If not\n    given, &lt;nr&gt; defaults to 10.\n    '}</em><a class="headerlink" href="#evennia.commands.default.system.CmdObjects.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'listobjects stats listobjs db', 'category': 'system', 'key': 'objects', 'tags': '', 'text': '\n    statistics on objects in the database\n\n    Usage:\n      objects [&lt;nr&gt;]\n\n    Gives statictics on objects in database as well as\n    a list of &lt;nr&gt; latest objects in database. If not\n    given, &lt;nr&gt; defaults to 10.\n    '}</em><a class="headerlink" href="#evennia.commands.default.system.CmdObjects.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -7100,7 +7100,7 @@ in the list.</p>
 <p>Display info about the game engine.</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.system.CmdAbout._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('about', 'version')</em><a class="headerlink" href="#evennia.commands.default.system.CmdAbout._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('version', 'about')</em><a class="headerlink" href="#evennia.commands.default.system.CmdAbout._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -7237,7 +7237,7 @@ caches may not show you a lower Residual/Virtual memory footprint,
 the released memory will instead be re-used by the program.</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.system.CmdServerLoad._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('serverload', 'serverprocess', 'server')</em><a class="headerlink" href="#evennia.commands.default.system.CmdServerLoad._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('server', 'serverprocess', 'serverload')</em><a class="headerlink" href="#evennia.commands.default.system.CmdServerLoad._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -7247,7 +7247,7 @@ the released memory will instead be re-used by the program.</p>
 
 <dl class="attribute">
 <dt id="evennia.commands.default.system.CmdServerLoad.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['serverload', 'serverprocess']</em><a class="headerlink" href="#evennia.commands.default.system.CmdServerLoad.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['serverprocess', 'serverload']</em><a class="headerlink" href="#evennia.commands.default.system.CmdServerLoad.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -7278,7 +7278,7 @@ the released memory will instead be re-used by the program.</p>
 
 <dl class="attribute">
 <dt id="evennia.commands.default.system.CmdServerLoad.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'serverload serverprocess', 'category': 'system', 'key': 'server', 'tags': '', 'text': &quot;\n    show server load and memory statistics\n\n    Usage:\n       server[/mem]\n\n    Switches:\n        mem - return only a string of the current memory usage\n        flushmem - flush the idmapper cache\n\n    This command shows server load statistics and dynamic memory\n    usage. It also allows to flush the cache of accessed database\n    objects.\n\n    Some Important statistics in the table:\n\n    |wServer load|n is an average of processor usage. It's usually\n    between 0 (no usage) and 1 (100% usage), but may also be\n    temporarily higher if your computer has multiple CPU cores.\n\n    The |wResident/Virtual memory|n displays the total memory used by\n    the server process.\n\n    Evennia |wcaches|n all retrieved database entities when they are\n    loaded by use of the idmapper functionality. This allows Evennia\n    to maintain the same instances of an entity and allowing\n    non-persistent storage schemes. The total amount of cached objects\n    are displayed plus a breakdown of database object types.\n\n    The |wflushmem|n switch allows to flush the object cache. Please\n    note that due to how Python's memory management works, releasing\n    caches may not show you a lower Residual/Virtual memory footprint,\n    the released memory will instead be re-used by the program.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.system.CmdServerLoad.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'serverprocess serverload', 'category': 'system', 'key': 'server', 'tags': '', 'text': &quot;\n    show server load and memory statistics\n\n    Usage:\n       server[/mem]\n\n    Switches:\n        mem - return only a string of the current memory usage\n        flushmem - flush the idmapper cache\n\n    This command shows server load statistics and dynamic memory\n    usage. It also allows to flush the cache of accessed database\n    objects.\n\n    Some Important statistics in the table:\n\n    |wServer load|n is an average of processor usage. It's usually\n    between 0 (no usage) and 1 (100% usage), but may also be\n    temporarily higher if your computer has multiple CPU cores.\n\n    The |wResident/Virtual memory|n displays the total memory used by\n    the server process.\n\n    Evennia |wcaches|n all retrieved database entities when they are\n    loaded by use of the idmapper functionality. This allows Evennia\n    to maintain the same instances of an entity and allowing\n    non-persistent storage schemes. The total amount of cached objects\n    are displayed plus a breakdown of database object types.\n\n    The |wflushmem|n switch allows to flush the object cache. Please\n    note that due to how Python's memory management works, releasing\n    caches may not show you a lower Residual/Virtual memory footprint,\n    the released memory will instead be re-used by the program.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.system.CmdServerLoad.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -7930,7 +7930,7 @@ connect “account name” “pass word”</p>
 <p>If you have spaces in your name, enclose it in double quotes.</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.unloggedin.CmdUnconnectedConnect._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('connect', 'con', 'co', 'conn')</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedConnect._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('conn', 'con', 'co', 'connect')</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedConnect._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -7940,7 +7940,7 @@ connect “account name” “pass word”</p>
 
 <dl class="attribute">
 <dt id="evennia.commands.default.unloggedin.CmdUnconnectedConnect.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['co', 'con', 'conn']</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedConnect.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['conn', 'con', 'co']</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedConnect.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -7980,7 +7980,7 @@ there is no object yet before the account has logged in)</p>
 
 <dl class="attribute">
 <dt id="evennia.commands.default.unloggedin.CmdUnconnectedConnect.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'co con conn', 'category': 'general', 'key': 'connect', 'tags': '', 'text': '\n    connect to the game\n\n    Usage (at login screen):\n      connect accountname password\n      connect &quot;account name&quot; &quot;pass word&quot;\n\n    Use the create command to first create an account before logging in.\n\n    If you have spaces in your name, enclose it in double quotes.\n    '}</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedConnect.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'conn con co', 'category': 'general', 'key': 'connect', 'tags': '', 'text': '\n    connect to the game\n\n    Usage (at login screen):\n      connect accountname password\n      connect &quot;account name&quot; &quot;pass word&quot;\n\n    Use the create command to first create an account before logging in.\n\n    If you have spaces in your name, enclose it in double quotes.\n    '}</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedConnect.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -7999,7 +7999,7 @@ create “account name” “pass word”</p>
 <p>If you have spaces in your name, enclose it in double quotes.</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.unloggedin.CmdUnconnectedCreate._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('cre', 'cr', 'create')</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedCreate._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('cr', 'create', 'cre')</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedCreate._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -8064,7 +8064,7 @@ here for unconnected accounts for the sake of simplicity. The logged in
 version is a bit more complicated.</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.unloggedin.CmdUnconnectedQuit._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('quit', 'q', 'qu')</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedQuit._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('q', 'qu', 'quit')</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedQuit._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -8124,7 +8124,7 @@ version is a bit more complicated.</p>
 All it does is display the connect screen.</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.unloggedin.CmdUnconnectedLook._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('look', '__unloggedin_look_command', 'l')</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedLook._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('l', 'look', '__unloggedin_look_command')</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedLook._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -8183,7 +8183,7 @@ All it does is display the connect screen.</p>
 for simplicity. It shows a pane of info.</p>
 <dl class="attribute">
 <dt id="evennia.commands.default.unloggedin.CmdUnconnectedHelp._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('?', 'h', 'help')</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedHelp._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('h', '?', 'help')</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedHelp._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -8193,7 +8193,7 @@ for simplicity. It shows a pane of info.</p>
 
 <dl class="attribute">
 <dt id="evennia.commands.default.unloggedin.CmdUnconnectedHelp.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['?', 'h']</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedHelp.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['h', '?']</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedHelp.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -8224,7 +8224,7 @@ for simplicity. It shows a pane of info.</p>
 
 <dl class="attribute">
 <dt id="evennia.commands.default.unloggedin.CmdUnconnectedHelp.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '? h', 'category': 'general', 'key': 'help', 'tags': '', 'text': '\n    get help when in unconnected-in state\n\n    Usage:\n      help\n\n    This is an unconnected version of the help command,\n    for simplicity. It shows a pane of info.\n    '}</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedHelp.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'h ?', 'category': 'general', 'key': 'help', 'tags': '', 'text': '\n    get help when in unconnected-in state\n\n    Usage:\n      help\n\n    This is an unconnected version of the help command,\n    for simplicity. It shows a pane of info.\n    '}</em><a class="headerlink" href="#evennia.commands.default.unloggedin.CmdUnconnectedHelp.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -8289,7 +8289,7 @@ for simplicity. It shows a pane of info.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.commands.default.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../versions/0.9.1/api/evennia.commands.default.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../0.9.1/api/evennia.commands.default.html">0.9.1 (master branch)</a></li>
 </ul>
 
         </div>
