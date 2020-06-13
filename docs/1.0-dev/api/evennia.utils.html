@@ -1899,7 +1899,7 @@ txt - extra text (string), could be encased in quotes.</p>
 <p>Commands for the editor</p>
 <dl class="attribute">
 <dt id="evennia.utils.eveditor.CmdEditorGroup._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = (':q', ':u', ':echo', ':!', ':dw', ':j', ':f', ':fi', ':p', ':&lt;', ':=', ':w', ':I', ':::', ':r', ':i', ':editor_command_group', ':', ':S', ':s', ':h', ':&gt;', ':UU', '::', ':dd', ':x', ':q!', ':DD', ':y', ':fd', ':A', ':uu', ':wq')</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = (':dw', ':p', ':I', ':echo', ':DD', ':&gt;', ':y', ':&lt;', ':x', ':f', ':r', ':w', ':::', ':i', ':u', ':editor_command_group', ':j', ':wq', ':UU', ':q', ':uu', ':=', ':q!', ':fi', ':S', ':dd', ':fd', ':h', ':A', ':', ':s', '::', ':!')</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -1909,7 +1909,7 @@ txt - extra text (string), could be encased in quotes.</p>
 
 <dl class="attribute">
 <dt id="evennia.utils.eveditor.CmdEditorGroup.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = [':q', ':u', ':echo', ':!', ':dw', ':j', ':f', ':fi', ':p', ':&lt;', ':=', ':w', ':I', ':::', ':r', ':i', ':', ':S', ':s', ':h', ':&gt;', ':UU', '::', ':dd', ':x', ':q!', ':DD', ':y', ':fd', ':A', ':uu', ':wq']</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = [':dw', ':p', ':I', ':echo', ':DD', ':&gt;', ':y', ':&lt;', ':x', ':f', ':r', ':w', ':i', ':u', ':j', ':UU', ':q', ':uu', ':=', ':q!', ':fi', ':S', ':!', '::', ':dd', ':fd', ':h', ':A', ':', ':s', ':::', ':wq']</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -1942,7 +1942,7 @@ efficient presentation.</p>
 
 <dl class="attribute">
 <dt id="evennia.utils.eveditor.CmdEditorGroup.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': ':q :u :echo :! :dw :j :f :fi :p :&lt; := :w :I ::: :r :i : :S :s :h :&gt; :UU :: :dd :x :q! :DD :y :fd :A :uu :wq', 'category': 'general', 'key': ':editor_command_group', 'tags': '', 'text': '\n    Commands for the editor\n    '}</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': ':dw :p :I :echo :DD :&gt; :y :&lt; :x :f :r :w :i :u :j :UU :q :uu := :q! :fi :S :! :: :dd :fd :h :A : :s ::: :wq', 'category': 'general', 'key': ':editor_command_group', 'tags': '', 'text': '\n    Commands for the editor\n    '}</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -3571,7 +3571,7 @@ caller.msg() construct every time the page is updated.</p>
 <p>Manipulate the text paging</p>
 <dl class="attribute">
 <dt id="evennia.utils.evmore.CmdMore._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('t', 'b', 'n', 'top', 'abort', 'q', 'quit', 'end', '__noinput_command', 'a', 'back', 'e', 'next')</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('top', 'a', 'abort', 'q', 'e', 'end', 't', 'quit', '__noinput_command', 'b', 'n', 'next', 'back')</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -3581,7 +3581,7 @@ caller.msg() construct every time the page is updated.</p>
 
 <dl class="attribute">
 <dt id="evennia.utils.evmore.CmdMore.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['t', 'b', 'n', 'top', 'back', 'abort', 'q', 'end', 'a', 'quit', 'e', 'next']</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['top', 'a', 'abort', 'q', 'e', 'end', 't', 'quit', 'b', 'n', 'next', 'back']</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -3612,7 +3612,7 @@ caller.msg() construct every time the page is updated.</p>
 
 <dl class="attribute">
 <dt id="evennia.utils.evmore.CmdMore.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 't b n top back abort q end a quit e next', 'category': 'general', 'key': '__noinput_command', 'tags': '', 'text': '\n    Manipulate the text paging\n    '}</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'top a abort q e end t quit b n next back', 'category': 'general', 'key': '__noinput_command', 'tags': '', 'text': '\n    Manipulate the text paging\n    '}</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -9571,7 +9571,7 @@ If neither one is provided, defaults to UTC.</p></li>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.utils.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../versions/0.9.1/api/evennia.utils.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../0.9.1/api/evennia.utils.html">0.9.1 (master branch)</a></li>
 </ul>
 
         </div>
