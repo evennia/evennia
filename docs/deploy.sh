@@ -18,12 +18,12 @@ git checkout gh-pages
 # remove all but the build dir
 ls -Q | grep -v build | xargs rm -Rf
 
-mv build/html/versions/* .
+cp -Rf build/html/versions/* .
 # docs/build is in .gitignore so will not be included
 git add .
 
 # TODO automate this? 
-ln -s 1.0-dev docs/latest
+ln -s 1.0-dev latest
 
 git add docs/*
 git commit -a -m "Updated HTML docs"
