@@ -85,6 +85,7 @@ html_sidebars = {
         "versioning.html",
     ]
 }
+html_favicon = "_static/favicon.ico"
 
 
 # napoleon Google-style docstring parser
