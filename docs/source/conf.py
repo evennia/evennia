@@ -142,7 +142,7 @@ html_theme = 'alabaster'
 smv_tag_whitelist = r"^$"
 # smv_branch_whitelist = r"^static-file-docs$|^static-file-dev$"
 smv_branch_whitelist = r"^master$|^v1.0$"
-smv_outputdir_format = "versions" + sep + "{config.release}"
+smv_outputdir_format = "{config.release}"
 
 
 # recommonmark

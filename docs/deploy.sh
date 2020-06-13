@@ -11,16 +11,21 @@ if [ -n "$(git status --untracked-files=no --porcelain)" ]; then
 fi
 
 git checkout gh-pages
+# at this point we should be inside the docs/ folder of the gh-pages branch,
+# with the build/ directory available since this is not in git
 
-rm -Rf versions
-mv build/html/versions .
-git add versions
+# remove all but the build dir
+ls -Q | grep -v build | xargs rm -Rf
+
+mv build/html/versions/* .
+# docs/build is in .gitignore so will not be included
+git add .
 
 git commit -a -m "Updated HTML docs"
 git push origin gh-pages
 
 # get back to previous branch
 
- git checkout -
+git checkout -
 
 echo "Deployed to https://evennia.github.io/evennia-docs."
