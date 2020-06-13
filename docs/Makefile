@@ -31,7 +31,8 @@ help:
 	@echo "  $(cblue)clean$(cnorm)       to remove remnants of a previous build"
 	@echo "  $(cblue)local$(cnorm)       to build local html docs of the current branch (no multiversion)."
 	@echo "  $(cblue)mv-local$(cnorm)    to build multiversion html docs, without deploying (req. local git commit)"
-	@echo "  $(cblue)release$(cnorm)     to build and deploy multiversion docs online (req. commit and github push access)"
+	@echo "  $(cblue)deploy$(cnorm)      to deploy previously built multiversion docs online (req. commit and github push access)"
+	@echo "  $(cblue)release$(cnorm)     to build + deploy multiversion docs online (req. commit and github push access)"
 
 
 .PHONY: help Makefile
@@ -115,6 +116,6 @@ deploy:
 # build and prepare the docs for release
 release:
 	make mv-local
-	# make _mv-deploy
+	make deploy
 	@echo ""
 	@echo "Deployment complete."
