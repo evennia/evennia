@@ -18,17 +18,14 @@ git checkout gh-pages
 # remove all but the build dir
 ls -Q | grep -v build | xargs rm -Rf
 
-cp -Rf build/html/versions/* .
-# docs/build is in .gitignore so will not be included
-git add .
-
+cp -Rf build/html/* .
 # TODO automate this? 
 ln -s 1.0-dev latest
 
-git add docs/*
-git commit -a -m "Updated HTML docs"
+# docs/build is in .gitignore so will not be included
+git add .
 
-mv build docs/
+git commit -a -m "Updated HTML docs"
 
 echo "Skipping deployment"
 # git push origin gh-pages
