@@ -35,6 +35,9 @@ extensions = [
     "sphinx.ext.githubpages",
 ]
 
+source_suffix = ['.md', '.rst']
+master_doc = 'index'
+
 # make sure sectionlabel references can be used as path/to/file:heading
 autosectionlabel_prefix_document = True
 
@@ -58,9 +61,9 @@ smv_tag_whitelist = r"^$"
 
 # -- Options for HTML output -------------------------------------------------
 
-html_theme = "alabaster"
-# html_theme = "standford_theme"
-# html_theme_path = [sphinx_theme.get_html_theme_path("stanford_theme")]
+# html_theme = "alabaster"
+html_theme = "stanford_theme"
+html_theme_path = [sphinx_theme.get_html_theme_path("stanford_theme")]
 
 # Custom extras for sidebar
 html_sidebars = {
@@ -79,27 +82,53 @@ html_favicon = "_static/favicon.ico"
 pygments_style = "sphinx"
 
 
+# -- Options for LaTeX output ------------------------------------------------
+# experimental, not working well atm
+
+latex_engine = 'xelatex'
+latex_show_urls = 'footnote'
+latex_elements = {
+    'papersize': 'a4paper',
+    'fncychap': r'\usepackage[Bjarne]{fncychap}',
+    'fontpkg': r'\usepackage{times,amsmath,amsfonts,amssymb,amsthm}',
+    'preamble': r'''
+        \usepackage[utf8]{fontenc}
+        \usepackage{amsmath,amsfonts,amssymb,amsthm}
+        \usepackage[math-style=literal]{unicode-math}
+        \usepackage{newunicodechar}
+        \usepackage{graphicx}
+    '''
+}
+latex_documents = [
+    (master_doc,  'main.tex', 'Sphinx format', 'Evennia', 'report'),
+    ("toc", 'toc.tex', 'TOC', 'Evennia', 'report')
+]
+
+
 # -- Recommonmark ------------------------------------------------------------
 # allows for writing Markdown and convert to rst dynamically
 
 # reroute to github links or to the api
 
-_github_code_root = "https://github.com/evennia/evennia/blob/master/"
+_github_code_root = "https://github.com/evennia/evennia/blob/"
 _github_doc_root = "https://github.com/evennia/tree/master/docs/sources/"
 _github_issue_choose = "https://github.com/evennia/evennia/issues/new/choose"
 
 
 def url_resolver(url):
-    urlstart = "github:"
+    githubstart = "github:"
     apistart = "api:"
-    choose_issue = ("feature-request", "report-bug", "issue")
+    choose_issue = ("feature-request", "report-bug", "issue", "bug-report")
 
     if url.lower().strip() in choose_issue:
         return _github_issue_choose
-    elif url.startswith(urlstart):
-        return _github_code_root + url[len(urlstart) :]
+
+    elif url.startswith(githubstart):
+        urlpath = url[len(githubstart):]
+        if not (urlpath.startswith("develop/") or urlpath.startswith("master")):
+            urlpath = "master/" + urlpath 
+        return _github_code_root + urlpath
     elif url.startswith(apistart):
-        print("api: -> api ref")
         return "api/" + url[len(apistart) :] + ".html"
     return url
     # else:

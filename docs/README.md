@@ -1,4 +1,5 @@
-# evennia-docs
+# Evennia docs
+
 Documentation for the Evennia MUD creation system.
 
 > WARNING: This system is still WIP and many things are bound to change!
@@ -9,26 +10,25 @@ The live documentation is (will in the future be) available at `https://evennia.
 # Editing the docs
 
 The documentation source files are `*.md` (Markdown) files found in `evennia/docs/source/`.
-Markdown files are simple text files that can be edited with a normal text editor. They use
-the [Markdown][commonmark] syntax.
+Markdown files are simple text files that can be edited with a normal text editor. They primaroly use
+the [Markdown][commonmark] syntax. See [the syntax section below](#Editing-syntax) for more help.
 
 Don't edit the files in `source/api/`. These are auto-generated and your changes
 will be lost.
-
-See also later in this doc for [Help with editing syntax](#Help-with-editing-syntax).
 
 ## Contributing
 
 Contributing to the docs is is like [contributing to the rest of Evennia][contributing]:
 Check out the branch of Evennia you want to edit the documentation for. Create your
-own work-branch, make your changes and make a PR for it!
+own work-branch, make your changes to files in `evennia/docs/source/` and make a PR for it!
 
-# Building the docs
+# Building the docs locally
 
 The sources in `evennia/docs/source/` are built into a pretty documentation using
 the [Sphinx][sphinx] static generator system. To do so locally you need to either
-use a system with `make` (Linux/Unix/Mac/Windows-WSL) or run sphinx-commands manually
-(read the `Makefile` to see which commands are run by `make`).
+use a system with `make` (Linux/Unix/Mac or [Windows-WSL][Windows-WSL]). Lacking that, you could
+in principle also run the sphinx build-commands manually - read the `evennia/docs/Makefile` to see 
+which commands are run by `make`.
 
 You don't necessarily _have_ to build the docs locally to contribute.  But
 building them allows you to check for yourself that syntax is correct and that
@@ -159,72 +159,316 @@ can now deploy.
 - After deployment finishes, the updated live documentation will be
 available at `https://evennia.github.io/evennia/`.
 
-# Help with editing syntax
+# Editing syntax
 
-> This needs expanding in the future.
+The format is [Markdown][commonmark-help] (Commonmark). While markdown supports a few alternative
+forms for some of these, we try to stick to the below forms for consistency.
 
-## Referring to a heading in the same file
+## Italic/Bold 
 
-You can self-reference by pointing to a header/label elsewhere in the
-same document by using `#` and replacing any spaces in the name with `-`.
+We generally use underscores for italics and double-asterisks for bold:
 
+- `_Italic text_`
+- `**Bold Text**`
+
+## Headings 
+
+We use `#` to indicate sections/headings. The more `#` the more of a sub-heading it is (will get smaller
+and smaller font).
+
+- `# Heading`
+- `## SubHeading`
+- `## SubSubHeading` 
+
+> Don't reuse the same heading/subheading name over and over in the same document. While Markdown does not prevent
+it, it makes it impossible to link to those duplicates properly (see next section). 
+
+## Lists 
+
+One can create both bullet-point lists and numbered lists:
+
+```markdown
+- first bulletpoint
+- second bulletpoint
+- third bulletpoint
 ```
-This is a [link to the heading](#My-Heading-Name).
-
-# My Heading Name
-
-```
-
-## Referring to titles in another file
-
-> WIP: Most of these special structures need more work and checking.
-
-If file1 looks like this:
-
-```
-# Header title
-
-```
-
-You can refer to it from another file as
-
-```
-Read more about it [here](path.to.file1.md:Header title)
-
-
-```
-> This is not actually working at this time (WIP)
-
-To refer to code in the Evennia repository, you can use a relative reference from the docs/ folder:
-
-```
-You can find this code [here](../evennia/objects/objects.py).
-
-```
-This will be automatically translated to the matching github link so the reader can click and jump to that code directly.
-> This is not currently working. (WIP)
-
-
-## Making toc-tree indices
-
-To make a Table-of-Contents listing (what Sphinx refers to as a "Toc Tree"), one
-must make new heading named either `Contents` or `Index`, followed by a bullet-list of
-links:
-
-```
-# Index
-
-- [Title1](doc1)
-- [Title2](doc2)
-
+```markdown
+1. Numbered point one
+2. Numbered point two
+3. Numbered point three
 ```
 
-This will create a toc-tree structure behind the scenes.
+## Notes 
+
+A note can be used to enphasise important things. It's added by starting one or more lines with `>`.
+
+```
+> Note: This is an important 
+> thing to remember.  
+```
+
+## Links 
+
+- `[linktext](url_or_ref)` - gives a clickable link `linktext`. 
+
+The `url_or_ref` can either be a full `http://...` url or an internal _reference_. For example, use
+`[my document](My-Document)` to link to the document `evennia/docs/source/My-Document.md`. Avoid using 
+full `http://` linking unless really referring to an external resource.
+
+- `[linktext](ref#heading-name)`
+
+You can point to sub-sections (headings) in a document by using a single `#` and the name of the 
+heading, replacing spaces with dashes. So to refer to a heading `## Cool Stuff` inside `My-Document`
+would be a link `[cool stuff](My-Document#Cool-Stuff)`.
+
+- `[linktext][linkref]` - refer to a reference defined later in the document.
+
+Urls can get long and if you are using the same url in many places it can get a little cluttered. So you can also put 
+the url as a 'footnote' at the end of your document
+and refer to it by putting your reference within square brackets `[ ]`. Here's an example: 
+
+```
+This is a [clickable link][mylink]. This is [another link][1].
+
+...
 
 
+[mylink]: http://...
+[1]: My-Document
 
-We may expand on this later. For now, check out existing docs and refer to the
-[Markdown][commonmark] (CommonMark) specification.
+```
+
+### Special references 
+
+The Evennia documentation supports some special reference shortcuts in links:
+
+#### Github online repository
+
+- `github:` - a shortcut for the full path to the Evennia repository on github. This will refer to
+  the `master` branch by default:
+  
+        [link to objects.py](github:evennia/objects/objects.py)
+
+    This will remap to https://github.com/evennia/evennia/blob/master/evennia/objects/objects.py.
+- To refer to the `develop` branch, start the url with `develop/`: 
+
+        [link to objects.py](github:develop/evennia/objects/objects.py)
+
+#### API
+
+- `api:` - references a path in the api documentation. This is specified as a Python-path:
+
+        [link to api for objects.py](api:evennia.objects)
+
+    This will create a link to the auto-generated `evennia/source/api/evennia.objects.rst` document. 
+
+    Since api-docs are generated alongside the documentation, this will always be the api docs for the
+    current version/branch of the docs. 
+
+#### Bug reports/feature request
+
+
+- `issue`, `bug-report`, `feature-request` - links to the same github issue select page. 
+
+        If you find a problem, make a [bug report](issue)!
+
+    This will generate a link to https://github.com/evennia/evennia/issues/new/choose.
+    
+ > For some reason these particular shortcuts gives a warning during documentation compilation. This 
+ > can be ignored. 
+
+## Verbatim text
+
+It's common to want to mark something to be displayed verbatim - just as written - without any 
+Markdown parsing. In running text, this is done using backticks (\`), like \`verbatim text\` becomes `verbatim text`. 
+
+If you want to put the verbatim text on its own line, you can do so easily by simply indenting
+it 4 spaces (add empty lines on each side for readability too): 
+
+```
+This is normal text 
+
+    This is verbatim text 
+
+This is normal text 
+```
+
+Another way is to use triple-backticks:
+
+````
+```
+Everything within these backticks will be verbatim.
+
+```
+````
+
+## Code blocks
+
+A special case is code examples - we want them to get code-highlighting for readability. This is done by using 
+the triple-backticks and specify which language we use:
+
+````
+```python
+
+def a_python_func(x):
+   return x * x 
+    
+``` 
+````
+
+## ReST blocks
+
+Markdown is easy to read and use. But while it does most of what we need, there are some things it's 
+not quite as expressive as it needs to be. For this we need to fall back to the [ReST][ReST] markup 
+language which the documentation system uses under the hood. This is done by specifying `eval_rst` as 
+the name of the `language` of a literal block: 
+
+````
+```eval_rst
+
+    This will be evaluated as ReST. 
+
+```
+````
+There is also a short-hand form for starting a [ReST directive][ReST-directives] without need for `eval_rst`:
+
+````
+```directive:: possible-option
+  
+  Content that *must* be indented for it to be included in the directive.
+
+  New lines are ignored except if separated by an empty line.
+```
+````
+
+See below for examples of this.
+
+#### Important
+
+This will display a one-line note that will pop even more than a normal `> note`.
+
+````
+```important:: 
+  This is important because it is!
+```
+````
+
+#### Warning
+
+A warning block is used to draw attention to particularly dangerous things, or features easy to 
+mess up.
+
+````
+```warning::
+  Be careful about this ... 
+````
+
+#### Version changes and deprecations
+
+These will show up as one-line warnings that suggest an added, changed or deprecated 
+feature beginning with particular version.
+
+````
+```versionadded:: 1.0
+```
+````
+
+````
+```versionchanged:: 1.0
+  How the feature changed with this version.
+```
+````
+````
+```deprecated:: 1.0
+```
+````
+
+
+#### Sidebar 
+
+This will display an informative sidebar that floats to the side of regular content. This is useful
+for example to remind the reader of some concept relevant to the text.
+
+````
+```sidebar:: Things to remember
+
+  - There can be bullet lists
+  - in here.
+
+  Headers with indented blocks:
+    like this 
+  Will end up as full sub-headings:
+    in the sidebar.
+```
+````
+
+> Remember that for ReST-directives, the content within the triple-backticks _must_ be indented to 
+>some degree or the content will just appear outside of the directive as regular text. 
+
+#### Tables 
+
+A table is specified using [ReST table syntax][ReST-tables]:
+
+````
+```eval_rst
+
+=====  =====  =======
+A      B      A and B
+=====  =====  =======
+False  False  False
+True   False  False
+False  True   False
+True   True   True
+=====  =====  =======
+```
+````
+
+or the more flexible but verbose
+
+````
+```eval_rst
++------------------------+------------+----------+----------+
+| Header row, column 3   | Header 2   | Header 3 | Header 4 |
+| (header rows optional) |            |          |          |
++========================+============+==========+==========+
+| body row 1, column 1   | column 2   | column 3 | column 4 |
++------------------------+------------+----------+----------+
+| body row 2             | ...        | ...      |          |
++------------------------+------------+----------+----------+
+```
+````
+
+#### A more flexible code block 
+
+The regular Markdown codeblock is usually enough but for more direct control over the style, one 
+can also specify the code block explicitly in `ReST`.
+for more flexibility. It also provides a link to the code block, identified by its name.
+
+
+````
+```code-block:: python
+    :linenos:
+    :emphasize-lines: 6-7,12
+    :caption: An example code block
+    :name: A full code block example
+
+    from evennia import Command
+    class CmdEcho(Command):
+        """
+        Usage: echo <arg>
+        """
+        key = "echo"
+        def func(self):
+            self.caller.msg(self.args.strip())
+```
+````
+Here, `:linenos:` turns on line-numbers and `:emphasize-lines:` allows for emphasizing certain lines
+in a different color. The `:caption:` shows an instructive text and `:name:` is used to reference this
+block through the link that will appear (so it should be unique for a give document). 
+
+> The default markdown syntax will actually generate a code-block ReST instruction like this 
+> automatically for us behind the scenes. The automatic generation can't know things like emphasize-lines
+> or caption since that's not a part of the Markdown specification.
 
 # Technical
 
@@ -237,11 +481,16 @@ For [autodoc-generation][sphinx-autodoc] generation, we use the sphinx-[napoleon
 to understand our friendly Google-style docstrings used in classes and functions etc.
 
 
+
 [sphinx]: https://www.sphinx-doc.org/en/master/
 [recommonmark]: https://recommonmark.readthedocs.io/en/latest/index.html
 [commonmark]: https://spec.commonmark.org/current/
+[commonmark-help]: https://commonmark.org/help/
 [sphinx-autodoc]: http://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc
 [sphinx-napoleon]: http://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html
 [getting-started]: https://github.com/evennia/evennia/wiki/Getting-Started
 [contributing]: https://github.com/evennia/evennia/wiki/Contributing
-
+[ReST]: https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html
+[ReST-tables]: https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html#tables
+[ReST-directives]: https://www.sphinx-doc.org/en/master/usage/restruturedtext/directives.html
+[Windows-WSL]: https://docs.microsoft.com/en-us/windows/wsl/install-win10
