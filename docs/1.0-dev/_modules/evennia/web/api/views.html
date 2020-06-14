@@ -1,0 +1,336 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>evennia.web.api.views &mdash; Evennia 1.0-dev documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../../search.html"/>
+    <link rel="top" title="Evennia 1.0-dev documentation" href="../../../../index.html"/>
+        <link rel="up" title="evennia" href="../../../evennia.html"/> 
+
+  
+  <script src="../../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> Evennia
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <!-- Local TOC -->
+                <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Evennia</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../../../evennia.html">evennia</a> &raquo;</li>
+        
+      <li>evennia.web.api.views</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for evennia.web.api.views</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Views are the functions that are called by different url endpoints.</span>
+<span class="sd">The Django Rest Framework provides collections called &#39;ViewSets&#39;, which</span>
+<span class="sd">can generate a number of views for the common CRUD operations.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">rest_framework.viewsets</span> <span class="k">import</span> <span class="n">ModelViewSet</span>
+<span class="kn">from</span> <span class="nn">rest_framework.decorators</span> <span class="k">import</span> <span class="n">action</span>
+<span class="kn">from</span> <span class="nn">rest_framework.response</span> <span class="k">import</span> <span class="n">Response</span>
+<span class="kn">from</span> <span class="nn">rest_framework</span> <span class="k">import</span> <span class="n">status</span>
+
+<span class="kn">from</span> <span class="nn">django_filters.rest_framework</span> <span class="k">import</span> <span class="n">DjangoFilterBackend</span>
+
+<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="k">import</span> <span class="n">ObjectDB</span>
+<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="k">import</span> <span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">DefaultExit</span><span class="p">,</span> <span class="n">DefaultRoom</span>
+<span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="k">import</span> <span class="n">AccountDB</span>
+<span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="k">import</span> <span class="n">ScriptDB</span>
+<span class="kn">from</span> <span class="nn">evennia.web.api.serializers</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">ObjectDBSerializer</span><span class="p">,</span>
+    <span class="n">AccountSerializer</span><span class="p">,</span>
+    <span class="n">ScriptDBSerializer</span><span class="p">,</span>
+    <span class="n">AttributeSerializer</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">evennia.web.api.filters</span> <span class="k">import</span> <span class="n">ObjectDBFilterSet</span><span class="p">,</span> <span class="n">AccountDBFilterSet</span><span class="p">,</span> <span class="n">ScriptDBFilterSet</span>
+<span class="kn">from</span> <span class="nn">evennia.web.api.permissions</span> <span class="k">import</span> <span class="n">EvenniaPermission</span>
+
+
+<div class="viewcode-block" id="TypeclassViewSetMixin"><a class="viewcode-back" href="../../../../api/evennia.web.api.html#evennia.web.api.views.TypeclassViewSetMixin">[docs]</a><span class="k">class</span> <span class="nc">TypeclassViewSetMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This mixin adds some shared functionality to each viewset of a typeclass. They all use the same</span>
+<span class="sd">    permission classes and filter backend. You can override any of these in your own viewsets.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># permission classes determine who is authorized to call the view</span>
+    <span class="n">permission_classes</span> <span class="o">=</span> <span class="p">[</span><span class="n">EvenniaPermission</span><span class="p">]</span>
+    <span class="c1"># the filter backend allows for retrieval views to have filter arguments passed to it,</span>
+    <span class="c1"># for example: mygame.com/api/objects?db_key=bob to find matches based on objects having a db_key of bob</span>
+    <span class="n">filter_backends</span> <span class="o">=</span> <span class="p">[</span><span class="n">DjangoFilterBackend</span><span class="p">]</span>
+
+<div class="viewcode-block" id="TypeclassViewSetMixin.set_attribute"><a class="viewcode-back" href="../../../../api/evennia.web.api.html#evennia.web.api.views.TypeclassViewSetMixin.set_attribute">[docs]</a>    <span class="nd">@action</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;put&quot;</span><span class="p">,</span> <span class="s2">&quot;post&quot;</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">set_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is an example of a custom action added to a viewset. Based on the name of the</span>
+<span class="sd">        method, it will create a default url_name (used for reversing) and url_path.</span>
+<span class="sd">        The &#39;pk&#39; argument is automatically passed to this action because it has a url path</span>
+<span class="sd">        of the format &lt;object type&gt;/:pk/set-attribute. The get_object method is automatically</span>
+<span class="sd">        set in the expected viewset classes that will inherit this, using the pk that&#39;s</span>
+<span class="sd">        passed along to retrieve the object.</span>
+
+<span class="sd">        This action will set an attribute if the db_value is defined, or remove it</span>
+<span class="sd">        if no db_value is provided.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="n">AttributeSerializer</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_object</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">is_valid</span><span class="p">(</span><span class="n">raise_exception</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">validated_data</span><span class="p">[</span><span class="s2">&quot;db_key&quot;</span><span class="p">]</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">validated_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;db_value&quot;</span><span class="p">)</span>
+            <span class="n">category</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">validated_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;db_category&quot;</span><span class="p">)</span>
+            <span class="n">attr_type</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">validated_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;db_attrtype&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">attr_type</span> <span class="o">==</span> <span class="s2">&quot;nick&quot;</span><span class="p">:</span>
+                <span class="n">handler</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">nicks</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">handler</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span>
+            <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+                <span class="n">handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">handler</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
+                <span class="n">AttributeSerializer</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">db_attributes</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_200_OK</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">attr</span><span class="o">.</span><span class="n">errors</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_400_BAD_REQUEST</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ObjectDBViewSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.html#evennia.web.api.views.ObjectDBViewSet">[docs]</a><span class="k">class</span> <span class="nc">ObjectDBViewSet</span><span class="p">(</span><span class="n">TypeclassViewSetMixin</span><span class="p">,</span> <span class="n">ModelViewSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An example of a basic viewset for all ObjectDB instances. It declares the</span>
+<span class="sd">    serializer to use for both retrieving and changing/creating/deleting</span>
+<span class="sd">    instances. Serializers are similar to django forms, used for the</span>
+<span class="sd">    transmitting of data (typically json).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">serializer_class</span> <span class="o">=</span> <span class="n">ObjectDBSerializer</span>
+    <span class="n">queryset</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="n">filterset_class</span> <span class="o">=</span> <span class="n">ObjectDBFilterSet</span></div>
+
+
+<div class="viewcode-block" id="CharacterViewSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.html#evennia.web.api.views.CharacterViewSet">[docs]</a><span class="k">class</span> <span class="nc">CharacterViewSet</span><span class="p">(</span><span class="n">ObjectDBViewSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This overrides the queryset to only retrieve Character objects</span>
+<span class="sd">    based on your DefaultCharacter typeclass path.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">queryset</span> <span class="o">=</span> <span class="n">DefaultCharacter</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">typeclass_search</span><span class="p">(</span>
+        <span class="n">DefaultCharacter</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">include_children</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RoomViewSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.html#evennia.web.api.views.RoomViewSet">[docs]</a><span class="k">class</span> <span class="nc">RoomViewSet</span><span class="p">(</span><span class="n">ObjectDBViewSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Viewset for Room objects&quot;&quot;&quot;</span>
+
+    <span class="n">queryset</span> <span class="o">=</span> <span class="n">DefaultRoom</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">typeclass_search</span><span class="p">(</span><span class="n">DefaultRoom</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">include_children</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ExitViewSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.html#evennia.web.api.views.ExitViewSet">[docs]</a><span class="k">class</span> <span class="nc">ExitViewSet</span><span class="p">(</span><span class="n">ObjectDBViewSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Viewset for Exit objects&quot;&quot;&quot;</span>
+
+    <span class="n">queryset</span> <span class="o">=</span> <span class="n">DefaultExit</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">typeclass_search</span><span class="p">(</span><span class="n">DefaultExit</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">include_children</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AccountDBViewSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.html#evennia.web.api.views.AccountDBViewSet">[docs]</a><span class="k">class</span> <span class="nc">AccountDBViewSet</span><span class="p">(</span><span class="n">TypeclassViewSetMixin</span><span class="p">,</span> <span class="n">ModelViewSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Viewset for Account objects&quot;&quot;&quot;</span>
+
+    <span class="n">serializer_class</span> <span class="o">=</span> <span class="n">AccountSerializer</span>
+    <span class="n">queryset</span> <span class="o">=</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="n">filterset_class</span> <span class="o">=</span> <span class="n">AccountDBFilterSet</span></div>
+
+
+<div class="viewcode-block" id="ScriptDBViewSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.html#evennia.web.api.views.ScriptDBViewSet">[docs]</a><span class="k">class</span> <span class="nc">ScriptDBViewSet</span><span class="p">(</span><span class="n">TypeclassViewSetMixin</span><span class="p">,</span> <span class="n">ModelViewSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Viewset for Script objects&quot;&quot;&quot;</span>
+
+    <span class="n">serializer_class</span> <span class="o">=</span> <span class="n">ScriptDBSerializer</span>
+    <span class="n">queryset</span> <span class="o">=</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="n">filterset_class</span> <span class="o">=</span> <span class="n">ScriptDBFilterSet</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, The Evennia developer community.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Sphinx-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../../',
+            VERSION:'1.0-dev',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
