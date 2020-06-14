@@ -9,81 +9,11 @@
 > For now you are best off using the original wiki, or the less changing v0.9.1
 > of these docs. You have been warned.
 
-```sidebar:: An important sidebar
-
-  - Extra features
-  - Another feature 
-
-  Third feature: 
-    Stuff to do 
-
-  Fourth feature:
-    Even more.
-```
-
 # Evennia Documentation
 
 This is the manual of [Evennia](http://www.evennia.com), the open source Python
-`MU*` creation system. A link to the [feature-request](issue)
-
-```note::
-
-  This is a particular note.
-
-```warning:: This is an important thing!
-  Especially this.
-```
-
-```important:: This is an interesting thing!
-
-  More text here!
-
-  And here.
-```
-
-```seealso:: This is good to look at too.
-  This in particular
-```
-
-```versionadded:: 1.0
-
-  This feature was added here
-
-```
-
-```deprecated:: 1.0
-  Use this thing instead.
-```
-
-```code-block:: python
-     :emphasize-lines: 6-7,12
-     :caption: An example code-block with everything turned on.
-     :name: Full code-block example
-
-     # Comment line
-     from evennia import Command 
-
-     class MyCommand(Command):
-       """
-       Usage: 
-          cmd x
-       """
-       key = "cmd"
-
-       def func(self):
-         self.caller.msg(self.args)
-```
-
-```markdown
-     # Comment line
-     import System
-     System.run_emphasis_line
-     # Long lines in code blocks create a auto horizontal scrollbar
-     System.exit!
-
-```
-
-<div style="clear: right;"></div>
+`MU*` creation system. Want to help improve the docs? See the page on
+[Contributing to docs](Contributing-Docs)!
 
 There is [a lengthier introduction](Evennia-Introduction) to read. You might also want to read about
 [how to get and give help](How-To-Get-And-Give-Help).

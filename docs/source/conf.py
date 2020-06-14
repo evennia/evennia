@@ -126,7 +126,7 @@ def url_resolver(url):
     elif url.startswith(githubstart):
         urlpath = url[len(githubstart):]
         if not (urlpath.startswith("develop/") or urlpath.startswith("master")):
-            urlpath = "master/" + urlpath 
+            urlpath = "master/" + urlpath
         return _github_code_root + urlpath
     elif url.startswith(apistart):
         return "api/" + url[len(apistart) :] + ".html"
@@ -182,6 +182,7 @@ if not _no_autodoc:
 
         evennia._init()
 
+
 if _no_autodoc:
     exclude_patterns = ["api/*"]
 else:
@@ -223,10 +224,15 @@ napoleon_use_rtype = True
 # -- Main config setup ------------------------------------------
 # last setup steps for some plugins
 
-
 def setup(app):
     app.connect("autodoc-skip-member", autodoc_skip_member)
     app.add_transform(AutoStructify)
+
+    # build toctree file
+    sys.path.insert(1, os.path.join(os.path.dirname(os.path.dirname(__file__)), 'docs'))
+    from docs.pylib import create_toctree
+    create_toctree.create_toctree()
+    print("Updated source/toc.md file")
 
     # custom lunr-based search
     # from docs import search
