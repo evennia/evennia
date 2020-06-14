@@ -30,9 +30,9 @@ help:
 	@echo "  $(cblue)install$(cnorm)     to get build requirements"
 	@echo "  $(cblue)clean$(cnorm)       to remove remnants of a previous build"
 	@echo "  $(cblue)local$(cnorm)       to build local html docs of the current branch (no multiversion)."
-	@echo "  $(cblue)mv-local$(cnorm)    to build multiversion html docs, without deploying (req. local git commit)"
-	@echo "  $(cblue)deploy$(cnorm)      to deploy previously built multiversion docs online (req. commit and github push access)"
-	@echo "  $(cblue)release$(cnorm)     to build + deploy multiversion docs online (req. commit and github push access)"
+	@echo "  $(cblue)mv-local$(cnorm)    to build multiversion html docs, without deploying (req: local git commit first)"
+	@echo "  $(cblue)deploy$(cnorm)      to deploy previously built multiversion docs online (req: commit and github push access)"
+	@echo "  $(cblue)release$(cnorm)     to build + deploy multiversion docs online (req: commit and github push access)"
 
 
 .PHONY: help Makefile
@@ -62,10 +62,10 @@ _multiversion-autodoc-index:
 	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) SPHINX_APIDOC_OPTIONS=$(SPHINXAPIDOCENV) $(SPHINXAPIDOC) $(SPHINXAPIDOCOPTS) -o $(SOURCEDIR)/api/ $(EVDIR) $(SPHINXAPIDOCEXCLUDE)
 	git diff-index --quiet HEAD || git commit -a -m "Updated API autodoc index."
 
-_build:
+_html-build:
 	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXBUILD) $(SPHINXOPTS) "$(SOURCEDIR)" "$(BUILDDIR)/html"
 
-_quick-build:
+_quick-html-build:
 	@NOAUTODOC=1 EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXBUILD) $(SPHINXOPTS) "$(SOURCEDIR)" "$(BUILDDIR)/html" $(QUICKFILES)
 
 _multiversion-build:
@@ -73,6 +73,10 @@ _multiversion-build:
 
 _multiversion-deploy:
 	@bash -e deploy.sh
+	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXMULTIVERSION) $(SPHINXOPTS) "$(SOURCEDIR)" "$(BUILDDIR)/html" $(SPHINXOPTS)
+
+_latex-build:
+	@NOAUTODOC=1 EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXBUILD) -M latexpdf "$(SOURCEDIR)" "$(BUILDDIR)/latex" $(QUICKFILES)
 
 # main targets
 
@@ -84,38 +88,44 @@ clean:
 	@git clean -f -d docs/
 	@echo "Cleaned old build dir and leftover files."
 
-# TODO remove once done with migration
-copy:
-	@cd pylib && python copy_from_wiki.py && cd ..
-	make quick 
+# not fully working at this time
+pdf:
+	make _latex-build
+	@echo ""
+	@echo "Documentation built (single version, no autodocs)."
+	@echo "To see result, open evennia/docs/build/latex/evennia.pdf in a PDF reader."
 
 quick:
 	make _check-env
-	make _quick-build $(FILES)
+	make _quick-html-build $(FILES)
 	@echo ""
-	@echo "Documentation built (no autodocs). \nTo see result, open evennia/docs/build/html/index.html in a browser."
+	@echo "Documentation built (single version, no autodocs)."
+	@echo "To see result, open evennia/docs/build/html/index.html in a browser."
 
 local:
 	make _check-env
 	make clean
 	make _autodoc-index
-	make _build
+	make _html-build
 	@echo ""
-	@echo "Documentation built. \nTo see result, open evennia/docs/build/html/index.html in a browser."
+	@echo "Documentation built (single version)."
+	@echo "To see result, open evennia/docs/build/html/index.html in a browser."
 
 mv-local:
 	make _multiversion-check-env
 	make clean
 	make _multiversion-autodoc-index
 	make _multiversion-build
-	@echo "Documentation built. \nTo see result, open evennia/docs/build/html/versions/<version>/index.html in a browser."
+	@echo ""
+	@echo "Documentation built (multiversion + autodocs)."
+	@echo "To see result, open evennia/docs/build/html/<version>/index.html in a browser."
 
 deploy:
 	make _multiversion-deploy
+	@echo "Documentation deployed."
 
 # build and prepare the docs for release
 release:
 	make mv-local
 	make deploy
-	@echo ""
-	@echo "Deployment complete."
+	@echo "Release complete."
