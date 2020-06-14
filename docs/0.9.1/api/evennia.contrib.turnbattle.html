@@ -1,35 +1,159 @@
 
+
 <!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>evennia.contrib.turnbattle package &mdash; Evennia 0.9.1 documentation</title>
+  
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta charset="utf-8" />
-    <title>evennia.contrib.turnbattle package &#8212; Evennia 0.9.1 documentation</title>
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
+  
+  
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Evennia 0.9.1 documentation" href="../index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
    
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  <div class="wy-grid-for-nav">
 
-  </head><body>
-  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
           
 
-          <div class="body" role="main">
+          
+            <a href="../index.html" class="icon icon-home"> Evennia
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <!-- Local TOC -->
+                <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">evennia.contrib.turnbattle package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-evennia.contrib.turnbattle.tb_basic">evennia.contrib.turnbattle.tb_basic module</a></li>
+<li><a class="reference internal" href="#module-evennia.contrib.turnbattle.tb_equip">evennia.contrib.turnbattle.tb_equip module</a></li>
+<li><a class="reference internal" href="#module-evennia.contrib.turnbattle.tb_items">evennia.contrib.turnbattle.tb_items module</a></li>
+<li><a class="reference internal" href="#module-evennia.contrib.turnbattle.tb_magic">evennia.contrib.turnbattle.tb_magic module</a></li>
+<li><a class="reference internal" href="#module-evennia.contrib.turnbattle.tb_range">evennia.contrib.turnbattle.tb_range module</a></li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Evennia</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>evennia.contrib.turnbattle package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/evennia.contrib.turnbattle.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <div class="section" id="module-evennia.contrib.turnbattle">
 <span id="evennia-contrib-turnbattle-package"></span><h1>evennia.contrib.turnbattle package<a class="headerlink" href="#module-evennia.contrib.turnbattle" title="Permalink to this headline">¶</a></h1>
@@ -172,7 +296,7 @@ help all</p>
 topics related to the game.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_basic.CmdCombatHelp._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('?', 'help')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_basic.CmdCombatHelp._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('help', '?')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_basic.CmdCombatHelp._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -227,7 +351,7 @@ the fight. If all participants in a fight disengage, the
 fight ends.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_basic.CmdDisengage._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('spare', 'disengage')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_basic.CmdDisengage._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('disengage', 'spare')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_basic.CmdDisengage._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -336,7 +460,7 @@ When it’s your turn, you can attack other characters.</p>
 if there are still any actions you can take.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_basic.CmdPass._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('hold', 'pass', 'wait')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_basic.CmdPass._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('pass', 'wait', 'hold')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_basic.CmdPass._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -346,7 +470,7 @@ if there are still any actions you can take.</p>
 
 <dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_basic.CmdPass.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['hold', 'wait']</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_basic.CmdPass.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['wait', 'hold']</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_basic.CmdPass.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -372,7 +496,7 @@ if there are still any actions you can take.</p>
 
 <dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_basic.CmdPass.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'hold wait', 'category': 'combat', 'key': 'pass', 'tags': '', 'text': '\n    Passes on your turn.\n\n    Usage:\n      pass\n\n    When in a fight, you can use this command to end your turn early, even\n    if there are still any actions you can take.\n    '}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_basic.CmdPass.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'wait hold', 'category': 'combat', 'key': 'pass', 'tags': '', 'text': '\n    Passes on your turn.\n\n    Usage:\n      pass\n\n    When in a fight, you can use this command to end your turn early, even\n    if there are still any actions you can take.\n    '}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_basic.CmdPass.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -987,7 +1111,7 @@ help all</p>
 topics related to the game.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_equip.CmdCombatHelp._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('?', 'help')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdCombatHelp._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('help', '?')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdCombatHelp._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -1042,7 +1166,7 @@ the fight. If all participants in a fight disengage, the
 fight ends.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_equip.CmdDisengage._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('spare', 'disengage')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdDisengage._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('disengage', 'spare')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdDisengage._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -1261,7 +1385,7 @@ When it’s your turn, you can attack other characters.</p>
 if there are still any actions you can take.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_equip.CmdPass._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('hold', 'pass', 'wait')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdPass._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('pass', 'wait', 'hold')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdPass._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -1271,7 +1395,7 @@ if there are still any actions you can take.</p>
 
 <dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_equip.CmdPass.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['hold', 'wait']</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdPass.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['wait', 'hold']</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdPass.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1297,7 +1421,7 @@ if there are still any actions you can take.</p>
 
 <dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_equip.CmdPass.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'hold wait', 'category': 'combat', 'key': 'pass', 'tags': '', 'text': '\n    Passes on your turn.\n\n    Usage:\n      pass\n\n    When in a fight, you can use this command to end your turn early, even\n    if there are still any actions you can take.\n    '}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdPass.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'wait hold', 'category': 'combat', 'key': 'pass', 'tags': '', 'text': '\n    Passes on your turn.\n\n    Usage:\n      pass\n\n    When in a fight, you can use this command to end your turn early, even\n    if there are still any actions you can take.\n    '}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_equip.CmdPass.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -2148,7 +2272,7 @@ help all</p>
 topics related to the game.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_items.CmdCombatHelp._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('?', 'help')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_items.CmdCombatHelp._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('help', '?')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_items.CmdCombatHelp._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -2203,7 +2327,7 @@ the fight. If all participants in a fight disengage, the
 fight ends.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_items.CmdDisengage._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('spare', 'disengage')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_items.CmdDisengage._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('disengage', 'spare')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_items.CmdDisengage._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -2312,7 +2436,7 @@ When it’s your turn, you can attack other characters.</p>
 if there are still any actions you can take.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_items.CmdPass._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('hold', 'pass', 'wait')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_items.CmdPass._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('pass', 'wait', 'hold')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_items.CmdPass._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -2322,7 +2446,7 @@ if there are still any actions you can take.</p>
 
 <dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_items.CmdPass.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['hold', 'wait']</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_items.CmdPass.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['wait', 'hold']</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_items.CmdPass.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -2348,7 +2472,7 @@ if there are still any actions you can take.</p>
 
 <dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_items.CmdPass.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'hold wait', 'category': 'combat', 'key': 'pass', 'tags': '', 'text': '\n    Passes on your turn.\n\n    Usage:\n      pass\n\n    When in a fight, you can use this command to end your turn early, even\n    if there are still any actions you can take.\n    '}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_items.CmdPass.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'wait hold', 'category': 'combat', 'key': 'pass', 'tags': '', 'text': '\n    Passes on your turn.\n\n    Usage:\n      pass\n\n    When in a fight, you can use this command to end your turn early, even\n    if there are still any actions you can take.\n    '}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_items.CmdPass.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -3311,7 +3435,7 @@ help all</p>
 topics related to the game.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_magic.CmdCombatHelp._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('?', 'help')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdCombatHelp._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('help', '?')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdCombatHelp._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -3366,7 +3490,7 @@ the fight. If all participants in a fight disengage, the
 fight ends.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_magic.CmdDisengage._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('spare', 'disengage')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdDisengage._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('disengage', 'spare')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdDisengage._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -3543,7 +3667,7 @@ When it’s your turn, you can attack other characters.</p>
 if there are still any actions you can take.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_magic.CmdPass._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('hold', 'pass', 'wait')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdPass._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('pass', 'wait', 'hold')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdPass._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -3553,7 +3677,7 @@ if there are still any actions you can take.</p>
 
 <dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_magic.CmdPass.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['hold', 'wait']</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdPass.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['wait', 'hold']</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdPass.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -3579,7 +3703,7 @@ if there are still any actions you can take.</p>
 
 <dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_magic.CmdPass.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'hold wait', 'category': 'combat', 'key': 'pass', 'tags': '', 'text': '\n    Passes on your turn.\n\n    Usage:\n      pass\n\n    When in a fight, you can use this command to end your turn early, even\n    if there are still any actions you can take.\n    '}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdPass.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'wait hold', 'category': 'combat', 'key': 'pass', 'tags': '', 'text': '\n    Passes on your turn.\n\n    Usage:\n      pass\n\n    When in a fight, you can use this command to end your turn early, even\n    if there are still any actions you can take.\n    '}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_magic.CmdPass.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -4400,7 +4524,7 @@ help all</p>
 topics related to the game.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdCombatHelp._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('?', 'help')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdCombatHelp._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('help', '?')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdCombatHelp._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -4455,7 +4579,7 @@ the fight. If all participants in a fight disengage, the
 fight ends.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdDisengage._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('spare', 'disengage')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdDisengage._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('disengage', 'spare')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdDisengage._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -4564,7 +4688,7 @@ When it’s your turn, you can attack other characters.</p>
 if there are still any actions you can take.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdPass._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('hold', 'pass', 'wait')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdPass._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('pass', 'wait', 'hold')</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdPass._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -4574,7 +4698,7 @@ if there are still any actions you can take.</p>
 
 <dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdPass.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['hold', 'wait']</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdPass.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['wait', 'hold']</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdPass.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -4600,7 +4724,7 @@ if there are still any actions you can take.</p>
 
 <dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdPass.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'hold wait', 'category': 'combat', 'key': 'pass', 'tags': '', 'text': '\n    Passes on your turn.\n\n    Usage:\n      pass\n\n    When in a fight, you can use this command to end your turn early, even\n    if there are still any actions you can take.\n    '}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdPass.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'wait hold', 'category': 'combat', 'key': 'pass', 'tags': '', 'text': '\n    Passes on your turn.\n\n    Usage:\n      pass\n\n    When in a fight, you can use this command to end your turn early, even\n    if there are still any actions you can take.\n    '}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdPass.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -5514,72 +5638,64 @@ withdrawing - they can be considered to be moving to open space.</p>
 </div>
 
 
+           </div>
           </div>
-          
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-<p><h3><a href="../index.html">Table of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">evennia.contrib.turnbattle package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-evennia.contrib.turnbattle.tb_basic">evennia.contrib.turnbattle.tb_basic module</a></li>
-<li><a class="reference internal" href="#module-evennia.contrib.turnbattle.tb_equip">evennia.contrib.turnbattle.tb_equip module</a></li>
-<li><a class="reference internal" href="#module-evennia.contrib.turnbattle.tb_items">evennia.contrib.turnbattle.tb_items module</a></li>
-<li><a class="reference internal" href="#module-evennia.contrib.turnbattle.tb_magic">evennia.contrib.turnbattle.tb_magic module</a></li>
-<li><a class="reference internal" href="#module-evennia.contrib.turnbattle.tb_range">evennia.contrib.turnbattle.tb_range module</a></li>
-</ul>
-</li>
-</ul>
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../index.html">Documentation overview</a><ul>
-  </ul></li>
-</ul>
-</div>
-  <div role="note" aria-label="source link">
-    <!--h3>This Page</h3-->
-    <ul class="this-page-menu">
-      <li><a href="../_sources/api/evennia.contrib.turnbattle.rst.txt"
-            rel="nofollow">Show Page Source</a></li>
-    </ul>
-   </div>
-<h3>Versions</h3>
-<ul>
-  <li><a href="../../1.0-dev/api/evennia.contrib.turnbattle.html">1.0-dev (develop branch)</a></li>
-  <li><a href="evennia.contrib.turnbattle.html">0.9.1 (master branch)</a></li>
-</ul>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, The Evennia developer community.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Sphinx-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
 
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2020, The Evennia developer community.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="../_sources/api/evennia.contrib.turnbattle.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
 
-    
+    </section>
 
-    
-  </body>
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.9.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="../_static/language_data.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
 </html>
