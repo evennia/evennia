@@ -11,11 +11,8 @@
 
 # Evennia Documentation
 
-This is the manual of [Evennia](http://www.evennia.com), the open source Python `MU*` creation system.
-You can [Search][search] the documentation as well as browse all pages alphabetically in the
-[Index](Wiki-Index). If you have trouble with unclear documentation, please let us know on our
-[mailing list][group], over [IRC][chat] or by dropping a note in our quick no-registration [online
-suggestion box][form]!
+This is the manual of [Evennia](http://www.evennia.com), the open source Python
+`MU*` creation system.
 
 There is [a lengthier introduction](Evennia-Introduction) to read. You might also want to read about
 [how to get and give help](How-To-Get-And-Give-Help).
