@@ -9,7 +9,7 @@ Documentation for the Evennia MUD creation system.
 The live documentation is (or will in the future be) available at 
 [https://evennia.github.io/evennia/latest](https://evennia.github.io/evennia/latest).
 
-# Editing the docs
+## Editing the docs
 
 The documentation source files are `*.md` (Markdown) files found in `evennia/docs/source/`.
 Markdown files are simple text files that can be edited with a normal text editor. They can also
@@ -19,13 +19,13 @@ the [Markdown][commonmark] syntax. See [the syntax section below](#Editing-synta
 > Note: Don't edit the files in `source/api/`. These are auto-generated and your changes
 > will be lost.
 
-## Contributing to docs
+### Contributing to docs
 
 Contributing to the docs is is like [contributing to the rest of Evennia][contributing]:
 Check out the branch of Evennia you want to edit the documentation for. Create your
 own work-branch, make your changes to files in `evennia/docs/source/` and make a PR for it!
 
-# Building the docs locally
+## Building the docs locally
 
 The sources in `evennia/docs/source/` are built into a pretty documentation using
 the [Sphinx][sphinx] static generator system. To do so locally you need to either
@@ -37,7 +37,7 @@ You don't necessarily _have_ to build the docs locally to contribute.  But
 building them allows you to check for yourself that syntax is correct and that
 your change comes out looking as you expected.
 
-## Building only the main documentation
+### Building only the main documentation
 
 If you only want to build the main documentation pages (not the API auto-docs),
 you don't need to install Evennia itself, only the documentation resources.
@@ -65,7 +65,7 @@ All is done in your terminal/console.
   the docs. Note that you will get errors if clicking a link to the auto-docs, because you didn't 
   build them!
 
-## Building the main documentation and API docs
+### Building the main documentation and API docs
 
 The full documentation includes both the doc pages and the API documentation
 generated from the Evennia source. For this you must install Evennia and
@@ -124,7 +124,7 @@ well. We won't touch that.
 - Point your web browser to `file://<path-to-folder>/evennia/docs/build/html/index.html` to 
   view the full docs.
 
-### Building with another gamedir
+#### Building with another gamedir
 
 If you for some reason want to use another location of your `gamedir/`, or want it
 named something else (maybe you already use the name 'gamedir' for your development ...),
@@ -135,7 +135,7 @@ of your alternative game dir. For example:
 EVGAMEDIR=/my/path/to/mygamedir make local
 ```
 
-## Building for release
+### Building for release
 
 The full Evennia documentation contains docs from many Evennia
 versions, old and new. This is done by pulling documentation from Evennia's old release
@@ -155,7 +155,7 @@ This is as close to the 'real' version as you can get locally. The different ver
 will be found under `evennia/docs/build`. During deploy a symlink `latest` will point 
 to the latest version of the docs.
 
-### Release 
+#### Release 
 
 Releasing the official docs requires git-push access the the Evennia `gh-pages` branch
 on `github`. So there is no risk of you releasing your local changes accidentally.
@@ -181,14 +181,14 @@ available at https://evennia.github.io/evennia/latest/.
 The format used for Evennia's docs is [Markdown][commonmark-help] (Commonmark). While markdown supports a 
 few alternative forms for some of these, we try to stick to the below forms for consistency.
 
-## Italic/Bold 
+### Italic/Bold 
 
 We generally use underscores for italics and double-asterisks for bold:
 
 - `_Italic text_` - _Italic text_
 - `**Bold Text**` - **Bold text**
 
-## Headings 
+### Headings 
 
 We use `#` to indicate sections/headings. The more `#` the more of a sub-heading it is (will get smaller
 and smaller font).
@@ -197,14 +197,10 @@ and smaller font).
 - `## SubHeading`
 - `## SubSubHeading` 
 
-# Heading
-## SubHeading
-### SubSubHeading
-
 > Don't reuse the same heading/subheading name over and over in the same document. While Markdown does not prevent
 it, it makes it impossible to link to those duplicates properly (see next section). 
 
-## Lists 
+### Lists 
 
 One can create both bullet-point lists and numbered lists:
 
@@ -228,7 +224,7 @@ One can create both bullet-point lists and numbered lists:
 2. Numbered point two
 3. Numbered point three
 
-## Notes 
+### Notes 
 
 A note can be used to enphasise important things. It's added by starting one or more lines with `>`.
 
@@ -240,7 +236,7 @@ A note can be used to enphasise important things. It's added by starting one or 
 > Note: This is an important 
 > thing to remember.  
 
-## Links 
+### Links 
 
 - `[linktext](url_or_ref)` - gives a clickable link [linktext][linkdemo]. 
 
@@ -271,11 +267,11 @@ This is a [clickable link][mylink]. This is [another link][1].
 
 ```
 
-### Special references 
+#### Special references 
 
 The Evennia documentation supports some special reference shortcuts in links:
 
-#### Github online repository
+##### Github online repository
 
 - `github:` - a shortcut for the full path to the Evennia repository on github. This will refer to
   the `master` branch by default:
@@ -287,7 +283,7 @@ The Evennia documentation supports some special reference shortcuts in links:
 
         [link to objects.py](github:develop/evennia/objects/objects.py)
 
-#### API
+##### API
 
 - `api:` - references a path in the api documentation. This is specified as a Python-path:
 
@@ -298,7 +294,7 @@ The Evennia documentation supports some special reference shortcuts in links:
     Since api-docs are generated alongside the documentation, this will always be the api docs for the
     current version/branch of the docs. 
 
-#### Bug reports/feature request
+##### Bug reports/feature request
 
 
 - `issue`, `bug-report`, `feature-request` - links to the same github issue select page. 
@@ -310,7 +306,7 @@ The Evennia documentation supports some special reference shortcuts in links:
  > For some reason these particular shortcuts gives a warning during documentation compilation. This 
  > can be ignored. 
 
-## Verbatim text
+### Verbatim text
 
 It's common to want to mark something to be displayed verbatim - just as written - without any 
 Markdown parsing. In running text, this is done using backticks (\`), like \`verbatim text\` becomes `verbatim text`. 
@@ -335,7 +331,7 @@ Everything within these backticks will be verbatim.
 ```
 ````
 
-## Code blocks
+### Code blocks
 
 A special case is code examples - we want them to get code-highlighting for readability. This is done by using 
 the triple-backticks and specify which language we use:
@@ -356,7 +352,7 @@ def a_python_func(x):
     
 ``` 
 
-## ReST blocks
+### ReST blocks
 
 Markdown is easy to read and use. But while it does most of what we need, there are some things it's 
 not quite as expressive as it needs to be. For this we need to fall back to the [ReST][ReST] markup 
@@ -567,7 +563,7 @@ for more flexibility. It also provides a link to the code block, identified by i
 ````
 ```code-block:: python
     :linenos:
-    :emphasize-lines: 6-7,12
+    :emphasize-lines: 1-2,8
     :caption: An example code block
     :name: A full code block example
 
