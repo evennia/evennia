@@ -44,6 +44,7 @@ div.body {
     color: #3E4349;
     padding: 0 30px 30px 30px;
     font-size: 0.9em;
+    margin-top: -9px;
 }
 
 div.footer {
@@ -60,7 +61,7 @@ div.footer a {
 }
 
 div.related {
-    background-color: #c6d7df;
+    background-color: #dbe9f0;
     line-height: 32px;
     color: #9FA0A0;
     /*! text-shadow: 0px 1px 0 #444; */
@@ -97,7 +98,7 @@ div.sphinxsidebar h4 {
     font-weight: normal;
     margin: 0;
     padding: 5px 10px;
-    background-color: #c6d7df;
+    background-color: #dbe9f0;
 }
 
 div.sphinxsidebar h4{
@@ -300,3 +301,13 @@ div.code-block-caption {
     color: #222;
     border: 1px solid #C6C9CB;
 }
+
+.logo {
+  padding-left: 1px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  margin-top: -12px;
+  opacity: 0.8;
+}
+
