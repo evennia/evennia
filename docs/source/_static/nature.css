@@ -73,11 +73,12 @@ div.related a {
 
 blockquote {
   font-style: italic;
+  color: #797979;
   background-color: #e1e8e2;
   padding: 3px;
   border: 1px solid #c7cdc8;
   padding-left: 14px;
-  color: #797979;
+}
 
 
 div.sphinxsidebar {
@@ -168,10 +169,8 @@ div.body h6 {
     padding: 5px 0 5px 10px;
     text-shadow: 0px 1px 0 white
     border-bottom: 1px solid #d1d1d1;
-    border-left: 10px solid #c9daea;
-    border-bottom: 1px solid #c9daea;
+    border-left: 10px solid #cfdde8;
 }
-
 
 div.body h1 {
     margin-top: 20px solid #fff;
