@@ -90,7 +90,8 @@ html_sidebars = {
         "versioning.html",
     ]
 }
-html_favicon = "_static/favicon.ico"
+html_favicon = "_static/images/favicon.ico"
+html_logo = "_static/images/evennia_logo.png"
 
 # HTML syntax highlighting style
 pygments_style = "sphinx"
