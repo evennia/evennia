@@ -62,8 +62,22 @@ smv_tag_whitelist = r"^$"
 # -- Options for HTML output -------------------------------------------------
 
 # html_theme = "alabaster"
-html_theme = "stanford_theme"
-html_theme_path = [sphinx_theme.get_html_theme_path("stanford_theme")]
+# import stanford_theme
+# html_theme = "stanford_theme"
+# html_theme_path = [stanford_theme.get_html_theme_path()]
+# html_theme = "sunpy"
+# import sunpy_sphinx_theme
+# html_theme_path = sunpy_sphinx_theme.get_html_theme_path()
+# html_theme = 'topos-theme'
+# html_theme = 'sphinxdoc'
+# html_theme = 'classic'
+# html_theme = 'scrolls'
+# html_theme = 'agogo'
+# html_theme = "traditional"
+html_theme = 'nature'
+## html_theme = 'pyramid'
+#html_theme = 'bizstyle'
+# html_theme = 'epub'
 
 # Custom extras for sidebar
 html_sidebars = {
@@ -141,6 +155,7 @@ auto_toc_sections = ["Contents", "Toc", "Index"]
 recommonmark_config = {
     "enable_auto_toc_tree": True,
     "url_resolver": url_resolver,
+    "auto_toc_maxdepth": 1,
     "auto_toc_tree_section": ["Contents", "Toc", "Index"],
     "code_highlight_options": {"force": True, "linenos": True},
 }
