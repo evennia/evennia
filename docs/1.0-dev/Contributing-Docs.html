@@ -1,203 +1,38 @@
 
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>Evennia docs &mdash; Evennia 1.0-dev documentation</title>
-  
 
-  
-  
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Evennia docs &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
-  
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+      </ul>
+    </div>  
 
-  
-
-  
-  
-    
-
-  
-
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Evennia 1.0-dev documentation" href="index.html"/> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
-</head>
-
-<body class="wy-body-for-nav" role="document">
-
-   
-  <div class="wy-grid-for-nav">
-
-    
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
-          
-
-          
-            <a href="index.html" class="icon icon-home"> Evennia
-          
-
-          
-          </a>
-
-          
-            
-            
-          
-
-          
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-                <!-- Local TOC -->
-                <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">Evennia docs</a></li>
-<li><a class="reference internal" href="#editing-the-docs">Editing the docs</a><ul>
-<li><a class="reference internal" href="#contributing-to-docs">Contributing to docs</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#building-the-docs-locally">Building the docs locally</a><ul>
-<li><a class="reference internal" href="#building-only-the-main-documentation">Building only the main documentation</a></li>
-<li><a class="reference internal" href="#building-the-main-documentation-and-api-docs">Building the main documentation and API docs</a><ul>
-<li><a class="reference internal" href="#building-with-another-gamedir">Building with another gamedir</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#building-for-release">Building for release</a><ul>
-<li><a class="reference internal" href="#release">Release</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#editing-syntax">Editing syntax</a><ul>
-<li><a class="reference internal" href="#italic-bold">Italic/Bold</a></li>
-<li><a class="reference internal" href="#headings">Headings</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#heading">Heading</a><ul>
-<li><a class="reference internal" href="#subheading">SubHeading</a><ul>
-<li><a class="reference internal" href="#subsubheading">SubSubHeading</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#lists">Lists</a></li>
-<li><a class="reference internal" href="#notes">Notes</a></li>
-<li><a class="reference internal" href="#links">Links</a><ul>
-<li><a class="reference internal" href="#special-references">Special references</a><ul>
-<li><a class="reference internal" href="#github-online-repository">Github online repository</a></li>
-<li><a class="reference internal" href="#api">API</a></li>
-<li><a class="reference internal" href="#bug-reports-feature-request">Bug reports/feature request</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#verbatim-text">Verbatim text</a></li>
-<li><a class="reference internal" href="#code-blocks">Code blocks</a></li>
-<li><a class="reference internal" href="#rest-blocks">ReST blocks</a><ul>
-<li><a class="reference internal" href="#note">Note</a></li>
-<li><a class="reference internal" href="#important">Important</a></li>
-<li><a class="reference internal" href="#warning">Warning</a></li>
-<li><a class="reference internal" href="#version-changes-and-deprecations">Version changes and deprecations</a></li>
-<li><a class="reference internal" href="#sidebar">Sidebar</a></li>
-<li><a class="reference internal" href="#tables">Tables</a></li>
-<li><a class="reference internal" href="#a-more-flexible-code-block">A more flexible code block</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#technical">Technical</a></li>
-</ul>
-</div>
-            
-          
-        </div>
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">Evennia</a>
-        
-      </nav>
-
-
-      
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
-  <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html">Docs</a> &raquo;</li>
-        
-      <li>Evennia docs</li>
-    
-    
-      <li class="wy-breadcrumbs-aside">
-        
-            
-            <a href="_sources/Contributing-Docs.md.txt" rel="nofollow"> View page source</a>
-          
-        
-      </li>
-    
-  </ul>
-
-  
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
             
   <div class="section" id="evennia-docs">
 <h1>Evennia docs<a class="headerlink" href="#evennia-docs" title="Permalink to this headline">¶</a></h1>
@@ -208,9 +43,8 @@
 </div>
 <p>The live documentation is (or will in the future be) available at
 <a class="reference external" href="https://evennia.github.io/evennia/latest">https://evennia.github.io/evennia/latest</a>.</p>
-</div>
 <div class="section" id="editing-the-docs">
-<h1>Editing the docs<a class="headerlink" href="#editing-the-docs" title="Permalink to this headline">¶</a></h1>
+<h2>Editing the docs<a class="headerlink" href="#editing-the-docs" title="Permalink to this headline">¶</a></h2>
 <p>The documentation source files are <code class="docutils literal notranslate"><span class="pre">*.md</span></code> (Markdown) files found in <code class="docutils literal notranslate"><span class="pre">evennia/docs/source/</span></code>.
 Markdown files are simple text files that can be edited with a normal text editor. They can also
 contain raw HTML directives (but that is very rarely needed). They primarly use
@@ -220,14 +54,14 @@ the <a class="reference external" href="https://spec.commonmark.org/current/">Ma
 will be lost.</p>
 </div></blockquote>
 <div class="section" id="contributing-to-docs">
-<h2>Contributing to docs<a class="headerlink" href="#contributing-to-docs" title="Permalink to this headline">¶</a></h2>
+<h3>Contributing to docs<a class="headerlink" href="#contributing-to-docs" title="Permalink to this headline">¶</a></h3>
 <p>Contributing to the docs is is like <a class="reference internal" href="Contributing.html"><span class="doc">contributing to the rest of Evennia</span></a>:
 Check out the branch of Evennia you want to edit the documentation for. Create your
 own work-branch, make your changes to files in <code class="docutils literal notranslate"><span class="pre">evennia/docs/source/</span></code> and make a PR for it!</p>
 </div>
 </div>
 <div class="section" id="building-the-docs-locally">
-<h1>Building the docs locally<a class="headerlink" href="#building-the-docs-locally" title="Permalink to this headline">¶</a></h1>
+<h2>Building the docs locally<a class="headerlink" href="#building-the-docs-locally" title="Permalink to this headline">¶</a></h2>
 <p>The sources in <code class="docutils literal notranslate"><span class="pre">evennia/docs/source/</span></code> are built into a pretty documentation using
 the <a class="reference external" href="https://www.sphinx-doc.org/en/master/">Sphinx</a> static generator system. To do so locally you need to either
 use a system with <code class="docutils literal notranslate"><span class="pre">make</span></code> (Linux/Unix/Mac or <a class="reference external" href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">Windows-WSL</a>). Lacking that, you could
@@ -237,7 +71,7 @@ which commands are run by <code class="docutils literal notranslate"><span class
 building them allows you to check for yourself that syntax is correct and that
 your change comes out looking as you expected.</p>
 <div class="section" id="building-only-the-main-documentation">
-<h2>Building only the main documentation<a class="headerlink" href="#building-only-the-main-documentation" title="Permalink to this headline">¶</a></h2>
+<h3>Building only the main documentation<a class="headerlink" href="#building-only-the-main-documentation" title="Permalink to this headline">¶</a></h3>
 <p>If you only want to build the main documentation pages (not the API auto-docs),
 you don’t need to install Evennia itself, only the documentation resources.
 All is done in your terminal/console.</p>
@@ -264,7 +98,7 @@ build them!</p></li>
 </ul>
 </div>
 <div class="section" id="building-the-main-documentation-and-api-docs">
-<h2>Building the main documentation and API docs<a class="headerlink" href="#building-the-main-documentation-and-api-docs" title="Permalink to this headline">¶</a></h2>
+<h3>Building the main documentation and API docs<a class="headerlink" href="#building-the-main-documentation-and-api-docs" title="Permalink to this headline">¶</a></h3>
 <p>The full documentation includes both the doc pages and the API documentation
 generated from the Evennia source. For this you must install Evennia and
 initialize a new game with a default database (you don’t need to have it
@@ -319,7 +153,7 @@ Note any errors from files you have edited.</p></li>
 view the full docs.</p></li>
 </ul>
 <div class="section" id="building-with-another-gamedir">
-<h3>Building with another gamedir<a class="headerlink" href="#building-with-another-gamedir" title="Permalink to this headline">¶</a></h3>
+<h4>Building with another gamedir<a class="headerlink" href="#building-with-another-gamedir" title="Permalink to this headline">¶</a></h4>
 <p>If you for some reason want to use another location of your <code class="docutils literal notranslate"><span class="pre">gamedir/</span></code>, or want it
 named something else (maybe you already use the name ‘gamedir’ for your development …),
 you can do so by setting the <code class="docutils literal notranslate"><span class="pre">EVGAMEDIR</span></code> environment variable to the absolute path
@@ -330,7 +164,7 @@ of your alternative game dir. For example:</p>
 </div>
 </div>
 <div class="section" id="building-for-release">
-<h2>Building for release<a class="headerlink" href="#building-for-release" title="Permalink to this headline">¶</a></h2>
+<h3>Building for release<a class="headerlink" href="#building-for-release" title="Permalink to this headline">¶</a></h3>
 <p>The full Evennia documentation contains docs from many Evennia
 versions, old and new. This is done by pulling documentation from Evennia’s old release
 branches and building them all so readers can choose which one to view. Only
@@ -349,7 +183,7 @@ docs are built by looking at the git tree.</p></li>
 will be found under <code class="docutils literal notranslate"><span class="pre">evennia/docs/build</span></code>. During deploy a symlink <code class="docutils literal notranslate"><span class="pre">latest</span></code> will point
 to the latest version of the docs.</p>
 <div class="section" id="release">
-<h3>Release<a class="headerlink" href="#release" title="Permalink to this headline">¶</a></h3>
+<h4>Release<a class="headerlink" href="#release" title="Permalink to this headline">¶</a></h4>
 <p>Releasing the official docs requires git-push access the the Evennia <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> branch
 on <code class="docutils literal notranslate"><span class="pre">github</span></code>. So there is no risk of you releasing your local changes accidentally.</p>
 <ul>
@@ -367,6 +201,7 @@ on <code class="docutils literal notranslate"><span class="pre">github</span></c
 </ul>
 <p>After deployment finishes, the updated live documentation will be
 available at https://evennia.github.io/evennia/latest/.</p>
+</div>
 </div>
 </div>
 </div>
@@ -391,19 +226,10 @@ and smaller font).</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">##</span> <span class="pre">SubHeading</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">##</span> <span class="pre">SubSubHeading</span></code></p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="heading">
-<h1>Heading<a class="headerlink" href="#heading" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="subheading">
-<h2>SubHeading<a class="headerlink" href="#subheading" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="subsubheading">
-<h3>SubSubHeading<a class="headerlink" href="#subsubheading" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><p>Don’t reuse the same heading/subheading name over and over in the same document. While Markdown does not prevent
 it, it makes it impossible to link to those duplicates properly (see next section).</p>
 </div></blockquote>
-</div>
 </div>
 <div class="section" id="lists">
 <h2>Lists<a class="headerlink" href="#lists" title="Permalink to this headline">¶</a></h2>
@@ -789,7 +615,7 @@ can also specify the code block explicitly in <code class="docutils literal notr
 for more flexibility. It also provides a link to the code block, identified by its name.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>```code-block:: python
     :linenos:
-    :emphasize-lines: 6-7,12
+    :emphasize-lines: 1-2,8
     :caption: An example code block
     :name: A full code block example
 
@@ -846,64 +672,108 @@ to understand our friendly Google-style docstrings used in classes and functions
 </div>
 
 
-           </div>
           </div>
-          <footer>
-  
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Evennia docs</a><ul>
+<li><a class="reference internal" href="#editing-the-docs">Editing the docs</a><ul>
+<li><a class="reference internal" href="#contributing-to-docs">Contributing to docs</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#building-the-docs-locally">Building the docs locally</a><ul>
+<li><a class="reference internal" href="#building-only-the-main-documentation">Building only the main documentation</a></li>
+<li><a class="reference internal" href="#building-the-main-documentation-and-api-docs">Building the main documentation and API docs</a><ul>
+<li><a class="reference internal" href="#building-with-another-gamedir">Building with another gamedir</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#building-for-release">Building for release</a><ul>
+<li><a class="reference internal" href="#release">Release</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#editing-syntax">Editing syntax</a><ul>
+<li><a class="reference internal" href="#italic-bold">Italic/Bold</a></li>
+<li><a class="reference internal" href="#headings">Headings</a></li>
+<li><a class="reference internal" href="#lists">Lists</a></li>
+<li><a class="reference internal" href="#notes">Notes</a></li>
+<li><a class="reference internal" href="#links">Links</a><ul>
+<li><a class="reference internal" href="#special-references">Special references</a><ul>
+<li><a class="reference internal" href="#github-online-repository">Github online repository</a></li>
+<li><a class="reference internal" href="#api">API</a></li>
+<li><a class="reference internal" href="#bug-reports-feature-request">Bug reports/feature request</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#verbatim-text">Verbatim text</a></li>
+<li><a class="reference internal" href="#code-blocks">Code blocks</a></li>
+<li><a class="reference internal" href="#rest-blocks">ReST blocks</a><ul>
+<li><a class="reference internal" href="#note">Note</a></li>
+<li><a class="reference internal" href="#important">Important</a></li>
+<li><a class="reference internal" href="#warning">Warning</a></li>
+<li><a class="reference internal" href="#version-changes-and-deprecations">Version changes and deprecations</a></li>
+<li><a class="reference internal" href="#sidebar">Sidebar</a></li>
+<li><a class="reference internal" href="#tables">Tables</a></li>
+<li><a class="reference internal" href="#a-more-flexible-code-block">A more flexible code block</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#technical">Technical</a></li>
+</ul>
 
-  <hr/>
-
-  <div role="contentinfo">
-    <p>
-        &copy; Copyright 2020, The Evennia developer community.
-
-    </p>
-  </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Sphinx-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
-
-</footer>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Contributing-Docs.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Contributing-Docs.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
 
         </div>
       </div>
-
-    </section>
-
-  </div>
-  
-
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'1.0-dev',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="_static/language_data.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
-      });
-  </script>
-   
-
-</body>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
 </html>

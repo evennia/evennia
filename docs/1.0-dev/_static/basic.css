@@ -315,9 +315,9 @@ img.align-default, .figure.align-default {
 
 div.sidebar {
     margin: 0 0 0.5em 1em;
-    border: 1px solid #ddb;
-    padding: 7px 7px 0 7px;
-    background-color: #ffe;
+    border: 1px solid #787878;
+    padding: 5px 7px 7px 15px;
+    background-color: #f5fdff;
     width: 40%;
     float: right;
 }
@@ -649,6 +649,7 @@ td.linenos pre {
     border: 0;
     background-color: transparent;
     color: #aaa;
+    -webkit-box-shadow: 0px 0px 0px #fff;
 }
 
 table.highlighttable {
@@ -656,7 +657,7 @@ table.highlighttable {
 }
 
 table.highlighttable td {
-    padding: 0 0.5em 0 0.5em;
+    /* padding: 0 0.5em 0 0.5em; */
 }
 
 div.code-block-caption {

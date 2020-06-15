@@ -1,277 +1,38 @@
 
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>Default Command Help &mdash; Evennia 0.9.1 documentation</title>
-  
 
-  
-  
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Default Command Help &#8212; Evennia 0.9.1 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
-  
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
 
-  
-
-  
-  
-    
-
-  
-
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Evennia 0.9.1 documentation" href="index.html"/> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
-</head>
-
-<body class="wy-body-for-nav" role="document">
-
-   
-  <div class="wy-grid-for-nav">
-
-    
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
-          
-
-          
-            <a href="index.html" class="icon icon-home"> Evennia
-          
-
-          
-          </a>
-
-          
-            
-            
-          
-
-          
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-                <!-- Local TOC -->
-                <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">Default Command Help</a><ul>
-<li><a class="reference internal" href="#a-z">A-Z</a></li>
-<li><a class="reference internal" href="#a-z-by-source-file">A-Z by source file</a></li>
-<li><a class="reference internal" href="#command-details">Command details</a><ul>
-<li><a class="reference internal" href="#account-py"><code class="docutils literal notranslate"><span class="pre">account.py</span></code></a><ul>
-<li><a class="reference internal" href="#charcreate-cmdcharcreate">charcreate (CmdCharCreate)</a></li>
-<li><a class="reference internal" href="#chardelete-cmdchardelete">chardelete (CmdCharDelete)</a></li>
-<li><a class="reference internal" href="#color-cmdcolortest">color (CmdColorTest)</a></li>
-<li><a class="reference internal" href="#ic-cmdic">ic (CmdIC)</a></li>
-<li><a class="reference internal" href="#look-cmdooclook">look (CmdOOCLook)</a></li>
-<li><a class="reference internal" href="#ooc-cmdooc">ooc (CmdOOC)</a></li>
-<li><a class="reference internal" href="#option-cmdoption">option (CmdOption)</a></li>
-<li><a class="reference internal" href="#password-cmdpassword">password (CmdPassword)</a></li>
-<li><a class="reference internal" href="#quell-cmdquell">quell (CmdQuell)</a></li>
-<li><a class="reference internal" href="#quit-cmdquit">quit (CmdQuit)</a></li>
-<li><a class="reference internal" href="#sessions-cmdsessions">sessions (CmdSessions)</a></li>
-<li><a class="reference internal" href="#style-cmdstyle">style (CmdStyle)</a></li>
-<li><a class="reference internal" href="#who-cmdwho">who (CmdWho)</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#admin-py"><code class="docutils literal notranslate"><span class="pre">admin.py</span></code></a><ul>
-<li><a class="reference internal" href="#ban-cmdban">ban (CmdBan)</a></li>
-<li><a class="reference internal" href="#boot-cmdboot">boot (CmdBoot)</a></li>
-<li><a class="reference internal" href="#emit-cmdemit">emit (CmdEmit)</a></li>
-<li><a class="reference internal" href="#force-cmdforce">force (CmdForce)</a></li>
-<li><a class="reference internal" href="#perm-cmdperm">perm (CmdPerm)</a></li>
-<li><a class="reference internal" href="#unban-cmdunban">unban (CmdUnban)</a></li>
-<li><a class="reference internal" href="#userpassword-cmdnewpassword">userpassword (CmdNewPassword)</a></li>
-<li><a class="reference internal" href="#wall-cmdwall">wall (CmdWall)</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#batchprocess-py"><code class="docutils literal notranslate"><span class="pre">batchprocess.py</span></code></a><ul>
-<li><a class="reference internal" href="#batchcode-cmdbatchcode">batchcode (CmdBatchCode)</a></li>
-<li><a class="reference internal" href="#batchcommands-cmdbatchcommands">batchcommands (CmdBatchCommands)</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#building-py"><code class="docutils literal notranslate"><span class="pre">building.py</span></code></a><ul>
-<li><a class="reference internal" href="#alias-cmdsetobjalias">alias (CmdSetObjAlias)</a></li>
-<li><a class="reference internal" href="#cmdsets-cmdlistcmdsets">cmdsets (CmdListCmdSets)</a></li>
-<li><a class="reference internal" href="#command-objmanipcommand">command (ObjManipCommand)</a></li>
-<li><a class="reference internal" href="#copy-cmdcopy">copy (CmdCopy)</a></li>
-<li><a class="reference internal" href="#cpattr-cmdcpattr">cpattr (CmdCpAttr)</a></li>
-<li><a class="reference internal" href="#create-cmdcreate">create (CmdCreate)</a></li>
-<li><a class="reference internal" href="#desc-cmddesc">desc (CmdDesc)</a></li>
-<li><a class="reference internal" href="#destroy-cmddestroy">destroy (CmdDestroy)</a></li>
-<li><a class="reference internal" href="#dig-cmddig">dig (CmdDig)</a></li>
-<li><a class="reference internal" href="#examine-cmdexamine">examine (CmdExamine)</a></li>
-<li><a class="reference internal" href="#find-cmdfind">find (CmdFind)</a></li>
-<li><a class="reference internal" href="#link-cmdlink">link (CmdLink)</a></li>
-<li><a class="reference internal" href="#lock-cmdlock">lock (CmdLock)</a></li>
-<li><a class="reference internal" href="#mvattr-cmdmvattr">mvattr (CmdMvAttr)</a></li>
-<li><a class="reference internal" href="#name-cmdname">name (CmdName)</a></li>
-<li><a class="reference internal" href="#open-cmdopen">open (CmdOpen)</a></li>
-<li><a class="reference internal" href="#script-cmdscript">script (CmdScript)</a></li>
-<li><a class="reference internal" href="#set-cmdsetattribute">set (CmdSetAttribute)</a></li>
-<li><a class="reference internal" href="#sethome-cmdsethome">sethome (CmdSetHome)</a></li>
-<li><a class="reference internal" href="#spawn-cmdspawn">spawn (CmdSpawn)</a></li>
-<li><a class="reference internal" href="#tag-cmdtag">tag (CmdTag)</a></li>
-<li><a class="reference internal" href="#tel-cmdteleport">tel (CmdTeleport)</a></li>
-<li><a class="reference internal" href="#tunnel-cmdtunnel">tunnel (CmdTunnel)</a></li>
-<li><a class="reference internal" href="#typeclass-cmdtypeclass">typeclass (CmdTypeclass)</a></li>
-<li><a class="reference internal" href="#unlink-cmdunlink">unlink (CmdUnLink)</a></li>
-<li><a class="reference internal" href="#wipe-cmdwipe">wipe (CmdWipe)</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#comms-py"><code class="docutils literal notranslate"><span class="pre">comms.py</span></code></a><ul>
-<li><a class="reference internal" href="#addcom-cmdaddcom">addcom (CmdAddCom)</a></li>
-<li><a class="reference internal" href="#allcom-cmdallcom">allcom (CmdAllCom)</a></li>
-<li><a class="reference internal" href="#cboot-cmdcboot">cboot (CmdCBoot)</a></li>
-<li><a class="reference internal" href="#ccreate-cmdchannelcreate">ccreate (CmdChannelCreate)</a></li>
-<li><a class="reference internal" href="#cdesc-cmdcdesc">cdesc (CmdCdesc)</a></li>
-<li><a class="reference internal" href="#cdestroy-cmdcdestroy">cdestroy (CmdCdestroy)</a></li>
-<li><a class="reference internal" href="#cemit-cmdcemit">cemit (CmdCemit)</a></li>
-<li><a class="reference internal" href="#channels-cmdchannels">channels (CmdChannels)</a></li>
-<li><a class="reference internal" href="#clock-cmdclock">clock (CmdClock)</a></li>
-<li><a class="reference internal" href="#cwho-cmdcwho">cwho (CmdCWho)</a></li>
-<li><a class="reference internal" href="#delcom-cmddelcom">delcom (CmdDelCom)</a></li>
-<li><a class="reference internal" href="#irc2chan-cmdirc2chan">irc2chan (CmdIRC2Chan)</a></li>
-<li><a class="reference internal" href="#page-cmdpage">page (CmdPage)</a></li>
-<li><a class="reference internal" href="#rss2chan-cmdrss2chan">rss2chan (CmdRSS2Chan)</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#general-py"><code class="docutils literal notranslate"><span class="pre">general.py</span></code></a><ul>
-<li><a class="reference internal" href="#access-cmdaccess">access (CmdAccess)</a></li>
-<li><a class="reference internal" href="#drop-cmddrop">drop (CmdDrop)</a></li>
-<li><a class="reference internal" href="#get-cmdget">get (CmdGet)</a></li>
-<li><a class="reference internal" href="#give-cmdgive">give (CmdGive)</a></li>
-<li><a class="reference internal" href="#home-cmdhome">home (CmdHome)</a></li>
-<li><a class="reference internal" href="#inventory-cmdinventory">inventory (CmdInventory)</a></li>
-<li><a class="reference internal" href="#look-cmdlook">look (CmdLook)</a></li>
-<li><a class="reference internal" href="#nick-cmdnick">nick (CmdNick)</a></li>
-<li><a class="reference internal" href="#pose-cmdpose">pose (CmdPose)</a></li>
-<li><a class="reference internal" href="#say-cmdsay">say (CmdSay)</a></li>
-<li><a class="reference internal" href="#setdesc-cmdsetdesc">setdesc (CmdSetDesc)</a></li>
-<li><a class="reference internal" href="#whisper-cmdwhisper">whisper (CmdWhisper)</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#help-py"><code class="docutils literal notranslate"><span class="pre">help.py</span></code></a><ul>
-<li><a class="reference internal" href="#help-cmdhelp">help (CmdHelp)</a></li>
-<li><a class="reference internal" href="#sethelp-cmdsethelp">sethelp (CmdSetHelp)</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#system-py"><code class="docutils literal notranslate"><span class="pre">system.py</span></code></a><ul>
-<li><a class="reference internal" href="#about-cmdabout">about (CmdAbout)</a></li>
-<li><a class="reference internal" href="#objects-cmdobjects">objects (CmdObjects)</a></li>
-<li><a class="reference internal" href="#py-cmdpy">py (CmdPy)</a></li>
-<li><a class="reference internal" href="#reload-cmdreload">reload (CmdReload)</a></li>
-<li><a class="reference internal" href="#reset-cmdreset">reset (CmdReset)</a></li>
-<li><a class="reference internal" href="#scripts-cmdscripts">scripts (CmdScripts)</a></li>
-<li><a class="reference internal" href="#server-cmdserverload">server (CmdServerLoad)</a></li>
-<li><a class="reference internal" href="#service-cmdservice">service (CmdService)</a></li>
-<li><a class="reference internal" href="#shutdown-cmdshutdown">shutdown (CmdShutdown)</a></li>
-<li><a class="reference internal" href="#time-cmdtime">time (CmdTime)</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#unloggedin-py"><code class="docutils literal notranslate"><span class="pre">unloggedin.py</span></code></a><ul>
-<li><a class="reference internal" href="#unloggedin-look-command-cmdunconnectedlook">__unloggedin_look_command (CmdUnconnectedLook)</a></li>
-<li><a class="reference internal" href="#connect-cmdunconnectedconnect">connect (CmdUnconnectedConnect)</a></li>
-<li><a class="reference internal" href="#create-cmdunconnectedcreate">create (CmdUnconnectedCreate)</a></li>
-<li><a class="reference internal" href="#help-cmdunconnectedhelp">help (CmdUnconnectedHelp)</a></li>
-<li><a class="reference internal" href="#quit-cmdunconnectedquit">quit (CmdUnconnectedQuit)</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-            
-          
-        </div>
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">Evennia</a>
-        
-      </nav>
-
-
-      
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
-  <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html">Docs</a> &raquo;</li>
-        
-      <li>Default Command Help</li>
-    
-    
-      <li class="wy-breadcrumbs-aside">
-        
-            
-            <a href="_sources/Default-Command-Help.md.txt" rel="nofollow"> View page source</a>
-          
-        
-      </li>
-    
-  </ul>
-
-  
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
             
   <div class="section" id="default-command-help">
 <h1>Default Command Help<a class="headerlink" href="#default-command-help" title="Permalink to this headline">¶</a></h1>
@@ -2882,64 +2643,187 @@ Belongs to command set <em>‘DefaultUnloggedin’</em> of class <code class="do
 </div>
 
 
-           </div>
           </div>
-          <footer>
-  
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Default Command Help</a><ul>
+<li><a class="reference internal" href="#a-z">A-Z</a></li>
+<li><a class="reference internal" href="#a-z-by-source-file">A-Z by source file</a></li>
+<li><a class="reference internal" href="#command-details">Command details</a><ul>
+<li><a class="reference internal" href="#account-py"><code class="docutils literal notranslate"><span class="pre">account.py</span></code></a><ul>
+<li><a class="reference internal" href="#charcreate-cmdcharcreate">charcreate (CmdCharCreate)</a></li>
+<li><a class="reference internal" href="#chardelete-cmdchardelete">chardelete (CmdCharDelete)</a></li>
+<li><a class="reference internal" href="#color-cmdcolortest">color (CmdColorTest)</a></li>
+<li><a class="reference internal" href="#ic-cmdic">ic (CmdIC)</a></li>
+<li><a class="reference internal" href="#look-cmdooclook">look (CmdOOCLook)</a></li>
+<li><a class="reference internal" href="#ooc-cmdooc">ooc (CmdOOC)</a></li>
+<li><a class="reference internal" href="#option-cmdoption">option (CmdOption)</a></li>
+<li><a class="reference internal" href="#password-cmdpassword">password (CmdPassword)</a></li>
+<li><a class="reference internal" href="#quell-cmdquell">quell (CmdQuell)</a></li>
+<li><a class="reference internal" href="#quit-cmdquit">quit (CmdQuit)</a></li>
+<li><a class="reference internal" href="#sessions-cmdsessions">sessions (CmdSessions)</a></li>
+<li><a class="reference internal" href="#style-cmdstyle">style (CmdStyle)</a></li>
+<li><a class="reference internal" href="#who-cmdwho">who (CmdWho)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#admin-py"><code class="docutils literal notranslate"><span class="pre">admin.py</span></code></a><ul>
+<li><a class="reference internal" href="#ban-cmdban">ban (CmdBan)</a></li>
+<li><a class="reference internal" href="#boot-cmdboot">boot (CmdBoot)</a></li>
+<li><a class="reference internal" href="#emit-cmdemit">emit (CmdEmit)</a></li>
+<li><a class="reference internal" href="#force-cmdforce">force (CmdForce)</a></li>
+<li><a class="reference internal" href="#perm-cmdperm">perm (CmdPerm)</a></li>
+<li><a class="reference internal" href="#unban-cmdunban">unban (CmdUnban)</a></li>
+<li><a class="reference internal" href="#userpassword-cmdnewpassword">userpassword (CmdNewPassword)</a></li>
+<li><a class="reference internal" href="#wall-cmdwall">wall (CmdWall)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#batchprocess-py"><code class="docutils literal notranslate"><span class="pre">batchprocess.py</span></code></a><ul>
+<li><a class="reference internal" href="#batchcode-cmdbatchcode">batchcode (CmdBatchCode)</a></li>
+<li><a class="reference internal" href="#batchcommands-cmdbatchcommands">batchcommands (CmdBatchCommands)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#building-py"><code class="docutils literal notranslate"><span class="pre">building.py</span></code></a><ul>
+<li><a class="reference internal" href="#alias-cmdsetobjalias">alias (CmdSetObjAlias)</a></li>
+<li><a class="reference internal" href="#cmdsets-cmdlistcmdsets">cmdsets (CmdListCmdSets)</a></li>
+<li><a class="reference internal" href="#command-objmanipcommand">command (ObjManipCommand)</a></li>
+<li><a class="reference internal" href="#copy-cmdcopy">copy (CmdCopy)</a></li>
+<li><a class="reference internal" href="#cpattr-cmdcpattr">cpattr (CmdCpAttr)</a></li>
+<li><a class="reference internal" href="#create-cmdcreate">create (CmdCreate)</a></li>
+<li><a class="reference internal" href="#desc-cmddesc">desc (CmdDesc)</a></li>
+<li><a class="reference internal" href="#destroy-cmddestroy">destroy (CmdDestroy)</a></li>
+<li><a class="reference internal" href="#dig-cmddig">dig (CmdDig)</a></li>
+<li><a class="reference internal" href="#examine-cmdexamine">examine (CmdExamine)</a></li>
+<li><a class="reference internal" href="#find-cmdfind">find (CmdFind)</a></li>
+<li><a class="reference internal" href="#link-cmdlink">link (CmdLink)</a></li>
+<li><a class="reference internal" href="#lock-cmdlock">lock (CmdLock)</a></li>
+<li><a class="reference internal" href="#mvattr-cmdmvattr">mvattr (CmdMvAttr)</a></li>
+<li><a class="reference internal" href="#name-cmdname">name (CmdName)</a></li>
+<li><a class="reference internal" href="#open-cmdopen">open (CmdOpen)</a></li>
+<li><a class="reference internal" href="#script-cmdscript">script (CmdScript)</a></li>
+<li><a class="reference internal" href="#set-cmdsetattribute">set (CmdSetAttribute)</a></li>
+<li><a class="reference internal" href="#sethome-cmdsethome">sethome (CmdSetHome)</a></li>
+<li><a class="reference internal" href="#spawn-cmdspawn">spawn (CmdSpawn)</a></li>
+<li><a class="reference internal" href="#tag-cmdtag">tag (CmdTag)</a></li>
+<li><a class="reference internal" href="#tel-cmdteleport">tel (CmdTeleport)</a></li>
+<li><a class="reference internal" href="#tunnel-cmdtunnel">tunnel (CmdTunnel)</a></li>
+<li><a class="reference internal" href="#typeclass-cmdtypeclass">typeclass (CmdTypeclass)</a></li>
+<li><a class="reference internal" href="#unlink-cmdunlink">unlink (CmdUnLink)</a></li>
+<li><a class="reference internal" href="#wipe-cmdwipe">wipe (CmdWipe)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#comms-py"><code class="docutils literal notranslate"><span class="pre">comms.py</span></code></a><ul>
+<li><a class="reference internal" href="#addcom-cmdaddcom">addcom (CmdAddCom)</a></li>
+<li><a class="reference internal" href="#allcom-cmdallcom">allcom (CmdAllCom)</a></li>
+<li><a class="reference internal" href="#cboot-cmdcboot">cboot (CmdCBoot)</a></li>
+<li><a class="reference internal" href="#ccreate-cmdchannelcreate">ccreate (CmdChannelCreate)</a></li>
+<li><a class="reference internal" href="#cdesc-cmdcdesc">cdesc (CmdCdesc)</a></li>
+<li><a class="reference internal" href="#cdestroy-cmdcdestroy">cdestroy (CmdCdestroy)</a></li>
+<li><a class="reference internal" href="#cemit-cmdcemit">cemit (CmdCemit)</a></li>
+<li><a class="reference internal" href="#channels-cmdchannels">channels (CmdChannels)</a></li>
+<li><a class="reference internal" href="#clock-cmdclock">clock (CmdClock)</a></li>
+<li><a class="reference internal" href="#cwho-cmdcwho">cwho (CmdCWho)</a></li>
+<li><a class="reference internal" href="#delcom-cmddelcom">delcom (CmdDelCom)</a></li>
+<li><a class="reference internal" href="#irc2chan-cmdirc2chan">irc2chan (CmdIRC2Chan)</a></li>
+<li><a class="reference internal" href="#page-cmdpage">page (CmdPage)</a></li>
+<li><a class="reference internal" href="#rss2chan-cmdrss2chan">rss2chan (CmdRSS2Chan)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#general-py"><code class="docutils literal notranslate"><span class="pre">general.py</span></code></a><ul>
+<li><a class="reference internal" href="#access-cmdaccess">access (CmdAccess)</a></li>
+<li><a class="reference internal" href="#drop-cmddrop">drop (CmdDrop)</a></li>
+<li><a class="reference internal" href="#get-cmdget">get (CmdGet)</a></li>
+<li><a class="reference internal" href="#give-cmdgive">give (CmdGive)</a></li>
+<li><a class="reference internal" href="#home-cmdhome">home (CmdHome)</a></li>
+<li><a class="reference internal" href="#inventory-cmdinventory">inventory (CmdInventory)</a></li>
+<li><a class="reference internal" href="#look-cmdlook">look (CmdLook)</a></li>
+<li><a class="reference internal" href="#nick-cmdnick">nick (CmdNick)</a></li>
+<li><a class="reference internal" href="#pose-cmdpose">pose (CmdPose)</a></li>
+<li><a class="reference internal" href="#say-cmdsay">say (CmdSay)</a></li>
+<li><a class="reference internal" href="#setdesc-cmdsetdesc">setdesc (CmdSetDesc)</a></li>
+<li><a class="reference internal" href="#whisper-cmdwhisper">whisper (CmdWhisper)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#help-py"><code class="docutils literal notranslate"><span class="pre">help.py</span></code></a><ul>
+<li><a class="reference internal" href="#help-cmdhelp">help (CmdHelp)</a></li>
+<li><a class="reference internal" href="#sethelp-cmdsethelp">sethelp (CmdSetHelp)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#system-py"><code class="docutils literal notranslate"><span class="pre">system.py</span></code></a><ul>
+<li><a class="reference internal" href="#about-cmdabout">about (CmdAbout)</a></li>
+<li><a class="reference internal" href="#objects-cmdobjects">objects (CmdObjects)</a></li>
+<li><a class="reference internal" href="#py-cmdpy">py (CmdPy)</a></li>
+<li><a class="reference internal" href="#reload-cmdreload">reload (CmdReload)</a></li>
+<li><a class="reference internal" href="#reset-cmdreset">reset (CmdReset)</a></li>
+<li><a class="reference internal" href="#scripts-cmdscripts">scripts (CmdScripts)</a></li>
+<li><a class="reference internal" href="#server-cmdserverload">server (CmdServerLoad)</a></li>
+<li><a class="reference internal" href="#service-cmdservice">service (CmdService)</a></li>
+<li><a class="reference internal" href="#shutdown-cmdshutdown">shutdown (CmdShutdown)</a></li>
+<li><a class="reference internal" href="#time-cmdtime">time (CmdTime)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#unloggedin-py"><code class="docutils literal notranslate"><span class="pre">unloggedin.py</span></code></a><ul>
+<li><a class="reference internal" href="#unloggedin-look-command-cmdunconnectedlook">__unloggedin_look_command (CmdUnconnectedLook)</a></li>
+<li><a class="reference internal" href="#connect-cmdunconnectedconnect">connect (CmdUnconnectedConnect)</a></li>
+<li><a class="reference internal" href="#create-cmdunconnectedcreate">create (CmdUnconnectedCreate)</a></li>
+<li><a class="reference internal" href="#help-cmdunconnectedhelp">help (CmdUnconnectedHelp)</a></li>
+<li><a class="reference internal" href="#quit-cmdunconnectedquit">quit (CmdUnconnectedQuit)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 
-  <hr/>
-
-  <div role="contentinfo">
-    <p>
-        &copy; Copyright 2020, The Evennia developer community.
-
-    </p>
-  </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Sphinx-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
-
-</footer>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Default-Command-Help.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/Default-Command-Help.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Default-Command-Help.html">0.9.1 (master branch)</a></li>
+</ul>
 
         </div>
       </div>
-
-    </section>
-
-  </div>
-  
-
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'0.9.1',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="_static/language_data.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
-      });
-  </script>
-   
-
-</body>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
 </html>
