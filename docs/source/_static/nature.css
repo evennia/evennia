@@ -37,11 +37,11 @@ hr {
 }
 
 div.document {
-    background-color: #eee;
+    background-color: #eeeeea;
 }
 
 div.body {
-    background-color: #f1f1f1;
+    background-color: #f1f1ef;
     color: #3E4349;
     padding: 0 30px 30px 30px;
     font-size: 0.9em;
@@ -166,7 +166,7 @@ div.body h4,
 div.body h5,
 div.body h6 {
     font-family: Arial, sans-serif;
-    background-color: #f7f7f7;
+    background-color: #f7f7f3;
     font-weight: normal;
     color: #212224;
     margin: 30px 0px 10px 0px;
