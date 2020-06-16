@@ -248,6 +248,11 @@ p.admonition-title:after {
     content: ":";
 }
 
+li > p:first-child {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
 .admonition.important {
   background-color: #fbf7c3;
   border: 1px solid #c8c59b;

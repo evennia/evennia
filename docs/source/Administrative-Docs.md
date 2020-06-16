@@ -20,8 +20,7 @@ index](http://games.evennia.com)
 ### Customizing the server
 
 - [Changing the Settings](Server-Conf#Settings-file) 
-    - [Available Master
-Settings](https://github.com/evennia/evennia/blob/master/evennia/settings_default.py)
+    - [Available Master Settings](https://github.com/evennia/evennia/blob/master/evennia/settings_default.py)
 - [Change Evennia's language](Internationalization) (internationalization)
 - [Apache webserver configuration](Apache-Config) (optional)
 - [Changing text encodings used by the server](Text-Encodings)
