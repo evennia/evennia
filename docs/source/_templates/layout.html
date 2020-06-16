@@ -1,0 +1,7 @@
+{%- extends "classic/layout.html" %}
+
+{%- block relbaritems %}
+{%- if master_doc != pagename %}
+<li class="nav-item nav-item-last"><a href="{{ pathto(pagename) }}">{{ title|striptags|e }}</a></li>
+{% endif %}
+{% endblock %}
