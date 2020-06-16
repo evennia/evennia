@@ -7,11 +7,13 @@
     <title>Typeclasses &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Typeclasses</a></li>
+
+
       </ul>
     </div>  
 
@@ -37,7 +42,7 @@
   <div class="section" id="typeclasses">
 <h1>Typeclasses<a class="headerlink" href="#typeclasses" title="Permalink to this headline">¶</a></h1>
 <p><em>Typeclasses</em> form the core of Evennia data storage. It allows Evennia to represent any number of different game entities as Python classes, without having to modify the database schema for every new type.</p>
-<p>In Evennia the most important game entities, <a class="reference internal" href="Accounts.html"><span class="doc">Accounts</span></a>, <a class="reference internal" href="Objects.html"><span class="doc">Objects</span></a>, <a class="reference internal" href="Scripts.html"><span class="doc">Scripts</span></a> and <a class="reference external" href="/Communications.html#Channels">Channels</a> are all Python classes inheriting, at varying distance, from <code class="docutils literal notranslate"><span class="pre">evennia.typeclasses.models.TypedObject</span></code>.  In the documentation we refer to these objects as being “typeclassed” or even “being a typeclass”.</p>
+<p>In Evennia the most important game entities, <a class="reference internal" href="Accounts.html"><span class="doc">Accounts</span></a>, <a class="reference internal" href="Objects.html"><span class="doc">Objects</span></a>, <a class="reference internal" href="Scripts.html"><span class="doc">Scripts</span></a> and <a class="reference external" href="Communications.html#Channels">Channels</a> are all Python classes inheriting, at varying distance, from <code class="docutils literal notranslate"><span class="pre">evennia.typeclasses.models.TypedObject</span></code>.  In the documentation we refer to these objects as being “typeclassed” or even “being a typeclass”.</p>
 <p>This is how the inheritance looks for the typeclasses in Evennia:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                  <span class="n">TypedObject</span>
       <span class="n">_________________</span><span class="o">|</span><span class="n">_________________________________</span>
@@ -69,7 +74,7 @@ to Evennia you must import that module from somewhere.</p>
 <h2>Difference between typeclasses and classes<a class="headerlink" href="#difference-between-typeclasses-and-classes" title="Permalink to this headline">¶</a></h2>
 <p>All Evennia classes inheriting from class in the table above share one important feature and two important limitations. This is why we don’t simply call them “classes” but “typeclasses”.</p>
 <ol>
-<li><p>A typeclass can save itself to the database. This means that some properties (actually not that many) on the class actually represents database fields and can only hold very specific data types. This is detailed <a class="reference external" href="/Typeclasses.html#about-typeclass-properties">below</a>.</p></li>
+<li><p>A typeclass can save itself to the database. This means that some properties (actually not that many) on the class actually represents database fields and can only hold very specific data types. This is detailed <a class="reference external" href="Typeclasses.html#about-typeclass-properties">below</a>.</p></li>
 <li><p>Due to its connection to the database, the typeclass’ name must be <em>unique</em> across the <em>entire</em> server namespace. That is, there must never be two same-named classes defined anywhere. So the below code would give an error (since <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> is now globally found both in this module and in the default library):</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
@@ -332,7 +337,10 @@ etc.</p></li>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Typeclasses</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

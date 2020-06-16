@@ -7,11 +7,13 @@
     <title>Tutorial Vehicles &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Tutorial Vehicles</a></li>
+
+
       </ul>
     </div>  
 
@@ -76,7 +81,7 @@
 </div>
 <div class="section" id="entering-and-leaving-the-train">
 <h2>Entering and leaving the train<a class="headerlink" href="#entering-and-leaving-the-train" title="Permalink to this headline">¶</a></h2>
-<p>Using the <code class="docutils literal notranslate"><span class="pre">&#64;tel</span></code>command like shown above is obviously not what we want. <code class="docutils literal notranslate"><span class="pre">&#64;tel</span></code> is an admin command and normal players will thus never be able to enter the train! It is also not really a good idea to use <a class="reference external" href="/Objects.html#exits">Exits</a> to get in and out of the train - Exits are (at least by default) objects too. They point to a specific destination. If we put an Exit in this room leading inside the train it would stay here when the train moved away (still leading into the train like a magic portal!). In the same way, if we put an Exit object inside the train, it would always point back to this room, regardless of where the Train has moved. Now, one <em>could</em> define custom Exit types that move with the train or change their destination in the right way - but this seems to be a pretty cumbersome solution.</p>
+<p>Using the <code class="docutils literal notranslate"><span class="pre">&#64;tel</span></code>command like shown above is obviously not what we want. <code class="docutils literal notranslate"><span class="pre">&#64;tel</span></code> is an admin command and normal players will thus never be able to enter the train! It is also not really a good idea to use <a class="reference external" href="Objects.html#exits">Exits</a> to get in and out of the train - Exits are (at least by default) objects too. They point to a specific destination. If we put an Exit in this room leading inside the train it would stay here when the train moved away (still leading into the train like a magic portal!). In the same way, if we put an Exit object inside the train, it would always point back to this room, regardless of where the Train has moved. Now, one <em>could</em> define custom Exit types that move with the train or change their destination in the right way - but this seems to be a pretty cumbersome solution.</p>
 <p>What we will do instead is to create some new <a class="reference internal" href="Commands.html"><span class="doc">commands</span></a>: one for entering the train and another for leaving it again. These will be stored <em>on the train object</em> and will thus be made available to whomever is either inside it or in the same room as the train.</p>
 <p>Let’s create a new command module as <code class="docutils literal notranslate"><span class="pre">mygame/commands/train.py</span></code>:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
@@ -506,7 +511,7 @@
 <li><p>Make it impossible to exit and enter the train mid-ride. This could be made by having the enter/exit commands check so the train is not moving before allowing the caller to proceed.</p></li>
 <li><p>Have train conductor commands that can override the automatic start/stop.</p></li>
 <li><p>Allow for in-between stops between the start- and end station</p></li>
-<li><p>Have a rail road track instead of hard-coding the rooms in the train object. This could for example be a custom <a class="reference external" href="/Objects.html#exits">Exit</a> only traversable by trains. The train will follow the track. Some track segments can split to lead to two different rooms and a player can switch the direction to which room it goes.</p></li>
+<li><p>Have a rail road track instead of hard-coding the rooms in the train object. This could for example be a custom <a class="reference external" href="Objects.html#exits">Exit</a> only traversable by trains. The train will follow the track. Some track segments can split to lead to two different rooms and a player can switch the direction to which room it goes.</p></li>
 <li><p>Create another kind of vehicle!</p></li>
 </ul>
 </div>
@@ -571,7 +576,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Tutorial Vehicles</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

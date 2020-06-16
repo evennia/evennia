@@ -7,11 +7,13 @@
     <title>Implementing a game rule system &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Implementing a game rule system</a></li>
+
+
       </ul>
     </div>  
 
@@ -66,10 +71,25 @@ to give some ideas for how to organize the “coded” part of your system, howe
 spread your skill check code, race bonus calculation, die modifiers or what have you all over your
 game.</p>
 <ul>
-<li><p>Put everything you would need to look up in a rule book into a module in <code class="docutils literal notranslate"><span class="pre">mygame/world</span></code>. Hide away as much as you can.  Think of it as a black box (or maybe the code representation of an all-knowing game master). The rest of your game will ask this black box questions and get answers back. Exactly how it arrives at those results should not need to be known outside the box.  Doing it this way makes it easier to change and update things in one place later.</p></li>
-<li><p>Store only the minimum stuff you need with each game object. That is, if your Characters need values for Health, a list of skills etc, store those things on the Character - don’t store how to roll or change them.</p></li>
-<li><p>Next is to determine just how you want to store things on your Objects and Characters. You can choose to either store things as individual <a class="reference internal" href="Attributes.html"><span class="doc">Attributes</span></a>, like <code class="docutils literal notranslate"><span class="pre">character.db.STR=34</span></code> and <code class="docutils literal notranslate"><span class="pre">character.db.Hunting_skill=20</span></code>. But you could also use some custom storage method, like a dictionary <code class="docutils literal notranslate"><span class="pre">character.db.skills</span> <span class="pre">=</span> <span class="pre">{&quot;Hunting&quot;:34,</span> <span class="pre">&quot;Fishing&quot;:20,</span> <span class="pre">...}</span></code>. A much more fancy solution is to look at the Ainneve <a class="reference external" href="https://github.com/evennia/ainneve/blob/master/world/traits.py">Trait handler</a>. Finally you could even go with a <a class="reference internal" href="New-Models.html"><span class="doc">custom django model</span></a>. Which is the better depends on your game and the complexity of your system.</p></li>
-<li><p>Make a clear <a class="reference external" href="http://en.wikipedia.org/wiki/Application_programming_interface">API</a> into your rules. That is, make methods/functions that you feed with, say, your Character and which skill you want to check. That is, you want something similar to this:</p>
+<li><p>Put everything you would need to look up in a rule book into a module in <code class="docutils literal notranslate"><span class="pre">mygame/world</span></code>. Hide away
+as much as you can.  Think of it as a black box (or maybe the code representation of an all-knowing
+game master). The rest of your game will ask this black box questions and get answers back. Exactly
+how it arrives at those results should not need to be known outside the box.  Doing it this way
+makes it easier to change and update things in one place later.</p></li>
+<li><p>Store only the minimum stuff you need with each game object. That is, if your Characters need
+values for Health, a list of skills etc, store those things on the Character - don’t store how to
+roll or change them.</p></li>
+<li><p>Next is to determine just how you want to store things on your Objects and Characters. You can
+choose to either store things as individual <a class="reference internal" href="Attributes.html"><span class="doc">Attributes</span></a>, like <code class="docutils literal notranslate"><span class="pre">character.db.STR=34</span></code> and
+<code class="docutils literal notranslate"><span class="pre">character.db.Hunting_skill=20</span></code>. But you could also use some custom storage method, like a
+dictionary <code class="docutils literal notranslate"><span class="pre">character.db.skills</span> <span class="pre">=</span> <span class="pre">{&quot;Hunting&quot;:34,</span> <span class="pre">&quot;Fishing&quot;:20,</span> <span class="pre">...}</span></code>. A much more fancy solution is
+to look at the Ainneve <a class="reference external" href="https://github.com/evennia/ainneve/blob/master/world/traits.py">Trait
+handler</a>. Finally you could even go
+with a <a class="reference internal" href="New-Models.html"><span class="doc">custom django model</span></a>. Which is the better depends on your game and the
+complexity of your system.</p></li>
+<li><p>Make a clear <a class="reference external" href="http://en.wikipedia.org/wiki/Application_programming_interface">API</a> into your
+rules. That is, make methods/functions that you feed with, say, your Character and which skill you
+want to check. That is, you want something similar to this:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">world</span> <span class="kn">import</span> <span class="n">rules</span>
@@ -79,18 +99,32 @@ game.</p>
 </td></tr></table></div>
 </li>
 </ul>
-<p>You might need to make these functions more or less complex depending on your game. For example the properties of the room might matter to the outcome of a roll (if the room is dark, burning etc). Establishing just what you need to send into your game mechanic module is a great way to also get a feel for what you need to add to your engine.</p>
+<p>You might need to make these functions more or less complex depending on your game. For example the
+properties of the room might matter to the outcome of a roll (if the room is dark, burning etc).
+Establishing just what you need to send into your game mechanic module is a great way to also get a
+feel for what you need to add to your engine.</p>
 </div>
 <div class="section" id="coded-systems">
 <h2>Coded systems<a class="headerlink" href="#coded-systems" title="Permalink to this headline">¶</a></h2>
-<p>Inspired by tabletop role playing games, most game systems mimic some sort of die mechanic. To this end Evennia offers a full <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/contrib/dice.py">dice roller</a> in its <code class="docutils literal notranslate"><span class="pre">contrib</span></code> folder. For custom implementations, Python offers many ways to randomize a result using its in-built <code class="docutils literal notranslate"><span class="pre">random</span></code> module. No matter how it’s implemented, we will in this text refer to the action of determining an outcome as a “roll”.</p>
-<p>In a freeform system, the result of the roll is just compared with values and people (or the game master) just agree on what it means. In a coded system the result now needs to be processed somehow. There are many things that may happen as a result of rule enforcement:</p>
+<p>Inspired by tabletop role playing games, most game systems mimic some sort of die mechanic. To this
+end Evennia offers a full <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/contrib/dice.py">dice
+roller</a> in its <code class="docutils literal notranslate"><span class="pre">contrib</span></code>
+folder. For custom implementations, Python offers many ways to randomize a result using its in-built
+<code class="docutils literal notranslate"><span class="pre">random</span></code> module. No matter how it’s implemented, we will in this text refer to the action of
+determining an outcome as a “roll”.</p>
+<p>In a freeform system, the result of the roll is just compared with values and people (or the game
+master) just agree on what it means. In a coded system the result now needs to be processed somehow.
+There are many things that may happen as a result of rule enforcement:</p>
 <ul class="simple">
 <li><p>Health may be added or deducted. This can effect the character in various ways.</p></li>
-<li><p>Experience may need to be added, and if a level-based system is used, the player might need to be informed they have increased a level.</p></li>
+<li><p>Experience may need to be added, and if a level-based system is used, the player might need to be
+informed they have increased a level.</p></li>
 <li><p>Room-wide effects need to be reported to the room, possibly affecting everyone in the room.</p></li>
 </ul>
-<p>There are also a slew of other things that fall under “Coded systems”, including things like weather, NPC artificial intelligence and game economy. Basically everything about the world that a Game master would control in a tabletop role playing game can be mimicked to some level by coded systems.</p>
+<p>There are also a slew of other things that fall under “Coded systems”, including things like
+weather, NPC artificial intelligence and game economy. Basically everything about the world that a
+Game master would control in a tabletop role playing game can be mimicked to some level by coded
+systems.</p>
 </div>
 <div class="section" id="example-of-rule-module">
 <h2>Example of Rule module<a class="headerlink" href="#example-of-rule-module" title="Permalink to this headline">¶</a></h2>
@@ -99,19 +133,32 @@ game.</p>
 <li><p>Characters have only four numerical values:</p>
 <ul>
 <li><p>Their <code class="docutils literal notranslate"><span class="pre">level</span></code>, which starts at 1.</p></li>
-<li><p>A skill <code class="docutils literal notranslate"><span class="pre">combat</span></code>, which determines how good they are at hitting things. Starts between 5 and 10.</p></li>
+<li><p>A skill <code class="docutils literal notranslate"><span class="pre">combat</span></code>, which determines how good they are at hitting things. Starts between 5 and</p></li>
+</ul>
+</li>
+</ul>
+<ol class="simple">
+<li><ul class="simple">
 <li><p>Their Strength, <code class="docutils literal notranslate"><span class="pre">STR</span></code>, which determine how much damage they do. Starts between 1 and 10.</p></li>
 <li><p>Their Health points, <code class="docutils literal notranslate"><span class="pre">HP</span></code>, which starts at 100.</p></li>
 </ul>
 </li>
-<li><p>When a Character reaches <code class="docutils literal notranslate"><span class="pre">HP</span> <span class="pre">=</span> <span class="pre">0</span></code>, they are presumed “defeated”. Their HP is reset and they get a failure message (as a stand-in for death code).</p></li>
+</ol>
+<ul class="simple">
+<li><p>When a Character reaches <code class="docutils literal notranslate"><span class="pre">HP</span> <span class="pre">=</span> <span class="pre">0</span></code>, they are presumed “defeated”. Their HP is reset and they get a
+failure message (as a stand-in for death code).</p></li>
 <li><p>Abilities are stored as simple Attributes on the Character.</p></li>
-<li><p>“Rolls” are done by rolling a 100-sided die. If the result is below the <code class="docutils literal notranslate"><span class="pre">combat</span></code> value, it’s a success and damage is rolled. Damage is rolled as a six-sided die + the value of <code class="docutils literal notranslate"><span class="pre">STR</span></code> (for this example we ignore weapons and assume <code class="docutils literal notranslate"><span class="pre">STR</span></code> is all that matters).</p></li>
-<li><p>Every successful <code class="docutils literal notranslate"><span class="pre">attack</span></code> roll gives 1-3 experience points (<code class="docutils literal notranslate"><span class="pre">XP</span></code>). Every time the number of <code class="docutils literal notranslate"><span class="pre">XP</span></code> reaches <code class="docutils literal notranslate"><span class="pre">(level</span> <span class="pre">+</span> <span class="pre">1)</span> <span class="pre">**</span> <span class="pre">2</span></code>, the Character levels up. When leveling up, the Character’s <code class="docutils literal notranslate"><span class="pre">combat</span></code> value goes up by 2 points and <code class="docutils literal notranslate"><span class="pre">STR</span></code> by one (this is a stand-in for a real progression system).</p></li>
+<li><p>“Rolls” are done by rolling a 100-sided die. If the result is below the <code class="docutils literal notranslate"><span class="pre">combat</span></code> value, it’s a
+success and damage is rolled. Damage is rolled as a six-sided die + the value of <code class="docutils literal notranslate"><span class="pre">STR</span></code> (for this
+example we ignore weapons and assume <code class="docutils literal notranslate"><span class="pre">STR</span></code> is all that matters).</p></li>
+<li><p>Every successful <code class="docutils literal notranslate"><span class="pre">attack</span></code> roll gives 1-3 experience points (<code class="docutils literal notranslate"><span class="pre">XP</span></code>). Every time the number of <code class="docutils literal notranslate"><span class="pre">XP</span></code>
+reaches <code class="docutils literal notranslate"><span class="pre">(level</span> <span class="pre">+</span> <span class="pre">1)</span> <span class="pre">**</span> <span class="pre">2</span></code>, the Character levels up. When leveling up, the Character’s <code class="docutils literal notranslate"><span class="pre">combat</span></code>
+value goes up by 2 points and <code class="docutils literal notranslate"><span class="pre">STR</span></code> by one (this is a stand-in for a real progression system).</p></li>
 </ul>
 <div class="section" id="character">
 <h3>Character<a class="headerlink" href="#character" title="Permalink to this headline">¶</a></h3>
-<p>The Character typeclass is simple. It goes in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code>. There is already an empty <code class="docutils literal notranslate"><span class="pre">Character</span></code> class there that Evennia will look to and use.</p>
+<p>The Character typeclass is simple. It goes in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code>. There is already
+an empty <code class="docutils literal notranslate"><span class="pre">Character</span></code> class there that Evennia will look to and use.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -143,7 +190,10 @@ game.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<p><code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> the server to load up the new code. Doing <code class="docutils literal notranslate"><span class="pre">examine</span> <span class="pre">self</span></code> will however <em>not</em> show the new Attributes on yourself. This is because the <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> hook is only called on <em>new</em> Characters. Your Character was already created and will thus not have them. To force a reload, use the following command:</p>
+<p><code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> the server to load up the new code. Doing <code class="docutils literal notranslate"><span class="pre">examine</span> <span class="pre">self</span></code> will however <em>not</em> show the new
+Attributes on yourself. This is because the <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> hook is only called on <em>new</em>
+Characters. Your Character was already created and will thus not have them. To force a reload, use
+the following command:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@typeclass</span><span class="o">/</span><span class="n">force</span><span class="o">/</span><span class="n">reset</span> <span class="bp">self</span>
 </pre></div>
 </div>
@@ -291,8 +341,13 @@ game.</p>
         <span class="k">raise</span> <span class="n">RunTimeError</span><span class="p">(</span><span class="s2">&quot;Skillname </span><span class="si">%s</span><span class="s2"> not found.&quot;</span> <span class="o">%</span> <span class="n">skillname</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<p>These few functions implement the entirety of our simple rule system.  We have a function to check the “defeat” condition and reset the <code class="docutils literal notranslate"><span class="pre">HP</span></code> back to 100 again. We define a generic “skill” function. Multiple skills could all be added with the same signature; our <code class="docutils literal notranslate"><span class="pre">SKILLS</span></code> dictionary makes it easy to look up the skills regardless of what their actual functions are called. Finally, the access function <code class="docutils literal notranslate"><span class="pre">roll_challenge</span></code> just picks the skill and gets the result.</p>
-<p>In this example, the skill function actually does a lot - it not only rolls results, it also informs everyone of their results via <code class="docutils literal notranslate"><span class="pre">character.msg()</span></code> calls.</p>
+<p>These few functions implement the entirety of our simple rule system.  We have a function to check
+the “defeat” condition and reset the <code class="docutils literal notranslate"><span class="pre">HP</span></code> back to 100 again. We define a generic “skill” function.
+Multiple skills could all be added with the same signature; our <code class="docutils literal notranslate"><span class="pre">SKILLS</span></code> dictionary makes it easy to
+look up the skills regardless of what their actual functions are called. Finally, the access
+function <code class="docutils literal notranslate"><span class="pre">roll_challenge</span></code> just picks the skill and gets the result.</p>
+<p>In this example, the skill function actually does a lot - it not only rolls results, it also informs
+everyone of their results via <code class="docutils literal notranslate"><span class="pre">character.msg()</span></code> calls.</p>
 <p>Here is an example of usage in a game command:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
@@ -411,7 +466,10 @@ your <code class="docutils literal notranslate"><span class="pre">rules</span></
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Implementing a game rule system</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

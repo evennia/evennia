@@ -7,11 +7,13 @@
     <title>Spawner and Prototypes &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Spawner and Prototypes</a></li>
+
+
       </ul>
     </div>  
 
@@ -93,7 +98,7 @@ more lenient and will use defaults for keys not explicitly provided.</p>
 <div><p>Note that the prototype dict as given on the command line must be a valid Python structure -
 so you need to put quotes around strings etc. For security reasons, a dict inserted from-in game cannot have any
 other advanced Python functionality, such as executable code, <code class="docutils literal notranslate"><span class="pre">lambda</span></code> etc. If builders are supposed
-to be able to use such features, you need to offer them through <a class="reference external" href="/Spawner-and-Prototypes.html#protfuncs">$protfuncs</a>, embedded runnable functions that you have full control to check and vet before running.</p>
+to be able to use such features, you need to offer them through <a class="reference external" href="Spawner-and-Prototypes.html#protfuncs">$protfuncs</a>, embedded runnable functions that you have full control to check and vet before running.</p>
 </div></blockquote>
 <div class="section" id="prototype-keys">
 <h3>Prototype keys<a class="headerlink" href="#prototype-keys" title="Permalink to this headline">¶</a></h3>
@@ -135,7 +140,7 @@ convenient for simple Attributes - use <code class="docutils literal notranslate
 <li><p><code class="docutils literal notranslate"><span class="pre">ndb_&lt;name&gt;</span></code> - sets the value of a non-persistent attribute (<code class="docutils literal notranslate"><span class="pre">&quot;ndb_&quot;</span></code> is stripped from the name).
 This is simply not useful in a prototype and is deprecated.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">exec</span></code> - This accepts a code snippet or a list of code snippets to run. This should not be used -
-use callables or <a class="reference external" href="/Spawner-and-Prototypes.html#protfuncs">$protfuncs</a> instead (see below).</p></li>
+use callables or <a class="reference external" href="Spawner-and-Prototypes.html#protfuncs">$protfuncs</a> instead (see below).</p></li>
 </ul>
 </div>
 <div class="section" id="prototype-values">
@@ -166,7 +171,7 @@ prototype:</p>
 </pre></div>
 </td></tr></table></div>
 <p>At execution time, the place of the protfunc will be replaced with the result of that protfunc being called (this is always a string). A protfunc works in much the same way as an
-<a class="reference external" href="/TextTags.html#inline-functions">InlineFunc</a> - they are actually
+<a class="reference external" href="TextTags.html#inline-functions">InlineFunc</a> - they are actually
 parsed using the same parser - except protfuncs are run every time the prototype is used to spawn a new object (whereas an inlinefunc is called when a text is returned to the user).</p>
 <p>Here is how a protfunc is defined (same as an inlinefunc).</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
@@ -372,7 +377,10 @@ in <code class="docutils literal notranslate"><span class="pre">settings.PROTOTY
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Spawner and Prototypes</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

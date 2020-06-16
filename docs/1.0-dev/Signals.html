@@ -7,11 +7,13 @@
     <title>Signals &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Signals</a></li>
+
+
       </ul>
     </div>  
 
@@ -84,22 +89,28 @@ like this:</p>
 </div>
 <div class="section" id="available-signals">
 <h2>Available signals<a class="headerlink" href="#available-signals" title="Permalink to this headline">¶</a></h2>
-<p>All signals (including some django-specific defaults) are available in the module <code class="docutils literal notranslate"><span class="pre">evennia.server.signals</span></code>
-(with a shortcut <code class="docutils literal notranslate"><span class="pre">evennia.signals</span></code>). Signals are named by the sender type. So <code class="docutils literal notranslate"><span class="pre">SIGNAL_ACCOUNT_*</span></code> returns
-<code class="docutils literal notranslate"><span class="pre">Account</span></code> instances as senders, <code class="docutils literal notranslate"><span class="pre">SIGNAL_OBJECT_*</span></code> returns <code class="docutils literal notranslate"><span class="pre">Object</span></code>s etc. Extra keywords (kwargs) should
+<p>All signals (including some django-specific defaults) are available in the module
+<code class="docutils literal notranslate"><span class="pre">evennia.server.signals</span></code>
+(with a shortcut <code class="docutils literal notranslate"><span class="pre">evennia.signals</span></code>). Signals are named by the sender type. So <code class="docutils literal notranslate"><span class="pre">SIGNAL_ACCOUNT_*</span></code>
+returns
+<code class="docutils literal notranslate"><span class="pre">Account</span></code> instances as senders, <code class="docutils literal notranslate"><span class="pre">SIGNAL_OBJECT_*</span></code> returns <code class="docutils literal notranslate"><span class="pre">Object</span></code>s etc. Extra keywords (kwargs)
+should
 be extracted from the <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> dict in the signal handler.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">SIGNAL_ACCOUNT_POST_CREATE</span></code> - this is triggered at the very end of <code class="docutils literal notranslate"><span class="pre">Account.create()</span></code>. Note that
-calling <code class="docutils literal notranslate"><span class="pre">evennia.create.create_account</span></code> (which is called internally by <code class="docutils literal notranslate"><span class="pre">Account.create</span></code>) will <em>not</em>
+calling <code class="docutils literal notranslate"><span class="pre">evennia.create.create_account</span></code> (which is called internally by <code class="docutils literal notranslate"><span class="pre">Account.create</span></code>) will
+<em>not</em>
 trigger this signal. This is because using <code class="docutils literal notranslate"><span class="pre">Account.create()</span></code> is expected to be the most commonly
 used way for users to themselves create accounts during login. It passes and extra kwarg <code class="docutils literal notranslate"><span class="pre">ip</span></code> with
 the client IP of the connecting account.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">SIGNAL_ACCOUNT_POST_LOGIN</span></code> - this will always fire when the account has authenticated.  Sends
 extra kwarg <code class="docutils literal notranslate"><span class="pre">session</span></code> with the new <a class="reference internal" href="Sessions.html"><span class="doc">Session</span></a> object involved.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">SIGNAL_ACCCOUNT_POST_FIRST_LOGIN</span></code> - this fires just before <code class="docutils literal notranslate"><span class="pre">SIGNAL_ACCOUNT_POST_LOGIN</span></code> but only if
+<li><p><code class="docutils literal notranslate"><span class="pre">SIGNAL_ACCCOUNT_POST_FIRST_LOGIN</span></code> - this fires just before <code class="docutils literal notranslate"><span class="pre">SIGNAL_ACCOUNT_POST_LOGIN</span></code> but only
+if
 this is the <em>first</em> connection done (that is, if there are no previous sessions connected). Also
 passes the <code class="docutils literal notranslate"><span class="pre">session</span></code> along as a kwarg.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">SIGNAL_ACCOUNT_POST_LOGIN_FAIL</span></code> - sent when someone tried to log into an account by failed. Passes
+<li><p><code class="docutils literal notranslate"><span class="pre">SIGNAL_ACCOUNT_POST_LOGIN_FAIL</span></code> - sent when someone tried to log into an account by failed.
+Passes
 the <code class="docutils literal notranslate"><span class="pre">session</span></code> as an extra kwarg.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">SIGNAL_ACCOUNT_POST_LOGOUT</span></code> - always fires when an account logs off, no matter if other sessions
 remain or not. Passes the disconnecting <code class="docutils literal notranslate"><span class="pre">session</span></code> along as a kwarg.</p></li>
@@ -111,16 +122,19 @@ and <code class="docutils literal notranslate"><span class="pre">account</span><
 <code class="docutils literal notranslate"><span class="pre">session</span></code> and <code class="docutils literal notranslate"><span class="pre">account</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">SIGNAL_ACCOUNT_POST_RENAME</span></code> - triggered by the setting of <code class="docutils literal notranslate"><span class="pre">Account.username</span></code>. Passes extra
 kwargs <code class="docutils literal notranslate"><span class="pre">old_name</span></code>, <code class="docutils literal notranslate"><span class="pre">new_name</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">SIGNAL_TYPED_OBJECT_POST_RENAME</span></code> - triggered when any Typeclassed entity’s <code class="docutils literal notranslate"><span class="pre">key</span></code> is changed. Extra
+<li><p><code class="docutils literal notranslate"><span class="pre">SIGNAL_TYPED_OBJECT_POST_RENAME</span></code> - triggered when any Typeclassed entity’s <code class="docutils literal notranslate"><span class="pre">key</span></code> is changed.
+Extra
 kwargs passed are <code class="docutils literal notranslate"><span class="pre">old_key</span></code> and <code class="docutils literal notranslate"><span class="pre">new_key</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">SIGNAL_SCRIPT_POST_CREATE</span></code> - fires when a script is first created, after any hooks.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">SIGNAL_CHANNEL_POST_CREATE</span></code> - fires when a Channel is first created, after any hooks.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">SIGNAL_HELPENTRY_POST_CREATE</span></code> - fires when a help entry is first created.</p></li>
 </ul>
-<p>The <code class="docutils literal notranslate"><span class="pre">evennia.signals</span></code> module also gives you conveneient access to the default Django signals (these use a
+<p>The <code class="docutils literal notranslate"><span class="pre">evennia.signals</span></code> module also gives you conveneient access to the default Django signals (these
+use a
 different naming convention).</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">pre_save</span></code> - fired when any database entitiy’s <code class="docutils literal notranslate"><span class="pre">.save</span></code> method fires, before any saving has happened.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pre_save</span></code> - fired when any database entitiy’s <code class="docutils literal notranslate"><span class="pre">.save</span></code> method fires, before any saving has
+happened.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">post_save</span></code> - fires after saving a database entity.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">pre_delete</span></code> - fires just before a database entity is deleted.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">post_delete</span></code> - fires after a database entity was deleted.</p></li>
@@ -198,7 +212,10 @@ decorator (only relevant for unit testing)</p></li>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Signals</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

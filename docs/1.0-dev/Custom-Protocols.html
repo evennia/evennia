@@ -7,11 +7,13 @@
     <title>Custom Protocols &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Custom Protocols</a></li>
+
+
       </ul>
     </div>  
 
@@ -38,13 +43,15 @@
 <h1>Custom Protocols<a class="headerlink" href="#custom-protocols" title="Permalink to this headline">¶</a></h1>
 <p><em>Note: This is considered an advanced topic and is mostly of interest to users planning to implement
 their own custom client protocol.</em></p>
-<p>A <a class="reference external" href="/Sessions.html#Portal-and-Server-Sessions">PortalSession</a> is the basic data object representing an external
+<p>A <a class="reference external" href="Sessions.html#Portal-and-Server-Sessions">PortalSession</a> is the basic data object representing an
+external
 connection to the Evennia <a class="reference internal" href="Portal-And-Server.html"><span class="doc">Portal</span></a> – usually a human player running a mud client
 of some kind.  The way they connect (the language the player’s client and Evennia use to talk to
 each other) is called the connection <em>Protocol</em>. The most common such protocol for MUD:s is the
 <em>Telnet</em> protocol. All Portal Sessions are stored and managed by the Portal’s <em>sessionhandler</em>.</p>
 <p>It’s technically sometimes hard to separate the concept of <em>PortalSession</em> from the concept of
-<em>Protocol</em> since both depend heavily on the other (they are often created as the same class). When data flows through this part of the system, this is how it goes</p>
+<em>Protocol</em> since both depend heavily on the other (they are often created as the same class). When
+data flows through this part of the system, this is how it goes</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># In the Portal</span>
 <span class="n">You</span> <span class="o">&lt;-&gt;</span> 
   <span class="n">Protocol</span> <span class="o">+</span> <span class="n">PortalSession</span> <span class="o">&lt;-&gt;</span> 
@@ -55,7 +62,10 @@ each other) is called the connection <em>Protocol</em>. The most common such pro
             <span class="n">InputFunc</span>  
 </pre></div>
 </div>
-<p>(See the <a class="reference internal" href="Messagepath.html"><span class="doc">Message Path</span></a> for the bigger picture of how data flows through Evennia). The parts that needs to be customized to make your own custom protocol is the <code class="docutils literal notranslate"><span class="pre">Protocol</span> <span class="pre">+</span> <span class="pre">PortalSession</span></code> (which translates between data coming in/out over the wire to/from Evennia internal representation) as well as the <code class="docutils literal notranslate"><span class="pre">InputFunc</span></code> (which handles incoming data).</p>
+<p>(See the <a class="reference internal" href="Messagepath.html"><span class="doc">Message Path</span></a> for the bigger picture of how data flows through Evennia). The
+parts that needs to be customized to make your own custom protocol is the <code class="docutils literal notranslate"><span class="pre">Protocol</span> <span class="pre">+</span> <span class="pre">PortalSession</span></code>
+(which translates between data coming in/out over the wire to/from Evennia internal representation)
+as well as the <code class="docutils literal notranslate"><span class="pre">InputFunc</span></code> (which handles incoming data).</p>
 <div class="section" id="adding-custom-protocols">
 <h2>Adding custom Protocols<a class="headerlink" href="#adding-custom-protocols" title="Permalink to this headline">¶</a></h2>
 <p>Evennia has a plugin-system that add the protocol as a new “service” to the application.</p>
@@ -75,7 +85,8 @@ modules, you could do the following:</p>
     <span class="n">PORTAL_SERVICES_PLUGIN_MODULES</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;server.conf.my_portal_plugins&#39;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<p>When adding a new connection you’ll most likely only need to add new things to the <code class="docutils literal notranslate"><span class="pre">PORTAL_SERVICES_PLUGIN_MODULES</span></code>.</p>
+<p>When adding a new connection you’ll most likely only need to add new things to the
+<code class="docutils literal notranslate"><span class="pre">PORTAL_SERVICES_PLUGIN_MODULES</span></code>.</p>
 <p>This module can contain whatever you need to define your protocol, but it <em>must</em> contain a function
 <code class="docutils literal notranslate"><span class="pre">start_plugin_services(app)</span></code>. This is called by the Portal as part of its upstart. The function
 <code class="docutils literal notranslate"><span class="pre">start_plugin_services</span></code> must contain all startup code the server need.  The <code class="docutils literal notranslate"><span class="pre">app</span></code> argument is a
@@ -139,7 +150,10 @@ protocol/services should start with the others.</p>
 <p>Writing a stable communication protocol from scratch is not something we’ll cover here, it’s no
 trivial task. The good news is that Twisted offers implementations of many common protocols, ready
 for adapting.</p>
-<p>Writing a protocol implementation in Twisted usually involves creating a class inheriting from an already existing Twisted protocol class and from <code class="docutils literal notranslate"><span class="pre">evennia.server.session.Session</span></code> (multiple inheritance), then overloading the methods that particular protocol uses to link them to the Evennia-specific inputs.</p>
+<p>Writing a protocol implementation in Twisted usually involves creating a class inheriting from an
+already existing Twisted protocol class and from <code class="docutils literal notranslate"><span class="pre">evennia.server.session.Session</span></code> (multiple
+inheritance), then overloading the methods that particular protocol uses to link them to the
+Evennia-specific inputs.</p>
 <p>Here’s a example to show the concept:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
@@ -326,18 +340,26 @@ for adapting.</p>
          <span class="bp">self</span><span class="o">.</span><span class="n">data_out</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">cmdname</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">args</span><span class="p">)})</span>
 </pre></div>
 </td></tr></table></div>
-<p>The principle here is that the Twisted-specific methods are overridden to redirect inputs/outputs to the Evennia-specific methods.</p>
+<p>The principle here is that the Twisted-specific methods are overridden to redirect inputs/outputs to
+the Evennia-specific methods.</p>
 <div class="section" id="sending-data-out">
 <h3>Sending data out<a class="headerlink" href="#sending-data-out" title="Permalink to this headline">¶</a></h3>
 <p>To send data out through this protocol, you’d need to get its Session and then you could e.g.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">session</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<p>The message will pass through the system such that the sessionhandler will dig out the session and check if it has a <code class="docutils literal notranslate"><span class="pre">send_text</span></code> method (it has). It will then pass the “foo” into that method, which in our case means sending “foo” across the network.</p>
+<p>The message will pass through the system such that the sessionhandler will dig out the session and
+check if it has a <code class="docutils literal notranslate"><span class="pre">send_text</span></code> method (it has). It will then pass the “foo” into that method, which
+in our case means sending “foo” across the network.</p>
 </div>
 <div class="section" id="receiving-data">
 <h3>Receiving data<a class="headerlink" href="#receiving-data" title="Permalink to this headline">¶</a></h3>
-<p>Just because the protocol is there, does not mean Evennia knows what to do with it. An <a class="reference internal" href="Inputfuncs.html"><span class="doc">Inputfunc</span></a> must exist to receive it. In the case of the <code class="docutils literal notranslate"><span class="pre">text</span></code> input exemplified above, Evennia alredy handles this input - it will parse it as a Command name followed by its inputs. So handle that you need to simply add a cmdset with commands on your receiving Session (and/or the Object/Character it is puppeting). If not you may need to add your own Inputfunc (see the <a class="reference internal" href="Inputfuncs.html"><span class="doc">Inputfunc</span></a> page for how to do this.</p>
+<p>Just because the protocol is there, does not mean Evennia knows what to do with it. An
+<a class="reference internal" href="Inputfuncs.html"><span class="doc">Inputfunc</span></a> must exist to receive it. In the case of the <code class="docutils literal notranslate"><span class="pre">text</span></code> input exemplified above,
+Evennia alredy handles this input - it will parse it as a Command name followed by its inputs. So
+handle that you need to simply add a cmdset with commands on your receiving Session (and/or the
+Object/Character it is puppeting). If not you may need to add your own Inputfunc (see the
+<a class="reference internal" href="Inputfuncs.html"><span class="doc">Inputfunc</span></a> page for how to do this.</p>
 <p>These might not be as clear-cut in all protocols, but the principle is there. These four basic
 components - however they are accessed - links to the <em>Portal Session</em>, which is the actual common
 interface between the different low-level protocols and Evennia.</p>
@@ -413,7 +435,10 @@ ways.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Custom Protocols</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

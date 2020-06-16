@@ -7,11 +7,13 @@
     <title>Evennia for roleplaying sessions &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Evennia for roleplaying sessions</a></li>
+
+
       </ul>
     </div>  
 
@@ -36,46 +41,71 @@
             
   <div class="section" id="evennia-for-roleplaying-sessions">
 <h1>Evennia for roleplaying sessions<a class="headerlink" href="#evennia-for-roleplaying-sessions" title="Permalink to this headline">¶</a></h1>
-<p>This tutorial will explain how to set up a realtime or play-by-post tabletop style game using a fresh Evennia server.</p>
-<p>The scenario is thus: You and a bunch of friends want to play a tabletop role playing game online. One of you will be the game master and you are all okay with playing using written text. You want both the ability to role play in real-time (when people happen to be online at the same time) as well as the ability for people to post when they can and catch up on what happened since they were last online.</p>
+<p>This tutorial will explain how to set up a realtime or play-by-post tabletop style game using a
+fresh Evennia server.</p>
+<p>The scenario is thus: You and a bunch of friends want to play a tabletop role playing game online.
+One of you will be the game master and you are all okay with playing using written text. You want
+both the ability to role play in real-time (when people happen to be online at the same time) as
+well as the ability for people to post when they can and catch up on what happened since they were
+last online.</p>
 <p>This is the functionality we will be needing and using:</p>
 <ul class="simple">
 <li><p>The ability to make one of you the <em>GM</em> (game master), with special abilities.</p></li>
-<li><p>A <em>Character sheet</em> that players can create, view and fill in. It can also be locked so only the GM can modify it.</p></li>
+<li><p>A <em>Character sheet</em> that players can create, view and fill in. It can also be locked so only the
+GM can modify it.</p></li>
 <li><p>A <em>dice roller</em> mechanism, for whatever type of dice the RPG rules require.</p></li>
-<li><p><em>Rooms</em>, to give a sense of location and to compartmentalize play going on- This means both Character movements from location to location and GM explicitly moving them around.</p></li>
+<li><p><em>Rooms</em>, to give a sense of location and to compartmentalize play going on- This means both
+Character movements from location to location and GM explicitly moving them around.</p></li>
 <li><p><em>Channels</em>, for easily sending text to all subscribing accounts, regardless of location.</p></li>
-<li><p>Account-to-Account <em>messaging</em> capability, including sending to multiple recipients simultaneously, regardless of location.</p></li>
+<li><p>Account-to-Account <em>messaging</em> capability, including sending to multiple recipients
+simultaneously, regardless of location.</p></li>
 </ul>
-<p>We will find most of these things are already part of vanilla Evennia, but that we can expand on the defaults for our particular use-case. Below we will flesh out these components from start to finish.</p>
+<p>We will find most of these things are already part of vanilla Evennia, but that we can expand on the
+defaults for our particular use-case. Below we will flesh out these components from start to finish.</p>
 <div class="section" id="starting-out">
 <h2>Starting out<a class="headerlink" href="#starting-out" title="Permalink to this headline">¶</a></h2>
-<p>We will assume you start from scratch. You need Evennia installed, as per the <a class="reference internal" href="Getting-Started.html"><span class="doc">Getting Started</span></a> instructions. Initialize a new game directory with <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">init</span> <span class="pre">&lt;gamedirname&gt;</span></code>. In this tutorial we assume your game dir is simply named <code class="docutils literal notranslate"><span class="pre">mygame</span></code>. You can use the default database and keep all other settings to default for now. Familiarize yourself with the <code class="docutils literal notranslate"><span class="pre">mygame</span></code> folder before continuing. You might want to browse the <a class="reference internal" href="First-Steps-Coding.html"><span class="doc">First Steps Coding</span></a> tutorial, just to see roughly where things are modified.</p>
+<p>We will assume you start from scratch. You need Evennia installed, as per the <a class="reference internal" href="Getting-Started.html"><span class="doc">Getting
+Started</span></a> instructions. Initialize a new game directory with <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">init</span> <span class="pre">&lt;gamedirname&gt;</span></code>. In this tutorial we assume your game dir is simply named <code class="docutils literal notranslate"><span class="pre">mygame</span></code>. You can use the
+default database and keep all other settings to default for now. Familiarize yourself with the
+<code class="docutils literal notranslate"><span class="pre">mygame</span></code> folder before continuing. You might want to browse the [First Steps Coding](First-Steps-
+Coding) tutorial, just to see roughly where things are modified.</p>
 </div>
 <div class="section" id="the-game-master-role">
 <h2>The Game Master role<a class="headerlink" href="#the-game-master-role" title="Permalink to this headline">¶</a></h2>
 <p>In brief:</p>
 <ul class="simple">
-<li><p>Simplest way: Being an admin, just give one account <code class="docutils literal notranslate"><span class="pre">Admins</span></code> permission using the standard <code class="docutils literal notranslate"><span class="pre">&#64;perm</span></code> command.</p></li>
-<li><p>Better but more work: Make a custom command to set/unset the above, while tweaking the Character to show your renewed GM status to the other accounts.</p></li>
+<li><p>Simplest way: Being an admin, just give one account <code class="docutils literal notranslate"><span class="pre">Admins</span></code> permission using the standard <code class="docutils literal notranslate"><span class="pre">&#64;perm</span></code>
+command.</p></li>
+<li><p>Better but more work: Make a custom command to set/unset the above, while tweaking the Character
+to show your renewed GM status to the other accounts.</p></li>
 </ul>
 <div class="section" id="the-permission-hierarchy">
 <h3>The permission hierarchy<a class="headerlink" href="#the-permission-hierarchy" title="Permalink to this headline">¶</a></h3>
-<p>Evennia has the following <a class="reference external" href="/Building-Permissions.html#assigning-permissions">permission hierarchy</a> out of the box: <em>Players, Helpers, Builders, Admins</em> and finally <em>Developers</em>. We could change these but then we’d need to update our Default commands to use the changes. We want to keep this simple, so instead we map our different roles on top of this permission ladder.</p>
+<p>Evennia has the following <a class="reference external" href="Building-Permissions.html#assigning-permissions">permission hierarchy</a> out of
+the box: <em>Players, Helpers, Builders, Admins</em> and finally <em>Developers</em>. We could change these but
+then we’d need to update our Default commands to use the changes. We want to keep this simple, so
+instead we map our different roles on top of this permission ladder.</p>
 <ol class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">Players</span></code> is the permission set on normal players. This is the default for anyone creating a new account on the server.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Helpers</span></code> are like <code class="docutils literal notranslate"><span class="pre">Players</span></code> except they also have the ability to create/edit new help entries. This could be granted to players who are willing to help with writing lore or custom logs for everyone.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Players</span></code> is the permission set on normal players. This is the default for anyone creating a new
+account on the server.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Helpers</span></code> are like <code class="docutils literal notranslate"><span class="pre">Players</span></code> except they also have the ability to create/edit new help entries.
+This could be granted to players who are willing to help with writing lore or custom logs for
+everyone.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Builders</span></code> is not used in our case since the GM should be the only world-builder.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Admins</span></code> is the permission level the GM should have. Admins can do everything builders can (create/describe rooms etc) but also kick accounts, rename them and things like that.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Developers</span></code>-level permission are the server administrators, the ones with the ability to restart/shutdown the server as well as changing the permission levels.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Admins</span></code> is the permission level the GM should have. Admins can do everything builders can
+(create/describe rooms etc) but also kick accounts, rename them and things like that.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Developers</span></code>-level permission are the server administrators, the ones with the ability to
+restart/shutdown the server as well as changing the permission levels.</p></li>
 </ol>
 <blockquote>
-<div><p>The <a class="reference external" href="/Building-Permissions.html#the-super-user">superuser</a> is not part of the hierarchy and actually completely bypasses it. We’ll assume server admin(s) will “just” be Developers.</p>
+<div><p>The <a class="reference external" href="Building-Permissions.html#the-super-user">superuser</a> is not part of the hierarchy and actually
+completely bypasses it. We’ll assume server admin(s) will “just” be Developers.</p>
 </div></blockquote>
 </div>
 <div class="section" id="how-to-grant-permissions">
 <h3>How to grant permissions<a class="headerlink" href="#how-to-grant-permissions" title="Permalink to this headline">¶</a></h3>
-<p>Only <code class="docutils literal notranslate"><span class="pre">Developers</span></code> can (by default) change permission level. Only they have access to the <code class="docutils literal notranslate"><span class="pre">&#64;perm</span></code> command:</p>
+<p>Only <code class="docutils literal notranslate"><span class="pre">Developers</span></code> can (by default) change permission level. Only they have access to the <code class="docutils literal notranslate"><span class="pre">&#64;perm</span></code>
+command:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="nd">@perm</span> <span class="n">Yvonne</span>
 <span class="n">Permissions</span> <span class="n">on</span> <span class="n">Yvonne</span><span class="p">:</span> <span class="n">accounts</span>
 
@@ -88,19 +118,28 @@
 <span class="n">Permissions</span> <span class="n">on</span> <span class="n">Yvonne</span><span class="p">:</span> <span class="n">accounts</span>
 </pre></div>
 </div>
-<p>There is no need to remove the basic <code class="docutils literal notranslate"><span class="pre">Players</span></code> permission when adding the higher permission: the highest will be used. Permission level names are <em>not</em> case sensitive. You can also use both plural and singular, so “Admins” gives the same powers as “Admin”.</p>
+<p>There is no need to remove the basic <code class="docutils literal notranslate"><span class="pre">Players</span></code> permission when adding the higher permission: the
+highest will be used. Permission level names are <em>not</em> case sensitive. You can also use both plural
+and singular, so “Admins” gives the same powers as “Admin”.</p>
 </div>
 <div class="section" id="optional-making-a-gm-granting-command">
 <h3>Optional: Making a GM-granting command<a class="headerlink" href="#optional-making-a-gm-granting-command" title="Permalink to this headline">¶</a></h3>
-<p>Use of <code class="docutils literal notranslate"><span class="pre">&#64;perm</span></code> works out of the box, but it’s really the bare minimum. Would it not be nice if other accounts could tell at a glance who the GM is? Also, we shouldn’t really need to remember that the permission level is called “Admins”. It would be easier if we could just do <code class="docutils literal notranslate"><span class="pre">&#64;gm</span> <span class="pre">&lt;account&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&#64;notgm</span> <span class="pre">&lt;account&gt;</span></code> and at the same time change something make the new GM status apparent.</p>
+<p>Use of <code class="docutils literal notranslate"><span class="pre">&#64;perm</span></code> works out of the box, but it’s really the bare minimum. Would it not be nice if other
+accounts could tell at a glance who the GM is? Also, we shouldn’t really need to remember that the
+permission level is called “Admins”. It would be easier if we could just do <code class="docutils literal notranslate"><span class="pre">&#64;gm</span> <span class="pre">&lt;account&gt;</span></code> and
+<code class="docutils literal notranslate"><span class="pre">&#64;notgm</span> <span class="pre">&lt;account&gt;</span></code> and at the same time change something make the new GM status apparent.</p>
 <p>So let’s make this possible. This is what we’ll do:</p>
 <ol class="simple">
-<li><p>We’ll customize the default Character class. If an object of this class has a particular flag, its name will have the string<code class="docutils literal notranslate"><span class="pre">(GM)</span></code> added to the end.</p></li>
+<li><p>We’ll customize the default Character class. If an object of this class has a particular flag,
+its name will have the string<code class="docutils literal notranslate"><span class="pre">(GM)</span></code> added to the end.</p></li>
 <li><p>We’ll add a new command, for the server admin to assign the GM-flag properly.</p></li>
 </ol>
 <div class="section" id="character-modification">
 <h4>Character modification<a class="headerlink" href="#character-modification" title="Permalink to this headline">¶</a></h4>
-<p>Let’s first start by customizing the Character. We recommend you browse the beginning of the <a class="reference internal" href="Accounts.html"><span class="doc">Account</span></a> page to make sure you know how Evennia differentiates between the OOC “Account objects” (not to be confused with the <code class="docutils literal notranslate"><span class="pre">Accounts</span></code> permission, which is just a string specifying your access) and the IC “Character objects”.</p>
+<p>Let’s first start by customizing the Character. We recommend you browse the beginning of the
+<a class="reference internal" href="Accounts.html"><span class="doc">Account</span></a> page to make sure you know how Evennia differentiates between the OOC “Account
+objects” (not to be confused with the <code class="docutils literal notranslate"><span class="pre">Accounts</span></code> permission, which is just a string specifying your
+access) and the IC “Character objects”.</p>
 <p>Open <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code> and modify the default <code class="docutils literal notranslate"><span class="pre">Character</span></code> class:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
@@ -155,14 +194,24 @@
             <span class="k">return</span> <span class="n">name</span>
 </pre></div>
 </td></tr></table></div>
-<p>Above, we change how the Character’s name is displayed: If the account controlling this Character is a GM, we attach the string <code class="docutils literal notranslate"><span class="pre">(GM)</span></code> to the Character’s name so everyone can tell who’s the boss. If we ourselves are Developers or GM’s we will see database ids attached to Characters names, which can help if doing database searches against Characters of exactly the same name. We base the “gm-ingness” on having an flag (an <a class="reference internal" href="Attributes.html"><span class="doc">Attribute</span></a>) named <code class="docutils literal notranslate"><span class="pre">is_gm</span></code>. We’ll make sure new GM’s actually get this flag below.</p>
+<p>Above, we change how the Character’s name is displayed: If the account controlling this Character is
+a GM, we attach the string <code class="docutils literal notranslate"><span class="pre">(GM)</span></code> to the Character’s name so everyone can tell who’s the boss. If we
+ourselves are Developers or GM’s we will see database ids attached to Characters names, which can
+help if doing database searches against Characters of exactly the same name. We base the “gm-
+ingness” on having an flag (an <a class="reference internal" href="Attributes.html"><span class="doc">Attribute</span></a>) named <code class="docutils literal notranslate"><span class="pre">is_gm</span></code>. We’ll make sure new GM’s
+actually get this flag below.</p>
 <blockquote>
-<div><p><strong>Extra exercise:</strong> This will only show the <code class="docutils literal notranslate"><span class="pre">(GM)</span></code> text on <em>Characters</em> puppeted by a GM account, that is, it will show only to those in the same location. If we wanted it to also pop up in, say, <code class="docutils literal notranslate"><span class="pre">who</span></code> listings and channels, we’d need to make a similar change to the <code class="docutils literal notranslate"><span class="pre">Account</span></code> typeclass in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/accounts.py</span></code>. We leave this as an exercise to the reader.</p>
+<div><p><strong>Extra exercise:</strong> This will only show the <code class="docutils literal notranslate"><span class="pre">(GM)</span></code> text on <em>Characters</em> puppeted by a GM account,
+that is, it will show only to those in the same location. If we wanted it to also pop up in, say,
+<code class="docutils literal notranslate"><span class="pre">who</span></code> listings and channels, we’d need to make a similar change to the <code class="docutils literal notranslate"><span class="pre">Account</span></code> typeclass in
+<code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/accounts.py</span></code>. We leave this as an exercise to the reader.</p>
 </div></blockquote>
 </div>
 <div class="section" id="new-gm-ungm-command">
 <h4>New &#64;gm/&#64;ungm command<a class="headerlink" href="#new-gm-ungm-command" title="Permalink to this headline">¶</a></h4>
-<p>We will describe in some detail how to create and add an Evennia <a class="reference internal" href="Commands.html"><span class="doc">command</span></a> here with the hope that we don’t need to be as detailed when adding commands in the future. We will build on Evennia’s default “mux-like” commands here.</p>
+<p>We will describe in some detail how to create and add an Evennia <a class="reference internal" href="Commands.html"><span class="doc">command</span></a> here with the
+hope that we don’t need to be as detailed when adding commands in the future. We will build on
+Evennia’s default “mux-like” commands here.</p>
 <p>Open <code class="docutils literal notranslate"><span class="pre">mygame/commands/command.py</span></code> and add a new Command class at the bottom:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
@@ -283,11 +332,16 @@
                 <span class="k">del</span> <span class="n">account</span><span class="o">.</span><span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_gm</span>
 </pre></div>
 </td></tr></table></div>
-<p>All the command does is to locate the account target and assign it the <code class="docutils literal notranslate"><span class="pre">Admins</span></code> permission if we used <code class="docutils literal notranslate"><span class="pre">&#64;gm</span></code> or revoke it if using the <code class="docutils literal notranslate"><span class="pre">&#64;ungm</span></code> alias. We also set/unset the <code class="docutils literal notranslate"><span class="pre">is_gm</span></code> Attribute that is expected by our new <code class="docutils literal notranslate"><span class="pre">Character.get_display_name</span></code> method from earlier.</p>
+<p>All the command does is to locate the account target and assign it the <code class="docutils literal notranslate"><span class="pre">Admins</span></code> permission if we
+used <code class="docutils literal notranslate"><span class="pre">&#64;gm</span></code> or revoke it if using the <code class="docutils literal notranslate"><span class="pre">&#64;ungm</span></code> alias. We also set/unset the <code class="docutils literal notranslate"><span class="pre">is_gm</span></code> Attribute that is
+expected by our new <code class="docutils literal notranslate"><span class="pre">Character.get_display_name</span></code> method from earlier.</p>
 <blockquote>
-<div><p>We could have made this into two separate commands or opted for a syntax like <code class="docutils literal notranslate"><span class="pre">&#64;gm/revoke</span> <span class="pre">&lt;accountname&gt;</span></code>. Instead we examine how this command was called (stored in <code class="docutils literal notranslate"><span class="pre">self.cmdstring</span></code>) in order to act accordingly. Either way works, practicality and coding style decides which to go with.</p>
+<div><p>We could have made this into two separate commands or opted for a syntax like <code class="docutils literal notranslate"><span class="pre">&#64;gm/revoke</span> <span class="pre">&lt;accountname&gt;</span></code>. Instead we examine how this command was called (stored in <code class="docutils literal notranslate"><span class="pre">self.cmdstring</span></code>) in order
+to act accordingly. Either way works, practicality and coding style decides which to go with.</p>
 </div></blockquote>
-<p>To actually make this command available (only to Developers, due to the lock on it), we add it to the default Account command set. Open the file <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code> and find the <code class="docutils literal notranslate"><span class="pre">AccountCmdSet</span></code> class:</p>
+<p>To actually make this command available (only to Developers, due to the lock on it), we add it to
+the default Account command set. Open the file <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code> and find the
+<code class="docutils literal notranslate"><span class="pre">AccountCmdSet</span></code> class:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -309,7 +363,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdMakeGM</span><span class="p">())</span>
 </pre></div>
 </td></tr></table></div>
-<p>Finally, issue the <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> command to update the server to your changes. Developer-level players (or the superuser) should now have the <code class="docutils literal notranslate"><span class="pre">&#64;gm/&#64;ungm</span></code> command available.</p>
+<p>Finally, issue the <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> command to update the server to your changes. Developer-level players
+(or the superuser) should now have the <code class="docutils literal notranslate"><span class="pre">&#64;gm/&#64;ungm</span></code> command available.</p>
 </div>
 </div>
 </div>
@@ -324,13 +379,18 @@
 </ul>
 <div class="section" id="building-a-character-sheet">
 <h3>Building a Character sheet<a class="headerlink" href="#building-a-character-sheet" title="Permalink to this headline">¶</a></h3>
-<p>There are many ways to build a Character sheet in text, from manually pasting strings together to more automated ways. Exactly what is the best/easiest way depends on the sheet one tries to create. We will here show two examples using the <em>EvTable</em> and <em>EvForm</em> utilities.Later we will create Commands to edit and display the output from those utilities.</p>
+<p>There are many ways to build a Character sheet in text, from manually pasting strings together to
+more automated ways. Exactly what is the best/easiest way depends on the sheet one tries to create.
+We will here show two examples using the <em>EvTable</em> and <em>EvForm</em> utilities.Later we will create
+Commands to edit and display the output from those utilities.</p>
 <blockquote>
-<div><p>Note that due to the limitations of the wiki, no color is used in any of the examples. See <a class="reference internal" href="TextTags.html"><span class="doc">the text tag documentation</span></a> for how to add color to the tables and forms.</p>
+<div><p>Note that due to the limitations of the wiki, no color is used in any of the examples. See <a class="reference internal" href="TextTags.html"><span class="doc">the
+text tag documentation</span></a> for how to add color to the tables and forms.</p>
 </div></blockquote>
 <div class="section" id="making-a-sheet-with-evtable">
 <h4>Making a sheet with EvTable<a class="headerlink" href="#making-a-sheet-with-evtable" title="Permalink to this headline">¶</a></h4>
-<p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia.utils.evtable">EvTable</a> is a text-table generator. It helps with displaying text in ordered rows and columns. This is an example of using it in code:</p>
+<p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia.utils.evtable">EvTable</a> is a text-table generator. It helps with displaying text in
+ordered rows and columns. This is an example of using it in code:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -356,7 +416,13 @@
                         <span class="p">],</span> <span class="n">align</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">border</span><span class="o">=</span><span class="s2">&quot;incols&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<p>Above, we create a two-column table by supplying the two columns directly. We also tell the table to be right-aligned and to use the “incols” border type (borders drawns only in between columns). The <code class="docutils literal notranslate"><span class="pre">EvTable</span></code> class takes a lot of arguments for customizing its look, you can see <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia.utils.evtable#evtable__init__">some of the possible keyword arguments here</a>. Once you have the <code class="docutils literal notranslate"><span class="pre">table</span></code> you could also retroactively add new columns and rows to it with <code class="docutils literal notranslate"><span class="pre">table.add_row()</span></code> and <code class="docutils literal notranslate"><span class="pre">table.add_column()</span></code>: if necessary the table will expand with empty rows/columns to always remain rectangular.</p>
+<p>Above, we create a two-column table by supplying the two columns directly. We also tell the table to
+be right-aligned and to use the “incols” border type (borders drawns only in between columns). The
+<code class="docutils literal notranslate"><span class="pre">EvTable</span></code> class takes a lot of arguments for customizing its look, you can see <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia.utils.evtable#evtable__init__">some of the possible
+keyword arguments here</a>. Once you have the <code class="docutils literal notranslate"><span class="pre">table</span></code> you
+could also retroactively add new columns and rows to it with <code class="docutils literal notranslate"><span class="pre">table.add_row()</span></code> and
+<code class="docutils literal notranslate"><span class="pre">table.add_column()</span></code>: if necessary the table will expand with empty rows/columns to always remain
+rectangular.</p>
 <p>The result from printing the above table will be</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
@@ -383,14 +449,26 @@
   <span class="n">CHA</span> <span class="o">|</span>    <span class="mi">13</span>
 </pre></div>
 </td></tr></table></div>
-<p>This is a minimalistic but effective Character sheet. By combining the <code class="docutils literal notranslate"><span class="pre">table_string</span></code> with other strings one could build up a reasonably full graphical representation of a Character. For more advanced layouts we’ll look into EvForm next.</p>
+<p>This is a minimalistic but effective Character sheet. By combining the <code class="docutils literal notranslate"><span class="pre">table_string</span></code> with other
+strings one could build up a reasonably full graphical representation of a Character. For more
+advanced layouts we’ll look into EvForm next.</p>
 </div>
 <div class="section" id="making-a-sheet-with-evform">
 <h4>Making a sheet with EvForm<a class="headerlink" href="#making-a-sheet-with-evform" title="Permalink to this headline">¶</a></h4>
-<p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia.utils.evform">EvForm</a> allows the creation of a two-dimensional “graphic” made by text characters. On this surface, one marks and tags rectangular regions (“cells”) to be filled with content. This content can be either normal strings or <code class="docutils literal notranslate"><span class="pre">EvTable</span></code> instances (see the previous section, one such instance would be the <code class="docutils literal notranslate"><span class="pre">table</span></code> variable in that example).</p>
-<p>In the case of a Character sheet, these cells would be comparable to a line or box where you could enter the name of your character or their strength score. EvMenu also easily allows to update the content of those fields in code (it use EvTables so you rebuild the table first before re-sending it to EvForm).</p>
-<p>The drawback of EvForm is that its shape is static; if you try to put more text in a region than it was sized for, the text will be cropped. Similarly, if you try to put an EvTable instance in a field too small for it, the EvTable will do its best to try to resize to fit, but will eventually resort to cropping its data or even give an error if too small to fit any data.</p>
-<p>An EvForm is defined in a Python module. Create a new file <code class="docutils literal notranslate"><span class="pre">mygame/world/charsheetform.py</span></code> and modify it thus:</p>
+<p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia.utils.evform">EvForm</a> allows the creation of a two-dimensional “graphic” made by
+text characters. On this surface, one marks and tags rectangular regions (“cells”) to be filled with
+content. This content can be either normal strings or <code class="docutils literal notranslate"><span class="pre">EvTable</span></code> instances (see the previous section,
+one such instance would be the <code class="docutils literal notranslate"><span class="pre">table</span></code> variable in that example).</p>
+<p>In the case of a Character sheet, these cells would be comparable to a line or box where you could
+enter the name of your character or their strength score. EvMenu also easily allows to update the
+content of those fields in code (it use EvTables so you rebuild the table first before re-sending it
+to EvForm).</p>
+<p>The drawback of EvForm is that its shape is static; if you try to put more text in a region than it
+was sized for, the text will be cropped. Similarly, if you try to put an EvTable instance in a field
+too small for it, the EvTable will do its best to try to resize to fit, but will eventually resort
+to cropping its data or even give an error if too small to fit any data.</p>
+<p>An EvForm is defined in a Python module. Create a new file <code class="docutils literal notranslate"><span class="pre">mygame/world/charsheetform.py</span></code> and
+modify it thus:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -444,9 +522,16 @@
 <span class="s2">&quot;&quot;&quot;</span>
 </pre></div>
 </td></tr></table></div>
-<p>The <code class="docutils literal notranslate"><span class="pre">#coding</span></code> statement (which must be put on the very first line to work) tells Python to use the utf-8 encoding for the file. Using the <code class="docutils literal notranslate"><span class="pre">FORMCHAR</span></code> and <code class="docutils literal notranslate"><span class="pre">TABLECHAR</span></code> we define what single-character we want to use to “mark” the regions of the character sheet holding cells and tables respectively. Within each block (which must be separated from one another by at least one non-marking character) we embed identifiers 1-4 to identify each block. The identifier could be any single character except for the <code class="docutils literal notranslate"><span class="pre">FORMCHAR</span></code> and <code class="docutils literal notranslate"><span class="pre">TABLECHAR</span></code></p>
+<p>The <code class="docutils literal notranslate"><span class="pre">#coding</span></code> statement (which must be put on the very first line to work) tells Python to use the
+utf-8 encoding for the file. Using the <code class="docutils literal notranslate"><span class="pre">FORMCHAR</span></code> and <code class="docutils literal notranslate"><span class="pre">TABLECHAR</span></code> we define what single-character we
+want to use to “mark” the regions of the character sheet holding cells and tables respectively.
+Within each block (which must be separated from one another by at least one non-marking character)
+we embed identifiers 1-4 to identify each block. The identifier could be any single character except
+for the <code class="docutils literal notranslate"><span class="pre">FORMCHAR</span></code> and <code class="docutils literal notranslate"><span class="pre">TABLECHAR</span></code></p>
 <blockquote>
-<div><p>You can still use <code class="docutils literal notranslate"><span class="pre">FORMCHAR</span></code> and <code class="docutils literal notranslate"><span class="pre">TABLECHAR</span></code> elsewhere in your sheet, but not in a way that it would identify a cell/table. The smallest identifiable cell/table area is 3 characters wide including the identifier (for example <code class="docutils literal notranslate"><span class="pre">x2x</span></code>).</p>
+<div><p>You can still use <code class="docutils literal notranslate"><span class="pre">FORMCHAR</span></code> and <code class="docutils literal notranslate"><span class="pre">TABLECHAR</span></code> elsewhere in your sheet, but not in a way that it
+would identify a cell/table. The smallest identifiable cell/table area is 3 characters wide
+including the identifier (for example <code class="docutils literal notranslate"><span class="pre">x2x</span></code>).</p>
 </div></blockquote>
 <p>Now we will map content to this form.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
@@ -486,9 +571,12 @@
          <span class="n">tables</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;2&quot;</span><span class="p">:</span><span class="n">table</span><span class="p">})</span>
 </pre></div>
 </td></tr></table></div>
-<p>We create some RP-sounding input and re-use the <code class="docutils literal notranslate"><span class="pre">table</span></code> variable from the previous <code class="docutils literal notranslate"><span class="pre">EvTable</span></code> example.</p>
+<p>We create some RP-sounding input and re-use the <code class="docutils literal notranslate"><span class="pre">table</span></code> variable from the previous <code class="docutils literal notranslate"><span class="pre">EvTable</span></code>
+example.</p>
 <blockquote>
-<div><p>Note, that if you didn’t want to create the form in a separate module you <em>could</em> also load it directly into the <code class="docutils literal notranslate"><span class="pre">EvForm</span></code> call like this: <code class="docutils literal notranslate"><span class="pre">EvForm(form={&quot;FORMCHAR&quot;:&quot;x&quot;,</span> <span class="pre">&quot;TABLECHAR&quot;:&quot;c&quot;,</span> <span class="pre">&quot;FORM&quot;:</span> <span class="pre">formstring})</span></code> where <code class="docutils literal notranslate"><span class="pre">FORM</span></code> specifies the form as a string in the same way as listed in the module above. Note however that the very first line of the <code class="docutils literal notranslate"><span class="pre">FORM</span></code> string is ignored, so start with a <code class="docutils literal notranslate"><span class="pre">\n</span></code>.</p>
+<div><p>Note, that if you didn’t want to create the form in a separate module you <em>could</em> also load it
+directly into the <code class="docutils literal notranslate"><span class="pre">EvForm</span></code> call like this: <code class="docutils literal notranslate"><span class="pre">EvForm(form={&quot;FORMCHAR&quot;:&quot;x&quot;,</span> <span class="pre">&quot;TABLECHAR&quot;:&quot;c&quot;,</span> <span class="pre">&quot;FORM&quot;:</span> <span class="pre">formstring})</span></code> where <code class="docutils literal notranslate"><span class="pre">FORM</span></code> specifies the form as a string in the same way as listed in the module
+above. Note however that the very first line of the <code class="docutils literal notranslate"><span class="pre">FORM</span></code> string is ignored, so start with a <code class="docutils literal notranslate"><span class="pre">\n</span></code>.</p>
 </div></blockquote>
 <p>We then map those to the cells of the form:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
@@ -513,12 +601,16 @@
 <span class="o">+--------------------------------------+</span>
 </pre></div>
 </div>
-<p>As seen, the texts and tables have been slotted into the text areas and line breaks have been added where needed. We chose to just enter the Advantages/Disadvantages as plain strings here, meaning long names ended up split between rows. If we wanted more control over the display we could have inserted <code class="docutils literal notranslate"><span class="pre">\n</span></code> line breaks after each line or used a borderless <code class="docutils literal notranslate"><span class="pre">EvTable</span></code> to display those as well.</p>
+<p>As seen, the texts and tables have been slotted into the text areas and line breaks have been added
+where needed. We chose to just enter the Advantages/Disadvantages as plain strings here, meaning
+long names ended up split between rows. If we wanted more control over the display we could have
+inserted <code class="docutils literal notranslate"><span class="pre">\n</span></code> line breaks after each line or used a borderless <code class="docutils literal notranslate"><span class="pre">EvTable</span></code> to display those as well.</p>
 </div>
 </div>
 <div class="section" id="tie-a-character-sheet-to-a-character">
 <h3>Tie a Character sheet to a Character<a class="headerlink" href="#tie-a-character-sheet-to-a-character" title="Permalink to this headline">¶</a></h3>
-<p>We will assume we go with the <code class="docutils literal notranslate"><span class="pre">EvForm</span></code> example above. We now need to attach this to a Character so it can be modified. For this we will modify our <code class="docutils literal notranslate"><span class="pre">Character</span></code> class a little more:</p>
+<p>We will assume we go with the <code class="docutils literal notranslate"><span class="pre">EvForm</span></code> example above. We now need to attach this to a Character so
+it can be modified. For this we will modify our <code class="docutils literal notranslate"><span class="pre">Character</span></code> class a little more:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -600,14 +692,18 @@
                                      <span class="s2">&quot;4&quot;</span><span class="p">:</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;disadvantages&quot;</span><span class="p">]})</span>
 </pre></div>
 </td></tr></table></div>
-<p>Use <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> to make this change available to all <em>newly created</em> Characters. <em>Already existing</em> Characters will <em>not</em> have the charsheet defined, since <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> is only called once. The easiest to force an existing Character to re-fire its <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> is to use the <code class="docutils literal notranslate"><span class="pre">&#64;typeclass</span></code> command in-game:</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> to make this change available to all <em>newly created</em> Characters. <em>Already existing</em>
+Characters will <em>not</em> have the charsheet defined, since <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> is only called once.
+The easiest to force an existing Character to re-fire its <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> is to use the
+<code class="docutils literal notranslate"><span class="pre">&#64;typeclass</span></code> command in-game:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@typeclass</span><span class="o">/</span><span class="n">force</span> <span class="o">&lt;</span><span class="n">Character</span> <span class="n">Name</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="command-for-account-to-change-character-sheet">
 <h3>Command for Account to change Character sheet<a class="headerlink" href="#command-for-account-to-change-character-sheet" title="Permalink to this headline">¶</a></h3>
-<p>We will add a command to edit the sections of our Character sheet. Open <code class="docutils literal notranslate"><span class="pre">mygame/commands/command.py</span></code>.</p>
+<p>We will add a command to edit the sections of our Character sheet. Open
+<code class="docutils literal notranslate"><span class="pre">mygame/commands/command.py</span></code>.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -747,12 +843,15 @@
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> was set to </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fieldname</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
 </pre></div>
 </td></tr></table></div>
-<p>Most of this command is error-checking to make sure the right type of data was input. Note how the <code class="docutils literal notranslate"><span class="pre">sheet_locked</span></code> Attribute is checked and will return if not set.</p>
-<p>This command you import into <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code> and add to the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code>, in the same way the <code class="docutils literal notranslate"><span class="pre">&#64;gm</span></code> command was added to the <code class="docutils literal notranslate"><span class="pre">AccountCmdSet</span></code> earlier.</p>
+<p>Most of this command is error-checking to make sure the right type of data was input. Note how the
+<code class="docutils literal notranslate"><span class="pre">sheet_locked</span></code> Attribute is checked and will return if not set.</p>
+<p>This command you import into <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code> and add to the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code>,
+in the same way the <code class="docutils literal notranslate"><span class="pre">&#64;gm</span></code> command was added to the <code class="docutils literal notranslate"><span class="pre">AccountCmdSet</span></code> earlier.</p>
 </div>
 <div class="section" id="commands-for-gm-to-change-character-sheet">
 <h3>Commands for GM to change Character sheet<a class="headerlink" href="#commands-for-gm-to-change-character-sheet" title="Permalink to this headline">¶</a></h3>
-<p>Game masters use basically the same input as Players do to edit a character sheet, except they can do it on other players than themselves. They are also not stopped by any <code class="docutils literal notranslate"><span class="pre">sheet_locked</span></code> flags.</p>
+<p>Game masters use basically the same input as Players do to edit a character sheet, except they can
+do it on other players than themselves. They are also not stopped by any <code class="docutils literal notranslate"><span class="pre">sheet_locked</span></code> flags.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -900,44 +999,63 @@
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">charsheet</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<p>The <code class="docutils literal notranslate"><span class="pre">&#64;gmsheet</span></code> command takes an additional argument to specify which Character’s character sheet to edit. It also takes <code class="docutils literal notranslate"><span class="pre">/lock</span></code> and <code class="docutils literal notranslate"><span class="pre">/unlock</span></code> switches to block the Player from tweaking their sheet.</p>
-<p>Before this can be used, it should be added to the default <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code> in the same way as the normal <code class="docutils literal notranslate"><span class="pre">&#64;sheet</span></code>. Due to the lock set on it, this command will only be available to <code class="docutils literal notranslate"><span class="pre">Admins</span></code> (i.e. GMs) or higher permission levels.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">&#64;gmsheet</span></code> command takes an additional argument to specify which Character’s character sheet to
+edit. It also takes <code class="docutils literal notranslate"><span class="pre">/lock</span></code> and <code class="docutils literal notranslate"><span class="pre">/unlock</span></code> switches to block the Player from tweaking their sheet.</p>
+<p>Before this can be used, it should be added to the default <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code> in the same way as the
+normal <code class="docutils literal notranslate"><span class="pre">&#64;sheet</span></code>. Due to the lock set on it, this command will only be available to <code class="docutils literal notranslate"><span class="pre">Admins</span></code> (i.e.
+GMs) or higher permission levels.</p>
 </div>
 </div>
 <div class="section" id="dice-roller">
 <h2>Dice roller<a class="headerlink" href="#dice-roller" title="Permalink to this headline">¶</a></h2>
-<p>Evennia’s <em>contrib</em> folder already comes with a full dice roller. To add it to the game, simply import <code class="docutils literal notranslate"><span class="pre">contrib.dice.CmdDice</span></code> into <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code> and add <code class="docutils literal notranslate"><span class="pre">CmdDice</span></code> to the <code class="docutils literal notranslate"><span class="pre">CharacterCmdset</span></code> as done with other commands in this tutorial. After a <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> you will be able to roll dice using normal RPG-style format:</p>
+<p>Evennia’s <em>contrib</em> folder already comes with a full dice roller. To add it to the game, simply
+import <code class="docutils literal notranslate"><span class="pre">contrib.dice.CmdDice</span></code> into <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code> and add <code class="docutils literal notranslate"><span class="pre">CmdDice</span></code> to the
+<code class="docutils literal notranslate"><span class="pre">CharacterCmdset</span></code> as done with other commands in this tutorial. After a <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> you will be able
+to roll dice using normal RPG-style format:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">roll</span> <span class="mi">2</span><span class="n">d6</span> <span class="o">+</span> <span class="mi">3</span>
 <span class="mi">7</span>
 </pre></div>
 </div>
-<p>Use <code class="docutils literal notranslate"><span class="pre">help</span> <span class="pre">dice</span></code> to see what syntax is supported or look at <code class="docutils literal notranslate"><span class="pre">evennia/contrib/dice.py</span></code> to see how it’s implemented.</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">help</span> <span class="pre">dice</span></code> to see what syntax is supported or look at <code class="docutils literal notranslate"><span class="pre">evennia/contrib/dice.py</span></code> to see how it’s
+implemented.</p>
 </div>
 <div class="section" id="rooms">
 <h2>Rooms<a class="headerlink" href="#rooms" title="Permalink to this headline">¶</a></h2>
-<p>Evennia comes with rooms out of the box, so no extra work needed. A GM will automatically have all needed building commands available. A fuller go-through is found in the <a class="reference internal" href="Building-Quickstart.html"><span class="doc">Building tutorial</span></a>. Here are some useful highlights:</p>
+<p>Evennia comes with rooms out of the box, so no extra work needed. A GM will automatically have all
+needed building commands available. A fuller go-through is found in the <a class="reference internal" href="Building-Quickstart.html"><span class="doc">Building
+tutorial</span></a>. Here are some useful highlights:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">&#64;dig</span> <span class="pre">roomname;alias</span> <span class="pre">=</span> <span class="pre">exit_there;alias,</span> <span class="pre">exit_back;alias</span></code> - this is the basic command for digging a new room. You can specify any exit-names and just enter the name of that exit to go there.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">&#64;tunnel</span> <span class="pre">direction</span> <span class="pre">=</span> <span class="pre">roomname</span></code> - this is a specialized command that only accepts directions in the cardinal directions (n,ne,e,se,s,sw,w,nw) as well as in/out and up/down. It also automatically builds “matching” exits back in the opposite direction.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&#64;dig</span> <span class="pre">roomname;alias</span> <span class="pre">=</span> <span class="pre">exit_there;alias,</span> <span class="pre">exit_back;alias</span></code> - this is the basic command for digging
+a new room. You can specify any exit-names and just enter the name of that exit to go there.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&#64;tunnel</span> <span class="pre">direction</span> <span class="pre">=</span> <span class="pre">roomname</span></code> - this is a specialized command that only accepts directions in the
+cardinal directions (n,ne,e,se,s,sw,w,nw) as well as in/out and up/down. It also automatically
+builds “matching” exits back in the opposite direction.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&#64;create/drop</span> <span class="pre">objectname</span></code> - this creates and drops a new simple object in the current location.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&#64;desc</span> <span class="pre">obj</span></code> - change the look-description of the object.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&#64;tel</span> <span class="pre">object</span> <span class="pre">=</span> <span class="pre">location</span></code> - teleport an object to a named location.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&#64;search</span> <span class="pre">objectname</span></code> - locate an object in the database.</p></li>
 </ul>
 <blockquote>
-<div><p>TODO: Describe how to add a logging room, that logs says and poses to a log file that people can access after the fact.</p>
+<div><p>TODO: Describe how to add a logging room, that logs says and poses to a log file that people can
+access after the fact.</p>
 </div></blockquote>
 </div>
 <div class="section" id="channels">
 <h2>Channels<a class="headerlink" href="#channels" title="Permalink to this headline">¶</a></h2>
-<p>Evennia comes with <a class="reference external" href="/Communications.html#Channels">Channels</a> in-built and they are described fully in the documentation. For brevity, here are the relevant commands for normal use:</p>
+<p>Evennia comes with <a class="reference external" href="Communications.html#Channels">Channels</a> in-built and they are described fully in the
+documentation. For brevity, here are the relevant commands for normal use:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">&#64;ccreate</span> <span class="pre">new_channel;alias;alias</span> <span class="pre">=</span> <span class="pre">short</span> <span class="pre">description</span></code> - Creates a new channel.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">addcom</span> <span class="pre">channel</span></code> - join an existing channel. Use <code class="docutils literal notranslate"><span class="pre">addcom</span> <span class="pre">alias</span> <span class="pre">=</span> <span class="pre">channel</span></code> to add a new alias you can use to talk to the channel, as many as desired.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">delcom</span> <span class="pre">alias</span> <span class="pre">or</span> <span class="pre">channel</span></code> - remove an alias from a channel or, if the real channel name is given, unsubscribe completely.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">&#64;channels</span></code> lists all available channels, including your subscriptions and any aliases you have set up for them.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">addcom</span> <span class="pre">channel</span></code> - join an existing channel. Use <code class="docutils literal notranslate"><span class="pre">addcom</span> <span class="pre">alias</span> <span class="pre">=</span> <span class="pre">channel</span></code> to add a new alias you
+can use to talk to the channel, as many as desired.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">delcom</span> <span class="pre">alias</span> <span class="pre">or</span> <span class="pre">channel</span></code> - remove an alias from a channel or, if the real channel name is given,
+unsubscribe completely.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&#64;channels</span></code> lists all available channels, including your subscriptions and any aliases you have
+set up for them.</p></li>
 </ul>
-<p>You can read channel history: if you for example are chatting on the <code class="docutils literal notranslate"><span class="pre">public</span></code> channel you can do <code class="docutils literal notranslate"><span class="pre">public/history</span></code> to see the 20 last posts to that channel or <code class="docutils literal notranslate"><span class="pre">public/history</span> <span class="pre">32</span></code> to view twenty posts backwards, starting with the 32nd from the end.</p>
+<p>You can read channel history: if you for example are chatting on the <code class="docutils literal notranslate"><span class="pre">public</span></code> channel you can do
+<code class="docutils literal notranslate"><span class="pre">public/history</span></code> to see the 20 last posts to that channel or <code class="docutils literal notranslate"><span class="pre">public/history</span> <span class="pre">32</span></code> to view twenty
+posts backwards, starting with the 32nd from the end.</p>
 </div>
 <div class="section" id="pms">
 <h2>PMs<a class="headerlink" href="#pms" title="Permalink to this headline">¶</a></h2>
@@ -946,7 +1064,8 @@
 <span class="n">page</span> <span class="n">recipient</span><span class="p">,</span> <span class="n">recipient</span><span class="p">,</span> <span class="o">...</span> <span class="o">=</span> <span class="n">message</span>
 </pre></div>
 </div>
-<p>Players can use <code class="docutils literal notranslate"><span class="pre">page</span></code> alone to see the latest messages. This also works if they were not online when the message was sent.</p>
+<p>Players can use <code class="docutils literal notranslate"><span class="pre">page</span></code> alone to see the latest messages. This also works if they were not online
+when the message was sent.</p>
 </div>
 </div>
 
@@ -1028,7 +1147,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Evennia for roleplaying sessions</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

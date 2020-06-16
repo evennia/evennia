@@ -7,11 +7,13 @@
     <title>evennia.typeclasses.attributes &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,7 +29,10 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">evennia.typeclasses.attributes</a></li>
+
+
       </ul>
     </div>  
 
@@ -201,6 +206,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This attribute is stored via Django. Most Attributes will be using this class.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1">#</span>
     <span class="c1"># Attribute Database Model setup</span>
     <span class="c1">#</span>
@@ -308,9 +314,11 @@
 
     <span class="n">value</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__value_get</span><span class="p">,</span> <span class="n">__value_set</span><span class="p">,</span> <span class="n">__value_del</span><span class="p">)</span></div>
 
+
 <span class="c1">#</span>
 <span class="c1"># Handlers making use of the Attribute model</span>
 <span class="c1">#</span>
+
 
 <div class="viewcode-block" id="IAttributeBackend"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.attributes.IAttributeBackend">[docs]</a><span class="k">class</span> <span class="nc">IAttributeBackend</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -375,8 +383,10 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_TYPECLASS_AGGRESSIVE_CACHE</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="n">attrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_all</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="s2">&quot;{to_str(attr.key).lower()}-{attr.category.lower() if attr.category else None}&quot;</span><span class="p">:</span> <span class="n">attr</span>
-                       <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">f</span><span class="s2">&quot;{to_str(attr.key).lower()}-{attr.category.lower() if attr.category else None}&quot;</span><span class="p">:</span> <span class="n">attr</span>
+            <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attrs</span>
+        <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache_complete</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="IAttributeBackend._get_cache_key"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.attributes.IAttributeBackend._get_cache_key">[docs]</a>    <span class="k">def</span> <span class="nf">_get_cache_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
@@ -662,7 +672,9 @@
                 <span class="c1"># update an existing attribute object</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">do_batch_update_attribute</span><span class="p">(</span><span class="n">attr_obj</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">,</span> <span class="n">new_value</span><span class="p">,</span> <span class="n">strattr</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">new_attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_create_attribute</span><span class="p">(</span><span class="n">keystr</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">,</span> <span class="n">new_value</span><span class="p">,</span> <span class="n">strvalue</span><span class="o">=</span><span class="n">strattr</span><span class="p">)</span>
+                <span class="n">new_attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_create_attribute</span><span class="p">(</span>
+                    <span class="n">keystr</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">,</span> <span class="n">new_value</span><span class="p">,</span> <span class="n">strvalue</span><span class="o">=</span><span class="n">strattr</span>
+                <span class="p">)</span>
                 <span class="n">new_attrobjs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_attr</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">new_attrobjs</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">do_batch_finish</span><span class="p">(</span><span class="n">new_attrobjs</span><span class="p">)</span></div>
@@ -735,8 +747,13 @@
             <span class="n">attrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">accessing_obj</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">do_batch_delete</span><span class="p">([</span><span class="n">attr</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attrs</span> <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attredit</span><span class="p">,</span>
-                                                                        <span class="n">default</span><span class="o">=</span><span class="n">default_access</span><span class="p">)])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">do_batch_delete</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">attr</span>
+                    <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attrs</span>
+                    <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attredit</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">default_access</span><span class="p">)</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># have to cast the results to a list or we&#39;ll get a RuntimeError for removing from the dict we&#39;re iterating</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">do_batch_delete</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">attrs</span><span class="p">))</span>
@@ -804,7 +821,9 @@
 
 <span class="sd">        strvalue has no meaning for InMemory attributes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrclass</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_next_id</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">lock_storage</span><span class="o">=</span><span class="n">lockstring</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">new_attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrclass</span><span class="p">(</span>
+            <span class="n">pk</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_next_id</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">lock_storage</span><span class="o">=</span><span class="n">lockstring</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[(</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">)]</span> <span class="o">=</span> <span class="n">new_attr</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_category_storage</span><span class="p">[</span><span class="n">category</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_attr</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">new_attr</span></div>
@@ -844,6 +863,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Uses Django models for storing Attributes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">_attrclass</span> <span class="o">=</span> <span class="n">Attribute</span>
     <span class="n">_m2m_fieldname</span> <span class="o">=</span> <span class="s2">&quot;db_attributes&quot;</span>
 
@@ -883,9 +903,7 @@
         <span class="p">}</span>
         <span class="k">return</span> <span class="p">[</span>
             <span class="n">conn</span><span class="o">.</span><span class="n">attribute</span>
-            <span class="k">for</span> <span class="n">conn</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m2m_fieldname</span><span class="p">)</span><span class="o">.</span><span class="n">through</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-                <span class="o">**</span><span class="n">query</span>
-            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">conn</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m2m_fieldname</span><span class="p">)</span><span class="o">.</span><span class="n">through</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="n">query</span><span class="p">)</span>
         <span class="p">]</span></div>
 
 <div class="viewcode-block" id="ModelAttributeBackend.do_create_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.attributes.ModelAttributeBackend.do_create_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">do_create_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">strvalue</span><span class="p">):</span>
@@ -894,7 +912,7 @@
             <span class="s2">&quot;db_category&quot;</span><span class="p">:</span> <span class="n">category</span><span class="p">,</span>
             <span class="s2">&quot;db_model&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span>
             <span class="s2">&quot;db_lock_storage&quot;</span><span class="p">:</span> <span class="n">lockstring</span> <span class="k">if</span> <span class="n">lockstring</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;db_attrtype&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrtype</span>
+            <span class="s2">&quot;db_attrtype&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrtype</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="k">if</span> <span class="n">strvalue</span><span class="p">:</span>
             <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;db_value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -940,6 +958,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Handler for adding Attributes to the object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">_attrcreate</span> <span class="o">=</span> <span class="s2">&quot;attrcreate&quot;</span>
     <span class="n">_attredit</span> <span class="o">=</span> <span class="s2">&quot;attredit&quot;</span>
     <span class="n">_attrread</span> <span class="o">=</span> <span class="s2">&quot;attrread&quot;</span>
@@ -1562,7 +1581,10 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li> 
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">evennia.typeclasses.attributes</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

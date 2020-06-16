@@ -503,6 +503,14 @@ li > p:last-child {
     margin-bottom: 0px;
 }
 
+ul.simple > li > ul > li {
+  margin-left: -25px;
+}
+
+ul > li > ul > li {
+  margin-left: -7px;
+}
+
 dl.footnote > dt,
 dl.citation > dt {
     float: left;

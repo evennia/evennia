@@ -1,7 +1,8 @@
 # Developer Central
 
 
-This page serves as a central nexus for information on using Evennia as well as developing the library itself.
+This page serves as a central nexus for information on using Evennia as well as developing the
+library itself.
 
 ### General Evennia development information
 
@@ -91,13 +92,17 @@ This page serves as a central nexus for information on using Evennia as well as 
 
 ### Developer brainstorms and whitepages
 
-- [API refactoring](API-refactoring), discussing what parts of the Evennia API needs a refactoring/cleanup/simplification
-- [Docs refactoring](Docs-refactoring), discussing how to reorganize and structure this wiki/docs better going forward
+- [API refactoring](API-refactoring), discussing what parts of the Evennia API needs a
+refactoring/cleanup/simplification
+- [Docs refactoring](Docs-refactoring), discussing how to reorganize and structure this wiki/docs
+better going forward
 - [Webclient brainstorm](Webclient-brainstorm), some ideas for a future webclient gui
 - [Roadmap](Roadmap), a tentative list of future major features
-- [Change log](https://github.com/evennia/evennia/blob/master/CHANGELOG.md) of big Evennia updates over time
+- [Change log](https://github.com/evennia/evennia/blob/master/CHANGELOG.md) of big Evennia updates
+over time
 
 
 [group]: https://groups.google.com/forum/#!forum/evennia
-[online-form]: https://docs.google.com/spreadsheet/viewform?hl=en_US&formkey=dGN0VlJXMWpCT3VHaHpscDEzY1RoZGc6MQ#gid=0 
+[online-form]:
+https://docs.google.com/spreadsheet/viewform?hl=en_US&formkey=dGN0VlJXMWpCT3VHaHpscDEzY1RoZGc6MQ#gid=0
 [issues]: https://github.com/evennia/evennia/issues

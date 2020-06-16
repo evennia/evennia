@@ -7,11 +7,13 @@
     <title>Building menus &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Building menus</a></li>
+
+
       </ul>
     </div>  
 
@@ -39,20 +44,33 @@
 </div>
 <div class="section" id="the-building-menu-contrib">
 <h1>The building_menu contrib<a class="headerlink" href="#the-building-menu-contrib" title="Permalink to this headline">¶</a></h1>
-<p>This contrib allows you to write custom and easy to use building menus.  As the name implies, these menus are most useful for building things, that is, your builders might appreciate them, although you can use them for your players as well.</p>
-<p>Building menus are somewhat similar to <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> although they don’t use the same system at all and are intended to make building easier.  They replicate what other engines refer to as “building editors”, which allow to you to build in a menu instead of having to enter a lot of complex commands.  Builders might appreciate this simplicity, and if the code that was used to create them is simple as well, coders could find this contrib useful.</p>
+<p>This contrib allows you to write custom and easy to use building menus.  As the name implies, these
+menus are most useful for building things, that is, your builders might appreciate them, although
+you can use them for your players as well.</p>
+<p>Building menus are somewhat similar to <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> although they don’t use the same system at all and
+are intended to make building easier.  They replicate what other engines refer to as “building
+editors”, which allow to you to build in a menu instead of having to enter a lot of complex
+commands.  Builders might appreciate this simplicity, and if the code that was used to create them
+is simple as well, coders could find this contrib useful.</p>
 <div class="section" id="a-simple-menu">
 <h2>A simple menu<a class="headerlink" href="#a-simple-menu" title="Permalink to this headline">¶</a></h2>
 <p>Before diving in, there are some things to point out:</p>
 <ul class="simple">
-<li><p>Building menus work on an object.  This object will be edited by manipulations in the menu.  So you can create a menu to add/edit a room, an exit, a character and so on.</p></li>
-<li><p>Building menus are arranged in layers of choices.  A choice gives access to an option or to a sub-menu.  Choices are linked to commands (usually very short).  For instance, in the example shown below, to edit the room key, after opening the building menu, you can type <code class="docutils literal notranslate"><span class="pre">k</span></code>.  That will lead you to the key choice where you can enter a new key for the room.  Then you can enter <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> to leave this choice and go back to the entire menu.  (All of this can be changed).</p></li>
-<li><p>To open the menu, you will need something like a command.  This contrib offers a basic command for demonstration, but we will override it in this example, using the same code with more flexibility.</p></li>
+<li><p>Building menus work on an object.  This object will be edited by manipulations in the menu.  So
+you can create a menu to add/edit a room, an exit, a character and so on.</p></li>
+<li><p>Building menus are arranged in layers of choices.  A choice gives access to an option or to a sub-
+menu.  Choices are linked to commands (usually very short).  For instance, in the example shown
+below, to edit the room key, after opening the building menu, you can type <code class="docutils literal notranslate"><span class="pre">k</span></code>.  That will lead you
+to the key choice where you can enter a new key for the room.  Then you can enter <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> to leave this
+choice and go back to the entire menu.  (All of this can be changed).</p></li>
+<li><p>To open the menu, you will need something like a command.  This contrib offers a basic command for
+demonstration, but we will override it in this example, using the same code with more flexibility.</p></li>
 </ul>
 <p>So let’s add a very basic example to begin with.</p>
 <div class="section" id="a-generic-editing-command">
 <h3>A generic editing command<a class="headerlink" href="#a-generic-editing-command" title="Permalink to this headline">¶</a></h3>
-<p>Let’s begin by adding a new command.  You could add or edit the following file (there’s no trick here, feel free to organize the code differently):</p>
+<p>Let’s begin by adding a new command.  You could add or edit the following file (there’s no trick
+here, feel free to organize the code differently):</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -95,7 +113,8 @@
 40
 41
 42
-43</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># file: commands/building.py</span>
+43
+44</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># file: commands/building.py</span>
 <span class="kn">from</span> <span class="nn">evennia.contrib.building_menu</span> <span class="kn">import</span> <span class="n">BuildingMenu</span>
 <span class="kn">from</span> <span class="nn">commands.command</span> <span class="kn">import</span> <span class="n">Command</span>
 
@@ -133,7 +152,8 @@
         <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">typename</span> <span class="o">==</span> <span class="s2">&quot;Room&quot;</span><span class="p">:</span>
             <span class="n">Menu</span> <span class="o">=</span> <span class="n">RoomBuildingMenu</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|rThe object {} cannot be edited.|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|rThe object {} cannot be</span>
+<span class="n">edited</span><span class="o">.|</span><span class="n">n</span><span class="s2">&quot;.format(obj.get_display_name(self.caller)))</span>
             <span class="k">return</span>
 
         <span class="n">menu</span> <span class="o">=</span> <span class="n">Menu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
@@ -143,18 +163,28 @@
 <p>This command is rather simple in itself:</p>
 <ol class="simple">
 <li><p>It has a key <code class="docutils literal notranslate"><span class="pre">&#64;edit</span></code> and a lock to only allow builders to use it.</p></li>
-<li><p>In its <code class="docutils literal notranslate"><span class="pre">func</span></code> method, it begins by checking the arguments, returning an error if no argument is specified.</p></li>
-<li><p>It then searches for the given argument.  We search globally.  The <code class="docutils literal notranslate"><span class="pre">search</span></code> method used in this way will return the found object or <code class="docutils literal notranslate"><span class="pre">None</span></code>.  It will also send the error message to the caller if necessary.</p></li>
-<li><p>Assuming we have found an object, we check the object <code class="docutils literal notranslate"><span class="pre">typename</span></code>.  This will be used later when we want to display several building menus.  For the time being, we only handle <code class="docutils literal notranslate"><span class="pre">Room</span></code>.  If the caller specified something else, we’ll display an error.</p></li>
-<li><p>Assuming this object is a <code class="docutils literal notranslate"><span class="pre">Room</span></code>, we have defined a <code class="docutils literal notranslate"><span class="pre">Menu</span></code> object containing the class of our building menu.  We build this class (creating an instance), giving it the caller and the object to edit.</p></li>
+<li><p>In its <code class="docutils literal notranslate"><span class="pre">func</span></code> method, it begins by checking the arguments, returning an error if no argument is
+specified.</p></li>
+<li><p>It then searches for the given argument.  We search globally.  The <code class="docutils literal notranslate"><span class="pre">search</span></code> method used in this
+way will return the found object or <code class="docutils literal notranslate"><span class="pre">None</span></code>.  It will also send the error message to the caller if
+necessary.</p></li>
+<li><p>Assuming we have found an object, we check the object <code class="docutils literal notranslate"><span class="pre">typename</span></code>.  This will be used later when
+we want to display several building menus.  For the time being, we only handle <code class="docutils literal notranslate"><span class="pre">Room</span></code>.  If the
+caller specified something else, we’ll display an error.</p></li>
+<li><p>Assuming this object is a <code class="docutils literal notranslate"><span class="pre">Room</span></code>, we have defined a <code class="docutils literal notranslate"><span class="pre">Menu</span></code> object containing the class of our
+building menu.  We build this class (creating an instance), giving it the caller and the object to
+edit.</p></li>
 <li><p>We then open the building menu, using the <code class="docutils literal notranslate"><span class="pre">open</span></code> method.</p></li>
 </ol>
-<p>The end might sound a bit surprising at first glance.  But the process is still very simple: we create an instance of our building menu and call its <code class="docutils literal notranslate"><span class="pre">open</span></code> method.  Nothing more.</p>
+<p>The end might sound a bit surprising at first glance.  But the process is still very simple: we
+create an instance of our building menu and call its <code class="docutils literal notranslate"><span class="pre">open</span></code> method.  Nothing more.</p>
 <blockquote>
 <div><p>Where is our building menu?</p>
 </div></blockquote>
-<p>If you go ahead and add this command and test it, you’ll get an error.  We haven’t defined <code class="docutils literal notranslate"><span class="pre">RoomBuildingMenu</span></code> yet.</p>
-<p>To add this command, edit <code class="docutils literal notranslate"><span class="pre">commands/default_cmdsets.py</span></code>.  Import our command, adding an import line at the top of the file:</p>
+<p>If you go ahead and add this command and test it, you’ll get an error.  We haven’t defined
+<code class="docutils literal notranslate"><span class="pre">RoomBuildingMenu</span></code> yet.</p>
+<p>To add this command, edit <code class="docutils literal notranslate"><span class="pre">commands/default_cmdsets.py</span></code>.  Import our command, adding an import line
+at the top of the file:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
@@ -211,7 +241,8 @@
 </div>
 <div class="section" id="our-first-menu">
 <h3>Our first menu<a class="headerlink" href="#our-first-menu" title="Permalink to this headline">¶</a></h3>
-<p>So far, we can’t use our building menu.  Our <code class="docutils literal notranslate"><span class="pre">&#64;edit</span></code> command will throw an error.  We have to define the <code class="docutils literal notranslate"><span class="pre">RoomBuildingMenu</span></code> class.  Open the <code class="docutils literal notranslate"><span class="pre">commands/building.py</span></code> file and add to the end of the file:</p>
+<p>So far, we can’t use our building menu.  Our <code class="docutils literal notranslate"><span class="pre">&#64;edit</span></code> command will throw an error.  We have to define
+the <code class="docutils literal notranslate"><span class="pre">RoomBuildingMenu</span></code> class.  Open the <code class="docutils literal notranslate"><span class="pre">commands/building.py</span></code> file and add to the end of the file:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -241,7 +272,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add_choice</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="s2">&quot;key&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<p>Save these changes, reload your game.  You can now use the <code class="docutils literal notranslate"><span class="pre">&#64;edit</span></code> command.  Here’s what we get (notice that the commands we enter into the game are prefixed with <code class="docutils literal notranslate"><span class="pre">&gt;</span> </code>, though this prefix will probably not appear in your MUD client):</p>
+<p>Save these changes, reload your game.  You can now use the <code class="docutils literal notranslate"><span class="pre">&#64;edit</span></code> command.  Here’s what we get
+(notice that the commands we enter into the game are prefixed with <code class="docutils literal notranslate"><span class="pre">&gt;</span> </code>, though this prefix will
+probably not appear in your MUD client):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; look
 Limbo(#2)
 Welcome to your new Evennia-based game! Visit http://www.evennia.com if you need
@@ -306,12 +339,14 @@ As Account #1 you can create a demo/tutorial area with @batchcommand tutorial_wo
 <li><p>When we use the <code class="docutils literal notranslate"><span class="pre">&#64;edit</span> <span class="pre">here</span></code> command, a building menu for this room appears.</p></li>
 <li><p>This menu has two choices:</p>
 <ul>
-<li><p>Enter <code class="docutils literal notranslate"><span class="pre">k</span></code> to edit the room key.  You will go into a choice where you can simply type the key room key (the way we have done here).  You can use <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> to go back to the menu.</p></li>
+<li><p>Enter <code class="docutils literal notranslate"><span class="pre">k</span></code> to edit the room key.  You will go into a choice where you can simply type the key
+room key (the way we have done here).  You can use <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> to go back to the menu.</p></li>
 <li><p>You can use <code class="docutils literal notranslate"><span class="pre">q</span></code> to quit the menu.</p></li>
 </ul>
 </li>
 </ul>
-<p>We then check, with the <code class="docutils literal notranslate"><span class="pre">look</span></code> command, that the menu has modified this room key.  So by adding a class, with a method and a single line of code within, we’ve added a menu with two choices.</p>
+<p>We then check, with the <code class="docutils literal notranslate"><span class="pre">look</span></code> command, that the menu has modified this room key.  So by adding a
+class, with a method and a single line of code within, we’ve added a menu with two choices.</p>
 </div>
 <div class="section" id="code-explanation">
 <h3>Code explanation<a class="headerlink" href="#code-explanation" title="Permalink to this headline">¶</a></h3>
@@ -340,40 +375,59 @@ As Account #1 you can create a demo/tutorial area with @batchcommand tutorial_wo
 </pre></div>
 </td></tr></table></div>
 <ul class="simple">
-<li><p>We first create a class inheriting from <code class="docutils literal notranslate"><span class="pre">BuildingMenu</span></code>.  This is usually the case when we want to create a building menu with this contrib.</p></li>
+<li><p>We first create a class inheriting from <code class="docutils literal notranslate"><span class="pre">BuildingMenu</span></code>.  This is usually the case when we want to
+create a building menu with this contrib.</p></li>
 <li><p>In this class, we override the <code class="docutils literal notranslate"><span class="pre">init</span></code> method, which is called when the menu opens.</p></li>
-<li><p>In this <code class="docutils literal notranslate"><span class="pre">init</span></code> method, we call <code class="docutils literal notranslate"><span class="pre">add_choice</span></code>.  This takes several arguments, but we’ve defined only three here:</p>
+<li><p>In this <code class="docutils literal notranslate"><span class="pre">init</span></code> method, we call <code class="docutils literal notranslate"><span class="pre">add_choice</span></code>.  This takes several arguments, but we’ve defined only
+three here:</p>
 <ul>
-<li><p>The choice name.  This is mandatory and will be used by the building menu to know how to display this choice.</p></li>
-<li><p>The command key to access this choice.  We’ve given a simple <code class="docutils literal notranslate"><span class="pre">&quot;k&quot;</span></code>.  Menu commands usually are pretty short (that’s part of the reason building menus are appreciated by builders).  You can also specify additional aliases, but we’ll see that later.</p></li>
-<li><p>We’ve added a keyword argument, <code class="docutils literal notranslate"><span class="pre">attr</span></code>.  This tells the building menu that when we are in this choice, the text we enter goes into this attribute name.  It’s called <code class="docutils literal notranslate"><span class="pre">attr</span></code>, but it could be a room attribute or a typeclass persistent or non-persistent attribute (we’ll see other examples as well).</p></li>
+<li><p>The choice name.  This is mandatory and will be used by the building menu to know how to
+display this choice.</p></li>
+<li><p>The command key to access this choice.  We’ve given a simple <code class="docutils literal notranslate"><span class="pre">&quot;k&quot;</span></code>.  Menu commands usually are
+pretty short (that’s part of the reason building menus are appreciated by builders).  You can also
+specify additional aliases, but we’ll see that later.</p></li>
+<li><p>We’ve added a keyword argument, <code class="docutils literal notranslate"><span class="pre">attr</span></code>.  This tells the building menu that when we are in this
+choice, the text we enter goes into this attribute name.  It’s called <code class="docutils literal notranslate"><span class="pre">attr</span></code>, but it could be a room
+attribute or a typeclass persistent or non-persistent attribute (we’ll see other examples as well).</p></li>
 </ul>
 </li>
 </ul>
 <blockquote>
 <div><p>We’ve added the menu choice for <code class="docutils literal notranslate"><span class="pre">key</span></code> here, why is another menu choice defined for <code class="docutils literal notranslate"><span class="pre">quit</span></code>?</p>
 </div></blockquote>
-<p>Our building menu creates a choice at the end of our choice list if it’s a top-level menu (sub-menus don’t have this feature).  You can, however, override it to provide a different “quit” message or to perform some actions.</p>
+<p>Our building menu creates a choice at the end of our choice list if it’s a top-level menu (sub-menus
+don’t have this feature).  You can, however, override it to provide a different “quit” message or to
+perform some actions.</p>
 <p>I encourage you to play with this code.  As simple as it is, it offers some functionalities already.</p>
 </div>
 </div>
 <div class="section" id="customizing-building-menus">
 <h2>Customizing building menus<a class="headerlink" href="#customizing-building-menus" title="Permalink to this headline">¶</a></h2>
-<p>This somewhat long section explains how to customize building menus.  There are different ways depending on what you would like to achieve.  We’ll go from specific to more advanced here.</p>
+<p>This somewhat long section explains how to customize building menus.  There are different ways
+depending on what you would like to achieve.  We’ll go from specific to more advanced here.</p>
 <div class="section" id="generic-choices">
 <h3>Generic choices<a class="headerlink" href="#generic-choices" title="Permalink to this headline">¶</a></h3>
-<p>In the previous example, we’ve used <code class="docutils literal notranslate"><span class="pre">add_choice</span></code>.  This is one of three methods you can use to add choices.  The other two are to handle more generic actions:</p>
+<p>In the previous example, we’ve used <code class="docutils literal notranslate"><span class="pre">add_choice</span></code>.  This is one of three methods you can use to add
+choices.  The other two are to handle more generic actions:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">add_choice_edit</span></code>: this is called to add a choice which points to the <code class="docutils literal notranslate"><span class="pre">EvEditor</span></code>.  It is used to edit a description in most cases, although you could edit other things.  We’ll see an example shortly.  <code class="docutils literal notranslate"><span class="pre">add_choice_edit</span></code> uses most of the <code class="docutils literal notranslate"><span class="pre">add_choice</span></code> keyword arguments we’ll see, but usually we specify only two (sometimes three):</p>
+<li><p><code class="docutils literal notranslate"><span class="pre">add_choice_edit</span></code>: this is called to add a choice which points to the <code class="docutils literal notranslate"><span class="pre">EvEditor</span></code>.  It is used to
+edit a description in most cases, although you could edit other things.  We’ll see an example
+shortly.  <code class="docutils literal notranslate"><span class="pre">add_choice_edit</span></code> uses most of the <code class="docutils literal notranslate"><span class="pre">add_choice</span></code> keyword arguments we’ll see, but usually
+we specify only two (sometimes three):</p>
 <ul>
 <li><p>The choice title as usual.</p></li>
 <li><p>The choice key (command key) as usual.</p></li>
-<li><p>Optionally, the attribute of the object to edit, with the <code class="docutils literal notranslate"><span class="pre">attr</span></code> keyword argument.  By default, <code class="docutils literal notranslate"><span class="pre">attr</span></code> contains <code class="docutils literal notranslate"><span class="pre">db.desc</span></code>.  It means that this persistent data attribute will be edited by the <code class="docutils literal notranslate"><span class="pre">EvEditor</span></code>.  You can change that to whatever you want though.</p></li>
+<li><p>Optionally, the attribute of the object to edit, with the <code class="docutils literal notranslate"><span class="pre">attr</span></code> keyword argument.  By
+default, <code class="docutils literal notranslate"><span class="pre">attr</span></code> contains <code class="docutils literal notranslate"><span class="pre">db.desc</span></code>.  It means that this persistent data attribute will be edited by
+the <code class="docutils literal notranslate"><span class="pre">EvEditor</span></code>.  You can change that to whatever you want though.</p></li>
 </ul>
 </li>
-<li><p><code class="docutils literal notranslate"><span class="pre">add_choice_quit</span></code>: this allows to add a choice to quit the editor.  Most advisable!  If you don’t do it, the building menu will do it automatically, except if you really tell it not to.  Again, you can specify the title and key of this menu.  You can also call a function when this menu closes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">add_choice_quit</span></code>: this allows to add a choice to quit the editor.  Most advisable!  If you don’t
+do it, the building menu will do it automatically, except if you really tell it not to.  Again, you
+can specify the title and key of this menu.  You can also call a function when this menu closes.</p></li>
 </ul>
-<p>So here’s a more complete example (you can replace your <code class="docutils literal notranslate"><span class="pre">RoomBuildingMenu</span></code> class in <code class="docutils literal notranslate"><span class="pre">commands/building.py</span></code> to see it):</p>
+<p>So here’s a more complete example (you can replace your <code class="docutils literal notranslate"><span class="pre">RoomBuildingMenu</span></code> class in
+<code class="docutils literal notranslate"><span class="pre">commands/building.py</span></code> to see it):</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -395,7 +449,9 @@ As Account #1 you can create a demo/tutorial area with @batchcommand tutorial_wo
         <span class="bp">self</span><span class="o">.</span><span class="n">add_choice_quit</span><span class="p">(</span><span class="s2">&quot;quit this editor&quot;</span><span class="p">,</span> <span class="s2">&quot;q&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<p>So far, our building menu class is still thin… and yet we already have some interesting feature.  See for yourself the following MUD client output (again, the commands are prefixed with <code class="docutils literal notranslate"><span class="pre">&gt;</span> </code> to distinguish them):</p>
+<p>So far, our building menu class is still thin… and yet we already have some interesting feature.
+See for yourself the following MUD client output (again, the commands are prefixed with <code class="docutils literal notranslate"><span class="pre">&gt;</span> </code> to
+distinguish them):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; @reload
 
 &gt; @edit here
@@ -440,25 +496,50 @@ A beautiful meadow(#2)
 This is a beautiful meadow.  But so beautiful I can&#39;t describe it.
 </pre></div>
 </div>
-<p>So by using the <code class="docutils literal notranslate"><span class="pre">d</span></code> shortcut in our building menu, an <code class="docutils literal notranslate"><span class="pre">EvEditor</span></code> opens.  You can use the <code class="docutils literal notranslate"><span class="pre">EvEditor</span></code> commands (like we did here, <code class="docutils literal notranslate"><span class="pre">:DD</span></code> to remove all, <code class="docutils literal notranslate"><span class="pre">:wq</span></code> to save and quit).  When you quit the editor, the description is saved (here, in <code class="docutils literal notranslate"><span class="pre">room.db.desc</span></code>) and you go back to the building menu.</p>
-<p>Notice that the choice to quit has changed too, which is due to our adding <code class="docutils literal notranslate"><span class="pre">add_choice_quit</span></code>.  In most cases, you will probably not use this method, since the quit menu is added automatically.</p>
+<p>So by using the <code class="docutils literal notranslate"><span class="pre">d</span></code> shortcut in our building menu, an <code class="docutils literal notranslate"><span class="pre">EvEditor</span></code> opens.  You can use the <code class="docutils literal notranslate"><span class="pre">EvEditor</span></code>
+commands (like we did here, <code class="docutils literal notranslate"><span class="pre">:DD</span></code> to remove all, <code class="docutils literal notranslate"><span class="pre">:wq</span></code> to save and quit).  When you quit the editor,
+the description is saved (here, in <code class="docutils literal notranslate"><span class="pre">room.db.desc</span></code>) and you go back to the building menu.</p>
+<p>Notice that the choice to quit has changed too, which is due to our adding <code class="docutils literal notranslate"><span class="pre">add_choice_quit</span></code>.  In
+most cases, you will probably not use this method, since the quit menu is added automatically.</p>
 </div>
 <div class="section" id="add-choice-options">
 <h3><code class="docutils literal notranslate"><span class="pre">add_choice</span></code> options<a class="headerlink" href="#add-choice-options" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">add_choice</span></code> and the two methods <code class="docutils literal notranslate"><span class="pre">add_choice_edit</span></code> and <code class="docutils literal notranslate"><span class="pre">add_choice_quit</span></code> take a lot of optional arguments to make customization easier.  Some of these options might not apply to <code class="docutils literal notranslate"><span class="pre">add_choice_edit</span></code> or <code class="docutils literal notranslate"><span class="pre">add_choice_quit</span></code> however.</p>
+<p><code class="docutils literal notranslate"><span class="pre">add_choice</span></code> and the two methods <code class="docutils literal notranslate"><span class="pre">add_choice_edit</span></code> and <code class="docutils literal notranslate"><span class="pre">add_choice_quit</span></code> take a lot of optional
+arguments to make customization easier.  Some of these options might not apply to <code class="docutils literal notranslate"><span class="pre">add_choice_edit</span></code>
+or <code class="docutils literal notranslate"><span class="pre">add_choice_quit</span></code> however.</p>
 <p>Below are the options of <code class="docutils literal notranslate"><span class="pre">add_choice</span></code>, specify them as arguments:</p>
 <ul class="simple">
-<li><p>The first positional, mandatory argument is the choice title, as we have seen.  This will influence how the choice appears in the menu.</p></li>
-<li><p>The second positional, mandatory argument is the command key to access to this menu.  It is best to use keyword arguments for the other arguments.</p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">aliases</span></code> keyword argument can contain a list of aliases that can be used to access to this menu.  For instance: <code class="docutils literal notranslate"><span class="pre">add_choice(...,</span> <span class="pre">aliases=['t'])</span></code></p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">attr</span></code> keyword argument contains the attribute to edit when this choice is selected.  It’s a string, it has to be the name, from the object (specified in the menu constructor) to reach this attribute.  For instance, a <code class="docutils literal notranslate"><span class="pre">attr</span></code> of <code class="docutils literal notranslate"><span class="pre">&quot;key&quot;</span></code> will try to find <code class="docutils literal notranslate"><span class="pre">obj.key</span></code> to read and write the attribute.  You can specify more complex attribute names, for instance, <code class="docutils literal notranslate"><span class="pre">attr=&quot;db.desc&quot;</span></code> to set the <code class="docutils literal notranslate"><span class="pre">desc</span></code> persistent attribute, or <code class="docutils literal notranslate"><span class="pre">attr=&quot;ndb.something&quot;</span></code> so use a non-persistent data attribute on the object.</p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">text</span></code> keyword argument is used to change the text that will be displayed when the menu choice is selected.  Menu choices provide a default text that you can change.  Since this is a long text, it’s useful to use multi-line strings (see an example below).</p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">glance</span></code> keyword argument is used to specify how to display the current information while in the menu, when the choice hasn’t been opened.  If you examine the previous examples, you will see that the current (<code class="docutils literal notranslate"><span class="pre">key</span></code> or <code class="docutils literal notranslate"><span class="pre">db.desc</span></code>) was shown in the menu, next to the command key.  This is useful for seeing at a glance the current value (hence the name).  Again, menu choices will provide a default glance if you don’t specify one.</p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">on_enter</span></code> keyword argument allows to add a callback to use when the menu choice is opened.  This is more advanced, but sometimes useful.</p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">on_nomatch</span></code> keyword argument is called when, once in the menu, the caller enters some text that doesn’t match any command (including the <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> command).  By default, this will edit the specified <code class="docutils literal notranslate"><span class="pre">attr</span></code>.</p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">on_leave</span></code> keyword argument allows to specify a callback used when the caller leaves the menu choice.  This can be useful for cleanup as well.</p></li>
+<li><p>The first positional, mandatory argument is the choice title, as we have seen.  This will
+influence how the choice appears in the menu.</p></li>
+<li><p>The second positional, mandatory argument is the command key to access to this menu.  It is best
+to use keyword arguments for the other arguments.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">aliases</span></code> keyword argument can contain a list of aliases that can be used to access to this
+menu.  For instance: <code class="docutils literal notranslate"><span class="pre">add_choice(...,</span> <span class="pre">aliases=['t'])</span></code></p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">attr</span></code> keyword argument contains the attribute to edit when this choice is selected.  It’s a
+string, it has to be the name, from the object (specified in the menu constructor) to reach this
+attribute.  For instance, a <code class="docutils literal notranslate"><span class="pre">attr</span></code> of <code class="docutils literal notranslate"><span class="pre">&quot;key&quot;</span></code> will try to find <code class="docutils literal notranslate"><span class="pre">obj.key</span></code> to read and write the
+attribute.  You can specify more complex attribute names, for instance, <code class="docutils literal notranslate"><span class="pre">attr=&quot;db.desc&quot;</span></code> to set the
+<code class="docutils literal notranslate"><span class="pre">desc</span></code> persistent attribute, or <code class="docutils literal notranslate"><span class="pre">attr=&quot;ndb.something&quot;</span></code> so use a non-persistent data attribute on the
+object.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">text</span></code> keyword argument is used to change the text that will be displayed when the menu choice
+is selected.  Menu choices provide a default text that you can change.  Since this is a long text,
+it’s useful to use multi-line strings (see an example below).</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">glance</span></code> keyword argument is used to specify how to display the current information while in
+the menu, when the choice hasn’t been opened.  If you examine the previous examples, you will see
+that the current (<code class="docutils literal notranslate"><span class="pre">key</span></code> or <code class="docutils literal notranslate"><span class="pre">db.desc</span></code>) was shown in the menu, next to the command key.  This is
+useful for seeing at a glance the current value (hence the name).  Again, menu choices will provide
+a default glance if you don’t specify one.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">on_enter</span></code> keyword argument allows to add a callback to use when the menu choice is opened.
+This is more advanced, but sometimes useful.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">on_nomatch</span></code> keyword argument is called when, once in the menu, the caller enters some text
+that doesn’t match any command (including the <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> command).  By default, this will edit the
+specified <code class="docutils literal notranslate"><span class="pre">attr</span></code>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">on_leave</span></code> keyword argument allows to specify a callback used when the caller leaves the menu
+choice.  This can be useful for cleanup as well.</p></li>
 </ul>
-<p>These are a lot of possibilities, and most of the time you won’t need them all.  Here is a short example using some of these arguments (again, replace the <code class="docutils literal notranslate"><span class="pre">RoomBuildingMenu</span></code> class in <code class="docutils literal notranslate"><span class="pre">commands/building.py</span></code> with the following code to see it working):</p>
+<p>These are a lot of possibilities, and most of the time you won’t need them all.  Here is a short
+example using some of these arguments (again, replace the <code class="docutils literal notranslate"><span class="pre">RoomBuildingMenu</span></code> class in
+<code class="docutils literal notranslate"><span class="pre">commands/building.py</span></code> with the following code to see it working):</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -532,17 +613,26 @@ This is a beautiful meadow.  But so beautiful I can&#39;t describe it.
 <span class="n">Closing</span> <span class="n">the</span> <span class="n">building</span> <span class="n">menu</span><span class="o">.</span>
 </pre></div>
 </div>
-<p>The most surprising part is no doubt the text.  We use the multi-line syntax (with <code class="docutils literal notranslate"><span class="pre">&quot;&quot;&quot;</span></code>).  Excessive spaces will be removed from the left for each line automatically.  We specify some information between braces… sometimes using double braces.  What might be a bit odd:</p>
+<p>The most surprising part is no doubt the text.  We use the multi-line syntax (with <code class="docutils literal notranslate"><span class="pre">&quot;&quot;&quot;</span></code>).
+Excessive spaces will be removed from the left for each line automatically.  We specify some
+information between braces… sometimes using double braces.  What might be a bit odd:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">{back}</span></code> is a direct format argument we’ll use (see the <code class="docutils literal notranslate"><span class="pre">.format</span></code> specifiers).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">{{obj...}}</span> <span class="pre">refers</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">object</span> <span class="pre">being</span> <span class="pre">edited.</span>&#160; <span class="pre">We</span> <span class="pre">use</span> <span class="pre">two</span> <span class="pre">braces,</span> <span class="pre">because</span> </code>.format` will remove them.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">{{obj...}}</span> <span class="pre">refers</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">object</span> <span class="pre">being</span> <span class="pre">edited.</span>&#160; <span class="pre">We</span> <span class="pre">use</span> <span class="pre">two</span> <span class="pre">braces,</span> <span class="pre">because</span> </code>.format` will remove
+them.</p></li>
 </ul>
 <p>In <code class="docutils literal notranslate"><span class="pre">glance</span></code>, we also use <code class="docutils literal notranslate"><span class="pre">{obj.key}</span></code> to indicate we want to show the room’s key.</p>
 </div>
 <div class="section" id="everything-can-be-a-function">
 <h3>Everything can be a function<a class="headerlink" href="#everything-can-be-a-function" title="Permalink to this headline">¶</a></h3>
-<p>The keyword arguments of <code class="docutils literal notranslate"><span class="pre">add_choice</span></code> are often strings (type <code class="docutils literal notranslate"><span class="pre">str</span></code>).  But each of these arguments can also be a function.  This allows for a lot of customization, since we define the callbacks that will be executed to achieve such and such an operation.</p>
-<p>To demonstrate, we will try to add a new feature.  Our building menu for rooms isn’t that bad, but it would be great to be able to edit exits too.  So we can add a new menu choice below description… but how to actually edit exits?  Exits are not just an attribute to set: exits are objects (of type <code class="docutils literal notranslate"><span class="pre">Exit</span></code> by default) which stands between two rooms (object of type <code class="docutils literal notranslate"><span class="pre">Room</span></code>).  So how can we show that?</p>
+<p>The keyword arguments of <code class="docutils literal notranslate"><span class="pre">add_choice</span></code> are often strings (type <code class="docutils literal notranslate"><span class="pre">str</span></code>).  But each of these arguments
+can also be a function.  This allows for a lot of customization, since we define the callbacks that
+will be executed to achieve such and such an operation.</p>
+<p>To demonstrate, we will try to add a new feature.  Our building menu for rooms isn’t that bad, but
+it would be great to be able to edit exits too.  So we can add a new menu choice below
+description… but how to actually edit exits?  Exits are not just an attribute to set: exits are
+objects (of type <code class="docutils literal notranslate"><span class="pre">Exit</span></code> by default) which stands between two rooms (object of type <code class="docutils literal notranslate"><span class="pre">Room</span></code>).  So how
+can we show that?</p>
 <p>First let’s add a couple of exits in limbo, so we have something to work with:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@tunnel</span> <span class="n">n</span>
 <span class="nd">@tunnel</span> <span class="n">s</span>
@@ -560,8 +650,10 @@ This is a beautiful meadow.  But so beautiful I can&#39;t describe it.
 <span class="p">[</span><span class="o">&lt;</span><span class="n">Exit</span><span class="p">:</span> <span class="n">north</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Exit</span><span class="p">:</span> <span class="n">south</span><span class="o">&gt;</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>So what we need is to display this list in our building menu… and to allow to edit it would be great.  Perhaps even add new exits?</p>
-<p>First of all, let’s write a function to display the <code class="docutils literal notranslate"><span class="pre">glance</span></code> on existing exits.  Here’s the code, it’s explained below:</p>
+<p>So what we need is to display this list in our building menu… and to allow to edit it would be
+great.  Perhaps even add new exits?</p>
+<p>First of all, let’s write a function to display the <code class="docutils literal notranslate"><span class="pre">glance</span></code> on existing exits.  Here’s the code,
+it’s explained below:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -627,7 +719,10 @@ This is a beautiful meadow.  But so beautiful I can&#39;t describe it.
     <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  |gNo exit yet|n&quot;</span>
 </pre></div>
 </td></tr></table></div>
-<p>When the building menu opens, it displays each choice to the caller.  A choice is displayed with its title (rendered a bit nicely to show the key as well) and the glance.  In the case of the <code class="docutils literal notranslate"><span class="pre">exits</span></code> choice, the glance is a function, so the building menu calls this function giving it the object being edited (the room here).  The function should return the text to see.</p>
+<p>When the building menu opens, it displays each choice to the caller.  A choice is displayed with its
+title (rendered a bit nicely to show the key as well) and the glance.  In the case of the <code class="docutils literal notranslate"><span class="pre">exits</span></code>
+choice, the glance is a function, so the building menu calls this function giving it the object
+being edited (the room here).  The function should return the text to see.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="nd">@edit</span> <span class="n">here</span>
 <span class="n">Building</span> <span class="n">menu</span><span class="p">:</span> <span class="n">A</span> <span class="n">beautiful</span> <span class="n">meadow</span>
 
@@ -646,25 +741,41 @@ This is a beautiful meadow.  But so beautiful I can&#39;t describe it.
 <blockquote>
 <div><p>How do I know the parameters of the function to give?</p>
 </div></blockquote>
-<p>The function you give can accept a lot of different parameters.  This allows for a flexible approach but might seem complicated at first.  Basically, your function can accept any parameter, and the building menu will send only the parameter based on their names.  If your function defines an argument named <code class="docutils literal notranslate"><span class="pre">caller</span></code> for instance (like <code class="docutils literal notranslate"><span class="pre">def</span> <span class="pre">func(caller):</span></code> ), then the building menu knows that the first argument should contain the caller of the building menu.  Here are the arguments, you don’t have to specify them (if you do, they need to have the same name):</p>
+<p>The function you give can accept a lot of different parameters.  This allows for a flexible approach
+but might seem complicated at first.  Basically, your function can accept any parameter, and the
+building menu will send only the parameter based on their names.  If your function defines an
+argument named <code class="docutils literal notranslate"><span class="pre">caller</span></code> for instance (like <code class="docutils literal notranslate"><span class="pre">def</span> <span class="pre">func(caller):</span></code> ), then the building menu knows that
+the first argument should contain the caller of the building menu.  Here are the arguments, you
+don’t have to specify them (if you do, they need to have the same name):</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">menu</span></code>: if your function defines an argument named <code class="docutils literal notranslate"><span class="pre">menu</span></code>, it will contain the building menu itself.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">choice</span></code>: if your function defines an argument named <code class="docutils literal notranslate"><span class="pre">choice</span></code>, it will contain the <code class="docutils literal notranslate"><span class="pre">Choice</span></code> object representing this menu choice.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">string</span></code>: if your function defines an argument named <code class="docutils literal notranslate"><span class="pre">string</span></code>, it will contain the user input to reach this menu choice.  This is not very useful, except on <code class="docutils literal notranslate"><span class="pre">nomatch</span></code> callbacks which we’ll see later.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">obj</span></code>: if your function defines an argument named <code class="docutils literal notranslate"><span class="pre">obj</span></code>, it will contain the building menu edited object.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">caller</span></code>: if your function defines an argument named <code class="docutils literal notranslate"><span class="pre">caller</span></code>, it will contain the caller of the building menu.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">menu</span></code>: if your function defines an argument named <code class="docutils literal notranslate"><span class="pre">menu</span></code>, it will contain the building menu
+itself.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">choice</span></code>: if your function defines an argument named <code class="docutils literal notranslate"><span class="pre">choice</span></code>, it will contain the <code class="docutils literal notranslate"><span class="pre">Choice</span></code> object
+representing this menu choice.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">string</span></code>: if your function defines an argument named <code class="docutils literal notranslate"><span class="pre">string</span></code>, it will contain the user input to
+reach this menu choice.  This is not very useful, except on <code class="docutils literal notranslate"><span class="pre">nomatch</span></code> callbacks which we’ll see
+later.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">obj</span></code>: if your function defines an argument named <code class="docutils literal notranslate"><span class="pre">obj</span></code>, it will contain the building menu edited
+object.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">caller</span></code>: if your function defines an argument named <code class="docutils literal notranslate"><span class="pre">caller</span></code>, it will contain the caller of the
+building menu.</p></li>
 <li><p>Anything else: any other argument will contain the object being edited by the building menu.</p></li>
 </ul>
 <p>So in our case:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">glance_exits</span><span class="p">(</span><span class="n">room</span><span class="p">):</span>
 </pre></div>
 </td></tr></table></div>
-<p>The only argument we need is <code class="docutils literal notranslate"><span class="pre">room</span></code>.  It’s not present in the list of possible arguments, so the editing object of the building menu (the room, here) is given.</p>
+<p>The only argument we need is <code class="docutils literal notranslate"><span class="pre">room</span></code>.  It’s not present in the list of possible arguments, so the
+editing object of the building menu (the room, here) is given.</p>
 <blockquote>
 <div><p>Why is it useful to get the menu or choice object?</p>
 </div></blockquote>
-<p>Most of the time, you will not need these arguments.  In very rare cases, you will use them to get specific data (like the default attribute that was set).  This tutorial will not elaborate on these possibilities.  Just know that they exist.</p>
-<p>We should also define a text callback, so that we can enter our menu to see the room exits.  We’ll see how to edit them in the next section but this is a good opportunity to show a more complete callback.  To see it in action, as usual, replace the class and functions in <code class="docutils literal notranslate"><span class="pre">commands/building.py</span></code>:</p>
+<p>Most of the time, you will not need these arguments.  In very rare cases, you will use them to get
+specific data (like the default attribute that was set).  This tutorial will not elaborate on these
+possibilities.  Just know that they exist.</p>
+<p>We should also define a text callback, so that we can enter our menu to see the room exits.  We’ll
+see how to edit them in the next section but this is a good opportunity to show a more complete
+callback.  To see it in action, as usual, replace the class and functions in <code class="docutils literal notranslate"><span class="pre">commands/building.py</span></code>:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -772,7 +883,9 @@ This is a beautiful meadow.  But so beautiful I can&#39;t describe it.
     <span class="k">return</span> <span class="n">text</span>
 </pre></div>
 </td></tr></table></div>
-<p>Look at the second callback in particular.  It takes an additional argument, the caller (remember, the argument names are important, their order is not relevant).  This is useful for displaying destination of exits accurately.  Here is a demonstration of this menu:</p>
+<p>Look at the second callback in particular.  It takes an additional argument, the caller (remember,
+the argument names are important, their order is not relevant).  This is useful for displaying
+destination of exits accurately.  Here is a demonstration of this menu:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="nd">@edit</span> <span class="n">here</span>
 <span class="n">Building</span> <span class="n">menu</span><span class="p">:</span> <span class="n">A</span> <span class="n">beautiful</span> <span class="n">meadow</span>
 
@@ -813,15 +926,30 @@ This is a beautiful meadow.  But so beautiful I can&#39;t describe it.
 </div>
 <div class="section" id="sub-menus-for-complex-menus">
 <h3>Sub-menus for complex menus<a class="headerlink" href="#sub-menus-for-complex-menus" title="Permalink to this headline">¶</a></h3>
-<p>A menu is relatively flat: it has a root (where you see all the menu choices) and individual choices you can go to using the menu choice keys.  Once in a choice you can type some input or go back to the root menu by entering the return command (usually <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>).</p>
-<p>Why shouldn’t individual exits have their own menu though?  Say, you edit an exit and can change its key, description or aliases… perhaps even destination?  Why ever not?  It would make building much easier!</p>
-<p>The building menu system offers two ways to do that.  The first is nested keys: nested keys allow to go beyond just one menu/choice, to have menus with more layers.  Using them is quick but might feel a bit counter-intuitive at first.  Another option is to create a different menu class and redirect from the first to the second.  This option might require more lines but is more explicit and can be re-used for multiple menus.  Adopt one of them depending of your taste.</p>
+<p>A menu is relatively flat: it has a root (where you see all the menu choices) and individual choices
+you can go to using the menu choice keys.  Once in a choice you can type some input or go back to
+the root menu by entering the return command (usually <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>).</p>
+<p>Why shouldn’t individual exits have their own menu though?  Say, you edit an exit and can change its
+key, description or aliases… perhaps even destination?  Why ever not?  It would make building much
+easier!</p>
+<p>The building menu system offers two ways to do that.  The first is nested keys: nested keys allow to
+go beyond just one menu/choice, to have menus with more layers.  Using them is quick but might feel
+a bit counter-intuitive at first.  Another option is to create a different menu class and redirect
+from the first to the second.  This option might require more lines but is more explicit and can be
+re-used for multiple menus.  Adopt one of them depending of your taste.</p>
 <div class="section" id="nested-menu-keys">
 <h4>Nested menu keys<a class="headerlink" href="#nested-menu-keys" title="Permalink to this headline">¶</a></h4>
-<p>So far, we’ve only used menu keys with one letter.  We can add more, of course, but menu keys in their simple shape are just command keys.  Press “e” to go to the “exits” choice.</p>
-<p>But menu keys can be nested.  Nested keys allow to add choices with sub-menus.  For instance, type “e” to go to the “exits” choice, and then you can type “c” to open a menu to create a new exit, or “d” to open a menu to delete an exit.  The first menu would have the “e.c” key (first e, then c), the second menu would have key as “e.d”.</p>
-<p>That’s more advanced and, if the following code doesn’t sound very friendly to you, try the next section which provides a different approach of the same problem.</p>
-<p>So we would like to edit exits.  That is, you can type “e” to go into the choice of exits, then enter <code class="docutils literal notranslate"><span class="pre">&#64;e</span></code> followed by the exit name to edit it… which will open another menu.  In this sub-menu you could change the exit key or description.</p>
+<p>So far, we’ve only used menu keys with one letter.  We can add more, of course, but menu keys in
+their simple shape are just command keys.  Press “e” to go to the “exits” choice.</p>
+<p>But menu keys can be nested.  Nested keys allow to add choices with sub-menus.  For instance, type
+“e” to go to the “exits” choice, and then you can type “c” to open a menu to create a new exit, or
+“d” to open a menu to delete an exit.  The first menu would have the “e.c” key (first e, then c),
+the second menu would have key as “e.d”.</p>
+<p>That’s more advanced and, if the following code doesn’t sound very friendly to you, try the next
+section which provides a different approach of the same problem.</p>
+<p>So we would like to edit exits.  That is, you can type “e” to go into the choice of exits, then
+enter <code class="docutils literal notranslate"><span class="pre">&#64;e</span></code> followed by the exit name to edit it… which will open another menu.  In this sub-menu
+you could change the exit key or description.</p>
 <p>So we have a menu hierarchy similar to that:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">t</span>                       <span class="n">Change</span> <span class="n">the</span> <span class="n">room</span> <span class="n">title</span>
 <span class="n">d</span>                       <span class="n">Change</span> <span class="n">the</span> <span class="n">room</span> <span class="n">description</span>
@@ -897,7 +1025,8 @@ This is a beautiful meadow.  But so beautiful I can&#39;t describe it.
 <span class="n">Closing</span> <span class="n">the</span> <span class="n">building</span> <span class="n">menu</span><span class="o">.</span>
 </pre></div>
 </div>
-<p>This needs a bit of code and a bit of explanation.  So here we go… the code first, the explanations next!</p>
+<p>This needs a bit of code and a bit of explanation.  So here we go… the code first, the
+explanations next!</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>  1
   2
   3
@@ -998,7 +1127,8 @@ This is a beautiful meadow.  But so beautiful I can&#39;t describe it.
  98
  99
 100
-101</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># ... from commands/building.py</span>
+101
+102</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># ... from commands/building.py</span>
 <span class="c1"># Our building menu</span>
 
 <span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
@@ -1021,7 +1151,8 @@ This is a beautiful meadow.  But so beautiful I can&#39;t describe it.
 <span class="s2">                Current title: |c{{obj.key}}|n</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">back</span><span class="o">=</span><span class="s2">&quot;|n or |y&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys_go_back</span><span class="p">)))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_choice_edit</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_choice</span><span class="p">(</span><span class="s2">&quot;exits&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="n">glance</span><span class="o">=</span><span class="n">glance_exits</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">text_exits</span><span class="p">,</span> <span class="n">on_nomatch</span><span class="o">=</span><span class="n">nomatch_exits</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_choice</span><span class="p">(</span><span class="s2">&quot;exits&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="n">glance</span><span class="o">=</span><span class="n">glance_exits</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">text_exits</span><span class="p">,</span>
+<span class="n">on_nomatch</span><span class="o">=</span><span class="n">nomatch_exits</span><span class="p">)</span>
 
         <span class="c1"># Exit sub-menu</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_choice</span><span class="p">(</span><span class="s2">&quot;exit&quot;</span><span class="p">,</span> <span class="s2">&quot;e.*&quot;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">text_single_exit</span><span class="p">,</span> <span class="n">on_nomatch</span><span class="o">=</span><span class="n">nomatch_single_exit</span><span class="p">)</span>
@@ -1104,16 +1235,37 @@ This is a beautiful meadow.  But so beautiful I can&#39;t describe it.
 <blockquote>
 <div><p>That’s a lot of code!  And we only handle editing the exit key!</p>
 </div></blockquote>
-<p>That’s why at some point you might want to write a real sub-menu, instead of using simple nested keys.  But you might need both to build pretty menus too!</p>
+<p>That’s why at some point you might want to write a real sub-menu, instead of using simple nested
+keys.  But you might need both to build pretty menus too!</p>
 <ol class="simple">
-<li><p>The first thing new is in our menu class.  After creating a <code class="docutils literal notranslate"><span class="pre">on_nomatch</span></code> callback for the exits menu (that shouldn’t be a surprised), we need to add a nested key.  We give this menu a key of <code class="docutils literal notranslate"><span class="pre">&quot;e.*&quot;</span></code>.  That’s a bit odd!  “e” is our key to the exits menu, . is the separator to indicate a nested menu, and * means anything.  So basically, we create a nested menu that is contains within the exits menu and anything.  We’ll see what this “anything” is in practice.</p></li>
+<li><p>The first thing new is in our menu class.  After creating a <code class="docutils literal notranslate"><span class="pre">on_nomatch</span></code> callback for the exits
+menu (that shouldn’t be a surprised), we need to add a nested key.  We give this menu a key of
+<code class="docutils literal notranslate"><span class="pre">&quot;e.*&quot;</span></code>.  That’s a bit odd!  “e” is our key to the exits menu, . is the separator to indicate a
+nested menu, and * means anything.  So basically, we create a nested menu that is contains within
+the exits menu and anything.  We’ll see what this “anything” is in practice.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">glance_exits</span></code> and <code class="docutils literal notranslate"><span class="pre">text_exits</span></code> are basically the same.</p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">nomatch_exits</span></code> is short but interesting.  It’s called when we enter some text in the “exits” menu (that is, in the list of exits).  We have said that the user should enter <code class="docutils literal notranslate"><span class="pre">&#64;e</span></code> followed by the exit name to edit it.  So in the <code class="docutils literal notranslate"><span class="pre">nomatch_exits</span></code> callbac, we check for that input.  If the entered text begins by <code class="docutils literal notranslate"><span class="pre">&#64;e</span></code>, we try to find the exit in the room.  If we do…</p></li>
-<li><p>We call the <code class="docutils literal notranslate"><span class="pre">menu.move</span></code> method.  That’s where things get a bit complicated with nested menus: we need to use <code class="docutils literal notranslate"><span class="pre">menu.move</span></code> to change from layer to layer.  Here, we are in the choice of exits (the exits menu, of key “e”).  We need to go down one layer to edit an exit.  So we call <code class="docutils literal notranslate"><span class="pre">menu.move</span></code> and give it an exit object.  The menu system remembers what position the user is based on the keys she has entered: when the user opens the menu, there is no key.  If she selects the exits choice, the menu key being “e”, the position of the user is <code class="docutils literal notranslate"><span class="pre">[&quot;e&quot;]</span></code> (a list with the menu keys).  If we call <code class="docutils literal notranslate"><span class="pre">menu.move</span></code>, whatever we give to this method will be appended to the list of keys, so that the user position becomes <code class="docutils literal notranslate"><span class="pre">[&quot;e&quot;,</span> <span class="pre">&lt;Exit</span> <span class="pre">object&gt;]</span></code>.</p></li>
-<li><p>In the menu class, we have defined the menu “e.*”, meaning “the menu contained in the exits choice plus anything”.  The “anything” here is an exit:  we have called <code class="docutils literal notranslate"><span class="pre">menu.move(exit)</span></code>, so the <code class="docutils literal notranslate"><span class="pre">&quot;e.*&quot;</span></code> menu choice is chosen.</p></li>
-<li><p>In this menu, the text is set to a callback.  There is also a <code class="docutils literal notranslate"><span class="pre">on_nomatch</span></code> callback that is called whenever the user enters some text.  If so, we change the exit name.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">nomatch_exits</span></code> is short but interesting.  It’s called when we enter some text in the “exits”
+menu (that is, in the list of exits).  We have said that the user should enter <code class="docutils literal notranslate"><span class="pre">&#64;e</span></code> followed by the
+exit name to edit it.  So in the <code class="docutils literal notranslate"><span class="pre">nomatch_exits</span></code> callbac, we check for that input.  If the entered
+text begins by <code class="docutils literal notranslate"><span class="pre">&#64;e</span></code>, we try to find the exit in the room.  If we do…</p></li>
+<li><p>We call the <code class="docutils literal notranslate"><span class="pre">menu.move</span></code> method.  That’s where things get a bit complicated with nested menus: we
+need to use <code class="docutils literal notranslate"><span class="pre">menu.move</span></code> to change from layer to layer.  Here, we are in the choice of exits (the
+exits menu, of key “e”).  We need to go down one layer to edit an exit.  So we call <code class="docutils literal notranslate"><span class="pre">menu.move</span></code> and
+give it an exit object.  The menu system remembers what position the user is based on the keys she
+has entered: when the user opens the menu, there is no key.  If she selects the exits choice, the
+menu key being “e”, the position of the user is <code class="docutils literal notranslate"><span class="pre">[&quot;e&quot;]</span></code> (a list with the menu keys).  If we call
+<code class="docutils literal notranslate"><span class="pre">menu.move</span></code>, whatever we give to this method will be appended to the list of keys, so that the user
+position becomes <code class="docutils literal notranslate"><span class="pre">[&quot;e&quot;,</span> <span class="pre">&lt;Exit</span> <span class="pre">object&gt;]</span></code>.</p></li>
+<li><p>In the menu class, we have defined the menu “e.*”, meaning “the menu contained in the exits
+choice plus anything”.  The “anything” here is an exit:  we have called <code class="docutils literal notranslate"><span class="pre">menu.move(exit)</span></code>, so the
+<code class="docutils literal notranslate"><span class="pre">&quot;e.*&quot;</span></code> menu choice is chosen.</p></li>
+<li><p>In this menu, the text is set to a callback.  There is also a <code class="docutils literal notranslate"><span class="pre">on_nomatch</span></code> callback that is
+called whenever the user enters some text.  If so, we change the exit name.</p></li>
 </ol>
-<p>Using <code class="docutils literal notranslate"><span class="pre">menu.move</span></code> like this is a bit confusing at first.  Sometimes it’s useful.  In this case, if we want a more complex menu for exits, it makes sense to use a real sub-menu, not nested keys like this.  But sometimes, you will find yourself in a situation where you don’t need a full menu to handle a choice.</p>
+<p>Using <code class="docutils literal notranslate"><span class="pre">menu.move</span></code> like this is a bit confusing at first.  Sometimes it’s useful.  In this case, if
+we want a more complex menu for exits, it makes sense to use a real sub-menu, not nested keys like
+this.  But sometimes, you will find yourself in a situation where you don’t need a full menu to
+handle a choice.</p>
 </div>
 <div class="section" id="full-sub-menu-as-separate-classes">
 <h4>Full sub-menu as separate classes<a class="headerlink" href="#full-sub-menu-as-separate-classes" title="Permalink to this headline">¶</a></h4>
@@ -1122,7 +1274,8 @@ This is a beautiful meadow.  But so beautiful I can&#39;t describe it.
 <li><p>One for the room menu.</p></li>
 <li><p>One for the individual exit menu.</p></li>
 </ul>
-<p>The first one will have to redirect on the second.  This might be more intuitive and flexible, depending on what you want to achieve.  So let’s build two menus:</p>
+<p>The first one will have to redirect on the second.  This might be more intuitive and flexible,
+depending on what you want to achieve.  So let’s build two menus:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -1200,7 +1353,8 @@ This is a beautiful meadow.  But so beautiful I can&#39;t describe it.
 75
 76
 77
-78</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># Still in commands/building.py, replace the menu class and functions by...</span>
+78
+79</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># Still in commands/building.py, replace the menu class and functions by...</span>
 <span class="c1"># Our building menus</span>
 
 <span class="k">class</span> <span class="nc">RoomBuildingMenu</span><span class="p">(</span><span class="n">BuildingMenu</span><span class="p">):</span>
@@ -1220,7 +1374,8 @@ This is a beautiful meadow.  But so beautiful I can&#39;t describe it.
 <span class="s2">                Current title: |c{{obj.key}}|n</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">back</span><span class="o">=</span><span class="s2">&quot;|n or |y&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys_go_back</span><span class="p">)))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_choice_edit</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_choice</span><span class="p">(</span><span class="s2">&quot;exits&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="n">glance</span><span class="o">=</span><span class="n">glance_exits</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">text_exits</span><span class="p">,</span> <span class="n">on_nomatch</span><span class="o">=</span><span class="n">nomatch_exits</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_choice</span><span class="p">(</span><span class="s2">&quot;exits&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="n">glance</span><span class="o">=</span><span class="n">glance_exits</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">text_exits</span><span class="p">,</span>
+<span class="n">on_nomatch</span><span class="o">=</span><span class="n">nomatch_exits</span><span class="p">)</span>
 
 
 <span class="c1"># Menu functions</span>
@@ -1280,7 +1435,8 @@ This is a beautiful meadow.  But so beautiful I can&#39;t describe it.
         <span class="bp">self</span><span class="o">.</span><span class="n">add_choice_edit</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<p>The code might be much easier to read.  But before detailing it, let’s see how it behaves in the game:</p>
+<p>The code might be much easier to read.  But before detailing it, let’s see how it behaves in the
+game:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; @edit here
 Building menu: A beautiful meadow
 
@@ -1391,27 +1547,42 @@ north
 This is the northern exit.  Cool huh?
 </pre></div>
 </div>
-<p>Very simply, we created two menus and bridged them together.  This needs much less callbacks.  There is only one line in the <code class="docutils literal notranslate"><span class="pre">nomatch_exits</span></code> to add:</p>
+<p>Very simply, we created two menus and bridged them together.  This needs much less callbacks.  There
+is only one line in the <code class="docutils literal notranslate"><span class="pre">nomatch_exits</span></code> to add:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">menu</span><span class="o">.</span><span class="n">open_submenu</span><span class="p">(</span><span class="s2">&quot;commands.building.ExitBuildingMenu&quot;</span><span class="p">,</span> <span class="nb">exit</span><span class="p">,</span> <span class="n">parent_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;e&quot;</span><span class="p">])</span>
 </pre></div>
 </td></tr></table></div>
-<p>We have to call <code class="docutils literal notranslate"><span class="pre">open_submenu</span></code> on the menu object (which opens, as its name implies, a sub menu) with three arguments:</p>
+<p>We have to call <code class="docutils literal notranslate"><span class="pre">open_submenu</span></code> on the menu object (which opens, as its name implies, a sub menu)
+with three arguments:</p>
 <ul class="simple">
-<li><p>The path of the menu class to create.  It’s the Python class leading to the menu (notice the dots).</p></li>
+<li><p>The path of the menu class to create.  It’s the Python class leading to the menu (notice the
+dots).</p></li>
 <li><p>The object that will be edited by the menu.  Here, it’s our exit, so we give it to the sub-menu.</p></li>
-<li><p>The keys of the parent to open when the sub-menu closes.  Basically, when we’re in the root of the sub-menu and press <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>, we’ll open the parent menu, with the parent keys.  So we specify <code class="docutils literal notranslate"><span class="pre">[&quot;e&quot;]</span></code>, since the parent menus is the “exits” choice.</p></li>
+<li><p>The keys of the parent to open when the sub-menu closes.  Basically, when we’re in the root of the
+sub-menu and press <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>, we’ll open the parent menu, with the parent keys.  So we specify <code class="docutils literal notranslate"><span class="pre">[&quot;e&quot;]</span></code>,
+since the parent menus is the “exits” choice.</p></li>
 </ul>
-<p>And that’s it.  The new class will be automatically created.  As you can see, we have to create a <code class="docutils literal notranslate"><span class="pre">on_nomatch</span></code> callback to open the sub-menu, but once opened, it automatically close whenever needed.</p>
+<p>And that’s it.  The new class will be automatically created.  As you can see, we have to create a
+<code class="docutils literal notranslate"><span class="pre">on_nomatch</span></code> callback to open the sub-menu, but once opened, it automatically close whenever needed.</p>
 </div>
 </div>
 <div class="section" id="generic-menu-options">
 <h3>Generic menu options<a class="headerlink" href="#generic-menu-options" title="Permalink to this headline">¶</a></h3>
-<p>There are some options that can be set on any menu class.  These options allow for greater customization.  They are class attributes (see the example below), so just set them in the class body:</p>
+<p>There are some options that can be set on any menu class.  These options allow for greater
+customization.  They are class attributes (see the example below), so just set them in the class
+body:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">keys_go_back</span></code> (default to <code class="docutils literal notranslate"><span class="pre">[&quot;&#64;&quot;]</span></code>): the keys to use to go back in the menu hierarchy, from choice to root menu, from sub-menu to parent-menu.  By default, only a <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> is used.  You can change this key for one menu or all of them.  You can define multiple return commands if you want.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">sep_keys</span></code> (default <code class="docutils literal notranslate"><span class="pre">&quot;.&quot;</span></code>): this is the separator for nested keys.  There is no real need to redefine it except if you really need the dot as a key, and need nested keys in your menu.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">joker_key</span></code> (default to <code class="docutils literal notranslate"><span class="pre">&quot;*&quot;</span></code>): used for nested keys to indicate “any key”.  Again, you shouldn’t need to change it unless you want to be able to use the &#64;*&#64; in a command key, and also need nested keys in your menu.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">min_shortcut</span></code> (default to <code class="docutils literal notranslate"><span class="pre">1</span></code>): although we didn’t see it here, one can create a menu choice without giving it a key.  If so, the menu system will try to “guess” the key.  This option allows to change the minimum length of any key for security reasons.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">keys_go_back</span></code> (default to <code class="docutils literal notranslate"><span class="pre">[&quot;&#64;&quot;]</span></code>): the keys to use to go back in the menu hierarchy, from choice
+to root menu, from sub-menu to parent-menu.  By default, only a <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> is used.  You can change this
+key for one menu or all of them.  You can define multiple return commands if you want.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sep_keys</span></code> (default <code class="docutils literal notranslate"><span class="pre">&quot;.&quot;</span></code>): this is the separator for nested keys.  There is no real need to
+redefine it except if you really need the dot as a key, and need nested keys in your menu.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">joker_key</span></code> (default to <code class="docutils literal notranslate"><span class="pre">&quot;*&quot;</span></code>): used for nested keys to indicate “any key”.  Again, you shouldn’t
+need to change it unless you want to be able to use the &#64;*&#64; in a command key, and also need nested
+keys in your menu.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">min_shortcut</span></code> (default to <code class="docutils literal notranslate"><span class="pre">1</span></code>): although we didn’t see it here, one can create a menu choice
+without giving it a key.  If so, the menu system will try to “guess” the key.  This option allows to
+change the minimum length of any key for security reasons.</p></li>
 </ul>
 <p>To set one of them just do so in your menu class(es):</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
@@ -1425,7 +1596,12 @@ This is the northern exit.  Cool huh?
 </div>
 <div class="section" id="conclusion">
 <h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">¶</a></h2>
-<p>Building menus mean to save you time and create a rich yet simple interface.  But they can be complicated to learn and require reading the source code to find out how to do such and such a thing.  This documentation, however long, is an attempt at describing this system, but chances are you’ll still have questions about it after reading it, especially if you try to push this system to a great extent.  Do not hesitate to read the documentation of this contrib, it’s meant to be exhaustive but user-friendly.</p>
+<p>Building menus mean to save you time and create a rich yet simple interface.  But they can be
+complicated to learn and require reading the source code to find out how to do such and such a
+thing.  This documentation, however long, is an attempt at describing this system, but chances are
+you’ll still have questions about it after reading it, especially if you try to push this system to
+a great extent.  Do not hesitate to read the documentation of this contrib, it’s meant to be
+exhaustive but user-friendly.</p>
 </div>
 </div>
 
@@ -1501,7 +1677,10 @@ This is the northern exit.  Cool huh?
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Building menus</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

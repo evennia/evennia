@@ -7,11 +7,13 @@
     <title>Server Conf &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Server Conf</a></li>
+
+
       </ul>
     </div>  
 
@@ -71,7 +76,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">at_initial_setup.py</span></code> - this allows you to add a custom startup method to be called (only) the very first time Evennia starts (at the same time as user #1 and Limbo is created). It can be made to start your own global scripts or set up other system/world-related things your game needs to have running from the start.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">at_server_startstop.py</span></code> - this module contains two functions that Evennia will call every time the Server starts and stops respectively - this includes stopping due to reloading and resetting as well as shutting down completely. It’s a useful place to put custom startup code for handlers and other things that must run in your game but which has no database persistence.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">connection_screens.py</span></code> - all global string variables in this module are interpreted by Evennia as a greeting screen to show when an Account first connects. If more than one string variable is present in the module a random one will be picked.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">inlinefuncs.py</span></code> - this is where you can define custom <a class="reference external" href="/TextTags.html#inlinefuncs">Inline functions</a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inlinefuncs.py</span></code> - this is where you can define custom <a class="reference external" href="TextTags.html#inlinefuncs">Inline functions</a>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">inputfuncs.py</span></code> - this is where you define custom <a class="reference internal" href="Inputfuncs.html"><span class="doc">Input functions</span></a> to handle data from the client.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">lockfuncs.py</span></code> - this is one of many possible modules to hold your own “safe” <em>lock functions</em> to make available to Evennia’s <a class="reference internal" href="Locks.html"><span class="doc">Locks</span></a>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">mssp.py</span></code> - this holds meta information about your game. It is used by MUD search engines (which you often have to register with) in order to display what kind of game you are running along with
@@ -148,7 +153,10 @@ know about if you are an Evennia developer.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Server Conf</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

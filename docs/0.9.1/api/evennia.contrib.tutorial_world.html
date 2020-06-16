@@ -7,11 +7,13 @@
     <title>evennia.contrib.tutorial_world package &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">evennia.contrib.tutorial_world package</a></li>
+
+
       </ul>
     </div>  
 
@@ -61,7 +66,7 @@ building to  activate the mob once it’s
 prepared.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.tutorial_world.mob.CmdMobOnOff._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('mobon', 'moboff')</em><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.CmdMobOnOff._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('moboff', 'mobon')</em><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.CmdMobOnOff._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -374,7 +379,7 @@ parry - forgoes your attack but will make you harder to hit on next</p>
 </div></blockquote>
 <dl class="attribute">
 <dt id="evennia.contrib.tutorial_world.objects.CmdAttack._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('chop', 'defend', 'attack', 'hit', 'thrust', 'pierce', 'kill', 'stab', 'fight', 'parry', 'slash')</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdAttack._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('chop', 'pierce', 'parry', 'hit', 'slash', 'kill', 'stab', 'thrust', 'defend', 'fight', 'attack')</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdAttack._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -384,7 +389,7 @@ parry - forgoes your attack but will make you harder to hit on next</p>
 
 <dl class="attribute">
 <dt id="evennia.contrib.tutorial_world.objects.CmdAttack.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['defend', 'hit', 'thrust', 'pierce', 'kill', 'stab', 'parry', 'fight', 'chop', 'slash']</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdAttack.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['chop', 'pierce', 'parry', 'hit', 'defend', 'slash', 'kill', 'thrust', 'stab', 'fight']</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdAttack.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -415,7 +420,7 @@ parry - forgoes your attack but will make you harder to hit on next</p>
 
 <dl class="attribute">
 <dt id="evennia.contrib.tutorial_world.objects.CmdAttack.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'defend hit thrust pierce kill stab parry fight chop slash', 'category': 'tutorialworld', 'key': 'attack', 'tags': '', 'text': '\n    Attack the enemy. Commands:\n\n      stab &lt;enemy&gt;\n      slash &lt;enemy&gt;\n      parry\n\n    stab - (thrust) makes a lot of damage but is harder to hit with.\n    slash - is easier to land, but does not make as much damage.\n    parry - forgoes your attack but will make you harder to hit on next\n            enemy attack.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdAttack.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'chop pierce parry hit defend slash kill thrust stab fight', 'category': 'tutorialworld', 'key': 'attack', 'tags': '', 'text': '\n    Attack the enemy. Commands:\n\n      stab &lt;enemy&gt;\n      slash &lt;enemy&gt;\n      parry\n\n    stab - (thrust) makes a lot of damage but is harder to hit with.\n    slash - is easier to land, but does not make as much damage.\n    parry - forgoes your attack but will make you harder to hit on next\n            enemy attack.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdAttack.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -543,7 +548,7 @@ itself handle all messages.</p>
 <p>Creates light where there was none. Something to burn.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.tutorial_world.objects.CmdLight._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('burn', 'light', 'on')</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdLight._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('light', 'on', 'burn')</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdLight._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -597,7 +602,7 @@ to sit on a “lightable” object, we operate only on self.obj.</p>
 <p>Presses a button.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.tutorial_world.objects.CmdPressButton._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('press', 'press button', 'push button', 'button')</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdPressButton._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('press button', 'press', 'push button', 'button')</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdPressButton._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -607,7 +612,7 @@ to sit on a “lightable” object, we operate only on self.obj.</p>
 
 <dl class="attribute">
 <dt id="evennia.contrib.tutorial_world.objects.CmdPressButton.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['press button', 'button', 'push button']</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdPressButton.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['press button', 'push button', 'button']</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdPressButton.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -638,7 +643,7 @@ to sit on a “lightable” object, we operate only on self.obj.</p>
 
 <dl class="attribute">
 <dt id="evennia.contrib.tutorial_world.objects.CmdPressButton.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'press button button push button', 'category': 'tutorialworld', 'key': 'press', 'tags': '', 'text': '\n    Presses a button.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdPressButton.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'press button push button button', 'category': 'tutorialworld', 'key': 'press', 'tags': '', 'text': '\n    Presses a button.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdPressButton.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -848,7 +853,7 @@ shift green root up/down</p>
 </dl>
 <dl class="attribute">
 <dt id="evennia.contrib.tutorial_world.objects.CmdShiftRoot._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('pull', 'move', 'shift', 'shiftroot', 'push')</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdShiftRoot._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('move', 'shift', 'pull', 'push', 'shiftroot')</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdShiftRoot._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -858,7 +863,7 @@ shift green root up/down</p>
 
 <dl class="attribute">
 <dt id="evennia.contrib.tutorial_world.objects.CmdShiftRoot.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['pull', 'move', 'shiftroot', 'push']</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdShiftRoot.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['shiftroot', 'push', 'move', 'pull']</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdShiftRoot.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -899,7 +904,7 @@ yellow/green - horizontal roots</p>
 
 <dl class="attribute">
 <dt id="evennia.contrib.tutorial_world.objects.CmdShiftRoot.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'pull move shiftroot push', 'category': 'tutorialworld', 'key': 'shift', 'tags': '', 'text': '\n    Shifts roots around.\n\n    Usage:\n      shift blue root left/right\n      shift red root left/right\n      shift yellow root up/down\n      shift green root up/down\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdShiftRoot.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'shiftroot push move pull', 'category': 'tutorialworld', 'key': 'shift', 'tags': '', 'text': '\n    Shifts roots around.\n\n    Usage:\n      shift blue root left/right\n      shift red root left/right\n      shift yellow root up/down\n      shift green root up/down\n\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.objects.CmdShiftRoot.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1739,7 +1744,7 @@ if they fall off the bridge.</p>
 </dl>
 <dl class="attribute">
 <dt id="evennia.contrib.tutorial_world.rooms.CmdLookBridge._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('look', 'l')</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdLookBridge._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('l', 'look')</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdLookBridge._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -1798,7 +1803,7 @@ if they fall off the bridge.</p>
 to find something.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.tutorial_world.rooms.CmdLookDark._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('feel around', 'feel', 'fiddle', 'look', 'l', 'search')</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdLookDark._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('l', 'feel', 'feel around', 'search', 'look', 'fiddle')</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdLookDark._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -1808,7 +1813,7 @@ to find something.</p>
 
 <dl class="attribute">
 <dt id="evennia.contrib.tutorial_world.rooms.CmdLookDark.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['feel around', 'feel', 'fiddle', 'l', 'search']</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdLookDark.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['l', 'feel', 'feel around', 'search', 'fiddle']</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdLookDark.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1841,7 +1846,7 @@ random chance of eventually finding a light source.</p>
 
 <dl class="attribute">
 <dt id="evennia.contrib.tutorial_world.rooms.CmdLookDark.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'feel around feel fiddle l search', 'category': 'tutorialworld', 'key': 'look', 'tags': '', 'text': '\n    Look around in darkness\n\n    Usage:\n      look\n\n    Look around in the darkness, trying\n    to find something.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdLookDark.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'l feel feel around search fiddle', 'category': 'tutorialworld', 'key': 'look', 'tags': '', 'text': '\n    Look around in darkness\n\n    Usage:\n      look\n\n    Look around in the darkness, trying\n    to find something.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdLookDark.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1926,7 +1931,7 @@ actually having to be actual database objects. It uses the
 return_detail() hook on TutorialRooms for this.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.tutorial_world.rooms.CmdTutorialLook._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('look', 'ls', 'l')</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdTutorialLook._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('l', 'ls', 'look')</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdTutorialLook._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -1936,7 +1941,7 @@ return_detail() hook on TutorialRooms for this.</p>
 
 <dl class="attribute">
 <dt id="evennia.contrib.tutorial_world.rooms.CmdTutorialLook.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['ls', 'l']</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdTutorialLook.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['l', 'ls']</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdTutorialLook.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1963,7 +1968,7 @@ code except for adding in the details.</p>
 
 <dl class="attribute">
 <dt id="evennia.contrib.tutorial_world.rooms.CmdTutorialLook.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'ls l', 'category': 'tutorialworld', 'key': 'look', 'tags': '', 'text': '\n    looks at the room and on details\n\n    Usage:\n        look &lt;obj&gt;\n        look &lt;room detail&gt;\n        look *&lt;account&gt;\n\n    Observes your location, details at your location or objects\n    in your vicinity.\n\n    Tutorial: This is a child of the default Look command, that also\n    allows us to look at &quot;details&quot; in the room.  These details are\n    things to examine and offers some extra description without\n    actually having to be actual database objects. It uses the\n    return_detail() hook on TutorialRooms for this.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdTutorialLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'l ls', 'category': 'tutorialworld', 'key': 'look', 'tags': '', 'text': '\n    looks at the room and on details\n\n    Usage:\n        look &lt;obj&gt;\n        look &lt;room detail&gt;\n        look *&lt;account&gt;\n\n    Observes your location, details at your location or objects\n    in your vicinity.\n\n    Tutorial: This is a child of the default Look command, that also\n    allows us to look at &quot;details&quot; in the room.  These details are\n    things to examine and offers some extra description without\n    actually having to be actual database objects. It uses the\n    return_detail() hook on TutorialRooms for this.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdTutorialLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -2063,7 +2068,7 @@ on the bridge, 0 - 4.</p></li>
 </dl>
 <dl class="attribute">
 <dt id="evennia.contrib.tutorial_world.rooms.CmdWest._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('w', 'west')</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdWest._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('west', 'w')</em><a class="headerlink" href="#evennia.contrib.tutorial_world.rooms.CmdWest._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -2633,7 +2638,10 @@ even though we don’t actually use them in this example)</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">evennia.contrib.tutorial_world package</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

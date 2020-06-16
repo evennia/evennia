@@ -7,11 +7,13 @@
     <title>Parsing command arguments, theory and best practices &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Parsing command arguments, theory and best practices</a></li>
+
+
       </ul>
     </div>  
 
@@ -36,8 +41,13 @@
             
   <div class="section" id="parsing-command-arguments-theory-and-best-practices">
 <h1>Parsing command arguments, theory and best practices<a class="headerlink" href="#parsing-command-arguments-theory-and-best-practices" title="Permalink to this headline">¶</a></h1>
-<p>This tutorial will elaborate on the many ways one can parse command arguments.  The first step after <a class="reference internal" href="Adding-Command-Tutorial.html"><span class="doc">adding a command</span></a> usually is to parse its arguments.  There are lots of ways to do it, but some are indeed better than others and this tutorial will try to present them.</p>
-<p>If you’re a Python beginner, this tutorial might help you a lot.  If you’re already familiar with Python syntax, this tutorial might still contain useful information.  There are still a lot of things I find in the standard library that come as a surprise, though they were there all along.  This might be true for others.</p>
+<p>This tutorial will elaborate on the many ways one can parse command arguments.  The first step after
+<a class="reference internal" href="Adding-Command-Tutorial.html"><span class="doc">adding a command</span></a> usually is to parse its arguments.  There are lots of
+ways to do it, but some are indeed better than others and this tutorial will try to present them.</p>
+<p>If you’re a Python beginner, this tutorial might help you a lot.  If you’re already familiar with
+Python syntax, this tutorial might still contain useful information.  There are still a lot of
+things I find in the standard library that come as a surprise, though they were there all along.
+This might be true for others.</p>
 <p>In this tutorial we will:</p>
 <ul class="simple">
 <li><p>Parse arguments with numbers.</p></li>
@@ -47,26 +57,39 @@
 </ul>
 <div class="section" id="what-are-command-arguments">
 <h2>What are command arguments?<a class="headerlink" href="#what-are-command-arguments" title="Permalink to this headline">¶</a></h2>
-<p>I’m going to talk about command arguments and parsing a lot in this tutorial.  So let’s be sure we talk about the same thing before going any further:</p>
+<p>I’m going to talk about command arguments and parsing a lot in this tutorial.  So let’s be sure we
+talk about the same thing before going any further:</p>
 <blockquote>
 <div><p>A command is an Evennia object that handles specific user input.</p>
 </div></blockquote>
-<p>For instance, the default <code class="docutils literal notranslate"><span class="pre">look</span></code> is a command.  After having created your Evennia game, and connected to it, you should be able to type <code class="docutils literal notranslate"><span class="pre">look</span></code> to see what’s around.  In this context, <code class="docutils literal notranslate"><span class="pre">look</span></code> is a command.</p>
+<p>For instance, the default <code class="docutils literal notranslate"><span class="pre">look</span></code> is a command.  After having created your Evennia game, and
+connected to it, you should be able to type <code class="docutils literal notranslate"><span class="pre">look</span></code> to see what’s around.  In this context, <code class="docutils literal notranslate"><span class="pre">look</span></code> is
+a command.</p>
 <blockquote>
 <div><p>Command arguments are additional text passed after the command.</p>
 </div></blockquote>
-<p>Following the same example, you can type <code class="docutils literal notranslate"><span class="pre">look</span> <span class="pre">self</span></code> to look at yourself.  In this context, <code class="docutils literal notranslate"><span class="pre">self</span></code> is the text specified after <code class="docutils literal notranslate"><span class="pre">look</span></code>.  <code class="docutils literal notranslate"><span class="pre">&quot;</span> <span class="pre">self&quot;</span></code> is the argument to the <code class="docutils literal notranslate"><span class="pre">look</span></code> command.</p>
-<p>Part of our task as a game developer is to connect user inputs (mostly commands) with actions in the game.  And most of the time, entering commands is not enough, we have to rely on arguments for specifying actions with more accuracy.</p>
-<p>Take the <code class="docutils literal notranslate"><span class="pre">say</span></code> command.  If you couldn’t specify what to say as a command argument (<code class="docutils literal notranslate"><span class="pre">say</span> <span class="pre">hello!</span></code>), you would have trouble communicating with others in the game.  One would need to create a different command for every kind of word or sentence, which is, of course, not practical.</p>
+<p>Following the same example, you can type <code class="docutils literal notranslate"><span class="pre">look</span> <span class="pre">self</span></code> to look at yourself.  In this context, <code class="docutils literal notranslate"><span class="pre">self</span></code>
+is the text specified after <code class="docutils literal notranslate"><span class="pre">look</span></code>.  <code class="docutils literal notranslate"><span class="pre">&quot;</span> <span class="pre">self&quot;</span></code> is the argument to the <code class="docutils literal notranslate"><span class="pre">look</span></code> command.</p>
+<p>Part of our task as a game developer is to connect user inputs (mostly commands) with actions in the
+game.  And most of the time, entering commands is not enough, we have to rely on arguments for
+specifying actions with more accuracy.</p>
+<p>Take the <code class="docutils literal notranslate"><span class="pre">say</span></code> command.  If you couldn’t specify what to say as a command argument (<code class="docutils literal notranslate"><span class="pre">say</span> <span class="pre">hello!</span></code>),
+you would have trouble communicating with others in the game.  One would need to create a different
+command for every kind of word or sentence, which is, of course, not practical.</p>
 <p>Last thing: what is parsing?</p>
 <blockquote>
-<div><p>In our case, parsing is the process by which we convert command arguments into something we can work with.</p>
+<div><p>In our case, parsing is the process by which we convert command arguments into something we can
+work with.</p>
 </div></blockquote>
-<p>We don’t usually use the command argument as is (which is just text, of type <code class="docutils literal notranslate"><span class="pre">str</span></code> in Python).  We need to extract useful information.  We might want to ask the user for a number, or the name of another character present in the same room.  We’re going to see how to do all that now.</p>
+<p>We don’t usually use the command argument as is (which is just text, of type <code class="docutils literal notranslate"><span class="pre">str</span></code> in Python).  We
+need to extract useful information.  We might want to ask the user for a number, or the name of
+another character present in the same room.  We’re going to see how to do all that now.</p>
 </div>
 <div class="section" id="working-with-strings">
 <h2>Working with strings<a class="headerlink" href="#working-with-strings" title="Permalink to this headline">¶</a></h2>
-<p>In object terms, when you write a command in Evennia (when you write the Python class), the arguments are stored in the <code class="docutils literal notranslate"><span class="pre">args</span></code> attribute.  Which is to say, inside your <code class="docutils literal notranslate"><span class="pre">func</span></code> method, you can access the command arguments in <code class="docutils literal notranslate"><span class="pre">self.args</span></code>.</p>
+<p>In object terms, when you write a command in Evennia (when you write the Python class), the
+arguments are stored in the <code class="docutils literal notranslate"><span class="pre">args</span></code> attribute.  Which is to say, inside your <code class="docutils literal notranslate"><span class="pre">func</span></code> method, you can
+access the command arguments in <code class="docutils literal notranslate"><span class="pre">self.args</span></code>.</p>
 <div class="section" id="self-args">
 <h3>self.args<a class="headerlink" href="#self-args" title="Permalink to this headline">¶</a></h3>
 <p>To begin with, look at this example:</p>
@@ -103,7 +126,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;You have entered: {self.args}.&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<p>If you add this command and test it, you will receive exactly what you have entered without any parsing:</p>
+<p>If you add this command and test it, you will receive exactly what you have entered without any
+parsing:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">test</span> <span class="n">Whatever</span>
 <span class="n">You</span> <span class="n">have</span> <span class="n">entered</span><span class="p">:</span>  <span class="n">Whatever</span><span class="o">.</span>
 <span class="o">&gt;</span> <span class="n">test</span>
@@ -111,14 +135,18 @@
 </pre></div>
 </div>
 <blockquote>
-<div><p>The lines starting with <code class="docutils literal notranslate"><span class="pre">&gt;</span></code> indicate what you enter into your client.  The other lines are what you receive from the game server.</p>
+<div><p>The lines starting with <code class="docutils literal notranslate"><span class="pre">&gt;</span></code> indicate what you enter into your client.  The other lines are what
+you receive from the game server.</p>
 </div></blockquote>
 <p>Notice two things here:</p>
 <ol class="simple">
-<li><p>The left space between our command key (“test”, here) and our command argument is not removed.  That’s why there are two spaces in our output at line 2.  Try entering something like “testok”.</p></li>
-<li><p>Even if you don’t enter command arguments, the command will still be called with an empty string in <code class="docutils literal notranslate"><span class="pre">self.args</span></code>.</p></li>
+<li><p>The left space between our command key (“test”, here) and our command argument is not removed.
+That’s why there are two spaces in our output at line 2.  Try entering something like “testok”.</p></li>
+<li><p>Even if you don’t enter command arguments, the command will still be called with an empty string
+in <code class="docutils literal notranslate"><span class="pre">self.args</span></code>.</p></li>
 </ol>
-<p>Perhaps a slight modification to our code would be appropriate to see what’s happening.  We will force Python to display the command arguments as a debug string using a little shortcut.</p>
+<p>Perhaps a slight modification to our code would be appropriate to see what’s happening.  We will
+force Python to display the command arguments as a debug string using a little shortcut.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -152,7 +180,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;You have entered: {self.args!r}.&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<p>The only line we have changed is the last one, and we have added <code class="docutils literal notranslate"><span class="pre">!r</span></code> between our braces to tell Python to print the debug version of the argument (the repr-ed version).  Let’s see the result:</p>
+<p>The only line we have changed is the last one, and we have added <code class="docutils literal notranslate"><span class="pre">!r</span></code> between our braces to tell
+Python to print the debug version of the argument (the repr-ed version).  Let’s see the result:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">test</span> <span class="n">Whatever</span>
 <span class="n">You</span> <span class="n">have</span> <span class="n">entered</span><span class="p">:</span> <span class="s1">&#39; Whatever&#39;</span><span class="o">.</span>
 <span class="o">&gt;</span> <span class="n">test</span>
@@ -161,19 +190,30 @@
 <span class="n">You</span> <span class="n">have</span> <span class="n">entered</span><span class="p">:</span> <span class="s2">&quot; And something with &#39;?&quot;</span><span class="o">.</span>
 </pre></div>
 </div>
-<p>This displays the string in a way you could see in the Python interpreter.  It might be easier to read… to debug, anyway.</p>
-<p>I insist so much on that point because it’s crucial: the command argument is just a string (of type <code class="docutils literal notranslate"><span class="pre">str</span></code>) and we will use this to parse it.  What you will see is mostly not Evennia-specific, it’s Python-specific and could be used in any other project where you have the same need.</p>
+<p>This displays the string in a way you could see in the Python interpreter.  It might be easier to
+read… to debug, anyway.</p>
+<p>I insist so much on that point because it’s crucial: the command argument is just a string (of type
+<code class="docutils literal notranslate"><span class="pre">str</span></code>) and we will use this to parse it.  What you will see is mostly not Evennia-specific, it’s
+Python-specific and could be used in any other project where you have the same need.</p>
 </div>
 <div class="section" id="stripping">
 <h3>Stripping<a class="headerlink" href="#stripping" title="Permalink to this headline">¶</a></h3>
-<p>As you’ve seen, our command arguments are stored with the space.  And the space between the command and the arguments is often of no importance.</p>
+<p>As you’ve seen, our command arguments are stored with the space.  And the space between the command
+and the arguments is often of no importance.</p>
 <blockquote>
 <div><p>Why is it ever there?</p>
 </div></blockquote>
-<p>Evennia will try its best to find a matching command.  If the user enters your command key with arguments (but omits the space), Evennia will still be able to find and call the command.  You might have seen what happened if the user entered <code class="docutils literal notranslate"><span class="pre">testok</span></code>.  In this case, <code class="docutils literal notranslate"><span class="pre">testok</span></code> could very well be a command (Evennia checks for that) but seeing none, and because there’s a <code class="docutils literal notranslate"><span class="pre">test</span></code> command, Evennia calls it with the arguments <code class="docutils literal notranslate"><span class="pre">&quot;ok&quot;</span></code>.</p>
-<p>But most of the time, we don’t really care about this left space, so you will often see code to remove it.  There are different ways to do it in Python, but a command use case is the <code class="docutils literal notranslate"><span class="pre">strip</span></code> method on <code class="docutils literal notranslate"><span class="pre">str</span></code> and its cousins, <code class="docutils literal notranslate"><span class="pre">lstrip</span></code> and <code class="docutils literal notranslate"><span class="pre">rstrip</span></code>.</p>
+<p>Evennia will try its best to find a matching command.  If the user enters your command key with
+arguments (but omits the space), Evennia will still be able to find and call the command.  You might
+have seen what happened if the user entered <code class="docutils literal notranslate"><span class="pre">testok</span></code>.  In this case, <code class="docutils literal notranslate"><span class="pre">testok</span></code> could very well be a
+command (Evennia checks for that) but seeing none, and because there’s a <code class="docutils literal notranslate"><span class="pre">test</span></code> command, Evennia
+calls it with the arguments <code class="docutils literal notranslate"><span class="pre">&quot;ok&quot;</span></code>.</p>
+<p>But most of the time, we don’t really care about this left space, so you will often see code to
+remove it.  There are different ways to do it in Python, but a command use case is the <code class="docutils literal notranslate"><span class="pre">strip</span></code>
+method on <code class="docutils literal notranslate"><span class="pre">str</span></code> and its cousins, <code class="docutils literal notranslate"><span class="pre">lstrip</span></code> and <code class="docutils literal notranslate"><span class="pre">rstrip</span></code>.</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">strip</span></code>: removes one or more characters (either spaces or other characters) from both ends of the string.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">strip</span></code>: removes one or more characters (either spaces or other characters) from both ends of the
+string.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">lstrip</span></code>: same thing but only removes from the left end (left strip) of the string.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">rstrip</span></code>: same thing but only removes from the right end (right strip) of the string.</p></li>
 </ul>
@@ -195,7 +235,8 @@
 <span class="go">&#39;Now, what is it&#39;</span>
 </pre></div>
 </td></tr></table></div>
-<p>Usually, since we don’t need the space separator, but still want our command to work if there’s no separator, we call <code class="docutils literal notranslate"><span class="pre">lstrip</span></code> on the command arguments:</p>
+<p>Usually, since we don’t need the space separator, but still want our command to work if there’s no
+separator, we call <code class="docutils literal notranslate"><span class="pre">lstrip</span></code> on the command arguments:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -238,7 +279,9 @@
 </pre></div>
 </td></tr></table></div>
 <blockquote>
-<div><p>We are now beginning to override the command’s <code class="docutils literal notranslate"><span class="pre">parse</span></code> method, which is typically useful just for argument parsing.  This method is executed before <code class="docutils literal notranslate"><span class="pre">func</span></code> and so <code class="docutils literal notranslate"><span class="pre">self.args</span></code> in <code class="docutils literal notranslate"><span class="pre">func()</span></code> will contain our <code class="docutils literal notranslate"><span class="pre">self.args.lstrip()</span></code>.</p>
+<div><p>We are now beginning to override the command’s <code class="docutils literal notranslate"><span class="pre">parse</span></code> method, which is typically useful just for
+argument parsing.  This method is executed before <code class="docutils literal notranslate"><span class="pre">func</span></code> and so <code class="docutils literal notranslate"><span class="pre">self.args</span></code> in <code class="docutils literal notranslate"><span class="pre">func()</span></code> will contain
+our <code class="docutils literal notranslate"><span class="pre">self.args.lstrip()</span></code>.</p>
 </div></blockquote>
 <p>Let’s try it:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">test</span> <span class="n">Whatever</span>
@@ -253,13 +296,18 @@
 </div>
 <p>Spaces at the end of the string are kept, but all spaces at the beginning are removed:</p>
 <blockquote>
-<div><p><code class="docutils literal notranslate"><span class="pre">strip</span></code>, <code class="docutils literal notranslate"><span class="pre">lstrip</span></code> and <code class="docutils literal notranslate"><span class="pre">rstrip</span></code> without arguments will strip spaces, line breaks and other common separators.  You can specify one or more characters as a parameter.  If you specify more than one character, all of them will be stripped from your original string.</p>
+<div><p><code class="docutils literal notranslate"><span class="pre">strip</span></code>, <code class="docutils literal notranslate"><span class="pre">lstrip</span></code> and <code class="docutils literal notranslate"><span class="pre">rstrip</span></code> without arguments will strip spaces, line breaks and other common
+separators.  You can specify one or more characters as a parameter.  If you specify more than one
+character, all of them will be stripped from your original string.</p>
 </div></blockquote>
 </div>
 <div class="section" id="convert-arguments-to-numbers">
 <h3>Convert arguments to numbers<a class="headerlink" href="#convert-arguments-to-numbers" title="Permalink to this headline">¶</a></h3>
-<p>As pointed out, <code class="docutils literal notranslate"><span class="pre">self.args</span></code> is a string (of type <code class="docutils literal notranslate"><span class="pre">str</span></code>).  What if we want the user to enter a number?</p>
-<p>Let’s take a very simple example: creating a command, <code class="docutils literal notranslate"><span class="pre">roll</span></code>, that allows to roll a six-sided die.  The player has to guess the number, specifying the number as argument.  To win, the player has to match the number with the die.  Let’s see an example:</p>
+<p>As pointed out, <code class="docutils literal notranslate"><span class="pre">self.args</span></code> is a string (of type <code class="docutils literal notranslate"><span class="pre">str</span></code>).  What if we want the user to enter a
+number?</p>
+<p>Let’s take a very simple example: creating a command, <code class="docutils literal notranslate"><span class="pre">roll</span></code>, that allows to roll a six-sided die.
+The player has to guess the number, specifying the number as argument.  To win, the player has to
+match the number with the die.  Let’s see an example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; roll 3
 You roll a die.  It lands on the number 4.
 You played 3, you have lost.
@@ -271,7 +319,9 @@ You roll a die.  It lands on the number 1.
 You played 1, you have won!
 </pre></div>
 </div>
-<p>If that’s your first command, it’s a good opportunity to try to write it.  A command with a simple and finite role always is a good starting choice.  Here’s how we could (first) write it… but it won’t work as is, I warn you:</p>
+<p>If that’s your first command, it’s a good opportunity to try to write it.  A command with a simple
+and finite role always is a good starting choice.  Here’s how we could (first) write it… but it
+won’t work as is, I warn you:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -343,9 +393,18 @@ You played 1, you have won!
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;You played {self.args}, you have lost.&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<p>If you try this code, Python will complain that you try to compare a number with a string: <code class="docutils literal notranslate"><span class="pre">figure</span></code> is a number and <code class="docutils literal notranslate"><span class="pre">self.args</span></code> is a string and can’t be compared as-is in Python.  Python doesn’t do “implicit converting” as some languages do.  By the way, this might be annoying sometimes, and other times you will be glad it tries to encourage you to be explicit rather than implicit about what to do.  This is an ongoing debate between programmers.  Let’s move on!</p>
-<p>So we need to convert the command argument from a <code class="docutils literal notranslate"><span class="pre">str</span></code> into an <code class="docutils literal notranslate"><span class="pre">int</span></code>.  There are a few ways to do it.  But the proper way is to try to convert and deal with the <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> Python exception.</p>
-<p>Converting a <code class="docutils literal notranslate"><span class="pre">str</span></code> into an <code class="docutils literal notranslate"><span class="pre">int</span></code> in Python is extremely simple: just use the <code class="docutils literal notranslate"><span class="pre">int</span></code> function, give it the string and it returns an integer, if it could.  If it can’t, it will raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.  So we’ll need to catch that.  However, we also have to indicate to Evennia that, should the number be invalid, no further parsing should be done.  Here’s a new attempt at our command with this converting:</p>
+<p>If you try this code, Python will complain that you try to compare a number with a string: <code class="docutils literal notranslate"><span class="pre">figure</span></code>
+is a number and <code class="docutils literal notranslate"><span class="pre">self.args</span></code> is a string and can’t be compared as-is in Python.  Python doesn’t do
+“implicit converting” as some languages do.  By the way, this might be annoying sometimes, and other
+times you will be glad it tries to encourage you to be explicit rather than implicit about what to
+do.  This is an ongoing debate between programmers.  Let’s move on!</p>
+<p>So we need to convert the command argument from a <code class="docutils literal notranslate"><span class="pre">str</span></code> into an <code class="docutils literal notranslate"><span class="pre">int</span></code>.  There are a few ways to do
+it.  But the proper way is to try to convert and deal with the <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> Python exception.</p>
+<p>Converting a <code class="docutils literal notranslate"><span class="pre">str</span></code> into an <code class="docutils literal notranslate"><span class="pre">int</span></code> in Python is extremely simple: just use the <code class="docutils literal notranslate"><span class="pre">int</span></code> function, give it
+the string and it returns an integer, if it could.  If it can’t, it will raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.  So
+we’ll need to catch that.  However, we also have to indicate to Evennia that, should the number be
+invalid, no further parsing should be done.  Here’s a new attempt at our command with this
+converting:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -435,10 +494,20 @@ You played 1, you have won!
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;You played {self.entered}, you have lost.&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<p>Before enjoying the result, let’s examine the <code class="docutils literal notranslate"><span class="pre">parse</span></code> method a little more: what it does is try to convert the entered argument from a <code class="docutils literal notranslate"><span class="pre">str</span></code> to an <code class="docutils literal notranslate"><span class="pre">int</span></code>.  This might fail (if a user enters <code class="docutils literal notranslate"><span class="pre">roll</span> <span class="pre">something</span></code>).  In such a case, Python raises a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> exception.  We catch it in our <code class="docutils literal notranslate"><span class="pre">try/except</span></code> block, send a message to the user and raise the <code class="docutils literal notranslate"><span class="pre">InterruptCommand</span></code> exception in response to tell Evennia to not run <code class="docutils literal notranslate"><span class="pre">func()</span></code>, since we have no valid number to give it.</p>
-<p>In the <code class="docutils literal notranslate"><span class="pre">func</span></code> method, instead of using <code class="docutils literal notranslate"><span class="pre">self.args</span></code>, we use <code class="docutils literal notranslate"><span class="pre">self.entered</span></code> which we have defined in our <code class="docutils literal notranslate"><span class="pre">parse</span></code> method.  You can expect that, if <code class="docutils literal notranslate"><span class="pre">func()</span></code> is run, then <code class="docutils literal notranslate"><span class="pre">self.entered</span></code> contains a valid number.</p>
-<p>If you try this command, it will work as expected this time: the number is converted as it should and compared to the die roll.  You might spend some minutes playing this game.  Time out!</p>
-<p>Something else we could want to address: in our small example, we only want the user to enter a positive number between 1 and 6.  And the user can enter <code class="docutils literal notranslate"><span class="pre">roll</span> <span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">roll</span> <span class="pre">-8</span></code> or <code class="docutils literal notranslate"><span class="pre">roll</span> <span class="pre">208</span></code> for that matter, the game still works.  It might be worth addressing.  Again, you could write a condition to do that, but since we’re catching an exception, we might end up with something cleaner by grouping:</p>
+<p>Before enjoying the result, let’s examine the <code class="docutils literal notranslate"><span class="pre">parse</span></code> method a little more: what it does is try to
+convert the entered argument from a <code class="docutils literal notranslate"><span class="pre">str</span></code> to an <code class="docutils literal notranslate"><span class="pre">int</span></code>.  This might fail (if a user enters <code class="docutils literal notranslate"><span class="pre">roll</span> <span class="pre">something</span></code>).  In such a case, Python raises a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> exception.  We catch it in our
+<code class="docutils literal notranslate"><span class="pre">try/except</span></code> block, send a message to the user and raise the <code class="docutils literal notranslate"><span class="pre">InterruptCommand</span></code> exception in
+response to tell Evennia to not run <code class="docutils literal notranslate"><span class="pre">func()</span></code>, since we have no valid number to give it.</p>
+<p>In the <code class="docutils literal notranslate"><span class="pre">func</span></code> method, instead of using <code class="docutils literal notranslate"><span class="pre">self.args</span></code>, we use <code class="docutils literal notranslate"><span class="pre">self.entered</span></code> which we have defined in
+our <code class="docutils literal notranslate"><span class="pre">parse</span></code> method.  You can expect that, if <code class="docutils literal notranslate"><span class="pre">func()</span></code> is run, then <code class="docutils literal notranslate"><span class="pre">self.entered</span></code> contains a valid
+number.</p>
+<p>If you try this command, it will work as expected this time: the number is converted as it should
+and compared to the die roll.  You might spend some minutes playing this game.  Time out!</p>
+<p>Something else we could want to address: in our small example, we only want the user to enter a
+positive number between 1 and 6.  And the user can enter <code class="docutils literal notranslate"><span class="pre">roll</span> <span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">roll</span> <span class="pre">-8</span></code> or <code class="docutils literal notranslate"><span class="pre">roll</span> <span class="pre">208</span></code> for
+that matter, the game still works.  It might be worth addressing.  Again, you could write a
+condition to do that, but since we’re catching an exception, we might end up with something cleaner
+by grouping:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -530,14 +599,20 @@ You played 1, you have won!
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;You played {self.entered}, you have lost.&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<p>Using grouped exceptions like that makes our code easier to read, but if you feel more comfortable checking, afterward, that the number the user entered is in the right range, you can do so in a latter condition.</p>
+<p>Using grouped exceptions like that makes our code easier to read, but if you feel more comfortable
+checking, afterward, that the number the user entered is in the right range, you can do so in a
+latter condition.</p>
 <blockquote>
-<div><p>Notice that we have updated our <code class="docutils literal notranslate"><span class="pre">parse</span></code> method only in this last attempt, not our <code class="docutils literal notranslate"><span class="pre">func()</span></code> method which remains the same.  This is one goal of separating argument parsing from command processing, these two actions are best kept isolated.</p>
+<div><p>Notice that we have updated our <code class="docutils literal notranslate"><span class="pre">parse</span></code> method only in this last attempt, not our <code class="docutils literal notranslate"><span class="pre">func()</span></code> method
+which remains the same.  This is one goal of separating argument parsing from command processing,
+these two actions are best kept isolated.</p>
 </div></blockquote>
 </div>
 <div class="section" id="working-with-several-arguments">
 <h3>Working with several arguments<a class="headerlink" href="#working-with-several-arguments" title="Permalink to this headline">¶</a></h3>
-<p>Often a command expects several arguments.  So far, in our example with the “roll” command, we only expect one argument: a number and just a number.  What if we want the user to specify several numbers?  First the number of dice to roll, then the guess?</p>
+<p>Often a command expects several arguments.  So far, in our example with the “roll” command, we only
+expect one argument: a number and just a number.  What if we want the user to specify several
+numbers?  First the number of dice to roll, then the guess?</p>
 <blockquote>
 <div><p>You won’t win often if you roll 5 dice but that’s for the example.</p>
 </div></blockquote>
@@ -546,7 +621,9 @@ You played 1, you have won!
 </pre></div>
 </div>
 <p>(To be understood: roll 3 dice, my guess is the total number will be 12.)</p>
-<p>What we need is to cut our command argument, which is a <code class="docutils literal notranslate"><span class="pre">str</span></code>, break it at the space (we use the space as a delimiter).  Python provides the <code class="docutils literal notranslate"><span class="pre">str.split</span></code> method which we’ll use.  Again, here are some examples from the Python interpreter:</p>
+<p>What we need is to cut our command argument, which is a <code class="docutils literal notranslate"><span class="pre">str</span></code>, break it at the space (we use the
+space as a delimiter).  Python provides the <code class="docutils literal notranslate"><span class="pre">str.split</span></code> method which we’ll use.  Again, here are
+some examples from the Python interpreter:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">args</span> <span class="o">=</span> <span class="s2">&quot;3 12&quot;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
 <span class="go">[&#39;3&#39;, &#39;12&#39;]</span>
@@ -556,8 +633,11 @@ You played 1, you have won!
 <span class="go">&gt;&gt;&gt;</span>
 </pre></div>
 </div>
-<p>As you can see, <code class="docutils literal notranslate"><span class="pre">str.split</span></code> will “convert” our strings into a list of strings.  The specified argument (<code class="docutils literal notranslate"><span class="pre">&quot;</span> <span class="pre">&quot;</span></code> in our case) is used as delimiter.  So Python browses our original string.  When it sees a delimiter, it takes whatever is before this delimiter and append it to a list.</p>
-<p>The point here is that <code class="docutils literal notranslate"><span class="pre">str.split</span></code> will be used to split our argument.  But, as you can see from the above output, we can never be sure of the length of the list at this point:</p>
+<p>As you can see, <code class="docutils literal notranslate"><span class="pre">str.split</span></code> will “convert” our strings into a list of strings.  The specified
+argument (<code class="docutils literal notranslate"><span class="pre">&quot;</span> <span class="pre">&quot;</span></code> in our case) is used as delimiter.  So Python browses our original string.  When it
+sees a delimiter, it takes whatever is before this delimiter and append it to a list.</p>
+<p>The point here is that <code class="docutils literal notranslate"><span class="pre">str.split</span></code> will be used to split our argument.  But, as you can see from the
+above output, we can never be sure of the length of the list at this point:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">args</span> <span class="o">=</span> <span class="s2">&quot;something&quot;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
 <span class="go">[&#39;something&#39;]</span>
@@ -567,7 +647,10 @@ You played 1, you have won!
 <span class="go">&gt;&gt;&gt;</span>
 </pre></div>
 </div>
-<p>Again we could use a condition to check the number of split arguments, but Python offers a better approach, making use of its exception mechanism.  We’ll give a second argument to <code class="docutils literal notranslate"><span class="pre">str.split</span></code>, the maximum number of splits to do.  Let’s see an example, this feature might be confusing at first glance:</p>
+<p>Again we could use a condition to check the number of split arguments, but Python offers a better
+approach, making use of its exception mechanism.  We’ll give a second argument to <code class="docutils literal notranslate"><span class="pre">str.split</span></code>, the
+maximum number of splits to do.  Let’s see an example, this feature might be confusing at first
+glance:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">args</span> <span class="o">=</span> <span class="s2">&quot;that is something great&quot;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># one split, that is a list with two elements (before, after)</span>
 </pre></div>
@@ -577,7 +660,10 @@ You played 1, you have won!
 <div><blockquote>
 <div></div></blockquote>
 </div></blockquote>
-<p>Read this example as many times as needed to understand it.  The second argument we give to <code class="docutils literal notranslate"><span class="pre">str.split</span></code> is not the length of the list that should be returned, but the number of times we have to split.  Therefore, we specify 1 here, but we get a list of two elements (before the separator, after the separator).</p>
+<p>Read this example as many times as needed to understand it.  The second argument we give to
+<code class="docutils literal notranslate"><span class="pre">str.split</span></code> is not the length of the list that should be returned, but the number of times we have
+to split.  Therefore, we specify 1 here, but we get a list of two elements (before the separator,
+after the separator).</p>
 <blockquote>
 <div><p>What will happen if Python can’t split the number of times we ask?</p>
 </div></blockquote>
@@ -588,8 +674,11 @@ You played 1, you have won!
 <span class="go">&gt;&gt;&gt;</span>
 </pre></div>
 </div>
-<p>This is one moment I would have hoped for an exception and didn’t get one.  But there’s another way which will raise an exception if there is an error: variable unpacking.</p>
-<p>We won’t talk about this feature in details here.  It would be complicated.  But the code is really straightforward to use.  Let’s take our example of the roll command but let’s add a first argument: the number of dice to roll.</p>
+<p>This is one moment I would have hoped for an exception and didn’t get one.  But there’s another way
+which will raise an exception if there is an error: variable unpacking.</p>
+<p>We won’t talk about this feature in details here.  It would be complicated.  But the code is really
+straightforward to use.  Let’s take our example of the roll command but let’s add a first argument:
+the number of dice to roll.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -735,12 +824,22 @@ You played 1, you have won!
     <span class="k">raise</span> <span class="n">InterruptCommand</span>
 </pre></div>
 </td></tr></table></div>
-<p>We split the argument using <code class="docutils literal notranslate"><span class="pre">str.split</span></code> but we capture the result in two variables.  Python is smart enough to know that we want what’s left of the space in the first variable, what’s right of the space in the second variable.  If there is not even a space in the string, Python will raise a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> exception.</p>
-<p>This code is much easier to read than browsing through the returned strings of <code class="docutils literal notranslate"><span class="pre">str.split</span></code>.  We can convert both variables the way we did previously.  Actually there are not so many changes in this version and the previous one, most of it is due to name changes for clarity.</p>
+<p>We split the argument using <code class="docutils literal notranslate"><span class="pre">str.split</span></code> but we capture the result in two variables.  Python is smart
+enough to know that we want what’s left of the space in the first variable, what’s right of the
+space in the second variable.  If there is not even a space in the string, Python will raise a
+<code class="docutils literal notranslate"><span class="pre">ValueError</span></code> exception.</p>
+<p>This code is much easier to read than browsing through the returned strings of <code class="docutils literal notranslate"><span class="pre">str.split</span></code>.  We can
+convert both variables the way we did previously.  Actually there are not so many changes in this
+version and the previous one, most of it is due to name changes for clarity.</p>
 <blockquote>
-<div><p>Splitting a string with a maximum of splits is a common occurrence while parsing command arguments.  You can also see the <code class="docutils literal notranslate"><span class="pre">str.rspli8t</span></code> method that does the same thing but from the right of the string.  Therefore, it will attempt to find delimiters at the end of the string and work toward the beginning of it.</p>
+<div><p>Splitting a string with a maximum of splits is a common occurrence while parsing command
+arguments.  You can also see the <code class="docutils literal notranslate"><span class="pre">str.rspli8t</span></code> method that does the same thing but from the right of
+the string.  Therefore, it will attempt to find delimiters at the end of the string and work toward
+the beginning of it.</p>
 </div></blockquote>
-<p>We have used a space as a delimiter.  This is absolutely not necessary.  You might remember that most default Evennia commands can take an <code class="docutils literal notranslate"><span class="pre">=</span></code> sign as a delimiter.  Now you know how to parse them as well:</p>
+<p>We have used a space as a delimiter.  This is absolutely not necessary.  You might remember that
+most default Evennia commands can take an <code class="docutils literal notranslate"><span class="pre">=</span></code> sign as a delimiter.  Now you know how to parse them
+as well:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cmd_key</span> <span class="o">=</span> <span class="s2">&quot;tel&quot;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cmd_args</span> <span class="o">=</span> <span class="s2">&quot;book = chest&quot;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">cmd_args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)</span> <span class="c1"># mighht raise ValueError!</span>
@@ -754,13 +853,17 @@ You played 1, you have won!
 </div>
 <div class="section" id="optional-arguments">
 <h3>Optional arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h3>
-<p>Sometimes, you’ll come across commands that have optional arguments.  These arguments are not necessary but they can be set if more information is needed.  I will not provide the entire command code here but just enough code to show the mechanism in Python:</p>
-<p>Again, we’ll use <code class="docutils literal notranslate"><span class="pre">str.split</span></code>, knowing that we might not have any delimiter at all.  For instance, the player could enter the “tel” command like this:</p>
+<p>Sometimes, you’ll come across commands that have optional arguments.  These arguments are not
+necessary but they can be set if more information is needed.  I will not provide the entire command
+code here but just enough code to show the mechanism in Python:</p>
+<p>Again, we’ll use <code class="docutils literal notranslate"><span class="pre">str.split</span></code>, knowing that we might not have any delimiter at all.  For instance,
+the player could enter the “tel” command like this:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">tel</span> <span class="n">book</span>
 <span class="o">&gt;</span> <span class="n">tell</span> <span class="n">book</span> <span class="o">=</span> <span class="n">chest</span>
 </pre></div>
 </div>
-<p>The equal sign is optional along with whatever is specified after it.  A possible solution in our <code class="docutils literal notranslate"><span class="pre">parse</span></code> method would be:</p>
+<p>The equal sign is optional along with whatever is specified after it.  A possible solution in our
+<code class="docutils literal notranslate"><span class="pre">parse</span></code> method would be:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
@@ -780,31 +883,48 @@ You played 1, you have won!
             <span class="n">destination</span> <span class="o">=</span> <span class="bp">None</span>
 </pre></div>
 </td></tr></table></div>
-<p>This code would place everything the user entered in <code class="docutils literal notranslate"><span class="pre">obj</span></code> if she didn’t specify any equal sign.  Otherwise, what’s before the equal sign will go in <code class="docutils literal notranslate"><span class="pre">obj</span></code>, what’s after the equal sign will go in <code class="docutils literal notranslate"><span class="pre">destination</span></code>.  This makes for quick testing after that, more robust code with less conditions that might too easily break your code if you’re not careful.</p>
+<p>This code would place everything the user entered in <code class="docutils literal notranslate"><span class="pre">obj</span></code> if she didn’t specify any equal sign.
+Otherwise, what’s before the equal sign will go in <code class="docutils literal notranslate"><span class="pre">obj</span></code>, what’s after the equal sign will go in
+<code class="docutils literal notranslate"><span class="pre">destination</span></code>.  This makes for quick testing after that, more robust code with less conditions that
+might too easily break your code if you’re not careful.</p>
 <blockquote>
 <div><p>Again, here we specified a maximum numbers of splits.  If the users enters:</p>
 </div></blockquote>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">tel</span> <span class="n">book</span> <span class="o">=</span> <span class="n">chest</span> <span class="o">=</span> <span class="n">chair</span>
 </pre></div>
 </div>
-<p>Then <code class="docutils literal notranslate"><span class="pre">destination</span></code> will contain: <code class="docutils literal notranslate"><span class="pre">&quot;</span> <span class="pre">chest</span> <span class="pre">=</span> <span class="pre">chair&quot;</span></code>.  This is often desired, but it’s up to you to set parsing however you like.</p>
+<p>Then <code class="docutils literal notranslate"><span class="pre">destination</span></code> will contain: <code class="docutils literal notranslate"><span class="pre">&quot;</span> <span class="pre">chest</span> <span class="pre">=</span> <span class="pre">chair&quot;</span></code>.  This is often desired, but it’s up to you to
+set parsing however you like.</p>
 </div>
 </div>
 <div class="section" id="evennia-searches">
 <h2>Evennia searches<a class="headerlink" href="#evennia-searches" title="Permalink to this headline">¶</a></h2>
-<p>After this quick tour of some <code class="docutils literal notranslate"><span class="pre">str</span></code> methods, we’ll take a look at some Evennia-specific features that you won’t find in standard Python.</p>
-<p>One very common task is to convert a <code class="docutils literal notranslate"><span class="pre">str</span></code> into an Evennia object.  Take the previous example: having <code class="docutils literal notranslate"><span class="pre">&quot;book&quot;</span></code>  in a variable is great, but we would prefer to know what the user is talking about… what is this <code class="docutils literal notranslate"><span class="pre">&quot;book&quot;</span></code>?</p>
-<p>To get an object from a string, we perform an Evennia search.  Evennia provides a <code class="docutils literal notranslate"><span class="pre">search</span></code> method on all typeclassed objects (you will most likely use the one on characters or accounts).  This method supports a very wide array of arguments and has <a class="reference internal" href="Tutorial-Searching-For-Objects.html"><span class="doc">its own tutorial</span></a>.  Some examples of useful cases follow:</p>
+<p>After this quick tour of some <code class="docutils literal notranslate"><span class="pre">str</span></code> methods, we’ll take a look at some Evennia-specific features
+that you won’t find in standard Python.</p>
+<p>One very common task is to convert a <code class="docutils literal notranslate"><span class="pre">str</span></code> into an Evennia object.  Take the previous example:
+having <code class="docutils literal notranslate"><span class="pre">&quot;book&quot;</span></code>  in a variable is great, but we would prefer to know what the user is talking
+about… what is this <code class="docutils literal notranslate"><span class="pre">&quot;book&quot;</span></code>?</p>
+<p>To get an object from a string, we perform an Evennia search.  Evennia provides a <code class="docutils literal notranslate"><span class="pre">search</span></code> method on
+all typeclassed objects (you will most likely use the one on characters or accounts).  This method
+supports a very wide array of arguments and has <a class="reference internal" href="Tutorial-Searching-For-Objects.html"><span class="doc">its own tutorial</span></a>.
+Some examples of useful cases follow:</p>
 <div class="section" id="local-searches">
 <h3>Local searches<a class="headerlink" href="#local-searches" title="Permalink to this headline">¶</a></h3>
-<p>When an account or a character enters a command, the account or character is found in the <code class="docutils literal notranslate"><span class="pre">caller</span></code> attribute.  Therefore, <code class="docutils literal notranslate"><span class="pre">self.caller</span></code> will contain an account or a character (or a session if that’s a session command, though that’s not as frequent).  The <code class="docutils literal notranslate"><span class="pre">search</span></code> method will be available on this caller.</p>
-<p>Let’s take the same example of our little “tel” command.  The user can specify an object as argument:</p>
+<p>When an account or a character enters a command, the account or character is found in the <code class="docutils literal notranslate"><span class="pre">caller</span></code>
+attribute.  Therefore, <code class="docutils literal notranslate"><span class="pre">self.caller</span></code> will contain an account or a character (or a session if that’s
+a session command, though that’s not as frequent).  The <code class="docutils literal notranslate"><span class="pre">search</span></code> method will be available on this
+caller.</p>
+<p>Let’s take the same example of our little “tel” command.  The user can specify an object as
+argument:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span>
 </pre></div>
 </td></tr></table></div>
-<p>We then need to “convert” this string into an Evennia object.  The Evennia object will be searched in the caller’s location and its contents by default (that is to say, if the command has been entered by a character, it will search the object in the character’s room and the character’s inventory).</p>
+<p>We then need to “convert” this string into an Evennia object.  The Evennia object will be searched
+in the caller’s location and its contents by default (that is to say, if the command has been
+entered by a character, it will search the object in the character’s room and the character’s
+inventory).</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
@@ -814,7 +934,9 @@ You played 1, you have won!
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<p>We specify only one argument to the <code class="docutils literal notranslate"><span class="pre">search</span></code> method here: the string to search.  If Evennia finds a match, it will return it and we keep it in the <code class="docutils literal notranslate"><span class="pre">obj</span></code> attribute.  If it can’t find anything, it will return <code class="docutils literal notranslate"><span class="pre">None</span></code> so we need to check for that:</p>
+<p>We specify only one argument to the <code class="docutils literal notranslate"><span class="pre">search</span></code> method here: the string to search.  If Evennia finds a
+match, it will return it and we keep it in the <code class="docutils literal notranslate"><span class="pre">obj</span></code> attribute.  If it can’t find anything, it will
+return <code class="docutils literal notranslate"><span class="pre">None</span></code> so we need to check for that:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
@@ -830,11 +952,14 @@ You played 1, you have won!
             <span class="k">raise</span> <span class="n">InterruptCommand</span>
 </pre></div>
 </td></tr></table></div>
-<p>That’s it.  After this condition, you know that whatever is in <code class="docutils literal notranslate"><span class="pre">self.obj</span></code> is a valid Evennia object (another character, an object, an exit…).</p>
+<p>That’s it.  After this condition, you know that whatever is in <code class="docutils literal notranslate"><span class="pre">self.obj</span></code> is a valid Evennia object
+(another character, an object, an exit…).</p>
 </div>
 <div class="section" id="quiet-searches">
 <h3>Quiet searches<a class="headerlink" href="#quiet-searches" title="Permalink to this headline">¶</a></h3>
-<p>By default, Evennia will handle the case when more than one match is found in the search.  The user will be asked to narrow down and re-enter the command.  You can, however, ask to be returned the list of matches and handle this list yourself:</p>
+<p>By default, Evennia will handle the case when more than one match is found in the search.  The user
+will be asked to narrow down and re-enter the command.  You can, however, ask to be returned the
+list of matches and handle this list yourself:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -856,11 +981,16 @@ You played 1, you have won!
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">objs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># Take the first match even if there are several</span>
 </pre></div>
 </td></tr></table></div>
-<p>All we have changed to obtain a list is a keyword argument in the <code class="docutils literal notranslate"><span class="pre">search</span></code> method: <code class="docutils literal notranslate"><span class="pre">quiet</span></code>.  If set to <code class="docutils literal notranslate"><span class="pre">True</span></code>,  then errors are ignored and a list is always returned, so we need to handle it as such.  Notice in this example, <code class="docutils literal notranslate"><span class="pre">self.obj</span></code> will contain a valid object too, but if several matches are found, <code class="docutils literal notranslate"><span class="pre">self.obj</span></code> will contain the first one, even if more matches are available.</p>
+<p>All we have changed to obtain a list is a keyword argument in the <code class="docutils literal notranslate"><span class="pre">search</span></code> method: <code class="docutils literal notranslate"><span class="pre">quiet</span></code>.  If set
+to <code class="docutils literal notranslate"><span class="pre">True</span></code>,  then errors are ignored and a list is always returned, so we need to handle it as such.
+Notice in this example, <code class="docutils literal notranslate"><span class="pre">self.obj</span></code> will contain a valid object too, but if several matches are
+found, <code class="docutils literal notranslate"><span class="pre">self.obj</span></code> will contain the first one, even if more matches are available.</p>
 </div>
 <div class="section" id="global-searches">
 <h3>Global searches<a class="headerlink" href="#global-searches" title="Permalink to this headline">¶</a></h3>
-<p>By default, Evennia will perform a local search, that is, a search limited by the location in which the caller is.  If you want to perform a global search (search in the entire database), just set the <code class="docutils literal notranslate"><span class="pre">global_search</span></code> keyword argument to <code class="docutils literal notranslate"><span class="pre">True</span></code>:</p>
+<p>By default, Evennia will perform a local search, that is, a search limited by the location in which
+the caller is.  If you want to perform a global search (search in the entire database), just set the
+<code class="docutils literal notranslate"><span class="pre">global_search</span></code> keyword argument to <code class="docutils literal notranslate"><span class="pre">True</span></code>:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -872,7 +1002,15 @@ You played 1, you have won!
 </div>
 <div class="section" id="conclusion">
 <h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">¶</a></h2>
-<p>Parsing command arguments is vital for most game designers.  If you design “intelligent” commands, users should be able to guess how to use them without reading the help, or with a very quick peek at said help.  Good commands are intuitive to users.  Better commands do what they’re told to do.  For game designers working on MUDs, commands are the main entry point for users into your game.  This is no trivial.  If commands execute correctly (if their argument is parsed, if they don’t behave in unexpected ways and report back the right errors), you will have happier players that might stay longer on your game.  I hope this tutorial gave you some pointers on ways to improve your command parsing.  There are, of course, other ways you will discover, or ways you are already using in your code.</p>
+<p>Parsing command arguments is vital for most game designers.  If you design “intelligent” commands,
+users should be able to guess how to use them without reading the help, or with a very quick peek at
+said help.  Good commands are intuitive to users.  Better commands do what they’re told to do.  For
+game designers working on MUDs, commands are the main entry point for users into your game.  This is
+no trivial.  If commands execute correctly (if their argument is parsed, if they don’t behave in
+unexpected ways and report back the right errors), you will have happier players that might stay
+longer on your game.  I hope this tutorial gave you some pointers on ways to improve your command
+parsing.  There are, of course, other ways you will discover, or ways you are already using in your
+code.</p>
 </div>
 </div>
 
@@ -944,7 +1082,10 @@ You played 1, you have won!
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Parsing command arguments, theory and best practices</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

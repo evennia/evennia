@@ -7,11 +7,13 @@
     <title>Webclient brainstorm &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Webclient brainstorm</a></li>
+
+
       </ul>
     </div>  
 
@@ -42,78 +47,106 @@
 <p><em>This is a brainstorming whitepage. Add your own comments in a named section below.</em></p>
 <div class="section" id="from-chat-on-2019-09-02">
 <h2>From Chat on 2019/09/02<a class="headerlink" href="#from-chat-on-2019-09-02" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  Griatch (IRC)APP  @friarzen: Could one (with goldenlayout) programmatically provide pane positions and sizes? 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  Griatch (IRC)APP  @friarzen: Could one (with goldenlayout) programmatically provide pane positions
+and sizes?
 I recall it was not trivial for the old split.js solution.
   friarzen  take a look at the goldenlayout_default_config.js
 It is kinda cryptic but that is the layout json.
-  Griatch (IRC)APP  @friarzen: Hm, so dynamically replacing the goldenlayout_config in the global scope at the right
+  Griatch (IRC)APP  @friarzen: Hm, so dynamically replacing the goldenlayout_config in the global
+scope at the right
  thing would do it?
   friarzen  yep
-  friarzen  the biggest pain in the butt is that goldenlayout_config needs to be set before the goldenlayout init() 
+  friarzen  the biggest pain in the butt is that goldenlayout_config needs to be set before the
+goldenlayout init()
 is called, which isn&#39;t trivial with the current structure, but it isn&#39;t impossible.
   Griatch (IRC)APP  One could in principle re-run init() at a later date though, right?
   friarzen  Hmm...not sure I&#39;ve ever tried it... seems doable off the top of my head...
-right now, that whole file exists to be overridden on page load as a separate &lt;script&gt; HTML tag, so it can get 
+right now, that whole file exists to be overridden on page load as a separate &lt;script&gt; HTML tag, so
+it can get
 force-loaded early.
-you could just as easily call the server at that time for the proper config info and store it into the variable.
-  Griatch (IRC)APP  @friarzen: Right. I picture the default would either be modified directly in that file or even be 
+you could just as easily call the server at that time for the proper config info and store it into
+the variable.
+  Griatch (IRC)APP  @friarzen: Right. I picture the default would either be modified directly in
+that file or even be
 in settings.
-  friarzen  And if you have it call with an authenticated session at that early point, you could even have the layout 
+  friarzen  And if you have it call with an authenticated session at that early point, you could
+even have the layout
 be defined as a per-user setting.
   Griatch (IRC)APP  Yeah, I think that&#39;d be a very important feature.
-So one part of the config would be the golden-layout config blob; then another section with custom per-pane 
-settings. Things like which tag a pane filters on, its type, and options for that type (like replace/scroll for a 
+So one part of the config would be the golden-layout config blob; then another section with custom
+per-pane
+settings. Things like which tag a pane filters on, its type, and options for that type (like
+replace/scroll for a
 text pane etc).
-And probably one general config section; things like notifications, sounds, popup settings and the like
+And probably one general config section; things like notifications, sounds, popup settings and the
+like
   friarzen  Actually, that information is already somewhat stored into the data as componentState {}
-  Griatch (IRC)APP  I imagine a pane would need to be identified uniquely for golden-layout to know which is which, 
+  Griatch (IRC)APP  I imagine a pane would need to be identified uniquely for golden-layout to know
+which is which,
 so that&#39;d need to be associated.
   friarzen  see line 55.
 that&#39;s....where it gets tricky...
 goldenlayout is kinda dumb in that it treats the whole json blob as a state object.
   Griatch (IRC)APP  componentState, is the idea that it takes arbitrary settings then?
-  friarzen  so each sub-dictionary with a type of &quot;component&quot; in it is a window and as you move stuff around it 
+  friarzen  so each sub-dictionary with a type of &quot;component&quot; in it is a window and as you move
+stuff around it
 dynamically creates new dictionaries as needed to keep it all together.
 yep
-right now I&#39;m storing the list of types as a string and the updateMethod type as a string, just to be as obvious as 
+right now I&#39;m storing the list of types as a string and the updateMethod type as a string, just to
+be as obvious as
 possible.
-  Griatch (IRC)APP  I wonder if one could populate componentState(s) just before initializing the system, and then 
-extract them into a more Evennia-friendly storage when saving. Or maybe it&#39;s no big deal to just store that whole 
+  Griatch (IRC)APP  I wonder if one could populate componentState(s) just before initializing the
+system, and then
+extract them into a more Evennia-friendly storage when saving. Or maybe it&#39;s no big deal to just
+store that whole
 blob as-is, with some extra things added?
-  friarzen  if you want to see it in action, take a look at the values in your localstorage after you&#39;ve moved stuff 
+  friarzen  if you want to see it in action, take a look at the values in your localstorage after
+you&#39;ve moved stuff
 around, created new windows, etc.
 I think their preference is to just store the whole blob.
 which is what the localstorage save does, in fact.
   Griatch (IRC)APP  Yes, I see.
 It allows you to retain the session within your browser as well
-  friarzen  One trick I&#39;ve been thinking about for the whole interface is to have another pair of components, one 
-being a &quot;dynamic&quot; config window that displays a series of dropdowns, one for each plugin that defines it&#39;s own 
+  friarzen  One trick I&#39;ve been thinking about for the whole interface is to have another pair of
+components, one
+being a &quot;dynamic&quot; config window that displays a series of dropdowns, one for each plugin that
+defines it&#39;s own
 settings.
-And another that has an embedded i-frame to allow a split-screen where half of the display is the text interface 
+And another that has an embedded i-frame to allow a split-screen where half of the display is the
+text interface
 and the other loads the local main website page and allows further browsing.
-  Griatch (IRC)APP  I think ideally, each pane should handle its per-pane settings as a dropdown or popup triggered 
+  Griatch (IRC)APP  I think ideally, each pane should handle its per-pane settings as a dropdown or
+popup triggered
 from its header.
   friarzen  well, pane != plugin...
   Griatch (IRC)APP  True, one tends to sometimes make the other available but they are not the same
-  friarzen  think of the history plugin for example...if you want to make keyboard keys dynamically configurable, you 
+  friarzen  think of the history plugin for example...if you want to make keyboard keys dynamically
+configurable, you
 need some place to enter that information.
 yeah.
-  Griatch (IRC)APP  Yes, I buy that - a dynamical option window would be needed. I&#39;d say the &#39;global&#39; settings should 
+  Griatch (IRC)APP  Yes, I buy that - a dynamical option window would be needed. I&#39;d say the
+&#39;global&#39; settings should
 be treated as just another module in this regard though
-So that if you have no modules installed, there is one entry in that option pane, the one that opens the global 
+So that if you have no modules installed, there is one entry in that option pane, the one that opens
+the global
 options
   friarzen  Yeah, so that is that component...one pane.
-  Griatch (IRC)APP  Another thing that the config should contain would be the available message tags. Waiting for 
-them to actually show up before being able to use them is not that useful. This would likely have to be a setting 
+  Griatch (IRC)APP  Another thing that the config should contain would be the available message
+tags. Waiting for
+them to actually show up before being able to use them is not that useful. This would likely have to
+be a setting
 though I imagine.
-  friarzen  we could remove the current pop-up and just open the new component pane instead, and then that pane would 
+  friarzen  we could remove the current pop-up and just open the new component pane instead, and
+then that pane would
 display the list of plugins that registered a config() callback.
   Griatch (IRC)APP  Yes
   friarzen  yeah, the server has to pre-define what tags it is going to send.
-  Griatch (IRC)APP  The process for adding a tag would be to adding to, say, a list in settings, restart and then .. profit
+  Griatch (IRC)APP  The process for adding a tag would be to adding to, say, a list in settings,
+restart and then .. profit
   friarzen  yep, which is kind of how I see spawns working.
   Griatch (IRC)APP  spawns, meaning stand-alone windows?
-  friarzen  we just have a plugin that defines it&#39;s config pane with a &quot;match this text&quot; box and a tag type to send 
+  friarzen  we just have a plugin that defines it&#39;s config pane with a &quot;match this text&quot; box and a
+tag type to send
 the data to, or spawn a new pane with that tag type preselected to capture that text.
 wouldn&#39;t be stand alone windows.  just new tabs, for now.
   Griatch (IRC)APP  Ok, so a filter target that filters on text content and directs to tag
@@ -121,64 +154,85 @@ wouldn&#39;t be stand alone windows.  just new tabs, for now.
   Griatch (IRC)APP  (or re-tags it, I suppose)
   friarzen  yeah, exactly.
 and opens a new window for that tag if one doesn&#39;t already exist.
-  Griatch (IRC)APP  A lot of complex effects could be achieved there. Should the filter extract the text and re-tag, 
+  Griatch (IRC)APP  A lot of complex effects could be achieved there. Should the filter extract the
+text and re-tag,
 or should it keep the text with its original tag and make a copy of it with the new tag? O_o;
   friarzen  yet more options for the user. :slightly_smiling_face:
 baby steps first I think.
 &quot;pages from bob should go to bob&#39;s window, not the general chat window&quot;
-  Griatch (IRC)APP  It doesn&#39;t sound too hard to do - using tagging like that is really neat since then the rerouting 
-can just work normally without knowing which pane you are actually rerouting too (and you could have multiple panes 
+  Griatch (IRC)APP  It doesn&#39;t sound too hard to do - using tagging like that is really neat since
+then the rerouting
+can just work normally without knowing which pane you are actually rerouting too (and you could have
+multiple panes
 getting the same content too)
   friarzen  yep.
 and the i-frame component, I think, provides just as much wow facter.
-  Griatch (IRC)APP  Yes, the setting would be something like: If text contains &quot;bob&quot; -&gt; set tag &quot;bob&quot; (auto-create 
+  Griatch (IRC)APP  Yes, the setting would be something like: If text contains &quot;bob&quot; -&gt; set tag
+&quot;bob&quot; (auto-create
 pane if not exist []?)
-  friarzen  just being able to load a character page from the wiki side in half the screen (including the pictures 
+  friarzen  just being able to load a character page from the wiki side in half the screen
+(including the pictures
 and whatnot) while playing/reading the text from the other half is really nice.
-  Griatch (IRC)APP  Could there not be some cross-scripting warnings in modern browsers if trying to load another 
+  Griatch (IRC)APP  Could there not be some cross-scripting warnings in modern browsers if trying to
+load another
 website in an iframe?
 I doubt you could open Github like that, for example.
-friarzen  well, assuming it is all from the same origin game server, it will all be from the same domain, so should 
-avoid that, but it will take some testing to make sure.  I want to get it to the point where you can click on 
+friarzen  well, assuming it is all from the same origin game server, it will all be from the same
+domain, so should
+avoid that, but it will take some testing to make sure.  I want to get it to the point where you can
+click on
 somebody&#39;s name in the general terminal-style window and have it pop up that characters&#39; wiki page.
   Griatch (IRC)APP  That does sound nice :)
-  friarzen  i-frames are pretty much the only way to handle cross-domain content, but they are a pain in the butt to 
+  friarzen  i-frames are pretty much the only way to handle cross-domain content, but they are a
+pain in the butt to
 get that to work.
-  Griatch (IRC)APP  If it&#39;s on the same domain it would be fine, but it should probably give a &quot;you are now leaving 
+  Griatch (IRC)APP  If it&#39;s on the same domain it would be fine, but it should probably give a &quot;you
+are now leaving
 ...&quot; message and switch to a new window if going elsewhere.
   friarzen  (without getting into modern CORS url blessings)
 yeah
   Griatch (IRC)APP  Just to avoid headaches :)
-  friarzen  So, yeah, two new goldenlayout components that I am working on but they aren&#39;t ready yet. heh.
+  friarzen  So, yeah, two new goldenlayout components that I am working on but they aren&#39;t ready
+yet. heh.
   Griatch (IRC)APP  Oh, you are working on them already?
   friarzen  yeah, some initial &quot;will this work&quot; structure.
 I haven&#39;t found anything yet that will not make it work.
 it&#39;s mostly just not going to look very pretty to start with. It&#39;ll take a few iterations I bet.
-  Griatch (IRC)APP  Sounds good! We should probably try to formalize our thoughts around a future config format as 
-well. Depending just how and when the golden-layout blob needs to be in place and if we can construct it on-the-
+  Griatch (IRC)APP  Sounds good! We should probably try to formalize our thoughts around a future
+config format as
+well. Depending just how and when the golden-layout blob needs to be in place and if we can
+construct it on-the-
 fly, it affects the format style chosen.
-  friarzen  Yeah, that&#39;s new from today&#39;s conversation, so I don&#39;t really have anything built for that.
-  Griatch (IRC)APP  I&#39;m still unsure about how the Evennia/pane specific things (that&#39;d need to be serialized to the 
+  friarzen  Yeah, that&#39;s new from today&#39;s conversation, so I don&#39;t really have anything built for
+that.
+  Griatch (IRC)APP  I&#39;m still unsure about how the Evennia/pane specific things (that&#39;d need to be
+serialized to the
 database on a per-account basis) would interact with the golden-layout structure.
-  friarzen  maybe the place to start is to wipe-out/update the old https://github.com/evennia/evennia/wiki/Webclient-
+  friarzen  maybe the place to start is to wipe-out/update the old
+https://github.com/evennia/evennia/wiki/Webclient-
 brainstorm entry?
-  Griatch (IRC)APP  I don&#39;t think we need to wipe the old, but we could certainly add a new section above the old and 
+  Griatch (IRC)APP  I don&#39;t think we need to wipe the old, but we could certainly add a new section
+above the old and
 start some new discussions.
   friarzen  It is really just that per componentState bit.
 anything in that json is treated as a blackbox that goldenlayout just passes around.
-  Griatch (IRC)APP  So would we save the whole blob then, componentState and all, and simply not worry about 
+  Griatch (IRC)APP  So would we save the whole blob then, componentState and all, and simply not
+worry about
 ourselves storing per-pane options?
-The drawback with that would be that a dev could not offer an exact default layout/setup for the user.
+The drawback with that would be that a dev could not offer an exact default layout/setup for the
+user.
 ... unless they set it up and saved the blob I guess
   friarzen  Yeah, that&#39;s exactly how I built mine. :slightly_smiling_face:
 not the most dev-friendly way to do it, but it works.
-  Griatch (IRC)APP  Heh. Ok, so the config would be one section for the golden-layout-blob, one for module settings, 
+  Griatch (IRC)APP  Heh. Ok, so the config would be one section for the golden-layout-blob, one for
+module settings,
 one of which is the global settings.
 and a list of the available tags
   friarzen  yep
   Griatch (IRC)APP  And probably an empty misc section for future use ...
   friarzen  seems reasonable.
-  Griatch (IRC)APP  So, that means that in the future one would need a procedure for the dev to easily create and 
+  Griatch (IRC)APP  So, that means that in the future one would need a procedure for the dev to
+easily create and
 save the player-wide default to central storage. Well, one step at a time.
 For now, good night!
   friarzen  Yep, I expect that would be some kind of admin-approved api/command
@@ -186,26 +240,48 @@ For now, good night!
 </pre></div>
 </div>
 <hr class="docutils" />
-<p>Relates to the activity happening relating to the <a class="reference external" href="https://github.com/evennia/evennia/issues/614">Webclient extensions task #614</a>.</p>
+<p>Relates to the activity happening relating to the <a class="reference external" href="https://github.com/evennia/evennia/issues/614">Webclient extensions task
+#614</a>.</p>
 </div>
 <div class="section" id="griatch-jan-23-2017-post-2">
 <h2>Griatch Jan 23, 2017 post 2<a class="headerlink" href="#griatch-jan-23-2017-post-2" title="Permalink to this headline">¶</a></h2>
-<p>These are my ideas for the functionality of Evennia’s webclient in the (possibly distant) future. It assumes the webclient options have been implemented as per <a class="reference external" href="https://github.com/evennia/evennia/pull/1172">#1172</a>.</p>
+<p>These are my ideas for the functionality of Evennia’s webclient in the (possibly distant) future. It
+assumes the webclient options have been implemented as per
+<a class="reference external" href="https://github.com/evennia/evennia/pull/1172">#1172</a>.</p>
 <p><img alt="Mockup 1" src="https://cloud.githubusercontent.com/assets/294267/22219738/448795f0-e1ac-11e6-9a31-222d8ac7f297.png" /></p>
-<p>The idea of the GUI is based around <em>panes</em> (a “window” feels like something that pops open). These are areas of the window of the type you would see from a javascript library like <a class="reference external" href="https://nathancahill.github.io/Split.js/">Split.js</a>. Each pane has a separator with a handle for resizing it.</p>
+<p>The idea of the GUI is based around <em>panes</em> (a “window” feels like something that pops open). These
+are areas of the window of the type you would see from a javascript library like
+<a class="reference external" href="https://nathancahill.github.io/Split.js/">Split.js</a>. Each pane has a separator with a handle for
+resizing it.</p>
 <p>Each pane has an icon for opening a dropdown menu (see next mockup image).</p>
-<p>Above image could show the default setup; mimicking the traditional telnet mud client setup. There should be at least one input pane (but you could add multiple). The Input pane has the icon for launching the main webclient options window. <em>Alternatively the options icon could hover transparently in the upper left, “above” all panes</em>.</p>
-<p>The main webclient options window should have an option for hiding all GUI customization icons (the draggable handles of panes and the dropdown menu) for users who does not want to have to worry about changing things accidentally. Devs not wanting to offer players the ability to customize their client GUIs could maybe just set it up the way they want and then turn the gui controls off on the javascript level.</p>
+<p>Above image could show the default setup; mimicking the traditional telnet mud client setup. There
+should be at least one input pane (but you could add multiple). The Input pane has the icon for
+launching the main webclient options window. <em>Alternatively the options icon could hover
+transparently in the upper left, “above” all panes</em>.</p>
+<p>The main webclient options window should have an option for hiding all GUI customization icons (the
+draggable handles of panes and the dropdown menu) for users who does not want to have to worry about
+changing things accidentally. Devs not wanting to offer players the ability to customize their
+client GUIs could maybe just set it up the way they want and then turn the gui controls off on the
+javascript level.</p>
 <p><img alt="Mockup 2" src="https://cloud.githubusercontent.com/assets/294267/22219743/4cf18a84-e1ac-11e6-9d1a-307c0db94419.png" /></p>
 <p>The dropdown menu allows for splitting each pane horizontally and vertically.</p>
 <p><img alt="Mockup 3" src="https://cloud.githubusercontent.com/assets/294267/22219746/511151f8-e1ac-11e6-8445-9cdfd4b9ab5d.png" /></p>
-<p>Each pane is “tagged” with what data will be sent to it. It could accept more than one type of tagged data. Just which tags are available is different for each game (and should be reported by the server).</p>
+<p>Each pane is “tagged” with what data will be sent to it. It could accept more than one type of
+tagged data. Just which tags are available is different for each game (and should be reported by the
+server).</p>
 <p>For example, the server could send the return of the “look” command as</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">msg</span><span class="p">(</span><span class="s2">&quot;you see ...&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;pane&quot;</span><span class="p">:</span> <span class="s2">&quot;look&quot;</span><span class="p">})</span>
 </pre></div>
 </td></tr></table></div>
-<p>If one (or more) of the panes is set to receive “look” data, all such will go there. If <em>no</em> pane is assigned to “look”, this text will end up in the pane(s) with the “Unassigned” designation. It might be necessary to enforce that at least one window has the “unassigned” designation in order to not lose output without a clear pane target. By contrast the pane tagged with “All” receives all output regardless of if it is also being sent to other panes.</p>
-<p>Another thing that came to mind is logging. It might be an idea to tie a given log file to a specific pane (panes?) to limit spam in the log (it might be one reason for having a pane with the “All” tag, for those wanting to log <em>everything</em>). This could also be set in the dropdown menu or in the webclient options window, maybe.</p>
+<p>If one (or more) of the panes is set to receive “look” data, all such will go there. If <em>no</em> pane is
+assigned to “look”, this text will end up in the pane(s) with the “Unassigned” designation. It might
+be necessary to enforce that at least one window has the “unassigned” designation in order to not
+lose output without a clear pane target. By contrast the pane tagged with “All” receives all output
+regardless of if it is also being sent to other panes.</p>
+<p>Another thing that came to mind is logging. It might be an idea to tie a given log file to a
+specific pane (panes?) to limit spam in the log (it might be one reason for having a pane with the
+“All” tag, for those wanting to log <em>everything</em>). This could also be set in the dropdown menu or in
+the webclient options window, maybe.</p>
 <p>Comments?</p>
 </div>
 <div class="section" id="titeuf87-jan-23-2017">
@@ -225,36 +301,68 @@ It’s certainly a lot more flexible than what I had in mind.</p>
 <p>But that’s not as good as Griatch’s proposal.</p>
 <p>The panes themselves can work differently depending on the content though:</p>
 <ul class="simple">
-<li><p>channel messages: when someone talks on a channel, the output text needs to be appended to the text already shown.</p></li>
-<li><p>inventory: this pane should clear its output every time the inventory is displayed, so old inventory is not displayed. Also what about dropping items? As long as the player doesn’t check its inventory then that pane won’t be updated, unless more OOB data is added to track the inventory.</p></li>
+<li><p>channel messages: when someone talks on a channel, the output text needs to be appended to the
+text already shown.</p></li>
+<li><p>inventory: this pane should clear its output every time the inventory is displayed, so old
+inventory is not displayed. Also what about dropping items? As long as the player doesn’t check its
+inventory then that pane won’t be updated, unless more OOB data is added to track the inventory.</p></li>
 <li><p>help/look: those pane should probably also clear their content before displaying new content.</p></li>
 </ul>
 <p>logging: do you mean have a “save to log” item in the pane menu?</p>
 </div>
 <div class="section" id="griatch-jan-23-2017-post-1">
 <h2>Griatch Jan 23, 2017, post 1<a class="headerlink" href="#griatch-jan-23-2017-post-1" title="Permalink to this headline">¶</a></h2>
-<p>It makes sense that different types of panes would have different functionality. I was thinking that something like <code class="docutils literal notranslate"><span class="pre">inventory</span></code> would be very specific to a given game. But titeuf87 has a point - maybe you can get a rather generalized behavior just by defining if a pane should replace or append to the existing data.</p>
-<p>As for the updating of inventory when dropping items, not sure if that can be generalized, but I guess drop/get commands could be wired to do that.</p>
-<p>As for logging - yes I picture a “save to log” thing in the menu. The problem is just where to save the log. I think at least for an initial setup, one could maybe set the logging file path in the webclient options and just append logs from all the panes marked for logging to that same file.</p>
+<p>It makes sense that different types of panes would have different functionality. I was thinking that
+something like <code class="docutils literal notranslate"><span class="pre">inventory</span></code> would be very specific to a given game. But titeuf87 has a point - maybe
+you can get a rather generalized behavior just by defining if a pane should replace or append to the
+existing data.</p>
+<p>As for the updating of inventory when dropping items, not sure if that can be generalized, but I
+guess drop/get commands could be wired to do that.</p>
+<p>As for logging - yes I picture a “save to log” thing in the menu. The problem is just where to save
+the log. I think at least for an initial setup, one could maybe set the logging file path in the
+webclient options and just append logs from all the panes marked for logging to that same file.</p>
 </div>
 <div class="section" id="chainsol-3rd-of-october-2017">
 <h2>chainsol 3rd of October, 2017<a class="headerlink" href="#chainsol-3rd-of-october-2017" title="Permalink to this headline">¶</a></h2>
-<p>I’ve been messing a little bit with split.js - I’ve managed to split a split dynamically with a data attribute on a button and jQuery. My current thinking on this issue is to use <a class="reference external" href="http://codepb.github.io/jquery-template/">jQuery Templates</a> to write the template for horizontal and vertical splits, then using jQuery to set up the initial split layout by inserting those templates as appropriate for user settings.</p>
-<p>We would have a dropdown per split that decides what tag it’s meant to handle - perhaps a data attribute that we change in the template for easy selection through jQuery - and then send tags for messages to the webclient. This dropdown would also have a setting per split to either append new content or replace content - again, perhaps a data attribute.</p>
-<p>We might also want to store “mobile” and “desktop” layouts separately - or just default to a mobile-friendly layout at a certain screen size, and turn off the splits.</p>
+<p>I’ve been messing a little bit with split.js - I’ve managed to split a split dynamically with a data
+attribute on a button and jQuery. My current thinking on this issue is to use <a class="reference external" href="http://codepb.github.io/jquery-template/">jQuery
+Templates</a> to write the template for horizontal and
+vertical splits, then using jQuery to set up the initial split layout by inserting those templates
+as appropriate for user settings.</p>
+<p>We would have a dropdown per split that decides what tag it’s meant to handle - perhaps a data
+attribute that we change in the template for easy selection through jQuery - and then send tags for
+messages to the webclient. This dropdown would also have a setting per split to either append new
+content or replace content - again, perhaps a data attribute.</p>
+<p>We might also want to store “mobile” and “desktop” layouts separately - or just default to a mobile-
+friendly layout at a certain screen size, and turn off the splits.</p>
 <p>Oh, and embedding Bootstrap containers in splits works perfectly - that could help us too.</p>
 </div>
 <div class="section" id="chainsol-9th-of-october-2017">
 <h2>chainsol 9th of October, 2017<a class="headerlink" href="#chainsol-9th-of-october-2017" title="Permalink to this headline">¶</a></h2>
-<p>I’ve got a demo of this working at <a class="reference external" href="https://dev.perfectdisorder.net/webclient">my development box</a>, if anyone wants to take a look. So far, I’ve got tag handling, dynamic splits, and the ability to swap splits’ contents. Since this doesn’t have a fancy interface yet, if you want to see a dynamic split, open your browser’s console and try these commands:</p>
-<p><code class="docutils literal notranslate"><span class="pre">SplitHandler.split(&quot;#main&quot;,</span> <span class="pre">&quot;horizontal&quot;)</span></code> will split the top-half into two 50-50 splits, both receiving content that’s not tagged or is tagged “all” from the server.</p>
-<p><code class="docutils literal notranslate"><span class="pre">SplitHandler.swapContent(&quot;#input&quot;,</span> <span class="pre">&quot;#split_2&quot;)</span></code> after doing so will swap the input into the top-left split.</p>
-<p>I’m trying to figure out where to put each split’s configuration - maybe a dropdown button that’s semi-transparent until you hover over it? So far, if you edited the data attributes, you could change each split to receive only tagged messages ( data-tag=”all” ), and you could change them to overwrite instead of append data ( data-update-append or data-update-overwrite )</p>
+<p>I’ve got a demo of this working at <a class="reference external" href="https://dev.perfectdisorder.net/webclient">my development box</a>,
+if anyone wants to take a look. So far, I’ve got tag handling, dynamic splits, and the ability to
+swap splits’ contents. Since this doesn’t have a fancy interface yet, if you want to see a dynamic
+split, open your browser’s console and try these commands:</p>
+<p><code class="docutils literal notranslate"><span class="pre">SplitHandler.split(&quot;#main&quot;,</span> <span class="pre">&quot;horizontal&quot;)</span></code> will split the top-half into two 50-50 splits, both
+receiving content that’s not tagged or is tagged “all” from the server.</p>
+<p><code class="docutils literal notranslate"><span class="pre">SplitHandler.swapContent(&quot;#input&quot;,</span> <span class="pre">&quot;#split_2&quot;)</span></code> after doing so will swap the input into the top-
+left split.</p>
+<p>I’m trying to figure out where to put each split’s configuration - maybe a dropdown button that’s
+semi-transparent until you hover over it? So far, if you edited the data attributes, you could
+change each split to receive only tagged messages ( data-tag=”all” ), and you could change them to
+overwrite instead of append data ( data-update-append or data-update-overwrite )</p>
 </div>
 <div class="section" id="griatch-oct-13-2017">
 <h2>Griatch Oct 13, 2017<a class="headerlink" href="#griatch-oct-13-2017" title="Permalink to this headline">¶</a></h2>
-<p>I would suggest that, assuming the game dev allows the user to modify their GUI in the first place, that modification is a “mode”. I picture that 99% of the time a user doesn’t need to modify their interface. They only want to click whatever game-related buttons etc are present in the pane without risk of resizing things accidentally.</p>
-<p>So I’d say that normally the panes are all fixed, with minimal spacing between them, no handles etc. But you can enter the client settings window and choose <em>Customize GUI mode</em> (or something like that). When you do, then separators get handles and the dropdown menu markers appear (permanently) in the corner of each pane. This means that if a user <em>wants</em> to easily tweak their window they could stay in this mode, but they could also “lock” the gui layout at any time.</p>
+<p>I would suggest that, assuming the game dev allows the user to modify their GUI in the first place,
+that modification is a “mode”. I picture that 99% of the time a user doesn’t need to modify their
+interface. They only want to click whatever game-related buttons etc are present in the pane without
+risk of resizing things accidentally.</p>
+<p>So I’d say that normally the panes are all fixed, with minimal spacing between them, no handles etc.
+But you can enter the client settings window and choose <em>Customize GUI mode</em> (or something like
+that). When you do, then separators get handles and the dropdown menu markers appear (permanently)
+in the corner of each pane. This means that if a user <em>wants</em> to easily tweak their window they
+could stay in this mode, but they could also “lock” the gui layout at any time.</p>
 </div>
 </div>
 
@@ -318,7 +426,10 @@ It’s certainly a lot more flexible than what I had in mind.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Webclient brainstorm</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

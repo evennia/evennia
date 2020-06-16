@@ -7,11 +7,13 @@
     <title>Bootstrap &amp; Evennia &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Bootstrap &amp; Evennia</a></li>
+
+
       </ul>
     </div>  
 
@@ -39,32 +44,53 @@
 </div>
 <div class="section" id="what-is-bootstrap">
 <h1>What is Bootstrap?<a class="headerlink" href="#what-is-bootstrap" title="Permalink to this headline">¶</a></h1>
-<p>Evennia’s new default web page uses a framework called <a class="reference external" href="https://getbootstrap.com/">Bootstrap</a>. This framework is in use across the internet - you’ll probably start to recognize its influence once you learn some of the common design patterns. This switch is great for web developers, perhaps like yourself, because instead of wondering about setting up different grid systems or what custom class another designer used, we have a base, a bootstrap, to work from. Bootstrap is responsive by default, and comes with some default styles that Evennia has lightly overrode to keep some of the same colors and styles you’re used to from the previous design.</p>
-<p>For your reading pleasure, a brief overview of Bootstrap follows. For more in-depth info, please read <a class="reference external" href="https://getbootstrap.com/docs/4.0/getting-started/introduction/">the documentation</a>.</p>
+<p>Evennia’s new default web page uses a framework called <a class="reference external" href="https://getbootstrap.com/">Bootstrap</a>. This
+framework is in use across the internet - you’ll probably start to recognize its influence once you
+learn some of the common design patterns. This switch is great for web developers, perhaps like
+yourself, because instead of wondering about setting up different grid systems or what custom class
+another designer used, we have a base, a bootstrap, to work from. Bootstrap is responsive by
+default, and comes with some default styles that Evennia has lightly overrode to keep some of the
+same colors and styles you’re used to from the previous design.</p>
+<p>For your reading pleasure, a brief overview of Bootstrap follows. For more in-depth info, please
+read <a class="reference external" href="https://getbootstrap.com/docs/4.0/getting-started/introduction/">the documentation</a>.</p>
 <hr class="docutils" />
 <div class="section" id="the-layout-system">
 <h2>The Layout System<a class="headerlink" href="#the-layout-system" title="Permalink to this headline">¶</a></h2>
-<p>Other than the basic styling Bootstrap includes, it also includes <a class="reference external" href="https://getbootstrap.com/docs/4.0/layout/overview/">a built in layout and grid system</a>.
-The first part of this system is <a class="reference external" href="https://getbootstrap.com/docs/4.0/layout/overview/#containers">the container</a>.</p>
-<p>The container is meant to hold all your page content. Bootstrap provides two types: fixed-width and full-width.
-Fixed-width containers take up a certain max-width of the page - they’re useful for limiting the width on Desktop or Tablet platforms, instead of making the content span the width of the page.</p>
+<p>Other than the basic styling Bootstrap includes, it also includes <a class="reference external" href="https://getbootstrap.com/docs/4.0/layout/overview/">a built in layout and grid
+system</a>.
+The first part of this system is <a class="reference external" href="https://getbootstrap.com/docs/4.0/layout/overview/#containers">the
+container</a>.</p>
+<p>The container is meant to hold all your page content. Bootstrap provides two types: fixed-width and
+full-width.
+Fixed-width containers take up a certain max-width of the page - they’re useful for limiting the
+width on Desktop or Tablet platforms, instead of making the content span the width of the page.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;div class=&quot;container&quot;&gt;
     &lt;!--- Your content here --&gt;
 &lt;/div&gt;
 </pre></div>
 </div>
-<p>Full width containers take up the maximum width available to them - they’ll span across a wide-screen desktop or a smaller screen phone, edge-to-edge.</p>
+<p>Full width containers take up the maximum width available to them - they’ll span across a wide-
+screen desktop or a smaller screen phone, edge-to-edge.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;div class=&quot;container-fluid&quot;&gt;
     &lt;!--- This content will span the whole page --&gt;
 &lt;/div&gt;
 </pre></div>
 </div>
-<p>The second part of the layout system is <a class="reference external" href="https://getbootstrap.com/docs/4.0/layout/grid/">the grid</a>. This is the bread-and-butter of the layout of Bootstrap - it allows you to change the size of elements depending on the size of the screen, without writing any media queries. We’ll briefly go over it - to learn more, please read the docs or look at the source code for Evennia’s home page in your browser.</p>
+<p>The second part of the layout system is <a class="reference external" href="https://getbootstrap.com/docs/4.0/layout/grid/">the grid</a>.
+This is the bread-and-butter of the layout of Bootstrap - it allows you to change the size of
+elements depending on the size of the screen, without writing any media queries. We’ll briefly go
+over it - to learn more, please read the docs or look at the source code for Evennia’s home page in
+your browser.</p>
 <blockquote>
-<div><p>Important! Grid elements should be in a .container or .container-fluid. This will center the contents of your site.</p>
+<div><p>Important! Grid elements should be in a .container or .container-fluid. This will center the
+contents of your site.</p>
 </div></blockquote>
-<p>Bootstrap’s grid system allows you to create rows and columns by applying classes based on breakpoints. The default breakpoints are extra small, small, medium, large, and extra-large. If you’d like to know more about these breakpoints, please <a class="reference external" href="https://getbootstrap.com/docs/4.0/layout/overview/#responsive-breakpoints">take a look at the documentation for them.</a></p>
-<p>To use the grid system, first create a container for your content, then add your rows and columns like so:</p>
+<p>Bootstrap’s grid system allows you to create rows and columns by applying classes based on
+breakpoints. The default breakpoints are extra small, small, medium, large, and extra-large. If
+you’d like to know more about these breakpoints, please <a class="reference external" href="https://getbootstrap.com/docs/4.0/layout/overview/#responsive-breakpoints">take a look at the documentation for
+them.</a></p>
+<p>To use the grid system, first create a container for your content, then add your rows and columns
+like so:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;container&quot;</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;row&quot;</span><span class="o">&gt;</span>
         <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;col&quot;</span><span class="o">&gt;</span>
@@ -81,7 +107,8 @@ Fixed-width containers take up a certain max-width of the page - they’re usefu
 </pre></div>
 </div>
 <p>This layout would create three equal-width columns.</p>
-<p>To specify your sizes - for instance, Evennia’s default site has three columns on desktop and tablet, but reflows to single-column on smaller screens. Try it out!</p>
+<p>To specify your sizes - for instance, Evennia’s default site has three columns on desktop and
+tablet, but reflows to single-column on smaller screens. Try it out!</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;container&quot;</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;row&quot;</span><span class="o">&gt;</span>
         <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;col col-md-6 col-lg-3&quot;</span><span class="o">&gt;</span>
@@ -100,13 +127,17 @@ Fixed-width containers take up a certain max-width of the page - they’re usefu
 <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
 </pre></div>
 </div>
-<p>This layout would be 4 columns on large screens, 2 columns on medium screens, and 1 column on anything smaller.</p>
-<p>To learn more about Bootstrap’s grid, please <a class="reference external" href="https://getbootstrap.com/docs/4.0/layout/grid/">take a look at the docs</a></p>
+<p>This layout would be 4 columns on large screens, 2 columns on medium screens, and 1 column on
+anything smaller.</p>
+<p>To learn more about Bootstrap’s grid, please <a class="reference external" href="https://getbootstrap.com/docs/4.0/layout/grid/">take a look at the
+docs</a></p>
 </div>
 <hr class="docutils" />
 <div class="section" id="more-bootstrap">
 <h2>More Bootstrap<a class="headerlink" href="#more-bootstrap" title="Permalink to this headline">¶</a></h2>
-<p>Bootstrap also provides a huge amount of utilities, as well as styling and content elements. To learn more about them, please <a class="reference external" href="https://getbootstrap.com/docs/4.0/getting-started/introduction/">read the Bootstrap docs</a> or read one of our other web tutorials.</p>
+<p>Bootstrap also provides a huge amount of utilities, as well as styling and content elements. To
+learn more about them, please [read the Bootstrap docs](https://getbootstrap.com/docs/4.0/getting-
+started/introduction/) or read one of our other web tutorials.</p>
 </div>
 </div>
 
@@ -165,7 +196,10 @@ Fixed-width containers take up a certain max-width of the page - they’re usefu
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Bootstrap &amp; Evennia</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

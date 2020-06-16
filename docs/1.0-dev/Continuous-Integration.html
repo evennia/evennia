@@ -7,11 +7,13 @@
     <title>Continuous Integration &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Continuous Integration</a></li>
+
+
       </ul>
     </div>  
 
@@ -57,12 +62,14 @@ Each check-in is then verified by an automated build, allowing teams to detect p
 </div>
 <div class="section" id="preparation">
 <h2>Preparation<a class="headerlink" href="#preparation" title="Permalink to this headline">¶</a></h2>
-<p>To prepare a CI environment for your <code class="docutils literal notranslate"><span class="pre">MU*</span></code>, it will be necessary to set up some prerequisite software for your server.</p>
+<p>To prepare a CI environment for your <code class="docutils literal notranslate"><span class="pre">MU*</span></code>, it will be necessary to set up some prerequisite
+software for your server.</p>
 <p>Among those you will need:</p>
 <ul class="simple">
 <li><p>A Continuous Integration Environment.</p>
 <ul>
-<li><p>I recommend <a class="reference external" href="https://www.jetbrains.com/teamcity/">TeamCity</a> which has an in-depth <a class="reference external" href="https://confluence.jetbrains.com/display/TCD8/Installing+and+Configuring+the+TeamCity+Server">Setup Guide</a></p></li>
+<li><p>I recommend <a class="reference external" href="https://www.jetbrains.com/teamcity/">TeamCity</a> which has an in-depth <a class="reference external" href="https://confluence.jetbrains.com/display/TCD8/Installing+and+Configuring+the+TeamCity+Server">Setup
+Guide</a></p></li>
 </ul>
 </li>
 <li><p><a class="reference internal" href="Version-Control.html"><span class="doc">Source Control</span></a></p>
@@ -78,7 +85,8 @@ Each check-in is then verified by an automated build, allowing teams to detect p
 build integration environment on Linux.</p>
 <p>After meeting the preparation steps for your specific environment, log on to your teamcity interface
 at <code class="docutils literal notranslate"><span class="pre">http://&lt;your</span> <span class="pre">server&gt;:8111/</span></code>.</p>
-<p>Create a new project named “Evennia” and in it construct a new template called continuous-integration.</p>
+<p>Create a new project named “Evennia” and in it construct a new template called continuous-
+integration.</p>
 <div class="section" id="a-quick-overview">
 <h3>A Quick Overview<a class="headerlink" href="#a-quick-overview" title="Permalink to this headline">¶</a></h3>
 <p>Templates are fancy objects in TeamCity that allow an administrator to define build steps that are
@@ -106,73 +114,53 @@ from your development environment.</p></li>
 <ul>
 <li><p>Create a build step with the name: Transform Configuration</p></li>
 <li><p>For the script add:</p>
-<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
 <span class="c1"># Replaces the game configuration with one </span>
 <span class="c1"># appropriate for this deployment.</span>
 
 <span class="nv">CONFIG</span><span class="o">=</span><span class="s2">&quot;%system.teamcity.build.checkoutDir%/server/conf/settings.py&quot;</span>
 <span class="nv">MYCONF</span><span class="o">=</span><span class="s2">&quot;%system.teamcity.build.checkoutDir%/server/conf/my.cnf&quot;</span>
 
-sed -e <span class="s1">&#39;s/TELNET_PORTS = [4000]/TELNET_PORTS = [%game.ports%]/g&#39;</span> <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span> &gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>.tmp <span class="o">&amp;&amp;</span> mv <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>.tmp <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
-sed -e <span class="s1">&#39;s/WEBSERVER_PORTS = [(4001, 4002)]/WEBSERVER_PORTS = [%game.webports%]/g&#39;</span> <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span> &gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>.tmp <span class="o">&amp;&amp;</span> mv <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>.tmp <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
-
-<span class="c1"># settings.py MySQL DB configuration</span>
-<span class="nb">echo</span> Configuring Game Database...
-<span class="nb">echo</span> <span class="s2">&quot;&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
-<span class="nb">echo</span> <span class="s2">&quot;######################################################################&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
-<span class="nb">echo</span> <span class="s2">&quot;# MySQL Database Configuration&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
-<span class="nb">echo</span> <span class="s2">&quot;######################################################################&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
-
-<span class="nb">echo</span> <span class="s2">&quot;DATABASES = {&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
-<span class="nb">echo</span> <span class="s2">&quot;   &#39;default&#39;: {&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
-<span class="nb">echo</span> <span class="s2">&quot;       &#39;ENGINE&#39;: &#39;django.db.backends.mysql&#39;,&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
-<span class="nb">echo</span> <span class="s2">&quot;       &#39;OPTIONS&#39;: {&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
-<span class="nb">echo</span> <span class="s2">&quot;           &#39;read_default_file&#39;: &#39;server/conf/my.cnf&#39;,&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
-<span class="nb">echo</span> <span class="s2">&quot;       },&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
-<span class="nb">echo</span> <span class="s2">&quot;   }&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
-<span class="nb">echo</span> <span class="s2">&quot;}&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>
-
-<span class="c1"># Create the My.CNF file.</span>
-<span class="nb">echo</span> <span class="s2">&quot;[client]&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$MYCONF</span><span class="s2">&quot;</span>
-<span class="nb">echo</span> <span class="s2">&quot;database = %mysql.db%&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$MYCONF</span><span class="s2">&quot;</span>
-<span class="nb">echo</span> <span class="s2">&quot;user = %mysql.user%&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$MYCONF</span><span class="s2">&quot;</span>
-<span class="nb">echo</span> <span class="s2">&quot;password = %mysql.pass%&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$MYCONF</span><span class="s2">&quot;</span>
-<span class="nb">echo</span> <span class="s2">&quot;default-character-set = utf8&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="nv">$MYCONF</span><span class="s2">&quot;</span>
+sed -e <span class="s1">&#39;s/TELNET_PORTS = [4000]/TELNET_PORTS = [%game.ports%]/g&#39;</span> <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span> &gt; <span class="s2">&quot;</span><span class="nv">$CONFIG</span><span class="s2">&quot;</span>.tmp <span class="o">&amp;&amp;</span> mv
 </pre></div>
 </td></tr></table></div>
 </li>
 </ul>
+<p>“$CONFIG”.tmp “$CONFIG”
+sed -e ‘s/WEBSERVER_PORTS = [(4001, 4002)]/WEBSERVER_PORTS = [%game.webports%]/g’ “$CONFIG” &gt;
+“$CONFIG”.tmp &amp;&amp; mv “$CONFIG”.tmp “$CONFIG”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># settings.py MySQL DB configuration
+echo Configuring Game Database...
+echo &quot;&quot; &gt;&gt; &quot;$CONFIG&quot;
+echo &quot;######################################################################&quot; &gt;&gt; &quot;$CONFIG&quot;
+echo &quot;# MySQL Database Configuration&quot; &gt;&gt; &quot;$CONFIG&quot;
+echo &quot;######################################################################&quot; &gt;&gt; &quot;$CONFIG&quot;
+
+echo &quot;DATABASES = {&quot; &gt;&gt; &quot;$CONFIG&quot;
+echo &quot;   &#39;default&#39;: {&quot; &gt;&gt; &quot;$CONFIG&quot;
+echo &quot;       &#39;ENGINE&#39;: &#39;django.db.backends.mysql&#39;,&quot; &gt;&gt; &quot;$CONFIG&quot;
+echo &quot;       &#39;OPTIONS&#39;: {&quot; &gt;&gt; &quot;$CONFIG&quot;
+echo &quot;           &#39;read_default_file&#39;: &#39;server/conf/my.cnf&#39;,&quot; &gt;&gt; &quot;$CONFIG&quot;
+echo &quot;       },&quot; &gt;&gt; &quot;$CONFIG&quot;
+echo &quot;   }&quot; &gt;&gt; &quot;$CONFIG&quot;
+echo &quot;}&quot; &gt;&gt; &quot;$CONFIG&quot;
+
+# Create the My.CNF file.
+echo &quot;[client]&quot; &gt;&gt; &quot;$MYCONF&quot;
+echo &quot;database = %mysql.db%&quot; &gt;&gt; &quot;$MYCONF&quot;
+echo &quot;user = %mysql.user%&quot; &gt;&gt; &quot;$MYCONF&quot;
+echo &quot;password = %mysql.pass%&quot; &gt;&gt; &quot;$MYCONF&quot;
+echo &quot;default-character-set = utf8&quot; &gt;&gt; &quot;$MYCONF&quot;
+```
+</pre></div>
+</div>
 <p>If you look at the parameters side of the page after saving this script, you’ll notice that some new
 parameters have been populated for you. This is because we’ve included new teamcity configuration
 parameters that are populated when the build itself is ran. When creating projects that inherit this
@@ -180,7 +168,8 @@ template, we’ll be able to fill in or override those parameters for project-sp
 <ul>
 <li><p>Go ahead and create another build step called “Make Database Migration”</p>
 <ul class="simple">
-<li><p>If you’re using SQLLite on your game, it will be prudent to change working directory on this step to: %game.dir%</p></li>
+<li><p>If you’re using SQLLite on your game, it will be prudent to change working directory on this
+step to: %game.dir%</p></li>
 </ul>
 </li>
 <li><p>In this script include:</p>
@@ -216,7 +205,8 @@ evennia makemigrations
 </li>
 <li><p>Create yet another build step, this time named: “Execute Database Migration”:</p>
 <ul>
-<li><p>If you’re using SQLLite on your game, it will be prudent to change working directory on this step to: %game.dir%</p>
+<li><p>If you’re using SQLLite on your game, it will be prudent to change working directory on this
+step to: %game.dir%</p>
 <div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -256,7 +246,8 @@ to where our game actually exists on the local server.</p>
 <ul>
 <li><p>Create a new build step called “Publish Build”:</p>
 <ul>
-<li><p>If you’re using SQLLite on your game, be sure to order this step ABOVE the Database Migration steps. The build order will matter!</p>
+<li><p>If you’re using SQLLite on your game, be sure to order this step ABOVE the Database Migration
+steps. The build order will matter!</p>
 <div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -354,9 +345,11 @@ set the evenv parameter to the directory where your virtualenv exists: IE “/sr
 <li><p>Base this configuration off of the continuous-integration template we made earlier.</p></li>
 </ul>
 </li>
-<li><p>In the build configuration, enter VCS roots and create a new VCS root that points to the branch/version control that you are using.</p></li>
+<li><p>In the build configuration, enter VCS roots and create a new VCS root that points to the
+branch/version control that you are using.</p></li>
 <li><p>Go to the parameters page and fill in the undefined parameters for your specific configuration.</p></li>
-<li><p>If you wish for the CI to run every time a commit is made, go to the VCS triggers and add one for “On Every Commit”.</p></li>
+<li><p>If you wish for the CI to run every time a commit is made, go to the VCS triggers and add one for
+“On Every Commit”.</p></li>
 </ul>
 <p>And you’re done! At this point, you can return to the project overview page and queue a new build
 for your game. If everything was set up correctly, the build will complete successfully. Additional
@@ -425,7 +418,10 @@ build steps could be added or removed at this point, adding some features like U
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Continuous Integration</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

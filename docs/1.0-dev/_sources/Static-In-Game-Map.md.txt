@@ -3,17 +3,30 @@
 
 ## Introduction
 
-This tutorial describes the creation of an in-game map display based on a pre-drawn map. It also details how to use the [Batch code processor](Batch-Code-Processor) for advanced building. There is also the [Dynamic in-game map tutorial](Dynamic-In-Game-Map) that works in the opposite direction, by generating a map from an existing grid of rooms. 
+This tutorial describes the creation of an in-game map display based on a pre-drawn map. It also
+details how to use the [Batch code processor](Batch-Code-Processor) for advanced building. There is
+also the [Dynamic in-game map tutorial](Dynamic-In-Game-Map) that works in the opposite direction,
+by generating a map from an existing grid of rooms.
 
-Evennia does not require its rooms to be positioned in a "logical" way. Your exits could be named anything. You could make an exit "west" that leads to a room described to be in the far north. You could have rooms inside one another, exits leading back to the same room or describing spatial geometries impossible in the real world. 
+Evennia does not require its rooms to be positioned in a "logical" way. Your exits could be named
+anything. You could make an exit "west" that leads to a room described to be in the far north. You
+could have rooms inside one another, exits leading back to the same room or describing spatial
+geometries impossible in the real world.
 
-That said, most games *do* organize their rooms in a logical fashion, if nothing else to retain the sanity of their players. And when they do, the game becomes possible to map. This tutorial will give an example of a simple but flexible in-game map system to further help player's to navigate. We will 
+That said, most games *do* organize their rooms in a logical fashion, if nothing else to retain the
+sanity of their players. And when they do, the game becomes possible to map. This tutorial will give
+an example of a simple but flexible in-game map system to further help player's to navigate. We will
 
-To simplify development and error-checking we'll break down the work into bite-size chunks, each building on what came before. For this we'll make extensive use of the [Batch code processor](Batch-Code-Processor), so you may want to familiarize yourself with that.
+To simplify development and error-checking we'll break down the work into bite-size chunks, each
+building on what came before. For this we'll make extensive use of the [Batch code processor](Batch-
+Code-Processor), so you may want to familiarize yourself with that.
 
-1. **Planning the map** - Here we'll come up with a small example map to use for the rest of the tutorial.
-2. **Making a map object** - This will showcase how to make a static in-game "map" object a Character could pick up and look at. 
-3. **Building the map areas** - Here we'll actually create the small example area according to the map we designed before. 
+1. **Planning the map** - Here we'll come up with a small example map to use for the rest of the
+tutorial.
+2. **Making a map object** - This will showcase how to make a static in-game "map" object a
+Character could pick up and look at.
+3. **Building the map areas** - Here we'll actually create the small example area according to the
+map we designed before.
 4. **Map code** - This will link the map to the location so our output looks something like this:
 
     ```
@@ -27,15 +40,26 @@ To simplify development and error-checking we'll break down the work into bite-s
     Exits: north(#8), east(#9), south(#10), west(#11)
     ```
 
-We will henceforth assume your game folder is name named `mygame` and that you haven't modified the default commands. We will also not be using [Colors](TextTags#colored-text) for our map since they don't show in the documentation wiki.
+We will henceforth assume your game folder is name named `mygame` and that you haven't modified the
+default commands. We will also not be using [Colors](TextTags#colored-text) for our map since they
+don't show in the documentation wiki.
 
 ## Planning the Map
 
-Let's begin with the fun part! Maps in MUDs come in many different [shapes and sizes](http://journal.imaginary-realities.com/volume-05/issue-01/modern-interface-modern-mud/index.html). Some appear as just boxes connected by lines. Others have complex graphics that are external to the game itself.
+Let's begin with the fun part! Maps in MUDs come in many different [shapes and
+sizes](http://journal.imaginary-realities.com/volume-05/issue-01/modern-interface-modern-
+mud/index.html). Some appear as just boxes connected by lines. Others have complex graphics that are
+external to the game itself.
 
-Our map will be in-game text but that doesn't mean we're restricted to the normal alphabet! If you've ever selected the [Wingdings font](https://en.wikipedia.org/wiki/Wingdings) in Microsoft Word you will know there are a multitude of other characters around to use. When creating your game with Evennia you have access to the [UTF-8 character encoding](https://en.wikipedia.org/wiki/UTF-8) which put at your disposal [thousands of letters, number and geometric shapes](http://mcdlr.com/utf-8/#1). 
+Our map will be in-game text but that doesn't mean we're restricted to the normal alphabet! If
+you've ever selected the [Wingdings font](https://en.wikipedia.org/wiki/Wingdings) in Microsoft Word
+you will know there are a multitude of other characters around to use. When creating your game with
+Evennia you have access to the [UTF-8 character encoding](https://en.wikipedia.org/wiki/UTF-8) which
+put at your disposal [thousands of letters, number and geometric shapes](http://mcdlr.com/utf-8/#1).
 
-For this exercise, we've copy-and-pasted from the pallet of special characters used over at [Dwarf Fortress](http://dwarffortresswiki.org/index.php/Character_table) to create what is hopefully a pleasing and easy to understood landscape:
+For this exercise, we've copy-and-pasted from the pallet of special characters used over at [Dwarf
+Fortress](http://dwarffortresswiki.org/index.php/Character_table) to create what is hopefully a
+pleasing and easy to understood landscape:
 
 ```
 ≈≈↑↑↑↑↑∩∩
@@ -49,19 +73,38 @@ For this exercise, we've copy-and-pasted from the pallet of special characters u
 ≈≈↑↑▲↑↑∩∩
 ≈≈↑↑↑↑↑∩∩
 ```
-There are many considerations when making a game map depending on the play style and requirements you intend to implement. Here we will display a 5x5 character map of the area surrounding the account. This means making sure to account for 2 characters around every visitable location. Good planning at this stage can solve many problems before they happen.
+There are many considerations when making a game map depending on the play style and requirements
+you intend to implement. Here we will display a 5x5 character map of the area surrounding the
+account. This means making sure to account for 2 characters around every visitable location. Good
+planning at this stage can solve many problems before they happen.
 
 ## Creating a Map Object
 
-In this section we will try to create an actual "map" object that an account can pick up and look at. 
+In this section we will try to create an actual "map" object that an account can pick up and look
+at.
 
-Evennia offers a range of [default commands](Default-Command-Help) for [creating objects and rooms in-game](Building-Quickstart). While readily accessible, these commands are made to do very specific, restricted things and will thus not offer as much flexibility to experiment (for an advanced exception see [in-line functions](TextTags#new-inlinefuncs)). Additionally, entering long descriptions and properties over and over in the game client can become tedious; especially when testing and you may want to delete and recreate things over and over. 
+Evennia offers a range of [default commands](Default-Command-Help) for [creating objects and rooms
+in-game](Building-Quickstart). While readily accessible, these commands are made to do very
+specific, restricted things and will thus not offer as much flexibility to experiment (for an
+advanced exception see [in-line functions](TextTags#new-inlinefuncs)). Additionally, entering long
+descriptions and properties over and over in the game client can become tedious; especially when
+testing and you may want to delete and recreate things over and over.
 
-To overcome this, Evennia offers [batch processors](Batch-Processors) that work as input-files created out-of-game. In this tutorial we'll be using the more powerful of the two available batch processors, the [Batch Code Processor ](Batch-Code-Processor), called with the `@batchcode` command. This is a very powerful tool. It allows you to craft Python files to act as blueprints of your entire game world. These files have access to use Evennia's Python API directly. Batchcode allows for easy editing and creation in whatever text editor you prefer, avoiding having to manually build the world line-by-line inside the game. 
+To overcome this, Evennia offers [batch processors](Batch-Processors) that work as input-files
+created out-of-game. In this tutorial we'll be using the more powerful of the two available batch
+processors, the [Batch Code Processor ](Batch-Code-Processor), called with the `@batchcode` command.
+This is a very powerful tool. It allows you to craft Python files to act as blueprints of your
+entire game world. These files have access to use Evennia's Python API directly. Batchcode allows
+for easy editing and creation in whatever text editor you prefer, avoiding having to manually build
+the world line-by-line inside the game.
 
-> Important warning: `@batchcode`'s power is only rivaled by the `@py` command. Batchcode is so powerful it should be reserved only for the [superuser](Building-Permissions). Think carefully before you let others (such as `Developer`- level staff) run `@batchcode` on their own - make sure you are okay with them running *arbitrary Python code* on your server.
+> Important warning: `@batchcode`'s power is only rivaled by the `@py` command. Batchcode is so
+powerful it should be reserved only for the [superuser](Building-Permissions). Think carefully
+before you let others (such as `Developer`- level staff) run `@batchcode` on their own - make sure
+you are okay with them running *arbitrary Python code* on your server.
 
-While a simple example, the map object it serves as good way to try out `@batchcode`. Go to `mygame/world` and create a new file there named `batchcode_map.py`:
+While a simple example, the map object it serves as good way to try out `@batchcode`. Go to
+`mygame/world` and create a new file there named `batchcode_map.py`:
 
 ```Python
 # mygame/world/batchcode_map.py
@@ -99,13 +142,19 @@ Log into your game project as the superuser and run the command
 @batchcode batchcode_map
 ```
 
-This will load your `batchcode_map.py` file and execute the code (Evennia will look in your `world/` folder automatically so you don't need to specify it). 
+This will load your `batchcode_map.py` file and execute the code (Evennia will look in your `world/`
+folder automatically so you don't need to specify it).
 
-A new map object should have appeared on the ground. You can view the map by using `look map`. Let's take it with the `get map` command. We'll need it in case we get lost!
+A new map object should have appeared on the ground. You can view the map by using `look map`. Let's
+take it with the `get map` command. We'll need it in case we get lost!
 
 ## Building the map areas
 
-We've just used batchcode to create an object useful for our adventures. But the locations on that map does not actually exist yet - we're all mapped up with nowhere to go! Let's use batchcode to build a game area based on our map. We have five areas outlined: a castle, a cottage, a campsite, a coastal beach and the crossroads which connects them. Create a new batchcode file for this in `mygame/world`, named `batchcode_world.py`.
+We've just used batchcode to create an object useful for our adventures. But the locations on that
+map does not actually exist yet - we're all mapped up with nowhere to go! Let's use batchcode to
+build a game area based on our map. We have five areas outlined: a castle, a cottage, a campsite, a
+coastal beach and the crossroads which connects them. Create a new batchcode file for this in
+`mygame/world`, named `batchcode_world.py`.
 
 ```Python
 # mygame/world/batchcode_world.py
@@ -180,15 +229,25 @@ limbo_exit = create_object(exits.Exit, key="enter world",
 
 ```
 
-Apply this new batch code with `@batchcode batchcode_world`. If there are no errors in the code we now have a nice mini-world to explore. Remember that if you get lost you can look at the map we created! 
+Apply this new batch code with `@batchcode batchcode_world`. If there are no errors in the code we
+now have a nice mini-world to explore. Remember that if you get lost you can look at the map we
+created!
 
 ## In-game minimap
 
-Now we have a landscape and matching map, but what we really want is a mini-map that displays whenever we move to a room or use the `look` command. 
+Now we have a landscape and matching map, but what we really want is a mini-map that displays
+whenever we move to a room or use the `look` command.
 
-We *could* manually enter a part of the map into the description of every room like we did our map object description. But some MUDs have tens of thousands of rooms! Besides, if we ever changed our map we would have to potentially alter a lot of those room descriptions manually to match the change. So instead we will make one central module to hold our map. Rooms will reference this central location on creation and the map changes will thus come into effect when next running our batchcode. 
+We *could* manually enter a part of the map into the description of every room like we did our map
+object description. But some MUDs have tens of thousands of rooms! Besides, if we ever changed our
+map we would have to potentially alter a lot of those room descriptions manually to match the
+change. So instead we will make one central module to hold our map. Rooms will reference this
+central location on creation and the map changes will thus come into effect when next running our
+batchcode.
 
-To make our mini-map we need to be able to cut our full map into parts. To do this we need to put it in a format which allows us to do that easily. Luckily, python allows us to treat strings as lists of characters allowing us to pick out the characters we need.
+To make our mini-map we need to be able to cut our full map into parts. To do this we need to put it
+in a format which allows us to do that easily. Luckily, python allows us to treat strings as lists
+of characters allowing us to pick out the characters we need.
 
 `mygame/world/map_module.py`
 ```Python
@@ -240,7 +299,8 @@ def return_minimap(x, y, radius = 2):
     return map
 ```
 
-With our map_module set up, let's replace our hardcoded map in `mygame/world/batchcode_map.py` with a reference to our map module. Make sure to import our map_module!
+With our map_module set up, let's replace our hardcoded map in `mygame/world/batchcode_map.py` with
+a reference to our map module. Make sure to import our map_module!
 
 ```python
 # mygame/world/batchcode_map.py
@@ -256,11 +316,22 @@ map.db.desc = map_module.return_map()
 caller.msg("A map appears out of thin air and falls to the ground.")
 ```
 
-Log into Evennia as the superuser and run this batchcode. If everything worked our new map should look exactly the same as the old map - you can use `@delete` to delete the old one (use a number to pick which to delete). 
+Log into Evennia as the superuser and run this batchcode. If everything worked our new map should
+look exactly the same as the old map - you can use `@delete` to delete the old one (use a number to
+pick which to delete).
 
-Now, lets turn our attention towards our game's rooms. Let's use the `return_minimap` method we created above in order to include a minimap in our room descriptions. This is a little more complicated.
+Now, lets turn our attention towards our game's rooms. Let's use the `return_minimap` method we
+created above in order to include a minimap in our room descriptions. This is a little more
+complicated.
 
-By itself we would have to settle for either the map being *above* the description with `room.db.desc = map_string + description_string`, or the map going *below* by reversing their order. Both options are rather unsatisfactory - we would like to have the map next to the text! For this solution we'll explore the utilities that ship with Evennia. Tucked away in `evennia\evennia\utils` is a little module called [EvTable](github:evennia.utils.evtable) . This is an advanced ASCII table creator for you to utilize in your game. We'll use it by creating a basic table with 1 row and two columns (one for our map and one for our text) whilst also hiding the borders. Open the batchfile again
+By itself we would have to settle for either the map being *above* the description with
+`room.db.desc = map_string + description_string`, or the map going *below* by reversing their order.
+Both options are rather unsatisfactory - we would like to have the map next to the text! For this
+solution we'll explore the utilities that ship with Evennia. Tucked away in `evennia\evennia\utils`
+is a little module called [EvTable](github:evennia.utils.evtable) . This is an advanced ASCII table
+creator for you to utilize in your game. We'll use it by creating a basic table with 1 row and two
+columns (one for our map and one for our text) whilst also hiding the borders. Open the batchfile
+again
 
 ```python
 # mygame\world\batchcode_world.py
@@ -326,12 +397,21 @@ west.db.desc = evtable.EvTable(map_module.return_minimap(2,5),
 west.db.desc.reformat_column(1, width=70)
 ```
 
-Before we run our new batchcode, if you are anything like me you would have something like 100 maps lying around and 3-4 different versions of our rooms extending from limbo. Let's wipe it all and start with a clean slate. In Command Prompt you can run `evennia flush` to clear the database and start anew. It won't reset dbref values however, so if you are at #100 it will start from there. Alternatively you can navigate to `mygame/server` and delete the `evennia.db3` file. Now in  Command Prompt use `evennia migrate` to have a completely freshly made database.
+Before we run our new batchcode, if you are anything like me you would have something like 100 maps
+lying around and 3-4 different versions of our rooms extending from limbo. Let's wipe it all and
+start with a clean slate. In Command Prompt you can run `evennia flush` to clear the database and
+start anew. It won't reset dbref values however, so if you are at #100 it will start from there.
+Alternatively you can navigate to `mygame/server` and delete the `evennia.db3` file. Now in  Command
+Prompt use `evennia migrate` to have a completely freshly made database.
 
 Log in to evennia and run `@batchcode batchcode_world` and you'll have a little world to explore.
 
 ## Conclusions
 
-You should now have a mapped little world and a basic understanding of batchcode, EvTable and how easily new game defining features can be added to Evennia. 
+You should now have a mapped little world and a basic understanding of batchcode, EvTable and how
+easily new game defining features can be added to Evennia.
 
-You can easily build from this tutorial by expanding the map and creating more rooms to explore. Why not add more features to your game by trying other tutorials: [Add weather to your world](Weather-Tutorial), [fill your world with NPC's](Tutorial-Aggressive-NPCs) or [implement a combat system](Turn-based-Combat-System).
+You can easily build from this tutorial by expanding the map and creating more rooms to explore. Why
+not add more features to your game by trying other tutorials: [Add weather to your world](Weather-
+Tutorial), [fill your world with NPC's](Tutorial-Aggressive-NPCs) or [implement a combat
+system](Turn-based-Combat-System).

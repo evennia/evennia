@@ -7,11 +7,13 @@
     <title>Zones &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Zones</a></li>
+
+
       </ul>
     </div>  
 
@@ -36,17 +41,32 @@
             
   <div class="section" id="zones">
 <h1>Zones<a class="headerlink" href="#zones" title="Permalink to this headline">¶</a></h1>
-<p>Say you create a room named <em>Meadow</em> in your nice big forest MUD.  That’s all nice and dandy, but what if you, in the other end of that forest want another <em>Meadow</em>? As a game creator, this can cause all sorts of confusion. For example, teleporting to <em>Meadow</em> will now give you a warning that there are two <em>Meadow</em> s and you have to select which one. It’s no problem to do that, you just choose for example to go to <code class="docutils literal notranslate"><span class="pre">2-meadow</span></code>, but unless you examine them you couldn’t be sure which of the two sat in the magical part of the forest and which didn’t.</p>
-<p>Another issue is if you want to group rooms in geographic regions.  Let’s say the “normal” part of the forest should have separate weather patterns from the magical part. Or maybe a magical disturbance echoes through all magical-forest rooms. It would then be convenient to be able to simply find all rooms that are “magical” so you could send messages to them.</p>
+<p>Say you create a room named <em>Meadow</em> in your nice big forest MUD.  That’s all nice and dandy, but
+what if you, in the other end of that forest want another <em>Meadow</em>? As a game creator, this can
+cause all sorts of confusion. For example, teleporting to <em>Meadow</em> will now give you a warning that
+there are two <em>Meadow</em> s and you have to select which one. It’s no problem to do that, you just
+choose for example to go to <code class="docutils literal notranslate"><span class="pre">2-meadow</span></code>, but unless you examine them you couldn’t be sure which of
+the two sat in the magical part of the forest and which didn’t.</p>
+<p>Another issue is if you want to group rooms in geographic regions.  Let’s say the “normal” part of
+the forest should have separate weather patterns from the magical part. Or maybe a magical
+disturbance echoes through all magical-forest rooms. It would then be convenient to be able to
+simply find all rooms that are “magical” so you could send messages to them.</p>
 <div class="section" id="zones-in-evennia">
 <h2>Zones in Evennia<a class="headerlink" href="#zones-in-evennia" title="Permalink to this headline">¶</a></h2>
-<p><em>Zones</em> try to separate rooms by global location. In our example we would separate the forest into two parts - the magical and the non-magical part. Each have a <em>Meadow</em> and rooms belonging to each part should be easy to retrieve.</p>
-<p>Many MUD codebases hardcode zones as part of the engine and database.  Evennia does no such distinction due to the fact that rooms themselves are meant to be customized to any level anyway. Below is a suggestion for how to implement zones in Evennia.</p>
-<p>All objects in Evennia can hold any number of <a class="reference internal" href="Tags.html"><span class="doc">Tags</span></a>. Tags are short labels that you attach to objects. They make it very easy to retrieve groups of objects. An object can have any number of different tags. So let’s attach the relevant tag to our forest:</p>
+<p><em>Zones</em> try to separate rooms by global location. In our example we would separate the forest into
+two parts - the magical and the non-magical part. Each have a <em>Meadow</em> and rooms belonging to each
+part should be easy to retrieve.</p>
+<p>Many MUD codebases hardcode zones as part of the engine and database.  Evennia does no such
+distinction due to the fact that rooms themselves are meant to be customized to any level anyway.
+Below is a suggestion for how to implement zones in Evennia.</p>
+<p>All objects in Evennia can hold any number of <a class="reference internal" href="Tags.html"><span class="doc">Tags</span></a>. Tags are short labels that you attach to
+objects. They make it very easy to retrieve groups of objects. An object can have any number of
+different tags. So let’s attach the relevant tag to our forest:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="n">forestobj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;magicalforest&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;zone&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<p>You could add this manually, or automatically during creation somehow (you’d need to modify your &#64;dig command for this, most likely). You can also use the default <code class="docutils literal notranslate"><span class="pre">&#64;tag</span></code> command during building:</p>
+<p>You could add this manually, or automatically during creation somehow (you’d need to modify your
+&#64;dig command for this, most likely). You can also use the default <code class="docutils literal notranslate"><span class="pre">&#64;tag</span></code> command during building:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@tag</span> <span class="n">forestobj</span> <span class="o">=</span> <span class="n">magicalforest</span> <span class="p">:</span> <span class="n">zone</span>
 </pre></div>
 </div>
@@ -59,8 +79,13 @@
 </div>
 <div class="section" id="using-typeclasses-and-inheritance-for-zoning">
 <h2>Using typeclasses and inheritance for zoning<a class="headerlink" href="#using-typeclasses-and-inheritance-for-zoning" title="Permalink to this headline">¶</a></h2>
-<p>The tagging or aliasing systems above don’t instill any sort of functional difference between a magical forest room and a normal one - they are just arbitrary ways to mark objects for quick retrieval later. Any functional differences must be expressed using <a class="reference internal" href="Typeclasses.html"><span class="doc">Typeclasses</span></a>.</p>
-<p>Of course, an alternative way to implement zones themselves is to have all rooms/objects in a zone inherit from a given typeclass parent - and then limit your searches to objects inheriting from that given parent. The effect would be similar but you’d need to expand the search functionality to properly search the inheritance tree.</p>
+<p>The tagging or aliasing systems above don’t instill any sort of functional difference between a
+magical forest room and a normal one - they are just arbitrary ways to mark objects for quick
+retrieval later. Any functional differences must be expressed using <a class="reference internal" href="Typeclasses.html"><span class="doc">Typeclasses</span></a>.</p>
+<p>Of course, an alternative way to implement zones themselves is to have all rooms/objects in a zone
+inherit from a given typeclass parent - and then limit your searches to objects inheriting from that
+given parent. The effect would be similar but you’d need to expand the search functionality to
+properly search the inheritance tree.</p>
 </div>
 </div>
 
@@ -118,7 +143,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Zones</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

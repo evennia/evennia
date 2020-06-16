@@ -7,11 +7,13 @@
     <title>Evennia for roleplaying sessions &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Evennia for roleplaying sessions</a></li>
+
+
       </ul>
     </div>  
 
@@ -61,7 +66,7 @@
 </ul>
 <div class="section" id="the-permission-hierarchy">
 <h3>The permission hierarchy<a class="headerlink" href="#the-permission-hierarchy" title="Permalink to this headline">¶</a></h3>
-<p>Evennia has the following <a class="reference external" href="/Building-Permissions.html#assigning-permissions">permission hierarchy</a> out of the box: <em>Players, Helpers, Builders, Admins</em> and finally <em>Developers</em>. We could change these but then we’d need to update our Default commands to use the changes. We want to keep this simple, so instead we map our different roles on top of this permission ladder.</p>
+<p>Evennia has the following <a class="reference external" href="Building-Permissions.html#assigning-permissions">permission hierarchy</a> out of the box: <em>Players, Helpers, Builders, Admins</em> and finally <em>Developers</em>. We could change these but then we’d need to update our Default commands to use the changes. We want to keep this simple, so instead we map our different roles on top of this permission ladder.</p>
 <ol class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Players</span></code> is the permission set on normal players. This is the default for anyone creating a new account on the server.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Helpers</span></code> are like <code class="docutils literal notranslate"><span class="pre">Players</span></code> except they also have the ability to create/edit new help entries. This could be granted to players who are willing to help with writing lore or custom logs for everyone.</p></li>
@@ -70,7 +75,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">Developers</span></code>-level permission are the server administrators, the ones with the ability to restart/shutdown the server as well as changing the permission levels.</p></li>
 </ol>
 <blockquote>
-<div><p>The <a class="reference external" href="/Building-Permissions.html#the-super-user">superuser</a> is not part of the hierarchy and actually completely bypasses it. We’ll assume server admin(s) will “just” be Developers.</p>
+<div><p>The <a class="reference external" href="Building-Permissions.html#the-super-user">superuser</a> is not part of the hierarchy and actually completely bypasses it. We’ll assume server admin(s) will “just” be Developers.</p>
 </div></blockquote>
 </div>
 <div class="section" id="how-to-grant-permissions">
@@ -930,7 +935,7 @@
 </div>
 <div class="section" id="channels">
 <h2>Channels<a class="headerlink" href="#channels" title="Permalink to this headline">¶</a></h2>
-<p>Evennia comes with <a class="reference external" href="/Communications.html#Channels">Channels</a> in-built and they are described fully in the documentation. For brevity, here are the relevant commands for normal use:</p>
+<p>Evennia comes with <a class="reference external" href="Communications.html#Channels">Channels</a> in-built and they are described fully in the documentation. For brevity, here are the relevant commands for normal use:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">&#64;ccreate</span> <span class="pre">new_channel;alias;alias</span> <span class="pre">=</span> <span class="pre">short</span> <span class="pre">description</span></code> - Creates a new channel.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">addcom</span> <span class="pre">channel</span></code> - join an existing channel. Use <code class="docutils literal notranslate"><span class="pre">addcom</span> <span class="pre">alias</span> <span class="pre">=</span> <span class="pre">channel</span></code> to add a new alias you can use to talk to the channel, as many as desired.</p></li>
@@ -1028,7 +1033,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Evennia for roleplaying sessions</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

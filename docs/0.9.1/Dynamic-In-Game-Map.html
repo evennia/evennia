@@ -7,11 +7,13 @@
     <title>Dynamic In Game Map &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Dynamic In Game Map</a></li>
+
+
       </ul>
     </div>  
 
@@ -46,7 +51,7 @@
 <p>There are at least two requirements needed for this tutorial to work.</p>
 <ol class="simple">
 <li><p>The structure of your mud has to follow a logical layout. Evennia supports the layout of your world to be ‘logically’ impossible with rooms looping to themselves or exits leading to the other side of the map. Exits can also be named anything, from “jumping out the window” to “into the fifth dimension”. This tutorial assumes you can only move in the cardinal directions (N, E, S and W).</p></li>
-<li><p>Rooms must be connected and linked together for the map to be generated correctly. Vanilla Evennia comes with a admin command <a class="reference external" href="/Default-Command-Help.html#tunnel-cmdtunnel">&#64;tunnel</a> that allows a user to create rooms in the cardinal directions, but additional work is needed to assure that rooms are connected. For example, if you <code class="docutils literal notranslate"><span class="pre">&#64;tunnel</span> <span class="pre">east</span></code> and then immediately do <code class="docutils literal notranslate"><span class="pre">&#64;tunnel</span> <span class="pre">west</span></code> you’ll find that you have created two completely stand-alone rooms. So care is needed if you want to create a “logical” layout. In this tutorial we assume you have such a grid of rooms that we can generate the map from.</p></li>
+<li><p>Rooms must be connected and linked together for the map to be generated correctly. Vanilla Evennia comes with a admin command <a class="reference external" href="Default-Command-Help.html#tunnel-cmdtunnel">&#64;tunnel</a> that allows a user to create rooms in the cardinal directions, but additional work is needed to assure that rooms are connected. For example, if you <code class="docutils literal notranslate"><span class="pre">&#64;tunnel</span> <span class="pre">east</span></code> and then immediately do <code class="docutils literal notranslate"><span class="pre">&#64;tunnel</span> <span class="pre">west</span></code> you’ll find that you have created two completely stand-alone rooms. So care is needed if you want to create a “logical” layout. In this tutorial we assume you have such a grid of rooms that we can generate the map from.</p></li>
 </ol>
 </div>
 <div class="section" id="concept">
@@ -736,7 +741,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Dynamic In Game Map</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

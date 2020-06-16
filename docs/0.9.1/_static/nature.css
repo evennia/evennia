@@ -10,16 +10,19 @@
  */
 
 @import url("basic.css");
+@import url(https://fonts.googleapis.com/css?family=Arvo:400,700,400italic);
+@import url(https://fonts.googleapis.com/css?family=Open%20Sans:400,700,400italic);
 
 /* -- page layout ----------------------------------------------------------- */
 
 body {
-    font-family: Arial, sans-serif;
+    font-family:"Open Sans", Helvetica, Arial, sans-serif;
     font-size: 100%;
-    background-color: #fff;
+    background-color: #eee;
     color: #555;
     margin: 0;
     padding: 0;
+    height:88
 }
 
 div.documentwrapper {
@@ -29,7 +32,6 @@ div.documentwrapper {
 
 div.bodywrapper {
     margin: 0 0 0 230px;
-    height: 88vh;
 }
 
 hr {
@@ -37,16 +39,15 @@ hr {
 }
 
 div.document {
-    background-color: #eee;
+    background-color: #eeeeea;
 }
 
 div.body {
-    background-color: #f1f1f1;
+    background-color: #f1f1ef;
     color: #3E4349;
     padding: 0 30px 30px 30px;
     font-size: 0.9em;
     margin-top: -9px;
-    height: 85vh;
 }
 
 div.footer {
@@ -94,7 +95,7 @@ div.sphinxsidebarwrapper{
 
 div.sphinxsidebar h3,
 div.sphinxsidebar h4 {
-    font-family: Arial, sans-serif;
+	  font-family: Arvo, sans-serif;
     color: #4f4f4f;
     font-size: 1.2em;
     font-weight: normal;
@@ -131,7 +132,7 @@ div.sphinxsidebar a {
 
 div.sphinxsidebar input {
     border: 1px solid #ccc;
-    font-family: sans-serif;
+	  font-family: Arvo, sans-serif;
     font-size: 1em;
 }
 
@@ -166,8 +167,8 @@ div.body h3,
 div.body h4,
 div.body h5,
 div.body h6 {
-    font-family: Arial, sans-serif;
-    background-color: #f7f7f7;
+	  font-family: Arvo, Monaco, serif;
+    background-color: #f7f7f3;
     font-weight: normal;
     color: #212224;
     margin: 30px 0px 10px 0px;
@@ -198,15 +199,14 @@ div.body h6 {
 }
 
 a.headerlink {
-    color: #cfdde8;
+    color: #7caeb7;
     font-size: 0.8em;
     padding: 0 4px 0 4px;
     text-decoration: none;
 }
 
 a.headerlink:hover {
-    /*! background-color: #c60f0f; */
-    color: #9bced7;
+    color: #7caeb7;
 }
 
 div.body p, div.body dd, div.body li {
@@ -250,6 +250,11 @@ p.admonition-title:after {
     content: ":";
 }
 
+li > p:first-child {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
 .admonition.important {
   background-color: #fbf7c3;
   border: 1px solid #c8c59b;
@@ -282,13 +287,13 @@ code {
     background-color: #ecf0f3;
     color: #6e0e0e;
     /* padding: 1px 2px; */
-    font-size: 1.1em;
-    font-family: monospace;
+    font-size: 0.8em;
+	  font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
     font-weight: bold;
 }
 
 .viewcode-back {
-    font-family: Arial, sans-serif;
+	  font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
 }
 
 div.viewcode-block:target {
@@ -312,3 +317,14 @@ div.code-block-caption {
   opacity: 0.8;
 }
 
+.versionadded {
+  background-color: #e9f6e1;
+}
+
+.versionchanged {
+  background-color: #f7f7f7;
+}
+
+.deprecated {
+  background-color: #fff3f3;
+}

@@ -7,11 +7,13 @@
     <title>Coding FAQ &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Coding FAQ</a></li>
+
+
       </ul>
     </div>  
 
@@ -40,17 +45,17 @@
 <div class="section" id="table-of-contents">
 <h2>Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference external" href="/Coding-FAQ.html#removing-default-commands">Removing default commands</a></p></li>
-<li><p><a class="reference external" href="/Coding-FAQ.html#preventing-character-from-moving-based-on-a-condition">Preventing character from moving based on a condition</a></p></li>
-<li><p><a class="reference external" href="/Coding-FAQ.html#reference-initiating-object-in-an-evmenu-command">Reference initiating object in an EvMenu command</a></p></li>
-<li><p><a class="reference external" href="/Coding-FAQ.html#adding-color-to-default-evennia-channels">Adding color to default Evennia Channels</a></p></li>
-<li><p><a class="reference external" href="/Coding-FAQ.html#selectively-turn-off-commands-in-a-room">Selectively turn off commands in a room</a></p></li>
-<li><p><a class="reference external" href="/Coding-FAQ.html#select-command-based-on-a-condition">Select Command based on a condition</a></p></li>
-<li><p><a class="reference external" href="/Coding-FAQ.html#automatically-updating-code-when-reloading">Automatically updating code when reloading</a></p></li>
-<li><p><a class="reference external" href="/Coding-FAQ.html#changing-all-exit-messages">Changing all exit messages</a></p></li>
-<li><p><a class="reference external" href="/Coding-FAQ.html#add-parsing-with-the-to-delimiter">Add parsing with the “to” delimiter</a></p></li>
-<li><p><a class="reference external" href="/Coding-FAQ.html#store-last-used-session-ip-address">Store last used session IP address</a></p></li>
-<li><p><a class="reference external" href="/Coding-FAQ.html#non-latin-characters-in-evtable">Use wide characters with EvTable</a></p></li>
+<li><p><a class="reference external" href="Coding-FAQ.html#removing-default-commands">Removing default commands</a></p></li>
+<li><p><a class="reference external" href="Coding-FAQ.html#preventing-character-from-moving-based-on-a-condition">Preventing character from moving based on a condition</a></p></li>
+<li><p><a class="reference external" href="Coding-FAQ.html#reference-initiating-object-in-an-evmenu-command">Reference initiating object in an EvMenu command</a></p></li>
+<li><p><a class="reference external" href="Coding-FAQ.html#adding-color-to-default-evennia-channels">Adding color to default Evennia Channels</a></p></li>
+<li><p><a class="reference external" href="Coding-FAQ.html#selectively-turn-off-commands-in-a-room">Selectively turn off commands in a room</a></p></li>
+<li><p><a class="reference external" href="Coding-FAQ.html#select-command-based-on-a-condition">Select Command based on a condition</a></p></li>
+<li><p><a class="reference external" href="Coding-FAQ.html#automatically-updating-code-when-reloading">Automatically updating code when reloading</a></p></li>
+<li><p><a class="reference external" href="Coding-FAQ.html#changing-all-exit-messages">Changing all exit messages</a></p></li>
+<li><p><a class="reference external" href="Coding-FAQ.html#add-parsing-with-the-to-delimiter">Add parsing with the “to” delimiter</a></p></li>
+<li><p><a class="reference external" href="Coding-FAQ.html#store-last-used-session-ip-address">Store last used session IP address</a></p></li>
+<li><p><a class="reference external" href="Coding-FAQ.html#non-latin-characters-in-evtable">Use wide characters with EvTable</a></p></li>
 </ul>
 </div>
 <div class="section" id="removing-default-commands">
@@ -210,7 +215,7 @@
         <span class="c1"># ...</span>
 </pre></div>
 </td></tr></table></div>
-<p>Add this to the <a class="reference internal" href="Adding-Command-Tutorial.html"><span class="doc">default cmdset as usual</span></a>. The <code class="docutils literal notranslate"><span class="pre">is_full_moon</span></code> <a class="reference external" href="/Locks.html#lock-functions">lock function</a> does not yet exist. We must create that:</p>
+<p>Add this to the <a class="reference internal" href="Adding-Command-Tutorial.html"><span class="doc">default cmdset as usual</span></a>. The <code class="docutils literal notranslate"><span class="pre">is_full_moon</span></code> <a class="reference external" href="Locks.html#lock-functions">lock function</a> does not yet exist. We must create that:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
@@ -530,7 +535,10 @@ MuxCommand class is also found commented-out in the <code class="docutils litera
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Coding FAQ</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

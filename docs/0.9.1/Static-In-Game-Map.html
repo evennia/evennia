@@ -7,11 +7,13 @@
     <title>Static In Game Map &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Static In Game Map</a></li>
+
+
       </ul>
     </div>  
 
@@ -59,7 +64,7 @@ Exits: north(#8), east(#9), south(#10), west(#11)
 </div>
 </li>
 </ol>
-<p>We will henceforth assume your game folder is name named <code class="docutils literal notranslate"><span class="pre">mygame</span></code> and that you haven’t modified the default commands. We will also not be using <a class="reference external" href="/TextTags.html#colored-text">Colors</a> for our map since they don’t show in the documentation wiki.</p>
+<p>We will henceforth assume your game folder is name named <code class="docutils literal notranslate"><span class="pre">mygame</span></code> and that you haven’t modified the default commands. We will also not be using <a class="reference external" href="TextTags.html#colored-text">Colors</a> for our map since they don’t show in the documentation wiki.</p>
 </div>
 <div class="section" id="planning-the-map">
 <h2>Planning the Map<a class="headerlink" href="#planning-the-map" title="Permalink to this headline">¶</a></h2>
@@ -83,7 +88,7 @@ Exits: north(#8), east(#9), south(#10), west(#11)
 <div class="section" id="creating-a-map-object">
 <h2>Creating a Map Object<a class="headerlink" href="#creating-a-map-object" title="Permalink to this headline">¶</a></h2>
 <p>In this section we will try to create an actual “map” object that an account can pick up and look at.</p>
-<p>Evennia offers a range of <a class="reference internal" href="Default-Command-Help.html"><span class="doc">default commands</span></a> for <a class="reference internal" href="Building-Quickstart.html"><span class="doc">creating objects and rooms in-game</span></a>. While readily accessible, these commands are made to do very specific, restricted things and will thus not offer as much flexibility to experiment (for an advanced exception see <a class="reference external" href="/TextTags.html#new-inlinefuncs">in-line functions</a>). Additionally, entering long descriptions and properties over and over in the game client can become tedious; especially when testing and you may want to delete and recreate things over and over.</p>
+<p>Evennia offers a range of <a class="reference internal" href="Default-Command-Help.html"><span class="doc">default commands</span></a> for <a class="reference internal" href="Building-Quickstart.html"><span class="doc">creating objects and rooms in-game</span></a>. While readily accessible, these commands are made to do very specific, restricted things and will thus not offer as much flexibility to experiment (for an advanced exception see <a class="reference external" href="TextTags.html#new-inlinefuncs">in-line functions</a>). Additionally, entering long descriptions and properties over and over in the game client can become tedious; especially when testing and you may want to delete and recreate things over and over.</p>
 <p>To overcome this, Evennia offers <a class="reference internal" href="Batch-Processors.html"><span class="doc">batch processors</span></a> that work as input-files created out-of-game. In this tutorial we’ll be using the more powerful of the two available batch processors, the <a class="reference internal" href="Batch-Code-Processor.html"><span class="doc">Batch Code Processor </span></a>, called with the <code class="docutils literal notranslate"><span class="pre">&#64;batchcode</span></code> command. This is a very powerful tool. It allows you to craft Python files to act as blueprints of your entire game world. These files have access to use Evennia’s Python API directly. Batchcode allows for easy editing and creation in whatever text editor you prefer, avoiding having to manually build the world line-by-line inside the game.</p>
 <blockquote>
 <div><p>Important warning: <code class="docutils literal notranslate"><span class="pre">&#64;batchcode</span></code>’s power is only rivaled by the <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code> command. Batchcode is so powerful it should be reserved only for the <a class="reference internal" href="Building-Permissions.html"><span class="doc">superuser</span></a>. Think carefully before you let others (such as <code class="docutils literal notranslate"><span class="pre">Developer</span></code>- level staff) run <code class="docutils literal notranslate"><span class="pre">&#64;batchcode</span></code> on their own - make sure you are okay with them running <em>arbitrary Python code</em> on your server.</p>
@@ -612,7 +617,10 @@ Exits: north(#8), east(#9), south(#10), west(#11)
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Static In Game Map</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

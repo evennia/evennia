@@ -7,11 +7,13 @@
     <title>evennia.utils package &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">evennia.utils package</a></li>
+
+
       </ul>
     </div>  
 
@@ -1902,7 +1907,7 @@ txt - extra text (string), could be encased in quotes.</p>
 <p>Commands for the editor</p>
 <dl class="attribute">
 <dt id="evennia.utils.eveditor.CmdEditorGroup._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = (':dd', ':I', ':S', ':A', ':dw', ':DD', ':wq', ':uu', ':echo', ':y', ':q!', ':x', ':', ':fi', '::', ':i', ':h', ':&lt;', ':!', ':&gt;', ':::', ':=', ':editor_command_group', ':w', ':j', ':q', ':UU', ':r', ':fd', ':s', ':u', ':f', ':p')</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = (':', ':echo', ':&gt;', ':UU', ':r', ':h', ':dw', ':u', ':s', ':w', ':p', ':S', ':!', ':x', ':I', ':DD', ':dd', ':j', '::', ':i', ':q', ':editor_command_group', ':A', ':f', ':wq', ':=', ':fi', ':y', ':::', ':&lt;', ':q!', ':fd', ':uu')</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -1912,7 +1917,7 @@ txt - extra text (string), could be encased in quotes.</p>
 
 <dl class="attribute">
 <dt id="evennia.utils.eveditor.CmdEditorGroup.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = [':dd', ':I', ':S', ':A', ':dw', ':DD', ':wq', ':uu', ':echo', ':y', ':q!', ':x', ':', ':fi', '::', ':i', ':h', ':&lt;', ':!', ':&gt;', ':::', ':=', ':w', ':j', ':q', ':UU', ':r', ':fd', ':s', ':u', ':f', ':p']</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = [':', ':echo', ':&gt;', ':UU', ':r', ':h', ':dw', ':u', ':s', ':w', ':p', ':S', ':!', ':uu', ':x', ':I', ':DD', ':dd', ':j', '::', ':i', ':q', ':A', ':f', ':wq', ':=', ':fi', ':fd', ':&lt;', ':q!', ':::', ':y']</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -1945,7 +1950,7 @@ efficient presentation.</p>
 
 <dl class="attribute">
 <dt id="evennia.utils.eveditor.CmdEditorGroup.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': ':dd :I :S :A :dw :DD :wq :uu :echo :y :q! :x : :fi :: :i :h :&lt; :! :&gt; ::: := :w :j :q :UU :r :fd :s :u :f :p', 'category': 'general', 'key': ':editor_command_group', 'tags': '', 'text': '\n    Commands for the editor\n    '}</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': ': :echo :&gt; :UU :r :h :dw :u :s :w :p :S :! :uu :x :I :DD :dd :j :: :i :q :A :f :wq := :fi :fd :&lt; :q! ::: :y', 'category': 'general', 'key': ':editor_command_group', 'tags': '', 'text': '\n    Commands for the editor\n    '}</em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1957,7 +1962,7 @@ efficient presentation.</p>
 <p>No command match - Inputs line of text into buffer.</p>
 <dl class="attribute">
 <dt id="evennia.utils.eveditor.CmdLineInput._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('__nomatch_command', '__noinput_command')</em><a class="headerlink" href="#evennia.utils.eveditor.CmdLineInput._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('__noinput_command', '__nomatch_command')</em><a class="headerlink" href="#evennia.utils.eveditor.CmdLineInput._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -2009,7 +2014,7 @@ nomatches (defaults to Yes), and avoid saves only if
 command was given specifically as “no” or “n”.</p>
 <dl class="attribute">
 <dt id="evennia.utils.eveditor.CmdSaveYesNo._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('__nomatch_command', '__noinput_command')</em><a class="headerlink" href="#evennia.utils.eveditor.CmdSaveYesNo._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('__noinput_command', '__nomatch_command')</em><a class="headerlink" href="#evennia.utils.eveditor.CmdSaveYesNo._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -2724,7 +2729,7 @@ evennia.utils.evmenu</cite>.</p>
 <p>Menu options.</p>
 <dl class="attribute">
 <dt id="evennia.utils.evmenu.CmdEvMenuNode._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('__nomatch_command', '__noinput_command')</em><a class="headerlink" href="#evennia.utils.evmenu.CmdEvMenuNode._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('__noinput_command', '__nomatch_command')</em><a class="headerlink" href="#evennia.utils.evmenu.CmdEvMenuNode._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -2777,7 +2782,7 @@ evennia.utils.evmenu</cite>.</p>
 <p>Enter your data and press return.</p>
 <dl class="attribute">
 <dt id="evennia.utils.evmenu.CmdGetInput._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('__nomatch_command', '__noinput_command')</em><a class="headerlink" href="#evennia.utils.evmenu.CmdGetInput._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('__noinput_command', '__nomatch_command')</em><a class="headerlink" href="#evennia.utils.evmenu.CmdGetInput._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -3574,7 +3579,7 @@ caller.msg() construct every time the page is updated.</p>
 <p>Manipulate the text paging</p>
 <dl class="attribute">
 <dt id="evennia.utils.evmore.CmdMore._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('e', 'abort', 'q', 'next', 'n', 'b', 'end', 'back', 'top', 't', '__noinput_command', 'quit', 'a')</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('e', '__noinput_command', 'q', 'n', 't', 'back', 'top', 'next', 'end', 'abort', 'b', 'quit', 'a')</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -3584,7 +3589,7 @@ caller.msg() construct every time the page is updated.</p>
 
 <dl class="attribute">
 <dt id="evennia.utils.evmore.CmdMore.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['e', 'abort', 'q', 'next', 'n', 'b', 'end', 'back', 'top', 't', 'quit', 'a']</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['e', 'q', 'n', 't', 'back', 'top', 'next', 'end', 'abort', 'b', 'quit', 'a']</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -3615,7 +3620,7 @@ caller.msg() construct every time the page is updated.</p>
 
 <dl class="attribute">
 <dt id="evennia.utils.evmore.CmdMore.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'e abort q next n b end back top t quit a', 'category': 'general', 'key': '__noinput_command', 'tags': '', 'text': '\n    Manipulate the text paging\n    '}</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'e q n t back top next end abort b quit a', 'category': 'general', 'key': '__noinput_command', 'tags': '', 'text': '\n    Manipulate the text paging\n    '}</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -3627,7 +3632,7 @@ caller.msg() construct every time the page is updated.</p>
 <p>Override look to display window and prevent OOCLook from firing</p>
 <dl class="attribute">
 <dt id="evennia.utils.evmore.CmdMoreLook._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('look', 'l')</em><a class="headerlink" href="#evennia.utils.evmore.CmdMoreLook._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('l', 'look')</em><a class="headerlink" href="#evennia.utils.evmore.CmdMoreLook._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -9586,7 +9591,10 @@ If neither one is provided, defaults to UTC.</p></li>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">evennia.utils package</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

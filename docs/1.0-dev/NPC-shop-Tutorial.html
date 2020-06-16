@@ -7,11 +7,13 @@
     <title>NPC shop Tutorial &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">NPC shop Tutorial</a></li>
+
+
       </ul>
     </div>  
 
@@ -36,22 +41,33 @@
             
   <div class="section" id="npc-shop-tutorial">
 <h1>NPC shop Tutorial<a class="headerlink" href="#npc-shop-tutorial" title="Permalink to this headline">¶</a></h1>
-<p>This tutorial will describe how to make an NPC-run shop. We will make use of the <a class="reference internal" href="EvMenu.html"><span class="doc">EvMenu</span></a> system to present shoppers with a menu where they can buy things from the store’s stock.</p>
-<p>Our shop extends over two rooms - a “front” room open to the shop’s customers and a locked “store room” holding the wares the shop should be able to sell. We aim for the following features:</p>
+<p>This tutorial will describe how to make an NPC-run shop. We will make use of the <a class="reference internal" href="EvMenu.html"><span class="doc">EvMenu</span></a>
+system to present shoppers with a menu where they can buy things from the store’s stock.</p>
+<p>Our shop extends over two rooms - a “front” room open to the shop’s customers and a locked “store
+room” holding the wares the shop should be able to sell. We aim for the following features:</p>
 <ul class="simple">
 <li><p>The front room should have an Attribute <code class="docutils literal notranslate"><span class="pre">storeroom</span></code> that points to the store room.</p></li>
-<li><p>Inside the front room, the customer should have a command <code class="docutils literal notranslate"><span class="pre">buy</span></code> or <code class="docutils literal notranslate"><span class="pre">browse</span></code>. This will open a menu listing all items available to buy from the store room.</p></li>
+<li><p>Inside the front room, the customer should have a command <code class="docutils literal notranslate"><span class="pre">buy</span></code> or <code class="docutils literal notranslate"><span class="pre">browse</span></code>. This will open a
+menu listing all items available to buy from the store room.</p></li>
 <li><p>A customer should be able to look at individual items before buying.</p></li>
-<li><p>We use “gold” as an example currency. To determine cost, the system will look for an Attribute <code class="docutils literal notranslate"><span class="pre">gold_value</span></code> on the items in the store room. If not found, a fixed base value of 1 will be assumed. The wealth of the customer should be set as an Attribute <code class="docutils literal notranslate"><span class="pre">gold</span></code> on the Character. If not set, they have no gold and can’t buy anything.</p></li>
-<li><p>When the customer makes a purchase, the system will check the <code class="docutils literal notranslate"><span class="pre">gold_value</span></code> of the goods and compare it to the <code class="docutils literal notranslate"><span class="pre">gold</span></code> Attribute of the customer. If enough gold is available, this will be deducted and the goods transferred from the store room to the inventory of the customer.</p></li>
+<li><p>We use “gold” as an example currency. To determine cost, the system will look for an Attribute
+<code class="docutils literal notranslate"><span class="pre">gold_value</span></code> on the items in the store room. If not found, a fixed base value of 1 will be assumed.
+The wealth of the customer should be set as an Attribute <code class="docutils literal notranslate"><span class="pre">gold</span></code> on the Character. If not set, they
+have no gold and can’t buy anything.</p></li>
+<li><p>When the customer makes a purchase, the system will check the <code class="docutils literal notranslate"><span class="pre">gold_value</span></code> of the goods and
+compare it to the <code class="docutils literal notranslate"><span class="pre">gold</span></code> Attribute of the customer. If enough gold is available, this will be
+deducted and the goods transferred from the store room to the inventory of the customer.</p></li>
 <li><p>We will lock the store room so that only people with the right key can get in there.</p></li>
 </ul>
 <div class="section" id="the-shop-menu">
 <h2>The shop menu<a class="headerlink" href="#the-shop-menu" title="Permalink to this headline">¶</a></h2>
-<p>We want to show a menu to the customer where they can list, examine and buy items in the store. This menu should change depending on what is currently for sale. Evennia’s <em>EvMenu</em> utility will manage the menu for us. It’s a good idea to <a class="reference internal" href="EvMenu.html"><span class="doc">read up on EvMenu</span></a> if you are not familiar with it.</p>
+<p>We want to show a menu to the customer where they can list, examine and buy items in the store. This
+menu should change depending on what is currently for sale. Evennia’s <em>EvMenu</em> utility will manage
+the menu for us. It’s a good idea to <a class="reference internal" href="EvMenu.html"><span class="doc">read up on EvMenu</span></a> if you are not familiar with it.</p>
 <div class="section" id="designing-the-menu">
 <h3>Designing the menu<a class="headerlink" href="#designing-the-menu" title="Permalink to this headline">¶</a></h3>
-<p>The shopping menu’s design is straightforward. First we want the main screen. You get this when you enter a shop and use the <code class="docutils literal notranslate"><span class="pre">browse</span></code> or <code class="docutils literal notranslate"><span class="pre">buy</span></code> command:</p>
+<p>The shopping menu’s design is straightforward. First we want the main screen. You get this when you
+enter a shop and use the <code class="docutils literal notranslate"><span class="pre">browse</span></code> or <code class="docutils literal notranslate"><span class="pre">buy</span></code> command:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>*** Welcome to ye Old Sword shop! ***
    Things for sale (choose 1-3 to inspect, quit to exit):
 _________________________________________________________
@@ -60,7 +76,9 @@ _________________________________________________________
 3. Excalibur (100 gold)
 </pre></div>
 </div>
-<p>There are only three items to buy in this example but the menu should expand to however many items are needed. When you make a selection you will get a new screen showing the options for that particular item:</p>
+<p>There are only three items to buy in this example but the menu should expand to however many items
+are needed. When you make a selection you will get a new screen showing the options for that
+particular item:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">You</span> <span class="n">inspect</span> <span class="n">A</span> <span class="n">rusty</span> <span class="n">sword</span><span class="p">:</span>
 
 <span class="n">This</span> <span class="ow">is</span> <span class="n">an</span> <span class="n">old</span> <span class="n">weapon</span> <span class="n">maybe</span> <span class="n">once</span> <span class="n">used</span> <span class="n">by</span> <span class="n">soldiers</span> <span class="ow">in</span> <span class="n">some</span>
@@ -82,7 +100,10 @@ _________________________________________________________
 </div>
 <div class="section" id="coding-the-menu">
 <h3>Coding the menu<a class="headerlink" href="#coding-the-menu" title="Permalink to this headline">¶</a></h3>
-<p>EvMenu defines the <em>nodes</em> (each menu screen with options) as normal Python functions. Each node must be able to change on the fly depending on what items are currently for sale. EvMenu will automatically make the <code class="docutils literal notranslate"><span class="pre">quit</span></code> command available to us so we won’t add that manually. For compactness we will put everything needed for our shop in one module, <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/npcshop.py</span></code>.</p>
+<p>EvMenu defines the <em>nodes</em> (each menu screen with options) as normal Python functions. Each node
+must be able to change on the fly depending on what items are currently for sale. EvMenu will
+automatically make the <code class="docutils literal notranslate"><span class="pre">quit</span></code> command available to us so we won’t add that manually. For compactness
+we will put everything needed for our shop in one module, <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/npcshop.py</span></code>.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -140,8 +161,13 @@ _________________________________________________________
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
 </pre></div>
 </td></tr></table></div>
-<p>In this code we assume the caller to be <em>inside</em> the shop when accessing the menu. This means we can access the shop room via <code class="docutils literal notranslate"><span class="pre">caller.location</span></code> and get its <code class="docutils literal notranslate"><span class="pre">key</span></code> to display as the shop’s name. We also assume the shop has an Attribute <code class="docutils literal notranslate"><span class="pre">storeroom</span></code> we can use to get to our stock. We loop over our goods to build up the menu’s options.</p>
-<p>Note that <em>all options point to the same menu node</em> called <code class="docutils literal notranslate"><span class="pre">menunode_inspect_and_buy</span></code>! We can’t know which goods will be available to sale so we rely on this node to modify itself depending on the circumstances. Let’s create it now.</p>
+<p>In this code we assume the caller to be <em>inside</em> the shop when accessing the menu. This means we can
+access the shop room via <code class="docutils literal notranslate"><span class="pre">caller.location</span></code> and get its <code class="docutils literal notranslate"><span class="pre">key</span></code> to display as the shop’s name. We also
+assume the shop has an Attribute <code class="docutils literal notranslate"><span class="pre">storeroom</span></code> we can use to get to our stock. We loop over our goods
+to build up the menu’s options.</p>
+<p>Note that <em>all options point to the same menu node</em> called <code class="docutils literal notranslate"><span class="pre">menunode_inspect_and_buy</span></code>! We can’t know
+which goods will be available to sale so we rely on this node to modify itself depending on the
+circumstances. Let’s create it now.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -211,13 +237,25 @@ _________________________________________________________
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
 </pre></div>
 </td></tr></table></div>
-<p>In this menu node we make use of the <code class="docutils literal notranslate"><span class="pre">raw_string</span></code> argument to the node. This is the text the menu user entered on the <em>previous</em> node to get here. Since we only allow numbered options in our menu, <code class="docutils literal notranslate"><span class="pre">raw_input</span></code> must be an number for the player to get to this point. So we convert it to an integer index (menu lists start from 1, whereas Python indices always starts at 0, so we need to subtract 1). We then use the index to get the corresponding item from storage.</p>
-<p>We just show the customer the <code class="docutils literal notranslate"><span class="pre">desc</span></code> of the item. In a more elaborate setup you might want to show things like weapon damage and special stats here as well.</p>
-<p>When the user choose the “buy” option, EvMenu will execute the <code class="docutils literal notranslate"><span class="pre">exec</span></code> instruction <em>before</em> we go back to the top node (the <code class="docutils literal notranslate"><span class="pre">goto</span></code> instruction). For this we make a little inline function <code class="docutils literal notranslate"><span class="pre">buy_ware_result</span></code>. EvMenu will call the function given to <code class="docutils literal notranslate"><span class="pre">exec</span></code> like any menu node but it does not need to return anything. In <code class="docutils literal notranslate"><span class="pre">buy_ware_result</span></code> we determine if the customer can afford the cost and give proper return messages. This is also where we actually move the bought item into the inventory of the customer.</p>
+<p>In this menu node we make use of the <code class="docutils literal notranslate"><span class="pre">raw_string</span></code> argument to the node. This is the text the menu
+user entered on the <em>previous</em> node to get here. Since we only allow numbered options in our menu,
+<code class="docutils literal notranslate"><span class="pre">raw_input</span></code> must be an number for the player to get to this point. So we convert it to an integer
+index (menu lists start from 1, whereas Python indices always starts at 0, so we need to subtract
+1). We then use the index to get the corresponding item from storage.</p>
+<p>We just show the customer the <code class="docutils literal notranslate"><span class="pre">desc</span></code> of the item. In a more elaborate setup you might want to show
+things like weapon damage and special stats here as well.</p>
+<p>When the user choose the “buy” option, EvMenu will execute the <code class="docutils literal notranslate"><span class="pre">exec</span></code> instruction <em>before</em> we go
+back to the top node (the <code class="docutils literal notranslate"><span class="pre">goto</span></code> instruction). For this we make a little inline function
+<code class="docutils literal notranslate"><span class="pre">buy_ware_result</span></code>. EvMenu will call the function given to <code class="docutils literal notranslate"><span class="pre">exec</span></code> like any menu node but it does not
+need to return anything. In <code class="docutils literal notranslate"><span class="pre">buy_ware_result</span></code> we determine if the customer can afford the cost and
+give proper return messages. This is also where we actually move the bought item into the inventory
+of the customer.</p>
 </div>
 <div class="section" id="the-command-to-start-the-menu">
 <h3>The command to start the menu<a class="headerlink" href="#the-command-to-start-the-menu" title="Permalink to this headline">¶</a></h3>
-<p>We could <em>in principle</em> launch the shopping menu the moment a customer steps into our shop room, but this would probably be considered pretty annoying. It’s better to create a <a class="reference internal" href="Commands.html"><span class="doc">Command</span></a> for customers to explicitly wanting to shop around.</p>
+<p>We could <em>in principle</em> launch the shopping menu the moment a customer steps into our shop room, but
+this would probably be considered pretty annoying. It’s better to create a <a class="reference internal" href="Commands.html"><span class="doc">Command</span></a> for
+customers to explicitly wanting to shop around.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -267,7 +305,10 @@ _________________________________________________________
                       <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;menunode_shopfront&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<p>This will launch the menu. The <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> instance is initialized with the path to this very module - since the only global functions available in this module are our menu nodes, this will work fine (you could also have put those in a separate module). We now just need to put this command in a <a class="reference internal" href="Command-Sets.html"><span class="doc">CmdSet</span></a> so we can add it correctly to the game:</p>
+<p>This will launch the menu. The <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> instance is initialized with the path to this very module -
+since the only global functions available in this module are our menu nodes, this will work fine
+(you could also have put those in a separate module). We now just need to put this command in a
+<a class="reference internal" href="Command-Sets.html"><span class="doc">CmdSet</span></a> so we can add it correctly to the game:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
@@ -286,9 +327,13 @@ _________________________________________________________
 <p>There are really only two things that separate our shop from any other Room:</p>
 <ul class="simple">
 <li><p>The shop has the <code class="docutils literal notranslate"><span class="pre">storeroom</span></code> Attribute set on it, pointing to a second (completely normal) room.</p></li>
-<li><p>It has the <code class="docutils literal notranslate"><span class="pre">ShopCmdSet</span></code> stored on itself. This makes the <code class="docutils literal notranslate"><span class="pre">buy</span></code> command available to users entering the shop.</p></li>
+<li><p>It has the <code class="docutils literal notranslate"><span class="pre">ShopCmdSet</span></code> stored on itself. This makes the <code class="docutils literal notranslate"><span class="pre">buy</span></code> command available to users entering
+the shop.</p></li>
 </ul>
-<p>For testing we could easily add these features manually to a room using <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code> or other admin commands. Just to show how it can be done we’ll instead make a custom <a class="reference internal" href="Typeclasses.html"><span class="doc">Typeclass</span></a> for the shop room and make a small command that builders can use to build both the shop and the storeroom at once.</p>
+<p>For testing we could easily add these features manually to a room using <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code> or other admin
+commands. Just to show how it can be done we’ll instead make a custom <a class="reference internal" href="Typeclasses.html"><span class="doc">Typeclass</span></a> for
+the shop room and make a small command that builders can use to build both the shop and the
+storeroom at once.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -422,25 +467,46 @@ _________________________________________________________
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The shop </span><span class="si">%s</span><span class="s2"> was created!&quot;</span> <span class="o">%</span> <span class="n">shop</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<p>Our typeclass is simple and so is our <code class="docutils literal notranslate"><span class="pre">buildshop</span></code> command. The command (which is for Builders only) just takes the name of the shop and builds the front room and a store room to go with it (always named <code class="docutils literal notranslate"><span class="pre">&quot;&lt;shopname&gt;-storage&quot;</span></code>. It connects the rooms with a two-way exit. You need to add <code class="docutils literal notranslate"><span class="pre">CmdBuildShop</span></code> <a class="reference external" href="/Adding-Command-Tutorial.html#step-2-adding-the-command-to-a-default-cmdset">to the default cmdset</a> before you can use it. Once having created the shop you can now <code class="docutils literal notranslate"><span class="pre">&#64;teleport</span></code> to it or <code class="docutils literal notranslate"><span class="pre">&#64;open</span></code> a new exit to it. You could also easily expand the above command to automatically create exits to and from the new shop from your current location.</p>
-<p>To avoid customers walking in and stealing everything, we create a <a class="reference internal" href="Locks.html"><span class="doc">Lock</span></a> on the storage door. It’s a simple lock that requires the one entering to carry an object named <code class="docutils literal notranslate"><span class="pre">&lt;shopname&gt;-storekey</span></code>. We even create such a key object and drop it in the shop for the new shop keeper to pick up.</p>
+<p>Our typeclass is simple and so is our <code class="docutils literal notranslate"><span class="pre">buildshop</span></code> command. The command (which is for Builders only)
+just takes the name of the shop and builds the front room and a store room to go with it (always
+named <code class="docutils literal notranslate"><span class="pre">&quot;&lt;shopname&gt;-storage&quot;</span></code>. It connects the rooms with a two-way exit. You need to add
+<code class="docutils literal notranslate"><span class="pre">CmdBuildShop</span></code> [to the default cmdset](Adding-Command-Tutorial#step-2-adding-the-command-to-a-
+default-cmdset) before you can use it. Once having created the shop you can now <code class="docutils literal notranslate"><span class="pre">&#64;teleport</span></code> to it or
+<code class="docutils literal notranslate"><span class="pre">&#64;open</span></code> a new exit to it. You could also easily expand the above command to automatically create
+exits to and from the new shop from your current location.</p>
+<p>To avoid customers walking in and stealing everything, we create a <a class="reference internal" href="Locks.html"><span class="doc">Lock</span></a> on the storage
+door. It’s a simple lock that requires the one entering to carry an object named
+<code class="docutils literal notranslate"><span class="pre">&lt;shopname&gt;-storekey</span></code>. We even create such a key object and drop it in the shop for the new shop
+keeper to pick up.</p>
 <blockquote>
-<div><p>If players are given the right to name their own objects, this simple lock is not very secure and you need to come up with a more robust lock-key solution.</p>
+<div><p>If players are given the right to name their own objects, this simple lock is not very secure and
+you need to come up with a more robust lock-key solution.</p>
 </div></blockquote>
 <blockquote>
-<div><p>We don’t add any descriptions to all these objects so looking “at” them will not be too thrilling. You could add better default descriptions as part of the <code class="docutils literal notranslate"><span class="pre">&#64;buildshop</span></code> command or leave descriptions this up to the Builder.</p>
+<div><p>We don’t add any descriptions to all these objects so looking “at” them will not be too thrilling.
+You could add better default descriptions as part of the <code class="docutils literal notranslate"><span class="pre">&#64;buildshop</span></code> command or leave descriptions
+this up to the Builder.</p>
 </div></blockquote>
 </div>
 <div class="section" id="the-shop-is-open-for-business">
 <h2>The shop is open for business!<a class="headerlink" href="#the-shop-is-open-for-business" title="Permalink to this headline">¶</a></h2>
-<p>We now have a functioning shop and an easy way for Builders to create it. All you need now is to <code class="docutils literal notranslate"><span class="pre">&#64;open</span></code> a new exit from the rest of the game into the shop and put some sell-able items in the store room. Our shop does have some shortcomings:</p>
+<p>We now have a functioning shop and an easy way for Builders to create it. All you need now is to
+<code class="docutils literal notranslate"><span class="pre">&#64;open</span></code> a new exit from the rest of the game into the shop and put some sell-able items in the store
+room. Our shop does have some shortcomings:</p>
 <ul class="simple">
-<li><p>For Characters to be able to buy stuff they need to also have the <code class="docutils literal notranslate"><span class="pre">gold</span></code> Attribute set on themselves.</p></li>
-<li><p>We manually remove the “door” exit from our items for sale. But what if there are other unsellable items in the store room? What if the shop owner walks in there for example - anyone in the store could then buy them for 1 gold.</p></li>
-<li><p>What if someone else were to buy the item we’re looking at just before we decide to buy it? It would then be gone and the counter be wrong - the shop would pass us the next item in the list.</p></li>
+<li><p>For Characters to be able to buy stuff they need to also have the <code class="docutils literal notranslate"><span class="pre">gold</span></code> Attribute set on
+themselves.</p></li>
+<li><p>We manually remove the “door” exit from our items for sale. But what if there are other unsellable
+items in the store room? What if the shop owner walks in there for example - anyone in the store
+could then buy them for 1 gold.</p></li>
+<li><p>What if someone else were to buy the item we’re looking at just before we decide to buy it? It
+would then be gone and the counter be wrong - the shop would pass us the next item in the list.</p></li>
 </ul>
 <p>Fixing these issues are left as an exercise.</p>
-<p>If you want to keep the shop fully NPC-run you could add a <a class="reference internal" href="Scripts.html"><span class="doc">Script</span></a> to restock the shop’s store room regularly. This shop example could also easily be owned by a human Player (run for them by a hired NPC) - the shop owner would get the key to the store room and be responsible for keeping it well stocked.</p>
+<p>If you want to keep the shop fully NPC-run you could add a <a class="reference internal" href="Scripts.html"><span class="doc">Script</span></a> to restock the shop’s
+store room regularly. This shop example could also easily be owned by a human Player (run for them
+by a hired NPC) - the shop owner would get the key to the store room and be responsible for keeping
+it well stocked.</p>
 </div>
 </div>
 
@@ -504,7 +570,10 @@ _________________________________________________________
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">NPC shop Tutorial</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

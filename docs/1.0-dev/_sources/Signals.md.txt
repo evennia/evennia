@@ -54,22 +54,28 @@ signals.SIGNAL_ACCOUNT_POST_CONNECT.connect(myhandler, account)
 
 ## Available signals
 
-All signals (including some django-specific defaults) are available in the module `evennia.server.signals`
-(with a shortcut `evennia.signals`). Signals are named by the sender type. So `SIGNAL_ACCOUNT_*` returns
-`Account` instances as senders, `SIGNAL_OBJECT_*` returns `Object`s etc. Extra keywords (kwargs) should
+All signals (including some django-specific defaults) are available in the module
+`evennia.server.signals`
+(with a shortcut `evennia.signals`). Signals are named by the sender type. So `SIGNAL_ACCOUNT_*`
+returns
+`Account` instances as senders, `SIGNAL_OBJECT_*` returns `Object`s etc. Extra keywords (kwargs)
+should
 be extracted from the `**kwargs` dict in the signal handler.
 
 - `SIGNAL_ACCOUNT_POST_CREATE` - this is triggered at the very end of `Account.create()`. Note that
-  calling `evennia.create.create_account` (which is called internally by `Account.create`) will *not*
+  calling `evennia.create.create_account` (which is called internally by `Account.create`) will
+*not*
   trigger this signal. This is because using `Account.create()` is expected to be the most commonly
   used way for users to themselves create accounts during login. It passes and extra kwarg `ip` with
   the client IP of the connecting account.
 - `SIGNAL_ACCOUNT_POST_LOGIN` - this will always fire when the account has authenticated.  Sends
   extra kwarg `session` with the new [Session](Sessions) object involved.
-- `SIGNAL_ACCCOUNT_POST_FIRST_LOGIN` - this fires just before `SIGNAL_ACCOUNT_POST_LOGIN` but only if
+- `SIGNAL_ACCCOUNT_POST_FIRST_LOGIN` - this fires just before `SIGNAL_ACCOUNT_POST_LOGIN` but only
+if
   this is the *first* connection done (that is, if there are no previous sessions connected). Also
   passes the `session` along as a kwarg.
-- `SIGNAL_ACCOUNT_POST_LOGIN_FAIL` - sent when someone tried to log into an account by failed. Passes
+- `SIGNAL_ACCOUNT_POST_LOGIN_FAIL` - sent when someone tried to log into an account by failed.
+Passes
   the `session` as an extra kwarg.
 - `SIGNAL_ACCOUNT_POST_LOGOUT` - always fires when an account logs off, no matter if other sessions
   remain or not. Passes the disconnecting `session` along as a kwarg.
@@ -81,16 +87,19 @@ be extracted from the `**kwargs` dict in the signal handler.
   `session` and `account`.
 - `SIGNAL_ACCOUNT_POST_RENAME` - triggered by the setting of `Account.username`. Passes extra
   kwargs `old_name`, `new_name`.
-- `SIGNAL_TYPED_OBJECT_POST_RENAME` - triggered when any Typeclassed entity's `key` is changed. Extra
+- `SIGNAL_TYPED_OBJECT_POST_RENAME` - triggered when any Typeclassed entity's `key` is changed.
+Extra
   kwargs passed are `old_key` and `new_key`.
 - `SIGNAL_SCRIPT_POST_CREATE` - fires when a script is first created, after any hooks.
 - `SIGNAL_CHANNEL_POST_CREATE` - fires when a Channel is first created, after any hooks.
 - `SIGNAL_HELPENTRY_POST_CREATE` - fires when a help entry is first created.
 
-The `evennia.signals` module also gives you conveneient access to the default Django signals (these use a
+The `evennia.signals` module also gives you conveneient access to the default Django signals (these
+use a
 different naming convention).
 
-- `pre_save` - fired when any database entitiy's `.save` method fires, before any saving has happened.
+- `pre_save` - fired when any database entitiy's `.save` method fires, before any saving has
+happened.
 - `post_save` - fires after saving a database entity.
 - `pre_delete` - fires just before a database entity is deleted.
 - `post_delete` - fires after a database entity was deleted.
@@ -110,4 +119,3 @@ they are included here for completeness.
   decorator (only relevant for unit testing)
 - `template_rendered` - sent when test system renders http template (only useful for unit tests).
 - `connection_creation` - sent when making initial connection to database.
-

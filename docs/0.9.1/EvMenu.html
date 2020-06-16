@@ -7,11 +7,13 @@
     <title>EvMenu &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">EvMenu</a></li>
+
+
       </ul>
     </div>  
 
@@ -522,14 +527,14 @@ needed. Here is an example:</p>
 <div class="section" id="examples">
 <h2>Examples:<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><strong><a class="reference external" href="/EvMenu.html#example-simple-branching-menu">Simple branching menu</a></strong> - choose from options</p></li>
-<li><p><strong><a class="reference external" href="/EvMenu.html#example-dynamic-goto">Dynamic goto</a></strong> - jumping to different nodes based on response</p></li>
-<li><p><strong><a class="reference external" href="/EvMenu.html#example-set-caller-properties">Set caller properties</a></strong> - a menu that changes things</p></li>
-<li><p><strong><a class="reference external" href="/EvMenu.html#example-get-arbitrary-input">Getting arbitrary input</a></strong> - entering text</p></li>
-<li><p><strong><a class="reference external" href="/EvMenu.html#example-storing-data-between-nodes">Storing data between nodes</a></strong> - keeping states and information while in the menu</p></li>
-<li><p><strong><a class="reference external" href="/EvMenu.html#example-repeating-the-same-node">Repeating the same node</a></strong> - validating within the node before moving to the next</p></li>
-<li><p><strong><a class="reference external" href="/EvMenu.html#example-full-menu">Full Menu</a>:</strong> a complete example</p></li>
-<li><p><strong><a class="reference external" href="/EvMenu.html#example-yesno-prompt">Yes/No prompt</a></strong> - entering text with limited possible responses (this is <em>not</em> using EvMenu but the conceptually similar yet technically unrelated <code class="docutils literal notranslate"><span class="pre">get_input</span></code> helper function accessed as <code class="docutils literal notranslate"><span class="pre">evennia.utils.evmenu.get_input</span></code>).</p></li>
+<li><p><strong><a class="reference external" href="EvMenu.html#example-simple-branching-menu">Simple branching menu</a></strong> - choose from options</p></li>
+<li><p><strong><a class="reference external" href="EvMenu.html#example-dynamic-goto">Dynamic goto</a></strong> - jumping to different nodes based on response</p></li>
+<li><p><strong><a class="reference external" href="EvMenu.html#example-set-caller-properties">Set caller properties</a></strong> - a menu that changes things</p></li>
+<li><p><strong><a class="reference external" href="EvMenu.html#example-get-arbitrary-input">Getting arbitrary input</a></strong> - entering text</p></li>
+<li><p><strong><a class="reference external" href="EvMenu.html#example-storing-data-between-nodes">Storing data between nodes</a></strong> - keeping states and information while in the menu</p></li>
+<li><p><strong><a class="reference external" href="EvMenu.html#example-repeating-the-same-node">Repeating the same node</a></strong> - validating within the node before moving to the next</p></li>
+<li><p><strong><a class="reference external" href="EvMenu.html#example-full-menu">Full Menu</a>:</strong> a complete example</p></li>
+<li><p><strong><a class="reference external" href="EvMenu.html#example-yesno-prompt">Yes/No prompt</a></strong> - entering text with limited possible responses (this is <em>not</em> using EvMenu but the conceptually similar yet technically unrelated <code class="docutils literal notranslate"><span class="pre">get_input</span></code> helper function accessed as <code class="docutils literal notranslate"><span class="pre">evennia.utils.evmenu.get_input</span></code>).</p></li>
 </ul>
 <div class="section" id="example-simple-branching-menu">
 <h3>Example: Simple branching menu<a class="headerlink" href="#example-simple-branching-menu" title="Permalink to this headline">¶</a></h3>
@@ -1136,7 +1141,7 @@ When asked &#39;Write something!&#39;, you answered &#39;Hello&#39;.
 return True from the callback to repeat the prompt until you pass whatever check you want.</p>
 <blockquote>
 <div><p>Note: You <em>cannot</em> link consecutive questions by putting a new <code class="docutils literal notranslate"><span class="pre">get_input</span></code> call inside the
-callback If you want that you should use an EvMenu instead (see the <a class="reference external" href="/EvMenu.html#example-repeating-the-same-node">Repeating the same
+callback If you want that you should use an EvMenu instead (see the <a class="reference external" href="EvMenu.html#example-repeating-the-same-node">Repeating the same
 node</a> example above). Otherwise you can either peek at the
 implementation of <code class="docutils literal notranslate"><span class="pre">get_input</span></code> and implement your own mechanism (it’s just using cmdset nesting) or
 you can look at <a class="reference external" href="https://groups.google.com/forum/#%21category-topic/evennia/evennia-questions/16pi0SfMO5U">this extension suggested on the mailing
@@ -1341,7 +1346,10 @@ until the exit node.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">EvMenu</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

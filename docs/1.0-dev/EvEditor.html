@@ -7,11 +7,13 @@
     <title>EvEditor &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">EvEditor</a></li>
+
+
       </ul>
     </div>  
 
@@ -36,7 +41,9 @@
             
   <div class="section" id="eveditor">
 <h1>EvEditor<a class="headerlink" href="#eveditor" title="Permalink to this headline">¶</a></h1>
-<p>Evennia offers a powerful in-game line editor in <code class="docutils literal notranslate"><span class="pre">evennia.utils.eveditor.EvEditor</span></code>. This editor, mimicking the well-known VI line editor. It offers line-by-line editing, undo/redo, line deletes, search/replace, fill, dedent and more.</p>
+<p>Evennia offers a powerful in-game line editor in <code class="docutils literal notranslate"><span class="pre">evennia.utils.eveditor.EvEditor</span></code>. This editor,
+mimicking the well-known VI line editor. It offers line-by-line editing, undo/redo, line deletes,
+search/replace, fill, dedent and more.</p>
 <div class="section" id="launching-the-editor">
 <h2>Launching the editor<a class="headerlink" href="#launching-the-editor" title="Permalink to this headline">¶</a></h2>
 <p>The editor is created as follows:</p>
@@ -53,10 +60,15 @@
 </td></tr></table></div>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">caller</span></code> (Object or Account): The user of the editor.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">loadfunc</span></code> (callable, optional): This is a function called when the editor is first started. It is called with <code class="docutils literal notranslate"><span class="pre">caller</span></code> as its only argument. The return value from this function is used as the starting text in the editor buffer.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">savefunc</span></code> (callable, optional): This is called when the user saves their buffer in the editor is called with two arguments, <code class="docutils literal notranslate"><span class="pre">caller</span></code> and <code class="docutils literal notranslate"><span class="pre">buffer</span></code>, where <code class="docutils literal notranslate"><span class="pre">buffer</span></code> is the current buffer.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">quitfunc</span></code> (callable, optional): This is called when the user quits the editor. If given, all cleanup and exit messages to the user must be handled by this function.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code> (str, optional): This text will be displayed as an identifier and reminder while editing. It has no other mechanical function.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">loadfunc</span></code> (callable, optional): This is a function called when the editor is first started. It
+is called with <code class="docutils literal notranslate"><span class="pre">caller</span></code> as its only argument. The return value from this function is used as the
+starting text in the editor buffer.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">savefunc</span></code> (callable, optional): This is called when the user saves their buffer in the editor is
+called with two arguments, <code class="docutils literal notranslate"><span class="pre">caller</span></code> and <code class="docutils literal notranslate"><span class="pre">buffer</span></code>, where <code class="docutils literal notranslate"><span class="pre">buffer</span></code> is the current buffer.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">quitfunc</span></code> (callable, optional): This is called when the user quits the editor. If given, all
+cleanup and exit messages to the user must be handled by this function.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code> (str, optional): This text will be displayed as an identifier and reminder while editing.
+It has no other mechanical function.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">persistent</span></code> (default <code class="docutils literal notranslate"><span class="pre">False</span></code>): if set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the editor will survive a reboot.</p></li>
 </ul>
 </div>
@@ -125,7 +137,10 @@
 </div>
 <div class="section" id="persistent-editor">
 <h2>Persistent editor<a class="headerlink" href="#persistent-editor" title="Permalink to this headline">¶</a></h2>
-<p>If you set the <code class="docutils literal notranslate"><span class="pre">persistent</span></code> keyword to <code class="docutils literal notranslate"><span class="pre">True</span></code> when creating the editor, it will remain open even when reloading the game.  In order to be persistent, an editor needs to have its callback functions (<code class="docutils literal notranslate"><span class="pre">loadfunc</span></code>, <code class="docutils literal notranslate"><span class="pre">savefunc</span></code> and <code class="docutils literal notranslate"><span class="pre">quitfunc</span></code>) as top-level functions defined in the module.  Since these functions will be stored, Python will need to find them.</p>
+<p>If you set the <code class="docutils literal notranslate"><span class="pre">persistent</span></code> keyword to <code class="docutils literal notranslate"><span class="pre">True</span></code> when creating the editor, it will remain open even
+when reloading the game.  In order to be persistent, an editor needs to have its callback functions
+(<code class="docutils literal notranslate"><span class="pre">loadfunc</span></code>, <code class="docutils literal notranslate"><span class="pre">savefunc</span></code> and <code class="docutils literal notranslate"><span class="pre">quitfunc</span></code>) as top-level functions defined in the module.  Since these
+functions will be stored, Python will need to find them.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -194,7 +209,8 @@
 </div>
 <div class="section" id="line-editor-usage">
 <h2>Line editor usage<a class="headerlink" href="#line-editor-usage" title="Permalink to this headline">¶</a></h2>
-<p>The editor mimics the <code class="docutils literal notranslate"><span class="pre">VIM</span></code> editor as best as possible. The below is an excerpt of the return from the in-editor help command (<code class="docutils literal notranslate"><span class="pre">:h</span></code>).</p>
+<p>The editor mimics the <code class="docutils literal notranslate"><span class="pre">VIM</span></code> editor as best as possible. The below is an excerpt of the return from
+the in-editor help command (<code class="docutils literal notranslate"><span class="pre">:h</span></code>).</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> &lt;txt&gt;  - any non-command is appended to the end of the buffer.
  :  &lt;l&gt; - view buffer or only line &lt;l&gt;
  :: &lt;l&gt; - view buffer without line numbers or other parsing
@@ -239,15 +255,27 @@
 </div>
 <div class="section" id="the-eveditor-to-edit-code">
 <h2>The EvEditor to edit code<a class="headerlink" href="#the-eveditor-to-edit-code" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">EvEditor</span></code> is also used to edit some Python code in Evennia.  The <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code> command supports an <code class="docutils literal notranslate"><span class="pre">/edit</span></code> switch that will open the EvEditor in code mode.  This mode isn’t significantly different from the standard one, except it handles automatic indentation of blocks and a few options to control this behavior.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">EvEditor</span></code> is also used to edit some Python code in Evennia.  The <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code> command supports an
+<code class="docutils literal notranslate"><span class="pre">/edit</span></code> switch that will open the EvEditor in code mode.  This mode isn’t significantly different
+from the standard one, except it handles automatic indentation of blocks and a few options to
+control this behavior.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">:&lt;</span></code> to remove a level of indentation for the future lines.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">:+</span></code> to add a level of indentation for the future lines.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">:=</span></code> to disable automatic indentation altogether.</p></li>
 </ul>
-<p>Automatic indentation is there to make code editing more simple.  Python needs correct indentation, not as an aesthetic addition, but as a requirement to determine beginning and ending of blocks.  The EvEditor will try to guess the next level of indentation.  If you type a block “if”, for instance, the EvEditor will propose you an additional level of indentation at the next line.  This feature cannot be perfect, however, and sometimes, you will have to use the above options to handle indentation.</p>
-<p><code class="docutils literal notranslate"><span class="pre">:=</span></code> can be used to turn automatic indentation off completely.  This can be very useful when trying to paste several lines of code that are already correctly indented, for instance.</p>
-<p>To see the EvEditor in code mode, you can use the <code class="docutils literal notranslate"><span class="pre">&#64;py/edit</span></code> command.  Type in your code (on one or several lines).  You can then use the <code class="docutils literal notranslate"><span class="pre">:w</span></code> option (save without quitting) and the code you have typed will be executed.  The <code class="docutils literal notranslate"><span class="pre">:!</span></code> will do the same thing.  Executing code while not closing the editor can be useful if you want to test the code you have typed but add new lines after your test.</p>
+<p>Automatic indentation is there to make code editing more simple.  Python needs correct indentation,
+not as an aesthetic addition, but as a requirement to determine beginning and ending of blocks.  The
+EvEditor will try to guess the next level of indentation.  If you type a block “if”, for instance,
+the EvEditor will propose you an additional level of indentation at the next line.  This feature
+cannot be perfect, however, and sometimes, you will have to use the above options to handle
+indentation.</p>
+<p><code class="docutils literal notranslate"><span class="pre">:=</span></code> can be used to turn automatic indentation off completely.  This can be very useful when trying
+to paste several lines of code that are already correctly indented, for instance.</p>
+<p>To see the EvEditor in code mode, you can use the <code class="docutils literal notranslate"><span class="pre">&#64;py/edit</span></code> command.  Type in your code (on one or
+several lines).  You can then use the <code class="docutils literal notranslate"><span class="pre">:w</span></code> option (save without quitting) and the code you have
+typed will be executed.  The <code class="docutils literal notranslate"><span class="pre">:!</span></code> will do the same thing.  Executing code while not closing the
+editor can be useful if you want to test the code you have typed but add new lines after your test.</p>
 </div>
 </div>
 
@@ -308,7 +336,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">EvEditor</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

@@ -7,11 +7,13 @@
     <title>Manually Configuring Color &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Manually Configuring Color</a></li>
+
+
       </ul>
     </div>  
 
@@ -37,7 +42,7 @@
   <div class="section" id="manually-configuring-color">
 <h1>Manually Configuring Color<a class="headerlink" href="#manually-configuring-color" title="Permalink to this headline">¶</a></h1>
 <p>This is a small tutorial for customizing your character objects, using the example of letting users turn on and off ANSI color parsing as an example.  <code class="docutils literal notranslate"><span class="pre">&#64;options</span> <span class="pre">NOCOLOR=True</span></code> will now do what this tutorial shows, but the tutorial subject can be applied to other toggles you may want, as well.</p>
-<p>In the Building guide’s <a class="reference external" href="/TextTags.html#coloured-text">Colors</a> page you can learn how to add color to your game by using special markup. Colors enhance the gaming experience, but not all users want color. Examples would be users working from clients that don’t support color, or people with various seeing disabilities that rely on screen readers to play your game. Also, whereas Evennia normally automatically detects if a client supports color, it may get it wrong. Being able to turn it on manually if you know it <strong>should</strong> work could be a nice feature.</p>
+<p>In the Building guide’s <a class="reference external" href="TextTags.html#coloured-text">Colors</a> page you can learn how to add color to your game by using special markup. Colors enhance the gaming experience, but not all users want color. Examples would be users working from clients that don’t support color, or people with various seeing disabilities that rely on screen readers to play your game. Also, whereas Evennia normally automatically detects if a client supports color, it may get it wrong. Being able to turn it on manually if you know it <strong>should</strong> work could be a nice feature.</p>
 <p>So here’s how to allow those users to remove color. It basically means you implementing a simple configuration system for your characters. This is the basic sequence:</p>
 <ol class="simple">
 <li><p>Define your own default character typeclass, inheriting from Evennia’s default.</p></li>
@@ -206,7 +211,7 @@
 </div>
 <div class="section" id="more-colors">
 <h2>More colors<a class="headerlink" href="#more-colors" title="Permalink to this headline">¶</a></h2>
-<p>Apart from ANSI colors, Evennia also supports <strong>Xterm256</strong> colors (See <a class="reference external" href="/TextTags.html#colored-text">Colors</a>). The <code class="docutils literal notranslate"><span class="pre">msg()</span></code> method supports the <code class="docutils literal notranslate"><span class="pre">xterm256</span></code> keyword for manually activating/deactiving xterm256. It should be easy to expand the above example to allow players to customize xterm256 regardless of if Evennia thinks their client supports it or not.</p>
+<p>Apart from ANSI colors, Evennia also supports <strong>Xterm256</strong> colors (See <a class="reference external" href="TextTags.html#colored-text">Colors</a>). The <code class="docutils literal notranslate"><span class="pre">msg()</span></code> method supports the <code class="docutils literal notranslate"><span class="pre">xterm256</span></code> keyword for manually activating/deactiving xterm256. It should be easy to expand the above example to allow players to customize xterm256 regardless of if Evennia thinks their client supports it or not.</p>
 <p>To get a better understanding of how <code class="docutils literal notranslate"><span class="pre">msg()</span></code> works with keywords, you can try this as superuser:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|123Dark blue with xterm256, bright blue with ANSI&quot;</span><span class="p">,</span> <span class="n">xterm256</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="nd">@py</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|gThis should be uncolored&quot;</span><span class="p">,</span> <span class="n">nomarkup</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -271,7 +276,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Manually Configuring Color</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

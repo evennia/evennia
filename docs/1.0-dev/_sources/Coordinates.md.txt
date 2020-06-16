@@ -4,7 +4,9 @@
 
 This tutorial is moderately difficult in content.  You might want to be familiar and at ease with
 some Python concepts (like properties) and possibly Django concepts (like queries), although this
-tutorial will try to walk you through the process and give enough explanations each time.  If you don't feel very confident with math, don't hesitate to pause, go to the example section, which shows a tiny map, and try to walk around the code or read the explanation.
+tutorial will try to walk you through the process and give enough explanations each time.  If you
+don't feel very confident with math, don't hesitate to pause, go to the example section, which shows
+a tiny map, and try to walk around the code or read the explanation.
 
 Evennia doesn't have a coordinate system by default.  Rooms and other objects are linked by location
 and content:
@@ -97,7 +99,8 @@ class Room(DefaultRoom):
 ```
 
 If you aren't familiar with the concept of properties in Python, I encourage you to read a good
-tutorial on the subject.  [This article on Python properties](https://www.programiz.com/python-programming/property) 
+tutorial on the subject.  [This article on Python properties](https://www.programiz.com/python-
+programming/property)
 is well-explained and should help you understand the idea.
 
 Let's look at our properties for `x`.  First of all is the read property.
@@ -170,7 +173,8 @@ class methods, since we want to get rooms.
 
 ### Finding one room
 
-First, a simple one: how to find a room at a given coordinate?  Say, what is the room at X=0, Y=0, Z=0?
+First, a simple one: how to find a room at a given coordinate?  Say, what is the room at X=0, Y=0,
+Z=0?
 
 ```python
 class Room(DefaultRoom):
@@ -199,7 +203,8 @@ class Room(DefaultRoom):
         return None
 ```
 
-This solution includes a bit of [Django queries](https://docs.djangoproject.com/en/1.11/topics/db/queries/). 
+This solution includes a bit of [Django
+queries](https://docs.djangoproject.com/en/1.11/topics/db/queries/).
 Basically, what we do is reach for the object manager and search for objects with the matching tags.
 Again, don't spend too much time worrying about the mechanism, the method is quite easy to use:
 
@@ -207,14 +212,16 @@ Again, don't spend too much time worrying about the mechanism, the method is qui
 Room.get_room_at(5, 2, -3)
 ```
 
-Notice that this is a class method: you will call it from `Room` (the class), not an instance.  Though you still can:
+Notice that this is a class method: you will call it from `Room` (the class), not an instance.
+Though you still can:
 
     @py here.get_room_at(3, 8, 0)
 
 ### Finding several rooms
 
 Here's another useful method that allows us to look for rooms around a given coordinate.  This is
-more advanced search and doing some calculation, beware!  Look at the following section if you're lost.
+more advanced search and doing some calculation, beware!  Look at the following section if you're
+lost.
 
 ```python
 from math import sqrt
@@ -280,7 +287,8 @@ This gets more serious.
 1. We have specified coordinates as parameters.  We determine a broad range using the distance.
    That is, for each coordinate, we create a list of possible matches.  See the example below.
 2. We then search for the rooms within this broader range.  It gives us a square
-   around our location.  Some rooms are definitely outside the range.  Again, see the example below to follow the logic.
+   around our location.  Some rooms are definitely outside the range.  Again, see the example below
+to follow the logic.
 3. We filter down the list and sort it by distance from the specified coordinates.
 
 Notice that we only search starting at step 2.  Thus, the Django search doesn't look and cache all
@@ -301,7 +309,10 @@ An example might help.  Consider this very simple map (a textual description fol
   1 2 3 4
 ```
 
-The X coordinates are given below.  The Y coordinates are given on the left.  This is a simple square with 16 rooms: 4 on each line, 4 lines of them.  All the rooms are identified by letters in this example: the first line at the top has rooms A to D, the second E to H, the third I to L and the fourth M to P.  The bottom-left room, X=1 and Y=1, is M.  The upper-right room X=4 and Y=4 is D.
+The X coordinates are given below.  The Y coordinates are given on the left.  This is a simple
+square with 16 rooms: 4 on each line, 4 lines of them.  All the rooms are identified by letters in
+this example: the first line at the top has rooms A to D, the second E to H, the third I to L and
+the fourth M to P.  The bottom-left room, X=1 and Y=1, is M.  The upper-right room X=4 and Y=4 is D.
 
 So let's say we want to find all the neighbors, distance 1, from the room J.  J is at X=2, Y=2.
 
@@ -310,8 +321,12 @@ So we use:
     Room.get_rooms_around(x=2, y=2, z=0, distance=1)
     # we'll assume a z coordinate of 0 for simplicity
 
-1. First, this method gets all the rooms in a square around J.  So it gets E F G, I J K, M N O.  If you want, draw the square around these coordinates to see what's happening.
-2. Next, we browse over this list and check the real distance between J (X=2, Y=2) and the room.  The four corners of the square are not in this circle.  For instance, the distance between J and M is not 1.  If you draw a circle of center J and radius 1, you'll notice that the four corners of our square (E, G, M and O) are not in this circle. So we remove them.
+1. First, this method gets all the rooms in a square around J.  So it gets E F G, I J K, M N O.  If
+you want, draw the square around these coordinates to see what's happening.
+2. Next, we browse over this list and check the real distance between J (X=2, Y=2) and the room.
+The four corners of the square are not in this circle.  For instance, the distance between J and M
+is not 1.  If you draw a circle of center J and radius 1, you'll notice that the four corners of our
+square (E, G, M and O) are not in this circle. So we remove them.
 3. We sort by distance from J.
 
 So in the end we might obtain something like this:

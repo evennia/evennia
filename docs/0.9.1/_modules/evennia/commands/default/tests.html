@@ -7,11 +7,13 @@
     <title>evennia.commands.default.tests &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -27,7 +29,10 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">evennia.commands.default.tests</a></li>
+
+
       </ul>
     </div>  
 
@@ -304,16 +309,17 @@
 
 
 <div class="viewcode-block" id="TestHelp"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.tests.TestHelp">[docs]</a><span class="k">class</span> <span class="nc">TestHelp</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
-
 <div class="viewcode-block" id="TestHelp.setUp"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.tests.TestHelp.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="c1"># we need to set up a logger here since lunr takes over the logger otherwise</span>
         <span class="kn">import</span> <span class="nn">logging</span>
+
         <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestHelp.tearDown"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.tests.TestHelp.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span>
         <span class="kn">import</span> <span class="nn">logging</span>
+
         <span class="n">logging</span><span class="o">.</span><span class="n">disable</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestHelp.test_help"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.tests.TestHelp.test_help">[docs]</a>    <span class="k">def</span> <span class="nf">test_help</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1640,7 +1646,10 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li> 
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">evennia.commands.default.tests</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

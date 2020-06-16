@@ -7,11 +7,13 @@
     <title>Apache Config &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Apache Config</a></li>
+
+
       </ul>
     </div>  
 
@@ -52,14 +57,16 @@ you would like covered, please let us know.</p>
 <div class="section" id="install-mod-wsgi">
 <h3>Install <code class="docutils literal notranslate"><span class="pre">mod_wsgi</span></code><a class="headerlink" href="#install-mod-wsgi" title="Permalink to this headline">¶</a></h3>
 <ul>
-<li><p><em>Fedora/RHEL</em> - Apache HTTP Server and <code class="docutils literal notranslate"><span class="pre">mod_wsgi</span></code> are available in the standard package repositories for Fedora and RHEL:</p>
+<li><p><em>Fedora/RHEL</em> - Apache HTTP Server and <code class="docutils literal notranslate"><span class="pre">mod_wsgi</span></code> are available in the standard package
+repositories for Fedora and RHEL:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ dnf install httpd mod_wsgi
 or
 $ yum install httpd mod_wsgi
 </pre></div>
 </div>
 </li>
-<li><p><em>Ubuntu/Debian</em> -  Apache HTTP Server and <code class="docutils literal notranslate"><span class="pre">mod_wsgi</span></code> are available in the standard package repositories for Ubuntu and Debian:</p>
+<li><p><em>Ubuntu/Debian</em> -  Apache HTTP Server and <code class="docutils literal notranslate"><span class="pre">mod_wsgi</span></code> are available in the standard package
+repositories for Ubuntu and Debian:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ apt-get update
 $ apt-get install apache2 libapache2-mod-wsgi
 </pre></div>
@@ -104,7 +111,8 @@ Ubuntu), you may tell <code class="docutils literal notranslate"><span class="pr
 <code class="docutils literal notranslate"><span class="pre">evennia/game/web/utils/apache_wsgi.conf</span></code>. When <code class="docutils literal notranslate"><span class="pre">mod_wsgi</span></code> sees that the file modification time has
 changed, it will force a code reload. Any modifications to the code will not be propagated to the
 live instance of your site until reloaded.</p>
-<p>If you are not running in daemon mode or want to force the issue, simply restart or reload apache2 to apply your changes.</p>
+<p>If you are not running in daemon mode or want to force the issue, simply restart or reload apache2
+to apply your changes.</p>
 </div>
 <div class="section" id="further-notes-and-hints">
 <h3>Further notes and hints:<a class="headerlink" href="#further-notes-and-hints" title="Permalink to this headline">¶</a></h3>
@@ -125,20 +133,24 @@ Not confirmed, but worth trying if there are trouble.</p>
 <div class="section" id="mod-proxy-and-mod-ssl-setup">
 <h2><code class="docutils literal notranslate"><span class="pre">mod_proxy</span></code> and <code class="docutils literal notranslate"><span class="pre">mod_ssl</span></code> setup<a class="headerlink" href="#mod-proxy-and-mod-ssl-setup" title="Permalink to this headline">¶</a></h2>
 <p>Below are steps on running Evennia using a front-end proxy (Apache HTTP), <code class="docutils literal notranslate"><span class="pre">mod_proxy_http</span></code>,
-<code class="docutils literal notranslate"><span class="pre">mod_proxy_wstunnel</span></code>, and <code class="docutils literal notranslate"><span class="pre">mod_ssl</span></code>. <code class="docutils literal notranslate"><span class="pre">mod_proxy_http</span></code> and <code class="docutils literal notranslate"><span class="pre">mod_proxy_wstunnel</span></code> will simply be referred to as
+<code class="docutils literal notranslate"><span class="pre">mod_proxy_wstunnel</span></code>, and <code class="docutils literal notranslate"><span class="pre">mod_ssl</span></code>. <code class="docutils literal notranslate"><span class="pre">mod_proxy_http</span></code> and <code class="docutils literal notranslate"><span class="pre">mod_proxy_wstunnel</span></code> will simply be
+referred to as
 <code class="docutils literal notranslate"><span class="pre">mod_proxy</span></code> below.</p>
 <div class="section" id="install-mod-ssl">
 <h3>Install <code class="docutils literal notranslate"><span class="pre">mod_ssl</span></code><a class="headerlink" href="#install-mod-ssl" title="Permalink to this headline">¶</a></h3>
 <ul>
-<li><p><em>Fedora/RHEL</em> - Apache HTTP Server and <code class="docutils literal notranslate"><span class="pre">mod_ssl</span></code> are available in the standard package repositories for Fedora and RHEL:</p>
+<li><p><em>Fedora/RHEL</em> - Apache HTTP Server and <code class="docutils literal notranslate"><span class="pre">mod_ssl</span></code> are available in the standard package
+repositories for Fedora and RHEL:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ dnf install httpd mod_ssl
 or
 $ yum install httpd mod_ssl
 </pre></div>
 </div>
 </li>
-<li><p><em>Ubuntu/Debian</em> - Apache HTTP Server and <code class="docutils literal notranslate"><span class="pre">mod_sslj</span></code>kl are installed together in the <code class="docutils literal notranslate"><span class="pre">apache2</span></code> package and available in the
-standard package repositories for Ubuntu and Debian. <code class="docutils literal notranslate"><span class="pre">mod_ssl</span></code> needs to be enabled after installation:</p>
+<li><p><em>Ubuntu/Debian</em> - Apache HTTP Server and <code class="docutils literal notranslate"><span class="pre">mod_sslj</span></code>kl are installed together in the <code class="docutils literal notranslate"><span class="pre">apache2</span></code>
+package and available in the
+standard package repositories for Ubuntu and Debian. <code class="docutils literal notranslate"><span class="pre">mod_ssl</span></code> needs to be enabled after
+installation:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ apt-get update
 $ apt-get install apache2 
 $ a2enmod ssl
@@ -273,7 +285,10 @@ port but this should be applicable also to other types of proxies (like nginx).<
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Apache Config</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

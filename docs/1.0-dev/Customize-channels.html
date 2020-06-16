@@ -7,11 +7,13 @@
     <title>Customize channels &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Customize channels</a></li>
+
+
       </ul>
     </div>  
 
@@ -167,13 +172,25 @@ communication.</p>
 </td></tr></table></div>
 <p>Okay, let’s review this code, but if you’re used to Evennia commands, it shouldn’t be too strange:</p>
 <ol class="simple">
-<li><p>We import <code class="docutils literal notranslate"><span class="pre">search_channel</span></code>.  This is a little helper function that we will use to search for channels by name and aliases, found in <code class="docutils literal notranslate"><span class="pre">evennia.utils.search</span></code>.  It’s just more convenient.</p></li>
+<li><p>We import <code class="docutils literal notranslate"><span class="pre">search_channel</span></code>.  This is a little helper function that we will use to search for
+channels by name and aliases, found in <code class="docutils literal notranslate"><span class="pre">evennia.utils.search</span></code>.  It’s just more convenient.</p></li>
 <li><p>Our class <code class="docutils literal notranslate"><span class="pre">CmdConnect</span></code> contains the body of our command to join a channel.</p></li>
-<li><p>Notice the key of this command is simply <code class="docutils literal notranslate"><span class="pre">&quot;+&quot;</span></code>.  When you enter <code class="docutils literal notranslate"><span class="pre">+something</span></code> in the game, it will try to find a command key <code class="docutils literal notranslate"><span class="pre">+something</span></code>.  Failing that, it will look at other potential matches.  Evennia is smart enough to understand that when we type <code class="docutils literal notranslate"><span class="pre">+something</span></code>, <code class="docutils literal notranslate"><span class="pre">+</span></code> is the command key and <code class="docutils literal notranslate"><span class="pre">something</span></code> is the command argument.  This will, of course, fail if you have a command beginning by <code class="docutils literal notranslate"><span class="pre">+</span></code> conflicting with the <code class="docutils literal notranslate"><span class="pre">CmdConnect</span></code> key.</p></li>
-<li><p>We have altered some class attributes, like <code class="docutils literal notranslate"><span class="pre">auto_help</span></code>.  If you want to know what they do and why they have changed here, you can check the <a class="reference internal" href="Commands.html"><span class="doc">documentation on commands</span></a>.</p></li>
-<li><p>In the command body, we begin by extracting the channel name.  Remember that this name should be in the command arguments (that is, in <code class="docutils literal notranslate"><span class="pre">self.args</span></code>).  Following the same example, if a player enters <code class="docutils literal notranslate"><span class="pre">+something</span></code>, <code class="docutils literal notranslate"><span class="pre">self.args</span></code> should contain <code class="docutils literal notranslate"><span class="pre">&quot;something&quot;</span></code>.  We use <code class="docutils literal notranslate"><span class="pre">search_channel</span></code> to see if this channel exists.</p></li>
-<li><p>We then check the access level of the channel, to see if the caller can listen to it (not necessarily use it to speak, mind you, just listen to others speak, as these are two different locks on Evennia).</p></li>
-<li><p>Finally, we connect the caller if he’s not already connected to the channel.  We use the channel’s <code class="docutils literal notranslate"><span class="pre">connect</span></code> method to do this.  Pretty straightforward eh?</p></li>
+<li><p>Notice the key of this command is simply <code class="docutils literal notranslate"><span class="pre">&quot;+&quot;</span></code>.  When you enter <code class="docutils literal notranslate"><span class="pre">+something</span></code> in the game, it will
+try to find a command key <code class="docutils literal notranslate"><span class="pre">+something</span></code>.  Failing that, it will look at other potential matches.
+Evennia is smart enough to understand that when we type <code class="docutils literal notranslate"><span class="pre">+something</span></code>, <code class="docutils literal notranslate"><span class="pre">+</span></code> is the command key and
+<code class="docutils literal notranslate"><span class="pre">something</span></code> is the command argument.  This will, of course, fail if you have a command beginning by
+<code class="docutils literal notranslate"><span class="pre">+</span></code> conflicting with the <code class="docutils literal notranslate"><span class="pre">CmdConnect</span></code> key.</p></li>
+<li><p>We have altered some class attributes, like <code class="docutils literal notranslate"><span class="pre">auto_help</span></code>.  If you want to know what they do and
+why they have changed here, you can check the <a class="reference internal" href="Commands.html"><span class="doc">documentation on commands</span></a>.</p></li>
+<li><p>In the command body, we begin by extracting the channel name.  Remember that this name should be
+in the command arguments (that is, in <code class="docutils literal notranslate"><span class="pre">self.args</span></code>).  Following the same example, if a player enters
+<code class="docutils literal notranslate"><span class="pre">+something</span></code>, <code class="docutils literal notranslate"><span class="pre">self.args</span></code> should contain <code class="docutils literal notranslate"><span class="pre">&quot;something&quot;</span></code>.  We use <code class="docutils literal notranslate"><span class="pre">search_channel</span></code> to see if this
+channel exists.</p></li>
+<li><p>We then check the access level of the channel, to see if the caller can listen to it (not
+necessarily use it to speak, mind you, just listen to others speak, as these are two different locks
+on Evennia).</p></li>
+<li><p>Finally, we connect the caller if he’s not already connected to the channel.  We use the
+channel’s <code class="docutils literal notranslate"><span class="pre">connect</span></code> method to do this.  Pretty straightforward eh?</p></li>
 </ol>
 <p>Now we’ll add a command to leave a channel.  It’s almost the same, turned upside down:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
@@ -629,7 +646,8 @@ add:</p>
  9
 10
 11
-12</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
+12
+13</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
     <span class="k">def</span> <span class="nf">get_extra_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Let users know that this command is for communicating on a channel.</span>
@@ -638,7 +656,8 @@ add:</p>
 <span class="sd">            caller (TypedObject): A Character or Account who has entered an ambiguous command.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            A string with identifying information to disambiguate the object, conventionally with a preceding space.</span>
+<span class="sd">            A string with identifying information to disambiguate the object, conventionally with a</span>
+<span class="sd">preceding space.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot; (channel)&quot;</span>
 </pre></div>
@@ -677,7 +696,8 @@ integrates all switches and does ever some extra checking, but it’s also very
 close from the code I’ve provided here.  Notice, however, that this resource is
 external to Evennia and not maintained by anyone but the original author of
 this article.</p>
-<p><a class="reference external" href="https://github.com/vincent-lg/avenew/blob/master/commands/comms.py">Read the full example on Github</a></p>
+<p>[Read the full example on Github](https://github.com/vincent-
+lg/avenew/blob/master/commands/comms.py)</p>
 </div>
 </div>
 
@@ -746,7 +766,10 @@ this article.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Customize channels</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

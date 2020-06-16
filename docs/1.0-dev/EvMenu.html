@@ -7,11 +7,13 @@
     <title>EvMenu &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">EvMenu</a></li>
+
+
       </ul>
     </div>  
 
@@ -116,26 +121,34 @@ most common way to do so - from inside a <a class="reference internal" href="Com
 new <a class="reference internal" href="Command-Sets.html"><span class="doc">CmdSet</span></a> assigned to it, for handling the menu.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">menu_data</span></code> (str, module or dict): is a module or python path to a module where the global-level
 functions will each be considered to be a menu node. Their names in the module will be the names
-by which they are referred to in the module. Importantly, function names starting with an underscore
-<code class="docutils literal notranslate"><span class="pre">_</span></code> will be ignored by the loader. Alternatively, this can be a direct mapping <code class="docutils literal notranslate"><span class="pre">{&quot;nodename&quot;:function,</span> <span class="pre">...}</span></code>.</p></li>
+by which they are referred to in the module. Importantly, function names starting with an
+underscore
+<code class="docutils literal notranslate"><span class="pre">_</span></code> will be ignored by the loader. Alternatively, this can be a direct mapping
+<code class="docutils literal notranslate"><span class="pre">{&quot;nodename&quot;:function,</span> <span class="pre">...}</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">startnode</span></code> (str): is the name of the menu-node to start the menu at. Changing this means that
 you can jump into a menu tree at different positions depending on circumstance and thus possibly
 re-use menu entries.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cmdset_mergetype</span></code> (str): This is usually one of “Replace” or “Union” (see <a class="reference internal" href="Command-Sets.html"><span class="doc">CmdSets</span></a>.
+<li><p><code class="docutils literal notranslate"><span class="pre">cmdset_mergetype</span></code> (str): This is usually one of “Replace” or “Union” (see [CmdSets](Command-
+Sets).
 The first means that the menu is exclusive - the user has no access to any other commands while
-in the menu. The Union mergetype means the menu co-exists with previous commands (and may overload
+in the menu. The Union mergetype means the menu co-exists with previous commands (and may
+overload
 them, so be careful as to what to name your menu entries in this case).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">cmdset_priority</span></code> (int): The priority with which to merge in the menu cmdset. This allows for
 advanced usage.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">auto_quit</span></code>, <code class="docutils literal notranslate"><span class="pre">auto_look</span></code>, <code class="docutils literal notranslate"><span class="pre">auto_help</span></code> (bool): If either of these are <code class="docutils literal notranslate"><span class="pre">True</span></code>, the menu
 automatically makes a <code class="docutils literal notranslate"><span class="pre">quit</span></code>, <code class="docutils literal notranslate"><span class="pre">look</span></code> or <code class="docutils literal notranslate"><span class="pre">help</span></code> command available to the user. The main reason why
-you’d want to turn this off is if  you want to use the aliases “q”, “l” or “h” for something in your
-menu. Nevertheless, at least <code class="docutils literal notranslate"><span class="pre">quit</span></code> is highly recommend - if <code class="docutils literal notranslate"><span class="pre">False</span></code>, the menu <em>must</em> itself supply
-an “exit node” (a node without any options), or the user will be stuck in the menu until the server
+you’d want to turn this off is if  you want to use the aliases “q”, “l” or “h” for something in
+your
+menu. Nevertheless, at least <code class="docutils literal notranslate"><span class="pre">quit</span></code> is highly recommend - if <code class="docutils literal notranslate"><span class="pre">False</span></code>, the menu <em>must</em> itself
+supply
+an “exit node” (a node without any options), or the user will be stuck in the menu until the
+server
 reloads (or eternally if the menu is <code class="docutils literal notranslate"><span class="pre">persistent</span></code>)!</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">cmd_on_exit</span></code> (str): This command string will be executed right <em>after</em> the menu has closed down.
 From experience, it’s useful to trigger a “look” command to make sure the user is aware of the
-change of state; but any command can be used. If set to <code class="docutils literal notranslate"><span class="pre">None</span></code>, no command will be triggered after
+change of state; but any command can be used. If set to <code class="docutils literal notranslate"><span class="pre">None</span></code>, no command will be triggered
+after
 exiting the menu.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">persistent</span></code> (bool) - if <code class="docutils literal notranslate"><span class="pre">True</span></code>, the menu will survive a reload (so the user will not be kicked
 out by the reload - make sure they can exit on their own!)</p></li>
@@ -184,7 +197,8 @@ menu. Temporary variables you store on a persistent <code class="docutils litera
 </pre></div>
 </td></tr></table></div>
 <blockquote>
-<div><p>While all of the above forms are okay, it’s recommended to stick to the third and last form since it
+<div><p>While all of the above forms are okay, it’s recommended to stick to the third and last form since
+it
 gives the most flexibility. The previous forms are mainly there for backwards compatibility with
 existing menus from a time when EvMenu was less able.</p>
 </div></blockquote>
@@ -219,10 +233,12 @@ help text is not given, the menu will give a generic error message when using <c
 </div>
 <div class="section" id="options">
 <h4>options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h4>
-<p>The <code class="docutils literal notranslate"><span class="pre">options</span></code> list describe all the choices available to the user when viewing this node. If <code class="docutils literal notranslate"><span class="pre">options</span></code> is
+<p>The <code class="docutils literal notranslate"><span class="pre">options</span></code> list describe all the choices available to the user when viewing this node. If
+<code class="docutils literal notranslate"><span class="pre">options</span></code> is
 returned as <code class="docutils literal notranslate"><span class="pre">None</span></code>, it means that this node is an <em>Exit node</em> - any text is displayed and then the
 menu immediately exits, running the <code class="docutils literal notranslate"><span class="pre">exit_cmd</span></code> if given.</p>
-<p>Otherwise, <code class="docutils literal notranslate"><span class="pre">options</span></code> should be a list (or tuple) of dictionaries, one for each option. If only one option is
+<p>Otherwise, <code class="docutils literal notranslate"><span class="pre">options</span></code> should be a list (or tuple) of dictionaries, one for each option. If only one
+option is
 available, a single dictionary can also be returned. This is how it could look:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
@@ -261,7 +277,8 @@ Defend: Hold back and defend yourself
 </div>
 <div class="section" id="option-key-key">
 <h5>option-key ‘key’<a class="headerlink" href="#option-key-key" title="Permalink to this headline">¶</a></h5>
-<p>The option’s <code class="docutils literal notranslate"><span class="pre">key</span></code> is what the user should enter in order to choose that option. If given as a tuple, the
+<p>The option’s <code class="docutils literal notranslate"><span class="pre">key</span></code> is what the user should enter in order to choose that option. If given as a
+tuple, the
 first string of that tuple will be what is shown on-screen while the rest are aliases for picking
 that option. In the above example, the user could enter “Attack” (or “attack”, it’s not
 case-sensitive), “a” or “att” in order to attack the goblin. Aliasing is useful for adding custom
@@ -367,7 +384,8 @@ function as</p>
 </td></tr></table></div>
 <p>Here, <code class="docutils literal notranslate"><span class="pre">raw_string</span></code> is always the input the user entered to make that choice and <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> are the
 same as those <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> that already entered the <em>current</em> node (they are passed on).</p>
-<p>Alternatively the <code class="docutils literal notranslate"><span class="pre">goto</span></code> could point to a “goto-callable”. Such callables are usually defined in the same
+<p>Alternatively the <code class="docutils literal notranslate"><span class="pre">goto</span></code> could point to a “goto-callable”. Such callables are usually defined in the
+same
 module as the menu nodes and given names starting with <code class="docutils literal notranslate"><span class="pre">_</span></code> (to avoid being parsed as nodes
 themselves). These callables will be called the same as a node function - <code class="docutils literal notranslate"><span class="pre">callable(caller,</span> <span class="pre">raw_string,</span> <span class="pre">**kwargs)</span></code>, where <code class="docutils literal notranslate"><span class="pre">raw_string</span></code> is what the user entered on this node and <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> is
 forwarded from the node’s own input.</p>
@@ -376,7 +394,8 @@ the kwargs passed into the goto-callable, for example you could use the same cal
 kwargs passed into it depending on which option was actually chosen.</p>
 <p>The “goto callable” must either return a string <code class="docutils literal notranslate"><span class="pre">&quot;nodename&quot;</span></code> or a tuple <code class="docutils literal notranslate"><span class="pre">(&quot;nodename&quot;,</span> <span class="pre">mykwargs)</span></code>.
 This will lead to the next node being called as either <code class="docutils literal notranslate"><span class="pre">nodename(caller,</span> <span class="pre">raw_string,</span> <span class="pre">**kwargs)</span></code> or
-<code class="docutils literal notranslate"><span class="pre">nodename(caller,</span> <span class="pre">raw_string,</span> <span class="pre">**mykwargs)</span></code> - so this allows changing (or replacing) the options going
+<code class="docutils literal notranslate"><span class="pre">nodename(caller,</span> <span class="pre">raw_string,</span> <span class="pre">**mykwargs)</span></code> - so this allows changing (or replacing) the options
+going
 into the next node depending on what option was chosen.</p>
 <p>There is one important case - if the goto-callable returns <code class="docutils literal notranslate"><span class="pre">None</span></code> for a <code class="docutils literal notranslate"><span class="pre">nodename</span></code>, <em>the current
 node will run again</em>, possibly with different kwargs. This makes it very easy to re-use a node over
@@ -522,18 +541,23 @@ needed. Here is an example:</p>
 <div class="section" id="examples">
 <h2>Examples:<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><strong><a class="reference external" href="/EvMenu.html#example-simple-branching-menu">Simple branching menu</a></strong> - choose from options</p></li>
-<li><p><strong><a class="reference external" href="/EvMenu.html#example-dynamic-goto">Dynamic goto</a></strong> - jumping to different nodes based on response</p></li>
-<li><p><strong><a class="reference external" href="/EvMenu.html#example-set-caller-properties">Set caller properties</a></strong> - a menu that changes things</p></li>
-<li><p><strong><a class="reference external" href="/EvMenu.html#example-get-arbitrary-input">Getting arbitrary input</a></strong> - entering text</p></li>
-<li><p><strong><a class="reference external" href="/EvMenu.html#example-storing-data-between-nodes">Storing data between nodes</a></strong> - keeping states and information while in the menu</p></li>
-<li><p><strong><a class="reference external" href="/EvMenu.html#example-repeating-the-same-node">Repeating the same node</a></strong> - validating within the node before moving to the next</p></li>
-<li><p><strong><a class="reference external" href="/EvMenu.html#example-full-menu">Full Menu</a>:</strong> a complete example</p></li>
-<li><p><strong><a class="reference external" href="/EvMenu.html#example-yesno-prompt">Yes/No prompt</a></strong> - entering text with limited possible responses (this is <em>not</em> using EvMenu but the conceptually similar yet technically unrelated <code class="docutils literal notranslate"><span class="pre">get_input</span></code> helper function accessed as <code class="docutils literal notranslate"><span class="pre">evennia.utils.evmenu.get_input</span></code>).</p></li>
+<li><p><strong><a class="reference external" href="EvMenu.html#example-simple-branching-menu">Simple branching menu</a></strong> - choose from options</p></li>
+<li><p><strong><a class="reference external" href="EvMenu.html#example-dynamic-goto">Dynamic goto</a></strong> - jumping to different nodes based on response</p></li>
+<li><p><strong><a class="reference external" href="EvMenu.html#example-set-caller-properties">Set caller properties</a></strong> - a menu that changes things</p></li>
+<li><p><strong><a class="reference external" href="EvMenu.html#example-get-arbitrary-input">Getting arbitrary input</a></strong> - entering text</p></li>
+<li><p><strong><a class="reference external" href="EvMenu.html#example-storing-data-between-nodes">Storing data between nodes</a></strong> - keeping states and
+information while in the menu</p></li>
+<li><p><strong><a class="reference external" href="EvMenu.html#example-repeating-the-same-node">Repeating the same node</a></strong> - validating within the node
+before moving to the next</p></li>
+<li><p><strong><a class="reference external" href="EvMenu.html#example-full-menu">Full Menu</a>:</strong> a complete example</p></li>
+<li><p><strong><a class="reference external" href="EvMenu.html#example-yesno-prompt">Yes/No prompt</a></strong> - entering text with limited possible responses
+(this is <em>not</em> using EvMenu but the conceptually similar yet technically unrelated <code class="docutils literal notranslate"><span class="pre">get_input</span></code>
+helper function accessed as <code class="docutils literal notranslate"><span class="pre">evennia.utils.evmenu.get_input</span></code>).</p></li>
 </ul>
 <div class="section" id="example-simple-branching-menu">
 <h3>Example: Simple branching menu<a class="headerlink" href="#example-simple-branching-menu" title="Permalink to this headline">¶</a></h3>
-<p>Below is an example of a simple branching menu node leading to different other nodes depending on choice:</p>
+<p>Below is an example of a simple branching menu node leading to different other nodes depending on
+choice:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -852,7 +876,8 @@ all nodes. At the end we look at it and, if we accept the character the menu wil
 result to permanent storage and exit.</p>
 <blockquote>
 <div><p>One point to remember though is that storage on <code class="docutils literal notranslate"><span class="pre">caller.ndb._menutree</span></code> is not persistent across
-<code class="docutils literal notranslate"><span class="pre">&#64;reloads</span></code>. If you are using a persistent menu (using <code class="docutils literal notranslate"><span class="pre">EvMenu(...,</span> <span class="pre">persistent=True)</span></code> you should use
+<code class="docutils literal notranslate"><span class="pre">&#64;reloads</span></code>. If you are using a persistent menu (using <code class="docutils literal notranslate"><span class="pre">EvMenu(...,</span> <span class="pre">persistent=True)</span></code> you should
+use
 <code class="docutils literal notranslate"><span class="pre">caller.db</span></code> to store in-menu data like this as well. You must then yourself make sure to clean it
 when the user exits the menu.</p>
 </div></blockquote>
@@ -1136,7 +1161,7 @@ When asked &#39;Write something!&#39;, you answered &#39;Hello&#39;.
 return True from the callback to repeat the prompt until you pass whatever check you want.</p>
 <blockquote>
 <div><p>Note: You <em>cannot</em> link consecutive questions by putting a new <code class="docutils literal notranslate"><span class="pre">get_input</span></code> call inside the
-callback If you want that you should use an EvMenu instead (see the <a class="reference external" href="/EvMenu.html#example-repeating-the-same-node">Repeating the same
+callback If you want that you should use an EvMenu instead (see the <a class="reference external" href="EvMenu.html#example-repeating-the-same-node">Repeating the same
 node</a> example above). Otherwise you can either peek at the
 implementation of <code class="docutils literal notranslate"><span class="pre">get_input</span></code> and implement your own mechanism (it’s just using cmdset nesting) or
 you can look at <a class="reference external" href="https://groups.google.com/forum/#%21category-topic/evennia/evennia-questions/16pi0SfMO5U">this extension suggested on the mailing
@@ -1341,7 +1366,10 @@ until the exit node.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">EvMenu</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">
