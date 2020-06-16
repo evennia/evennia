@@ -30,7 +30,7 @@ body {
   font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-size: 14px;
 	color: #232323;
-	background-color: #FBFAF7;
+	background-color: #F4F3F1;
 	margin: 0;
 	line-height: 1.8em;
 	-webkit-font-smoothing: antialiased;
@@ -76,7 +76,7 @@ h4, h5, h6 {
 }
 
 a {
-  color:#C30000;
+  color:#5C81F1;
   font-weight:200;
   text-decoration:none;
 }
@@ -156,7 +156,9 @@ p img {
   vertical-align: middle;
   text-align: center;
   border: none;
+  opacity: 0.6;
 }
+
 
 /* Code blocks */
 
@@ -213,8 +215,8 @@ td {
 /* Header */
 
 header {
-	background-color: #171717;
-	color: #FDFDFB;
+	background-color: #d7d6d4;
+	color: #2C2C2C;
   width:170px;
   float:left;
   position:fixed;
@@ -226,8 +228,9 @@ header {
 	border-top-right-radius: 4px;
 	border-bottom-right-radius: 4px;
 	padding: 34px 25px 22px 50px;
-	margin: 30px 25px 0 0;
+	margin: -10px 25px 0 0;
 	-webkit-font-smoothing: antialiased;
+	height: 94vh;
 }
 
 p.header {
@@ -270,26 +273,22 @@ header li {
 	padding: 6px 6px 6px 7px;
 
 	background: #AF0011;
-	background: -moz-linear-gradient(top, #AF0011 0%, #820011 100%);
+	/*! background: -moz-linear-gradient(top, #AF0011 0%, #820011 100%); */
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f8f8f8), color-stop(100%,#dddddd));
-  background: -webkit-linear-gradient(top, #AF0011 0%,#820011 100%);
+  background: -webkit-linear-gradient(top, #FFFFF 0%,#820011 100%);
   background: -o-linear-gradient(top, #AF0011 0%,#820011 100%);
   background: -ms-linear-gradient(top, #AF0011 0%,#820011 100%);
   background: linear-gradient(top, #AF0011 0%,#820011 100%);
 
 	border-radius:4px;
   border:1px solid #0D0D0D;
-
-	-webkit-box-shadow: inset 0px 1px 1px 0 rgba(233,2,38, 1);
-	box-shadow: inset 0px 1px 1px 0 rgba(233,2,38, 1);
-
 }
 
 header li:hover {
 	background: #C3001D;
 	background: -moz-linear-gradient(top, #C3001D 0%, #950119 100%);
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f8f8f8), color-stop(100%,#dddddd));
-  background: -webkit-linear-gradient(top, #C3001D 0%,#950119 100%);
+  /*! background: -webkit-linear-gradient(top, #C3001D 0%,#950119 100%); */
   background: -o-linear-gradient(top, #C3001D 0%,#950119 100%);
   background: -ms-linear-gradient(top, #C3001D 0%,#950119 100%);
   background: linear-gradient(top, #C3001D 0%,#950119 100%);
@@ -297,22 +296,23 @@ header li:hover {
 
 a.buttons {
 	-webkit-font-smoothing: antialiased;
-	background: url(../images/arrow-down.png) no-repeat;
+	/*! background: url(../images/arrow-down.png) no-repeat; */
 	font-weight: normal;
-	text-shadow: rgba(0, 0, 0, 0.4) 0 -1px 0;
+	/*! text-shadow: rgba(0, 0, 0, 0.4) 0 -1px 0; */
 	padding: 2px 2px 2px 22px;
 	height: 30px;
+  color: #474747;
 }
+
 
 a.github {
 	background: url(../images/octocat-small.png) no-repeat 1px;
 }
 
 a.buttons:hover {
-	color: #fff;
+	color: #6084f1;
 	text-decoration: none;
 }
-
 
 /* Section - for main page content */
 
