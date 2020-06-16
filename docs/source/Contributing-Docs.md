@@ -222,12 +222,14 @@ One can create both bullet-point lists and numbered lists:
 2. Numbered point two
 3. Numbered point three
 
-### Notes
+### Blockquotes
 
-A note can be used to enphasise important things. It's added by starting one or more lines with `>`.
+A blockquote will create an indented block. It's useful for emphasis and is
+added by starting one or more lines with `>`. For 'notes' you can also use
+an explicit [Note](#Note).
 
 ```
-> Note: This is an important
+> This is an important
 > thing to remember.
 ```
 
@@ -364,6 +366,7 @@ the name of the `language` of a literal block:
 
 ```
 ````
+
 There is also a short-hand form for starting a [ReST directive][ReST-directives] without need for `eval_rst`:
 
 ````
@@ -379,19 +382,21 @@ See below for examples of this.
 
 #### Note
 
-This kind of note may pop even more than a normal `> note`. It may however also make the test
-feel more 'busy', so use with care.
+This kind of note may pop more than doing a `> Note: ...`. Contrary to a
+[blockquote](#Blockquotes), the end result will not be indented.
 
 ````
 ```note::
 
-  Remember that ...
+  Remember that you have to indent this content for it to be part of the note.
 
 ```
 ````
+
+
 ```note::
 
-  Remember that ...
+  Remember that you have to indent this content for it to be part of the note.
 
 ```
 

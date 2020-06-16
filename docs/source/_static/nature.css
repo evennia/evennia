@@ -20,6 +20,7 @@ body {
     color: #555;
     margin: 0;
     padding: 0;
+    height:88
 }
 
 div.documentwrapper {
@@ -309,3 +310,14 @@ div.code-block-caption {
   opacity: 0.8;
 }
 
+.versionadded {
+  background-color: #e9f6e1;
+}
+
+.versionchanged {
+  background-color: #f7f7f7;
+}
+
+.deprecated {
+  background-color: #fff3f3;
+}
