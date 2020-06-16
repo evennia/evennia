@@ -7,11 +7,13 @@
     <title>Online Setup &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Online Setup</a></li>
+
+
       </ul>
     </div>  
 
@@ -66,7 +71,7 @@
 </div></blockquote>
 <div class="section" id="settings-example">
 <h3>Settings example<a class="headerlink" href="#settings-example" title="Permalink to this headline">¶</a></h3>
-<p>You can connect Evennia to the Internet without any changes to your settings. The default settings are easy to use but are not necessarily the safest. You can customize your online presence in your <a class="reference external" href="/Server-Conf.html#settings-file">settings file</a>. To have Evennia recognize changed port settings you have to do a full <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">reboot</span></code> to also restart the Portal and not just the Server component.</p>
+<p>You can connect Evennia to the Internet without any changes to your settings. The default settings are easy to use but are not necessarily the safest. You can customize your online presence in your <a class="reference external" href="Server-Conf.html#settings-file">settings file</a>. To have Evennia recognize changed port settings you have to do a full <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">reboot</span></code> to also restart the Portal and not just the Server component.</p>
 <p>Below is an example of a simple set of settings, mostly using the defaults. Evennia will require access to five computer ports, of which three (only) should be open to the outside world. Below we continue to assume that our server address is <code class="docutils literal notranslate"><span class="pre">203.0.113.0</span></code>.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
@@ -286,7 +291,7 @@ The <em>internal</em> port (<code class="docutils literal notranslate"><span cla
 </ul>
 <div class="section" id="setting-up-your-own-machine-as-a-server">
 <h4>Setting up your own machine as a server<a class="headerlink" href="#setting-up-your-own-machine-as-a-server" title="Permalink to this headline">¶</a></h4>
-<p><a class="reference external" href="/Online-Setup.html#connecting-from-the-outside">The first section</a> of this page describes how to do this and allow users to connect to the IP address of your machine/router.</p>
+<p><a class="reference external" href="Online-Setup.html#connecting-from-the-outside">The first section</a> of this page describes how to do this and allow users to connect to the IP address of your machine/router.</p>
 <p>A complication with using a specific IP address like this is that your home IP might not remain the same. Many ISPs (Internet Service Providers) allocates a <em>dynamic</em> IP to you which could change at any time. When that happens, that IP you told people to go to will be worthless. Also, that long string of numbers is not very pretty, is it? It’s hard to remember and not easy to use in marketing your game. What you need is to alias it to a more sensible domain name - an alias that follows you around also when the IP changes.</p>
 <ol>
 <li><p>To set up a domain name alias, we recommend starting with a free domain name from <a class="reference external" href="http://freedns.afraid.org/">FreeDNS</a>. Once you register there (it’s free) you have access to tens of thousands domain names that people have “donated” to allow you to use for your own sub domain. For example, <code class="docutils literal notranslate"><span class="pre">strangled.net</span></code> is one of those available domains. So tying our IP address to <code class="docutils literal notranslate"><span class="pre">strangled.net</span></code> using the subdomain <code class="docutils literal notranslate"><span class="pre">evennia</span></code> would mean that one could henceforth direct people to <code class="docutils literal notranslate"><span class="pre">http://evennia.strangled.net:4001</span></code> for their gaming needs - far easier to remember!</p></li>
@@ -429,7 +434,10 @@ The <em>internal</em> port (<code class="docutils literal notranslate"><span cla
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Online Setup</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

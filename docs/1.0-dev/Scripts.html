@@ -7,11 +7,13 @@
     <title>Scripts &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Scripts</a></li>
+
+
       </ul>
     </div>  
 
@@ -106,7 +111,10 @@ Typeclass.</p>
         <span class="c1"># do stuff every minute </span>
 </pre></div>
 </td></tr></table></div>
-<p>In <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/scripts.py</span></code> is the <code class="docutils literal notranslate"><span class="pre">Script</span></code> class which inherits from <code class="docutils literal notranslate"><span class="pre">DefaultScript</span></code> already. This is provided as your own base class to do with what you like: You can tweak <code class="docutils literal notranslate"><span class="pre">Script</span></code> if you want to change the default behavior and it is usually convenient to inherit from this instead. Here’s an example:</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/scripts.py</span></code> is the <code class="docutils literal notranslate"><span class="pre">Script</span></code> class which inherits from <code class="docutils literal notranslate"><span class="pre">DefaultScript</span></code>
+already. This is provided as your own base class to do with what you like: You can tweak <code class="docutils literal notranslate"><span class="pre">Script</span></code> if
+you want to change the default behavior and it is usually convenient to inherit from this instead.
+Here’s an example:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -203,47 +211,89 @@ command in-game.</p>
 </div>
 <div class="section" id="properties-and-functions-defined-on-scripts">
 <h2>Properties and functions defined on Scripts<a class="headerlink" href="#properties-and-functions-defined-on-scripts" title="Permalink to this headline">¶</a></h2>
-<p>A Script has all the properties of a typeclassed object, such as <code class="docutils literal notranslate"><span class="pre">db</span></code> and <code class="docutils literal notranslate"><span class="pre">ndb</span></code>(see <a class="reference internal" href="Typeclasses.html"><span class="doc">Typeclasses</span></a>). Setting <code class="docutils literal notranslate"><span class="pre">key</span></code> is useful in order to manage scripts (delete them by name etc). These are usually set up in the Script’s typeclass, but can also be assigned on the fly as keyword arguments to <code class="docutils literal notranslate"><span class="pre">evennia.create_script</span></code>.</p>
+<p>A Script has all the properties of a typeclassed object, such as <code class="docutils literal notranslate"><span class="pre">db</span></code> and <code class="docutils literal notranslate"><span class="pre">ndb</span></code>(see
+<a class="reference internal" href="Typeclasses.html"><span class="doc">Typeclasses</span></a>). Setting <code class="docutils literal notranslate"><span class="pre">key</span></code> is useful in order to manage scripts (delete them by name
+etc). These are usually set up in the Script’s typeclass, but can also be assigned on the fly as
+keyword arguments to <code class="docutils literal notranslate"><span class="pre">evennia.create_script</span></code>.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">desc</span></code> - an optional description of the script’s function. Seen in script listings.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">interval</span></code> - how often the script should run. If <code class="docutils literal notranslate"><span class="pre">interval</span> <span class="pre">==</span> <span class="pre">0</span></code> (default), this script has no timing component, will not repeat and will exist forever. This is useful for Scripts used for storage or acting as bases for various non-time dependent game systems.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">start_delay</span></code> - (bool), if we should wait <code class="docutils literal notranslate"><span class="pre">interval</span></code> seconds before firing for the first time or not.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">repeats</span></code> - How many times we should repeat, assuming <code class="docutils literal notranslate"><span class="pre">interval</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>. If repeats is set to <code class="docutils literal notranslate"><span class="pre">&lt;=</span> <span class="pre">0</span></code>, the script will repeat indefinitely. Note that <em>each</em> firing of the script (including the first one) counts towards this value. So a <code class="docutils literal notranslate"><span class="pre">Script</span></code> with <code class="docutils literal notranslate"><span class="pre">start_delay=False</span></code> and <code class="docutils literal notranslate"><span class="pre">repeats=1</span></code> will start, immediately fire and shut down right away.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">persistent</span></code>- if this script should survive a server <em>reset</em> or server <em>shutdown</em>. (You don’t need to set this for it to survive a normal reload - the script will be paused and seamlessly restart after the reload is complete).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">interval</span></code> - how often the script should run. If <code class="docutils literal notranslate"><span class="pre">interval</span> <span class="pre">==</span> <span class="pre">0</span></code> (default), this script has no
+timing component, will not repeat and will exist forever. This is useful for Scripts used for
+storage or acting as bases for various non-time dependent game systems.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">start_delay</span></code> - (bool), if we should wait <code class="docutils literal notranslate"><span class="pre">interval</span></code> seconds before firing for the first time or
+not.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">repeats</span></code> - How many times we should repeat, assuming <code class="docutils literal notranslate"><span class="pre">interval</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>. If repeats is set to <code class="docutils literal notranslate"><span class="pre">&lt;=</span> <span class="pre">0</span></code>,
+the script will repeat indefinitely. Note that <em>each</em> firing of the script (including the first one)
+counts towards this value. So a <code class="docutils literal notranslate"><span class="pre">Script</span></code> with <code class="docutils literal notranslate"><span class="pre">start_delay=False</span></code> and <code class="docutils literal notranslate"><span class="pre">repeats=1</span></code> will start,
+immediately fire and shut down right away.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">persistent</span></code>- if this script should survive a server <em>reset</em> or server <em>shutdown</em>. (You don’t need
+to set this for it to survive a normal reload - the script will be paused and seamlessly restart
+after the reload is complete).</p></li>
 </ul>
 <p>There is one special property:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">obj</span></code> - the <a class="reference internal" href="Objects.html"><span class="doc">Object</span></a> this script is attached to (if any).  You should not need to set this manually. If you add the script to the Object with <code class="docutils literal notranslate"><span class="pre">myobj.scripts.add(myscriptpath)</span></code> or give <code class="docutils literal notranslate"><span class="pre">myobj</span></code> as an argument to the <code class="docutils literal notranslate"><span class="pre">utils.create.create_script</span></code> function, the <code class="docutils literal notranslate"><span class="pre">obj</span></code> property will be set to <code class="docutils literal notranslate"><span class="pre">myobj</span></code> for you.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">obj</span></code> - the <a class="reference internal" href="Objects.html"><span class="doc">Object</span></a> this script is attached to (if any).  You should not need to set
+this manually. If you add the script to the Object with <code class="docutils literal notranslate"><span class="pre">myobj.scripts.add(myscriptpath)</span></code> or give
+<code class="docutils literal notranslate"><span class="pre">myobj</span></code> as an argument to the <code class="docutils literal notranslate"><span class="pre">utils.create.create_script</span></code> function, the <code class="docutils literal notranslate"><span class="pre">obj</span></code> property will be set
+to <code class="docutils literal notranslate"><span class="pre">myobj</span></code> for you.</p></li>
 </ul>
 <p>It’s also imperative to know the hook functions. Normally, overriding
 these are all the customization you’ll need to do in Scripts. You can
 find longer descriptions of these in <code class="docutils literal notranslate"><span class="pre">src/scripts/scripts.py</span></code>.</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">at_script_creation()</span></code> - this is usually where the script class sets things like <code class="docutils literal notranslate"><span class="pre">interval</span></code> and <code class="docutils literal notranslate"><span class="pre">repeats</span></code>; things that control how the script runs. It is only called once - when the script is first created.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">is_valid()</span></code> - determines if the script should still be running or not. This is called when running <code class="docutils literal notranslate"><span class="pre">obj.scripts.validate()</span></code>, which you can run manually, but which is also called by Evennia during certain situations such as reloads. This is also useful for using scripts as state managers. If the method returns <code class="docutils literal notranslate"><span class="pre">False</span></code>, the script is stopped and cleanly removed.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">at_start()</span></code> - this is called when the script starts or is unpaused. For persistent scripts this is at least once ever server startup. Note that this will <em>always</em> be called right away, also if <code class="docutils literal notranslate"><span class="pre">start_delay</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">at_repeat()</span></code> - this is called every <code class="docutils literal notranslate"><span class="pre">interval</span></code> seconds, or not at all. It is called right away at startup, unless <code class="docutils literal notranslate"><span class="pre">start_delay</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, in which case the system will wait <code class="docutils literal notranslate"><span class="pre">interval</span></code> seconds before calling.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">at_stop()</span></code> - this is called when the script stops for whatever reason. It’s a good place to do custom cleanup.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">at_server_reload()</span></code> - this is called whenever the server is warm-rebooted (e.g. with the <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> command). It’s a good place to save non-persistent data you might want to survive a reload.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_script_creation()</span></code> - this is usually where the script class sets things like <code class="docutils literal notranslate"><span class="pre">interval</span></code> and
+<code class="docutils literal notranslate"><span class="pre">repeats</span></code>; things that control how the script runs. It is only called once - when the script is
+first created.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">is_valid()</span></code> - determines if the script should still be running or not. This is called when
+running <code class="docutils literal notranslate"><span class="pre">obj.scripts.validate()</span></code>, which you can run manually, but which is also called by Evennia
+during certain situations such as reloads. This is also useful for using scripts as state managers.
+If the method returns <code class="docutils literal notranslate"><span class="pre">False</span></code>, the script is stopped and cleanly removed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_start()</span></code> - this is called when the script starts or is unpaused. For persistent scripts this
+is at least once ever server startup. Note that this will <em>always</em> be called right away, also if
+<code class="docutils literal notranslate"><span class="pre">start_delay</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_repeat()</span></code> - this is called every <code class="docutils literal notranslate"><span class="pre">interval</span></code> seconds, or not at all. It is called right away at
+startup, unless <code class="docutils literal notranslate"><span class="pre">start_delay</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, in which case the system will wait <code class="docutils literal notranslate"><span class="pre">interval</span></code> seconds
+before calling.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_stop()</span></code> - this is called when the script stops for whatever reason. It’s a good place to do
+custom cleanup.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_server_reload()</span></code> - this is called whenever the server is warm-rebooted (e.g. with the
+<code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> command). It’s a good place to save non-persistent data you might want to survive a
+reload.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">at_server_shutdown()</span></code> - this is called when a system reset or systems shutdown is invoked.</p></li>
 </ul>
 <p>Running methods (usually called automatically by the engine, but possible to also invoke manually)</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">start()</span></code> - this will start the script. This is called automatically whenever you add a new script to a handler. <code class="docutils literal notranslate"><span class="pre">at_start()</span></code> will be called.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">stop()</span></code> - this will stop the script and delete it. Removing a script from a handler will stop it automatically. <code class="docutils literal notranslate"><span class="pre">at_stop()</span></code> will be called.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">pause()</span></code> - this pauses a running script, rendering it inactive, but not deleting it. All properties are saved and timers can be resumed. This is called automatically when the server reloads and will <em>not</em> lead to the <em>at_stop()</em> hook being called. This is a suspension of the script, not a change of state.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">unpause()</span></code> - resumes a previously paused script. The <code class="docutils literal notranslate"><span class="pre">at_start()</span></code> hook <em>will</em> be called to allow it to reclaim its internal state. Timers etc are restored to what they were before pause. The server automatically unpauses all paused scripts after a server reload.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">force_repeat()</span></code> - this will forcibly step the script, regardless of when it would otherwise have fired. The timer will reset and the <code class="docutils literal notranslate"><span class="pre">at_repeat()</span></code> hook is called as normal. This also counts towards the total number of repeats, if limited.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">time_until_next_repeat()</span></code> - for timed scripts, this returns the time in seconds until it next fires. Returns <code class="docutils literal notranslate"><span class="pre">None</span></code> if <code class="docutils literal notranslate"><span class="pre">interval==0</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">remaining_repeats()</span></code> - if the Script should run a limited amount of times, this tells us how many are currently left.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">reset_callcount(value=0)</span></code> - this allows you to reset the number of times the Script has fired. It only makes sense if <code class="docutils literal notranslate"><span class="pre">repeats</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">restart(interval=None,</span> <span class="pre">repeats=None,</span> <span class="pre">start_delay=None)</span></code> - this method allows you to restart the Script in-place with different run settings. If you do, the <code class="docutils literal notranslate"><span class="pre">at_stop</span></code> hook will be called and the Script brought to a halt, then the <code class="docutils literal notranslate"><span class="pre">at_start</span></code> hook will be called as the Script starts up with your (possibly changed) settings. Any keyword left at <code class="docutils literal notranslate"><span class="pre">None</span></code> means to not change the original setting.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">start()</span></code> - this will start the script. This is called automatically whenever you add a new script
+to a handler. <code class="docutils literal notranslate"><span class="pre">at_start()</span></code> will be called.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stop()</span></code> - this will stop the script and delete it. Removing a script from a handler will stop it
+automatically. <code class="docutils literal notranslate"><span class="pre">at_stop()</span></code> will be called.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pause()</span></code> - this pauses a running script, rendering it inactive, but not deleting it. All
+properties are saved and timers can be resumed. This is called automatically when the server reloads
+and will <em>not</em> lead to the <em>at_stop()</em> hook being called. This is a suspension of the script, not a
+change of state.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">unpause()</span></code> - resumes a previously paused script. The <code class="docutils literal notranslate"><span class="pre">at_start()</span></code> hook <em>will</em> be called to allow
+it to reclaim its internal state. Timers etc are restored to what they were before pause. The server
+automatically unpauses all paused scripts after a server reload.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">force_repeat()</span></code> - this will forcibly step the script, regardless of when it would otherwise have
+fired. The timer will reset and the <code class="docutils literal notranslate"><span class="pre">at_repeat()</span></code> hook is called as normal. This also counts towards
+the total number of repeats, if limited.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time_until_next_repeat()</span></code> - for timed scripts, this returns the time in seconds until it next
+fires. Returns <code class="docutils literal notranslate"><span class="pre">None</span></code> if <code class="docutils literal notranslate"><span class="pre">interval==0</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">remaining_repeats()</span></code> - if the Script should run a limited amount of times, this tells us how many
+are currently left.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reset_callcount(value=0)</span></code> - this allows you to reset the number of times the Script has fired. It
+only makes sense if <code class="docutils literal notranslate"><span class="pre">repeats</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">restart(interval=None,</span> <span class="pre">repeats=None,</span> <span class="pre">start_delay=None)</span></code> - this method allows you to restart the
+Script in-place with different run settings. If you do, the <code class="docutils literal notranslate"><span class="pre">at_stop</span></code> hook will be called and the
+Script brought to a halt, then the <code class="docutils literal notranslate"><span class="pre">at_start</span></code> hook will be called as the Script starts up with your
+(possibly changed) settings. Any keyword left at <code class="docutils literal notranslate"><span class="pre">None</span></code> means to not change the original setting.</p></li>
 </ul>
 </div>
 <div class="section" id="global-scripts">
 <h2>Global Scripts<a class="headerlink" href="#global-scripts" title="Permalink to this headline">¶</a></h2>
 <p>A script does not have to be connected to an in-game object. If not it is
-called a <em>Global script</em>. You can create global scripts by simply not supplying an object to store it on:</p>
+called a <em>Global script</em>. You can create global scripts by simply not supplying an object to store
+it on:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
@@ -280,10 +330,13 @@ way to access global scripts. If you know the name (key) of the script you can g
 <div><p>Note that global scripts appear as properties on <code class="docutils literal notranslate"><span class="pre">GLOBAL_SCRIPTS</span></code> based on their <code class="docutils literal notranslate"><span class="pre">key</span></code>.
 If you were to create two global scripts with the same <code class="docutils literal notranslate"><span class="pre">key</span></code> (even with different typeclasses),
 the <code class="docutils literal notranslate"><span class="pre">GLOBAL_SCRIPTS</span></code> container will only return one of them (which one depends on order in
-the database). Best is to organize your scripts so that this does not happen. Otherwise, use <code class="docutils literal notranslate"><span class="pre">evennia.search_script</span></code> to get exactly the script you want.</p>
+the database). Best is to organize your scripts so that this does not happen. Otherwise, use
+<code class="docutils literal notranslate"><span class="pre">evennia.search_script</span></code> to get exactly the script you want.</p>
 </div></blockquote>
 <p>There are two ways to make a script appear as a property on <code class="docutils literal notranslate"><span class="pre">GLOBAL_SCRIPTS</span></code>. The first is
-to manually create a new global script with <code class="docutils literal notranslate"><span class="pre">create_script</span></code> as mentioned above. Often you want this to happen automatically when the server starts though. For this you can use the setting <code class="docutils literal notranslate"><span class="pre">GLOBAL_SCRIPTS</span></code>:</p>
+to manually create a new global script with <code class="docutils literal notranslate"><span class="pre">create_script</span></code> as mentioned above. Often you want this
+to happen automatically when the server starts though. For this you can use the setting
+<code class="docutils literal notranslate"><span class="pre">GLOBAL_SCRIPTS</span></code>:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -311,12 +364,18 @@ to manually create a new global script with <code class="docutils literal notran
 <span class="p">}</span>
 </pre></div>
 </td></tr></table></div>
-<p>Here the key (<code class="docutils literal notranslate"><span class="pre">myscript</span></code> and <code class="docutils literal notranslate"><span class="pre">storagescript</span></code> above) is required, all other fields are optional. If <code class="docutils literal notranslate"><span class="pre">typeclass</span></code> is not given, a script of type <code class="docutils literal notranslate"><span class="pre">settings.BASE_SCRIPT_TYPECLASS</span></code> is assumed. The keys related to timing and intervals are only needed if the script is timed.</p>
-<p>Evennia will use the information in <code class="docutils literal notranslate"><span class="pre">settings.GLOBAL_SCRIPTS</span></code> to automatically create and start these
-scripts when the server starts (unless they already exist, based on their <code class="docutils literal notranslate"><span class="pre">key</span></code>). You need to reload the server before the setting is read and new scripts become available. You can then find the <code class="docutils literal notranslate"><span class="pre">key</span></code> you gave as properties on <code class="docutils literal notranslate"><span class="pre">evennia.GLOBAL_SCRIPTS</span></code>
+<p>Here the key (<code class="docutils literal notranslate"><span class="pre">myscript</span></code> and <code class="docutils literal notranslate"><span class="pre">storagescript</span></code> above) is required, all other fields are optional. If
+<code class="docutils literal notranslate"><span class="pre">typeclass</span></code> is not given, a script of type <code class="docutils literal notranslate"><span class="pre">settings.BASE_SCRIPT_TYPECLASS</span></code> is assumed. The keys
+related to timing and intervals are only needed if the script is timed.</p>
+<p>Evennia will use the information in <code class="docutils literal notranslate"><span class="pre">settings.GLOBAL_SCRIPTS</span></code> to automatically create and start
+these
+scripts when the server starts (unless they already exist, based on their <code class="docutils literal notranslate"><span class="pre">key</span></code>). You need to reload
+the server before the setting is read and new scripts become available. You can then find the <code class="docutils literal notranslate"><span class="pre">key</span></code>
+you gave as properties on <code class="docutils literal notranslate"><span class="pre">evennia.GLOBAL_SCRIPTS</span></code>
 (such as <code class="docutils literal notranslate"><span class="pre">evennia.GLOBAL_SCRIPTS.storagescript</span></code>).</p>
 <blockquote>
-<div><p>Note: Make sure that your Script typeclass does not have any critical errors. If so, you’ll see errors in your log and your Script will temporarily fall back to being a <code class="docutils literal notranslate"><span class="pre">DefaultScript</span></code> type.</p>
+<div><p>Note: Make sure that your Script typeclass does not have any critical errors. If so, you’ll see
+errors in your log and your Script will temporarily fall back to being a <code class="docutils literal notranslate"><span class="pre">DefaultScript</span></code> type.</p>
 </div></blockquote>
 <p>Moreover, a script defined this way is <em>guaranteed</em> to exist when you try to access it:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
@@ -332,10 +391,14 @@ scripts when the server starts (unless they already exist, based on their <code 
 <span class="n">storage</span> <span class="o">=</span> <span class="n">GLOBAL_SCRIPTS</span><span class="o">.</span><span class="n">storagescript</span>
 </pre></div>
 </td></tr></table></div>
-<p>That is, if the script is deleted, next time you get it from <code class="docutils literal notranslate"><span class="pre">GLOBAL_SCRIPTS</span></code>, it will use the information
+<p>That is, if the script is deleted, next time you get it from <code class="docutils literal notranslate"><span class="pre">GLOBAL_SCRIPTS</span></code>, it will use the
+information
 in settings to recreate it for you.</p>
 <blockquote>
-<div><p>Note that if your goal with the Script is to store persistent data, you should set it as <code class="docutils literal notranslate"><span class="pre">persistent=True</span></code>, either in <code class="docutils literal notranslate"><span class="pre">settings.GLOBAL_SCRIPTS</span></code> or in the Scripts typeclass. Otherwise any data you wanted to store on it will be gone (since a new script of the same name is restarted instead).</p>
+<div><p>Note that if your goal with the Script is to store persistent data, you should set it as
+<code class="docutils literal notranslate"><span class="pre">persistent=True</span></code>, either in <code class="docutils literal notranslate"><span class="pre">settings.GLOBAL_SCRIPTS</span></code> or in the Scripts typeclass. Otherwise any
+data you wanted to store on it will be gone (since a new script of the same name is restarted
+instead).</p>
 </div></blockquote>
 </div>
 <div class="section" id="dealing-with-errors">
@@ -464,7 +527,10 @@ tutorial</a>.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Scripts</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

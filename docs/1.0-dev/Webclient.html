@@ -7,11 +7,13 @@
     <title>Webclient &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Webclient</a></li>
+
+
       </ul>
     </div>  
 
@@ -39,18 +44,39 @@
 </div>
 <div class="section" id="web-client">
 <h1><strong>Web client</strong><a class="headerlink" href="#web-client" title="Permalink to this headline">¶</a></h1>
-<p>Evennia comes with a MUD client accessible from a normal web browser. During development you can try it at <code class="docutils literal notranslate"><span class="pre">http://localhost:4001/webclient</span></code>. The client consists of several parts, all under <code class="docutils literal notranslate"><span class="pre">evennia/web/webclient/</span></code>:</p>
-<p><code class="docutils literal notranslate"><span class="pre">templates/webclient/webclient.html</span></code> and <code class="docutils literal notranslate"><span class="pre">templates/webclient/base.html</span></code> are the very simplistic django html templates describing the webclient layout.</p>
-<p><code class="docutils literal notranslate"><span class="pre">static/webclient/js/evennia.js</span></code> is the main evennia javascript library. This handles all communication between Evennia and the client over websockets and via AJAX/COMET if the browser can’t handle websockets. It will make the Evennia object available to the javascript namespace, which offers methods for sending and receiving data to/from the server transparently. This is intended to be used also if swapping out the gui front end.</p>
-<p><code class="docutils literal notranslate"><span class="pre">static/webclient/js/webclient_gui.js</span></code> is the default plugin manager. It adds the <code class="docutils literal notranslate"><span class="pre">plugins</span></code> and <code class="docutils literal notranslate"><span class="pre">plugin_manager</span></code> objects to the javascript namespace, coordinates the GUI operations between the various plugins, and uses the Evennia object library for all in/out.</p>
-<p><code class="docutils literal notranslate"><span class="pre">static/webclient/js/plugins</span></code> provides a default set of plugins that implement a “telnet-like” interface.</p>
-<p><code class="docutils literal notranslate"><span class="pre">static/webclient/css/webclient.css</span></code> is the CSS file for the client; it also defines things like how to display ANSI/Xterm256 colors etc.</p>
-<p>The server-side webclient protocols are found in <code class="docutils literal notranslate"><span class="pre">evennia/server/portal/webclient.py</span></code> and <code class="docutils literal notranslate"><span class="pre">webclient_ajax.py</span></code> for the two types of connections. You can’t (and should not need to) modify these.</p>
+<p>Evennia comes with a MUD client accessible from a normal web browser. During development you can try
+it at <code class="docutils literal notranslate"><span class="pre">http://localhost:4001/webclient</span></code>. The client consists of several parts, all under
+<code class="docutils literal notranslate"><span class="pre">evennia/web/webclient/</span></code>:</p>
+<p><code class="docutils literal notranslate"><span class="pre">templates/webclient/webclient.html</span></code> and <code class="docutils literal notranslate"><span class="pre">templates/webclient/base.html</span></code> are the very simplistic
+django html templates describing the webclient layout.</p>
+<p><code class="docutils literal notranslate"><span class="pre">static/webclient/js/evennia.js</span></code> is the main evennia javascript library. This handles all
+communication between Evennia and the client over websockets and via AJAX/COMET if the browser can’t
+handle websockets. It will make the Evennia object available to the javascript namespace, which
+offers methods for sending and receiving data to/from the server transparently. This is intended to
+be used also if swapping out the gui front end.</p>
+<p><code class="docutils literal notranslate"><span class="pre">static/webclient/js/webclient_gui.js</span></code> is the default plugin manager. It adds the <code class="docutils literal notranslate"><span class="pre">plugins</span></code> and
+<code class="docutils literal notranslate"><span class="pre">plugin_manager</span></code> objects to the javascript namespace, coordinates the GUI operations between the
+various plugins, and uses the Evennia object library for all in/out.</p>
+<p><code class="docutils literal notranslate"><span class="pre">static/webclient/js/plugins</span></code> provides a default set of plugins that implement a “telnet-like”
+interface.</p>
+<p><code class="docutils literal notranslate"><span class="pre">static/webclient/css/webclient.css</span></code> is the CSS file for the client; it also defines things like how
+to display ANSI/Xterm256 colors etc.</p>
+<p>The server-side webclient protocols are found in <code class="docutils literal notranslate"><span class="pre">evennia/server/portal/webclient.py</span></code> and
+<code class="docutils literal notranslate"><span class="pre">webclient_ajax.py</span></code> for the two types of connections. You can’t (and should not need to) modify
+these.</p>
 <div class="section" id="customizing-the-web-client">
 <h2>Customizing the web client<a class="headerlink" href="#customizing-the-web-client" title="Permalink to this headline">¶</a></h2>
-<p>Like was the case for the website, you override the webclient from your game directory. You need to add/modify a file in the matching directory location within one of the _overrides directories.  These _override directories are NOT directly used by the web server when the game is running, the server copies everything web related in the Evennia folder over to <code class="docutils literal notranslate"><span class="pre">mygame/web/static/</span></code> and then copies in all of your _overrides.  This can cause some cases were you edit a file, but it doesn’t seem to make any difference in the servers behavior.  <strong>Before doing anything else, try shutting down the game and running <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">collectstatic</span></code> from the command line then start it back up, clear your browser cache, and see if your edit shows up.</strong></p>
+<p>Like was the case for the website, you override the webclient from your game directory. You need to
+add/modify a file in the matching directory location within one of the _overrides directories.
+These _override directories are NOT directly used by the web server when the game is running, the
+server copies everything web related in the Evennia folder over to <code class="docutils literal notranslate"><span class="pre">mygame/web/static/</span></code> and then
+copies in all of your _overrides.  This can cause some cases were you edit a file, but it doesn’t
+seem to make any difference in the servers behavior.  <strong>Before doing anything else, try shutting
+down the game and running <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">collectstatic</span></code> from the command line then start it back up, clear
+your browser cache, and see if your edit shows up.</strong></p>
 <p>Example: To change the utilized plugin list, you need to override base.html by copying
-<code class="docutils literal notranslate"><span class="pre">evennia/web/webclient/templates/webclient/base.html</span></code> to <code class="docutils literal notranslate"><span class="pre">mygame/web/template_overrides/webclient/base.html</span></code> and  editing it to add your new plugin.</p>
+<code class="docutils literal notranslate"><span class="pre">evennia/web/webclient/templates/webclient/base.html</span></code> to
+<code class="docutils literal notranslate"><span class="pre">mygame/web/template_overrides/webclient/base.html</span></code> and  editing it to add your new plugin.</p>
 </div>
 </div>
 <div class="section" id="evennia-web-client-api-from-evennia-js">
@@ -82,48 +108,83 @@
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">init()</span></code> – The only required callback</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">boolean</span> <span class="pre">onKeydown(event)</span></code> This plugin listens for Keydown events</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">onBeforeUnload()</span></code> This plugin does something special just before the webclient page/tab is closed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">onBeforeUnload()</span></code> This plugin does something special just before the webclient page/tab is
+closed.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">onLoggedIn(args,</span> <span class="pre">kwargs)</span></code> This plugin does something when the webclient first logs in.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">onGotOptions(args,</span> <span class="pre">kwargs)</span></code> This plugin does something with options sent from the server.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">boolean</span> <span class="pre">onText(args,</span> <span class="pre">kwargs)</span></code> This plugin does something with messages sent from the server.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">boolean</span> <span class="pre">onPrompt(args,</span> <span class="pre">kwargs)</span></code> This plugin does something when the server sends a prompt.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">boolean</span> <span class="pre">onUnknownCmd(cmdname,</span> <span class="pre">args,</span> <span class="pre">kwargs)</span></code> This plugin does something with “unknown commands”.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">onConnectionClose(args,</span> <span class="pre">kwargs)</span></code> This plugin does something when the webclient disconnects from the server.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">newstring</span> <span class="pre">onSend(string)</span></code> This plugin examines/alters text that other plugins generate. <strong>Use with caution</strong></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">onConnectionClose(args,</span> <span class="pre">kwargs)</span></code> This plugin does something when the webclient disconnects from
+the server.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">newstring</span> <span class="pre">onSend(string)</span></code> This plugin examines/alters text that other plugins generate. <strong>Use
+with caution</strong></p></li>
 </ul>
-<p>The order of the plugins defined in <code class="docutils literal notranslate"><span class="pre">base.html</span></code> is important.  All the callbacks for each plugin will be executed in that order.  Functions marked “boolean” above must return true/false.  Returning true will short-circuit the execution, so no other plugins lower in the base.html list will have their callback for this event called.  This enables things like the up/down arrow keys for the history.js plugin to always occur before the default_in.js plugin adds that key to the current input buffer.</p>
+<p>The order of the plugins defined in <code class="docutils literal notranslate"><span class="pre">base.html</span></code> is important.  All the callbacks for each plugin
+will be executed in that order.  Functions marked “boolean” above must return true/false.  Returning
+true will short-circuit the execution, so no other plugins lower in the base.html list will have
+their callback for this event called.  This enables things like the up/down arrow keys for the
+history.js plugin to always occur before the default_in.js plugin adds that key to the current input
+buffer.</p>
 </div>
 <div class="section" id="example-default-plugins-plugins-js">
 <h1>Example/Default Plugins (plugins/*.js)<a class="headerlink" href="#example-default-plugins-plugins-js" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">clienthelp.js</span></code> Defines onOptionsUI from the options2 plugin.  This is a mostly empty plugin to add some “How To” information for your game.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">default_in.js</span></code> Defines onKeydown. <enter> key or mouse clicking the arrow will send the currently typed text.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clienthelp.js</span></code> Defines onOptionsUI from the options2 plugin.  This is a mostly empty plugin to
+add some “How To” information for your game.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">default_in.js</span></code> Defines onKeydown. <enter> key or mouse clicking the arrow will send the currently
+typed text.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">default_out.js</span></code> Defines onText, onPrompt, and onUnknownCmd.  Generates HTML output for the user.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">default_unload.js</span></code> Defines onBeforeUnload.  Prompts the user to confirm that they meant to leave/close the game.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">default_unload.js</span></code> Defines onBeforeUnload.  Prompts the user to confirm that they meant to
+leave/close the game.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">font.js</span></code> Defines onOptionsUI. The plugin adds the ability to select your font and font size.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">goldenlayout_default_config.js</span></code> Not actually a plugin, defines a global variable that goldenlayout uses to determine its window layout, known tag routing, etc.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">goldenlayout.js</span></code> Defines onKeydown, onText and custom functions.  A very powerful “tabbed” window manager for drag-n-drop windows, text routing and more.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">history.js</span></code> Defines onKeydown and onSend. Creates a history of past sent commands, and uses arrow keys to peruse.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">hotbuttons.js</span></code> Defines onGotOptions. A Disabled-by-default plugin that defines a button bar with user-assignable commands.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">iframe.js</span></code> Defines onOptionsUI.  A goldenlayout-only plugin to create a restricted browsing sub-window for a side-by-side web/text interface, mostly an example of how to build new HTML “components” for goldenlayout.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">message_routing.js</span></code> Defines onOptionsUI, onText, onKeydown.  This goldenlayout-only plugin implements regex matching to allow users to “tag” arbitrary text that matches, so that it gets routed to proper windows. Similar to “Spawn” functions for other clients.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">multimedia.js</span></code> An basic plugin to allow the client to handle “image” “audio” and “video” messages from the server and display them as inline HTML.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">notifications.js</span></code> Defines onText. Generates browser notification events for each new message while the tab is hidden.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">goldenlayout_default_config.js</span></code> Not actually a plugin, defines a global variable that
+goldenlayout uses to determine its window layout, known tag routing, etc.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">goldenlayout.js</span></code> Defines onKeydown, onText and custom functions.  A very powerful “tabbed” window
+manager for drag-n-drop windows, text routing and more.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">history.js</span></code> Defines onKeydown and onSend. Creates a history of past sent commands, and uses arrow
+keys to peruse.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hotbuttons.js</span></code> Defines onGotOptions. A Disabled-by-default plugin that defines a button bar with
+user-assignable commands.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">iframe.js</span></code> Defines onOptionsUI.  A goldenlayout-only plugin to create a restricted browsing sub-
+window for a side-by-side web/text interface, mostly an example of how to build new HTML
+“components” for goldenlayout.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">message_routing.js</span></code> Defines onOptionsUI, onText, onKeydown.  This goldenlayout-only plugin
+implements regex matching to allow users to “tag” arbitrary text that matches, so that it gets
+routed to proper windows. Similar to “Spawn” functions for other clients.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">multimedia.js</span></code> An basic plugin to allow the client to handle “image” “audio” and “video” messages
+from the server and display them as inline HTML.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">notifications.js</span></code> Defines onText. Generates browser notification events for each new message
+while the tab is hidden.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">oob.js</span></code> Defines onSend. Allows the user to test/send Out Of Band json messages to the server.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">options.js</span></code> Defines most callbacks. Provides a popup-based UI to coordinate options settings with the server.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">options2.js</span></code> Defines most callbacks. Provides a goldenlayout-based version of the options/settings tab.  Integrates with other plugins via the custom onOptionsUI callback.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">options.js</span></code> Defines most callbacks. Provides a popup-based UI to coordinate options settings with
+the server.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">options2.js</span></code> Defines most callbacks. Provides a goldenlayout-based version of the
+options/settings tab.  Integrates with other plugins via the custom onOptionsUI callback.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">popups.js</span></code> Provides default popups/Dialog UI for other plugins to use.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">splithandler.js</span></code> Defines onText. Provides an older, less-flexible alternative to goldenlayout for multi-window UI to automatically separate out screen real-estate by type of message.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">splithandler.js</span></code> Defines onText. Provides an older, less-flexible alternative to goldenlayout for
+multi-window UI to automatically separate out screen real-estate by type of message.</p></li>
 </ul>
 </div>
 <div class="section" id="writing-your-own-plugins">
 <h1>Writing your own Plugins<a class="headerlink" href="#writing-your-own-plugins" title="Permalink to this headline">¶</a></h1>
-<p>So, you love the functionality of the webclient, but your game has specific types of text that need to be separated out into their own space, visually.  There are two plugins to help with this.  The Goldenlayout plugin framework, and the older Splithandler framework.</p>
+<p>So, you love the functionality of the webclient, but your game has specific types of text that need
+to be separated out into their own space, visually.  There are two plugins to help with this.  The
+Goldenlayout plugin framework, and the older Splithandler framework.</p>
 <div class="section" id="goldenlayout">
 <h2>GoldenLayout<a class="headerlink" href="#goldenlayout" title="Permalink to this headline">¶</a></h2>
-<p>GoldenLayout is a web framework that allows web developers and their users to create their own tabbed/windowed layouts.  Windows/tabs can be click-and-dragged from location to location by clicking on their titlebar and dragging until the “frame lines” appear.  Dragging a window onto another window’s titlebar will create a tabbed “Stack”.  The Evennia goldenlayout plugin defines 3 basic types of window:  The Main window, input windows and non-main text output windows.  The Main window and the first input window are unique in that they can’t be “closed”.</p>
-<p>The most basic customization is to provide your users with a default layout other than just one Main output and the one starting input window.  This is done by modifying your server’s goldenlayout_default_config.js.</p>
-<p>Start by creating a new <code class="docutils literal notranslate"><span class="pre">mygame/web/static_overrides/webclient/js/plugins/goldenlayout_default_config.js</span></code> file, and adding the following JSON variable:</p>
+<p>GoldenLayout is a web framework that allows web developers and their users to create their own
+tabbed/windowed layouts.  Windows/tabs can be click-and-dragged from location to location by
+clicking on their titlebar and dragging until the “frame lines” appear.  Dragging a window onto
+another window’s titlebar will create a tabbed “Stack”.  The Evennia goldenlayout plugin defines 3
+basic types of window:  The Main window, input windows and non-main text output windows.  The Main
+window and the first input window are unique in that they can’t be “closed”.</p>
+<p>The most basic customization is to provide your users with a default layout other than just one Main
+output and the one starting input window.  This is done by modifying your server’s
+goldenlayout_default_config.js.</p>
+<p>Start by creating a new
+<code class="docutils literal notranslate"><span class="pre">mygame/web/static_overrides/webclient/js/plugins/goldenlayout_default_config.js</span></code> file, and adding
+the following JSON variable:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">goldenlayout_config</span> <span class="o">=</span> <span class="p">{</span>
     <span class="n">content</span><span class="p">:</span> <span class="p">[{</span>
         <span class="nb">type</span><span class="p">:</span> <span class="s1">&#39;column&#39;</span><span class="p">,</span>
@@ -185,16 +246,30 @@
 <span class="p">};</span>
 </pre></div>
 </div>
-<p>This is a bit ugly, but hopefully, from the indentation, you can see that it creates a side-by-side (2-column) interface with 3 windows down the left side (The Main and 2 inputs) and a pair of windows on the right side for extra outputs.  Any text tagged with “some-tag-here” will flow to the bottom of the “example” window, and any text tagged “sheet” will replace the text already in the “sheet” window.</p>
-<p>Note:  GoldenLayout gets VERY confused and will break if you create two windows with the “Main” componentName.</p>
-<p>Now, let’s say you want to display text on each window using different CSS.  This is where new goldenlayout “components” come in.  Each component is like a blueprint that gets stamped out when you create a new instance of that component, once it is defined, it won’t be easily altered.  You will need to define a new component, preferably in a new plugin file, and then add that into your page (either dynamically to the DOM via javascript, or by including the new plugin file into the base.html).</p>
-<p>First up, follow the directions in Customizing the Web Client section above to override the base.html.</p>
+<p>This is a bit ugly, but hopefully, from the indentation, you can see that it creates a side-by-side
+(2-column) interface with 3 windows down the left side (The Main and 2 inputs) and a pair of windows
+on the right side for extra outputs.  Any text tagged with “some-tag-here” will flow to the bottom
+of the “example” window, and any text tagged “sheet” will replace the text already in the “sheet”
+window.</p>
+<p>Note:  GoldenLayout gets VERY confused and will break if you create two windows with the “Main”
+componentName.</p>
+<p>Now, let’s say you want to display text on each window using different CSS.  This is where new
+goldenlayout “components” come in.  Each component is like a blueprint that gets stamped out when
+you create a new instance of that component, once it is defined, it won’t be easily altered.  You
+will need to define a new component, preferably in a new plugin file, and then add that into your
+page (either dynamically to the DOM via javascript, or by including the new plugin file into the
+base.html).</p>
+<p>First up, follow the directions in Customizing the Web Client section above to override the
+base.html.</p>
 <p>Next, add the new plugin to your copy of base.html:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">script</span> <span class="n">src</span><span class="o">=</span><span class="p">{</span><span class="o">%</span> <span class="n">static</span> <span class="s2">&quot;webclient/js/plugins/myplugin.js&quot;</span> <span class="o">%</span><span class="p">}</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;javascript&quot;</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/javascript&quot;</span><span class="o">&gt;&lt;/</span><span class="n">script</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">script</span> <span class="n">src</span><span class="o">=</span><span class="p">{</span><span class="o">%</span> <span class="n">static</span> <span class="s2">&quot;webclient/js/plugins/myplugin.js&quot;</span> <span class="o">%</span><span class="p">}</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;javascript&quot;</span>
+<span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/javascript&quot;</span><span class="o">&gt;&lt;/</span><span class="n">script</span><span class="o">&gt;</span>
 </pre></div>
 </div>
-<p>Remember, plugins are load-order dependent, so make sure the new <code class="docutils literal notranslate"><span class="pre">&lt;script&gt;</span></code> tag comes before the goldenlayout.js</p>
-<p>Next, create a new plugin file <code class="docutils literal notranslate"><span class="pre">mygame/web/static_overrides/webclient/js/plugins/myplugin.js</span></code> and edit it.</p>
+<p>Remember, plugins are load-order dependent, so make sure the new <code class="docutils literal notranslate"><span class="pre">&lt;script&gt;</span></code> tag comes before the
+goldenlayout.js</p>
+<p>Next, create a new plugin file <code class="docutils literal notranslate"><span class="pre">mygame/web/static_overrides/webclient/js/plugins/myplugin.js</span></code> and
+edit it.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>let myplugin = (function () {
     //
     //
@@ -221,18 +296,23 @@ window.plugin_handler.add(&quot;myplugin&quot;, myplugin);
 </pre></div>
 </div>
 <p>You can then add “mycomponent” to an item’s componentName in your goldenlayout_default_config.js.</p>
-<p>Make sure to stop your server, evennia collectstatic, and restart your server.  Then make sure to clear your browser cache before loading the webclient page.</p>
+<p>Make sure to stop your server, evennia collectstatic, and restart your server.  Then make sure to
+clear your browser cache before loading the webclient page.</p>
 </div>
 <div class="section" id="older-splithandler">
 <h2>Older Splithandler<a class="headerlink" href="#older-splithandler" title="Permalink to this headline">¶</a></h2>
-<p>The splithandler.js plugin provides a means to do this, but you don’t want to have to force every player to set up their own layout every time they use the client.</p>
+<p>The splithandler.js plugin provides a means to do this, but you don’t want to have to force every
+player to set up their own layout every time they use the client.</p>
 <p>Let’s create a <code class="docutils literal notranslate"><span class="pre">mygame/web/static_overrides/webclient/js/plugins/layout.js</span></code> plugin!</p>
-<p>First up, follow the directions in Customizing the Web Client section above to override the base.html.</p>
+<p>First up, follow the directions in Customizing the Web Client section above to override the
+base.html.</p>
 <p>Next, add the new plugin to your copy of base.html:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">script</span> <span class="n">src</span><span class="o">=</span><span class="p">{</span><span class="o">%</span> <span class="n">static</span> <span class="s2">&quot;webclient/js/plugins/layout.js&quot;</span> <span class="o">%</span><span class="p">}</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;javascript&quot;</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/javascript&quot;</span><span class="o">&gt;&lt;/</span><span class="n">script</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">script</span> <span class="n">src</span><span class="o">=</span><span class="p">{</span><span class="o">%</span> <span class="n">static</span> <span class="s2">&quot;webclient/js/plugins/layout.js&quot;</span> <span class="o">%</span><span class="p">}</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;javascript&quot;</span>
+<span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/javascript&quot;</span><span class="o">&gt;&lt;/</span><span class="n">script</span><span class="o">&gt;</span>
 </pre></div>
 </div>
-<p>Remember, plugins are load-order dependent, so make sure the new <code class="docutils literal notranslate"><span class="pre">&lt;script&gt;</span></code> tag comes after the splithandler.js</p>
+<p>Remember, plugins are load-order dependent, so make sure the new <code class="docutils literal notranslate"><span class="pre">&lt;script&gt;</span></code> tag comes after the
+splithandler.js</p>
 <p>And finally create the layout.js file and add the minimum skeleton of a plugin to it:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">my</span> <span class="n">new</span> <span class="n">plugin</span>
 <span class="n">var</span> <span class="n">my_plugin</span> <span class="o">=</span> <span class="p">(</span><span class="n">function</span> <span class="p">()</span> <span class="p">{</span>
@@ -247,16 +327,20 @@ window.plugin_handler.add(&quot;myplugin&quot;, myplugin);
 <span class="n">plugin_handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;myplugin&quot;</span><span class="p">,</span> <span class="n">my_plugin</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>Now, <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">stop</span></code>, <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">collectstatic</span></code>, and <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">start</span></code> and then load the webclient up in your browser.
-Enable developer options and look in the console, and you should see the message ‘myplugin! Hello World!’</p>
-<p>Since our layout.js plugin is going to use the splithandler, let’s enhance this by adding a check to make sure the splithandler.js plugin has been loaded:</p>
+<p>Now, <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">stop</span></code>, <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">collectstatic</span></code>, and <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">start</span></code> and then load the webclient up in
+your browser.
+Enable developer options and look in the console, and you should see the message ‘myplugin! Hello
+World!’</p>
+<p>Since our layout.js plugin is going to use the splithandler, let’s enhance this by adding a check to
+make sure the splithandler.js plugin has been loaded:</p>
 <p>change the above init function to:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">let</span> <span class="n">init</span> <span class="o">=</span> <span class="n">function</span> <span class="p">()</span> <span class="p">{</span>
     <span class="n">let</span> <span class="n">splithandler</span> <span class="o">=</span> <span class="n">plugins</span><span class="p">[</span><span class="s1">&#39;splithandler&#39;</span><span class="p">];</span>
     <span class="k">if</span><span class="p">(</span> <span class="n">splithandler</span> <span class="p">)</span> <span class="p">{</span>
         <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;MyPlugin initialized&quot;</span><span class="p">);</span>
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-        <span class="n">alert</span><span class="p">(</span><span class="s1">&#39;MyPlugin requires the splithandler.js plugin. Please contact the game maintainer to correct this&#39;</span><span class="p">);</span>
+        <span class="n">alert</span><span class="p">(</span><span class="s1">&#39;MyPlugin requires the splithandler.js plugin. Please contact the game maintainer to</span>
+<span class="n">correct</span> <span class="n">this</span><span class="s1">&#39;);</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -265,22 +349,25 @@ Enable developer options and look in the console, and you should see the message
 <code class="docutils literal notranslate"><span class="pre">dynamic_split(</span> <span class="pre">pane_name_to_cut_apart,</span> <span class="pre">direction_of_split,</span> <span class="pre">new_pane_name1,</span> <span class="pre">new_pane_name2,</span> <span class="pre">text_flow_pane1,</span> <span class="pre">text_flow_pane2,</span> <span class="pre">array_of_split_percentages</span> <span class="pre">)</span></code>
 and
 <code class="docutils literal notranslate"><span class="pre">set_pane_types(</span> <span class="pre">pane_to_set,</span> <span class="pre">array_of_known_message_types_to_assign)</span></code></p>
-<p>In this case, we’ll cut it into 3 panes, 1 bigger, two smaller, and assign ‘help’ messages to the top-right pane:</p>
+<p>In this case, we’ll cut it into 3 panes, 1 bigger, two smaller, and assign ‘help’ messages to the
+top-right pane:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">let</span> <span class="n">init</span> <span class="o">=</span> <span class="n">function</span> <span class="p">()</span> <span class="p">{</span>
     <span class="n">let</span> <span class="n">splithandler</span> <span class="o">=</span> <span class="n">plugins</span><span class="p">[</span><span class="s1">&#39;splithandler&#39;</span><span class="p">];</span>
     <span class="k">if</span><span class="p">(</span> <span class="n">splithandler</span> <span class="p">)</span> <span class="p">{</span>
-        <span class="n">splithandler</span><span class="o">.</span><span class="n">dynamic_split</span><span class="p">(</span><span class="s2">&quot;main&quot;</span><span class="p">,</span><span class="s2">&quot;horizontal&quot;</span><span class="p">,</span><span class="s2">&quot;left&quot;</span><span class="p">,</span><span class="s2">&quot;right&quot;</span><span class="p">,</span><span class="s2">&quot;linefeed&quot;</span><span class="p">,</span><span class="s2">&quot;linefeed&quot;</span><span class="p">,[</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">]);</span>
+<span class="n">splithandler</span><span class="o">.</span><span class="n">dynamic_split</span><span class="p">(</span><span class="s2">&quot;main&quot;</span><span class="p">,</span><span class="s2">&quot;horizontal&quot;</span><span class="p">,</span><span class="s2">&quot;left&quot;</span><span class="p">,</span><span class="s2">&quot;right&quot;</span><span class="p">,</span><span class="s2">&quot;linefeed&quot;</span><span class="p">,</span><span class="s2">&quot;linefeed&quot;</span><span class="p">,[</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">]);</span>
         <span class="n">splithandler</span><span class="o">.</span><span class="n">dynamic_split</span><span class="p">(</span><span class="s2">&quot;right&quot;</span><span class="p">,</span><span class="s2">&quot;vertical&quot;</span><span class="p">,</span><span class="s2">&quot;help&quot;</span><span class="p">,</span><span class="s2">&quot;misc&quot;</span><span class="p">,</span><span class="s2">&quot;replace&quot;</span><span class="p">,</span><span class="s2">&quot;replace&quot;</span><span class="p">,[</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">]);</span>
         <span class="n">splithandler</span><span class="o">.</span><span class="n">set_pane_types</span><span class="p">(</span><span class="s1">&#39;help&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;help&#39;</span><span class="p">]);</span>
 
         <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;MyPlugin initialized&quot;</span><span class="p">);</span>
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-        <span class="n">alert</span><span class="p">(</span><span class="s1">&#39;MyPlugin requires the splithandler.js plugin. Please contact the game maintainer to correct this&#39;</span><span class="p">);</span>
+        <span class="n">alert</span><span class="p">(</span><span class="s1">&#39;MyPlugin requires the splithandler.js plugin. Please contact the game maintainer to</span>
+<span class="n">correct</span> <span class="n">this</span><span class="s1">&#39;);</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">stop</span></code>, <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">collectstatic</span></code>, and <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">start</span></code> once more, and force-reload your browser page to clear any cached version.  You should now have a nicely split layout.</p>
+<p><code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">stop</span></code>, <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">collectstatic</span></code>, and <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">start</span></code> once more, and force-reload your
+browser page to clear any cached version.  You should now have a nicely split layout.</p>
 </div>
 </div>
 
@@ -347,7 +434,10 @@ and
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Webclient</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

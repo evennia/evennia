@@ -7,11 +7,13 @@
     <title>Getting Started &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Getting Started</a></li>
+
+
       </ul>
     </div>  
 
@@ -43,14 +48,14 @@ test out Evennia. Apart from downloading and updating you don’t even need an
 internet connection until you feel ready to share your game with the world.</p>
 </div></blockquote>
 <ul class="simple">
-<li><p><a class="reference external" href="/Getting-Started.html#quick-start">Quick Start</a></p></li>
-<li><p><a class="reference external" href="/Getting-Started.html#requirements">Requirements</a></p></li>
-<li><p><a class="reference external" href="/Getting-Started.html#linux-install">Linux Install</a></p></li>
-<li><p><a class="reference external" href="/Getting-Started.html#mac-install">Mac Install</a></p></li>
-<li><p><a class="reference external" href="/Getting-Started.html#windows-install">Windows Install</a></p></li>
+<li><p><a class="reference external" href="Getting-Started.html#quick-start">Quick Start</a></p></li>
+<li><p><a class="reference external" href="Getting-Started.html#requirements">Requirements</a></p></li>
+<li><p><a class="reference external" href="Getting-Started.html#linux-install">Linux Install</a></p></li>
+<li><p><a class="reference external" href="Getting-Started.html#mac-install">Mac Install</a></p></li>
+<li><p><a class="reference external" href="Getting-Started.html#windows-install">Windows Install</a></p></li>
 <li><p><a class="reference internal" href="Running-Evennia-in-Docker.html"><span class="doc">Running in Docker</span></a></p></li>
-<li><p><a class="reference external" href="/Getting-Started.html#where-to-go-next">Where to Go Next</a></p></li>
-<li><p><a class="reference external" href="/Getting-Started.html#troubleshooting">Troubleshooting</a></p></li>
+<li><p><a class="reference external" href="Getting-Started.html#where-to-go-next">Where to Go Next</a></p></li>
+<li><p><a class="reference external" href="Getting-Started.html#troubleshooting">Troubleshooting</a></p></li>
 <li><p><a class="reference internal" href="Glossary.html"><span class="doc">Glossary of terms</span></a></p></li>
 </ul>
 <div class="section" id="quick-start">
@@ -106,9 +111,9 @@ version is usually untested with Evennia)</p></li>
 <div class="section" id="linux-install">
 <h2>Linux Install<a class="headerlink" href="#linux-install" title="Permalink to this headline">¶</a></h2>
 <p>If you run into any issues during the installation and first start, please
-check out <a class="reference external" href="/Getting-Started.html#linux-troubleshooting">Linux Troubleshooting</a>.</p>
+check out <a class="reference external" href="Getting-Started.html#linux-troubleshooting">Linux Troubleshooting</a>.</p>
 <p>For Debian-derived systems (like Ubuntu, Mint etc), start a terminal and
-install the <a class="reference external" href="/Getting-Started.html#requirements">dependencies</a>:</p>
+install the <a class="reference external" href="Getting-Started.html#requirements">dependencies</a>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span>
 <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">python3</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span> <span class="n">python3</span><span class="o">-</span><span class="n">dev</span> <span class="n">python3</span><span class="o">-</span><span class="n">setuptools</span> <span class="n">python3</span><span class="o">-</span><span class="n">git</span> <span class="n">python3</span><span class="o">-</span><span class="n">virtualenv</span> <span class="n">gcc</span>
 
@@ -133,7 +138,7 @@ development:</p>
 contains the source code though, it is not <em>installed</em> yet. To isolate the
 Evennia install and its dependencies from the rest of the system, it is good
 Python practice to install into a <em>virtualenv</em>. If you are unsure about what a
-virtualenv is and why it’s useful, see the <a class="reference external" href="/Glossary.html#virtualenv">Glossary entry on
+virtualenv is and why it’s useful, see the <a class="reference external" href="Glossary.html#virtualenv">Glossary entry on
 virtualenv</a>.</p>
 <p>Run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-V</span></code> to see which version of Python your system defaults to.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># If your Linux defaults to Python3.7+:</span>
@@ -165,8 +170,8 @@ folders) and run</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="n">evennia</span>
 </pre></div>
 </div>
-<p>For more info about <code class="docutils literal notranslate"><span class="pre">pip</span></code>, see the <a class="reference external" href="/Glossary.html#pip">Glossary entry on pip</a>. If
-install failed with any issues, see <a class="reference external" href="/Getting-Started.html#linux-troubleshooting">Linux Troubleshooting</a>.</p>
+<p>For more info about <code class="docutils literal notranslate"><span class="pre">pip</span></code>, see the <a class="reference external" href="Glossary.html#pip">Glossary entry on pip</a>. If
+install failed with any issues, see <a class="reference external" href="Getting-Started.html#linux-troubleshooting">Linux Troubleshooting</a>.</p>
 <p>Next we’ll start our new game, here called “mygame”. This will create yet
 another new folder where you will be creating your new game:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="o">--</span><span class="n">init</span> <span class="n">mygame</span>
@@ -179,7 +184,7 @@ another new folder where you will be creating your new game:</p>
     <span class="n">mygame</span><span class="o">/</span>
 </pre></div>
 </div>
-<p>You can <a class="reference external" href="/Server-Conf.html#settings-file">configure Evennia</a> extensively, for example
+<p>You can <a class="reference external" href="Server-Conf.html#settings-file">configure Evennia</a> extensively, for example
 to use a <a class="reference internal" href="Choosing-An-SQL-Server.html"><span class="doc">different database</span></a>. For now we’ll just stick
 to the defaults though.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">mygame</span>
@@ -193,14 +198,14 @@ live in the terminal, use <code class="docutils literal notranslate"><span class
 </div></blockquote>
 <p>Your game should now be running! Open a web browser at <code class="docutils literal notranslate"><span class="pre">http://localhost:4001</span></code>
 or point a telnet client to <code class="docutils literal notranslate"><span class="pre">localhost:4000</span></code> and log in with the user you
-created. Check out <a class="reference external" href="/Getting-Started.html#where-to-go-next">where to go next</a>.</p>
+created. Check out <a class="reference external" href="Getting-Started.html#where-to-go-next">where to go next</a>.</p>
 </div>
 <div class="section" id="mac-install">
 <h2>Mac Install<a class="headerlink" href="#mac-install" title="Permalink to this headline">¶</a></h2>
 <p>The Evennia server is a terminal program. Open the terminal e.g. from
 <em>Applications-&gt;Utilities-&gt;Terminal</em>. <a class="reference external" href="http://blog.teamtreehouse.com/introduction-to-the-mac-os-x-command-line">Here is an introduction to the Mac terminal</a>
 if you are unsure how it works. If you run into any issues during the
-installation, please check out <a class="reference external" href="/Getting-Started.html#mac-troubleshooting">Mac Troubleshooting</a>.</p>
+installation, please check out <a class="reference external" href="Getting-Started.html#mac-troubleshooting">Mac Troubleshooting</a>.</p>
 <ul class="simple">
 <li><p>Python should already be installed but you must make sure it’s a high enough version.
 (<a class="reference external" href="http://docs.python-guide.org/en/latest/starting/install/osx/">This</a> discusses
@@ -226,7 +231,7 @@ install gcc and the Python headers.</p></li>
 contains the source code though, it is not <em>installed</em> yet. To isolate the
 Evennia install and its dependencies from the rest of the system, it is good
 Python practice to install into a <em>virtualenv</em>. If you are unsure about what a
-virtualenv is and why it’s useful, see the <a class="reference external" href="/Glossary.html#virtualenv">Glossary entry on virtualenv</a>.</p>
+virtualenv is and why it’s useful, see the <a class="reference external" href="Glossary.html#virtualenv">Glossary entry on virtualenv</a>.</p>
 <p>Run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-V</span></code> to check which Python your system defaults to.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># If your Mac defaults to Python3:</span>
 <span class="n">virtualenv</span> <span class="n">evenv</span>
@@ -256,8 +261,8 @@ folders) and run</p>
 <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="n">evennia</span>
 </pre></div>
 </div>
-<p>For more info about <code class="docutils literal notranslate"><span class="pre">pip</span></code>, see the <a class="reference external" href="/Glossary.html#pip">Glossary entry on pip</a>. If
-install failed with any issues, see <a class="reference external" href="/Getting-Started.html#mac-troubleshooting">Mac Troubleshooting</a>.</p>
+<p>For more info about <code class="docutils literal notranslate"><span class="pre">pip</span></code>, see the <a class="reference external" href="Glossary.html#pip">Glossary entry on pip</a>. If
+install failed with any issues, see <a class="reference external" href="Getting-Started.html#mac-troubleshooting">Mac Troubleshooting</a>.</p>
 <p>Next we’ll start our new game. We’ll call it “mygame” here. This creates a new
 folder where you will be creating your new game:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="o">--</span><span class="n">init</span> <span class="n">mygame</span>
@@ -270,7 +275,7 @@ folder where you will be creating your new game:</p>
     <span class="n">mygame</span><span class="o">/</span>
 </pre></div>
 </div>
-<p>You can <a class="reference external" href="/Server-Conf.html#settings-file">configure Evennia</a> extensively, for example
+<p>You can <a class="reference external" href="Server-Conf.html#settings-file">configure Evennia</a> extensively, for example
 to use a <a class="reference internal" href="Choosing-An-SQL-Server.html"><span class="doc">different database</span></a>. We’ll go with the
 defaults here.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">mygame</span>
@@ -284,12 +289,12 @@ live in the terminal, use <code class="docutils literal notranslate"><span class
 </div></blockquote>
 <p>Your game should now be running! Open a web browser at <code class="docutils literal notranslate"><span class="pre">http://localhost:4001</span></code>
 or point a telnet client to <code class="docutils literal notranslate"><span class="pre">localhost:4000</span></code> and log in with the user you
-created. Check out <a class="reference external" href="/Getting-Started.html#where-to-go-next">where to go next</a>.</p>
+created. Check out <a class="reference external" href="Getting-Started.html#where-to-go-next">where to go next</a>.</p>
 </div>
 <div class="section" id="windows-install">
 <h2>Windows Install<a class="headerlink" href="#windows-install" title="Permalink to this headline">¶</a></h2>
 <p>If you run into any issues during the installation, please check out
-<a class="reference external" href="/Getting-Started.html#windows-troubleshooting">Windows Troubleshooting</a>.</p>
+<a class="reference external" href="Getting-Started.html#windows-troubleshooting">Windows Troubleshooting</a>.</p>
 <blockquote>
 <div><p>If you are running Windows10, consider using the Windows Subsystem for Linux
 (<a class="reference external" href="https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux">WSL</a>) instead.
@@ -335,7 +340,7 @@ directory change.</p>
 contains the source code though, it is not <em>installed</em> yet. To isolate the
 Evennia install and its dependencies from the rest of the system, it is good
 Python practice to install into a <em>virtualenv</em>. If you are unsure about what a
-virtualenv is and why it’s useful, see the <a class="reference external" href="/Glossary.html#virtualenv">Glossary entry on virtualenv</a>.</p>
+virtualenv is and why it’s useful, see the <a class="reference external" href="Glossary.html#virtualenv">Glossary entry on virtualenv</a>.</p>
 <p>In your console, try <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-V</span></code> to see which version of Python your system
 defaults to.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">virtualenv</span>
@@ -373,8 +378,8 @@ folders when you use the <code class="docutils literal notranslate"><span class=
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="n">evennia</span>
 </pre></div>
 </div>
-<p>For more info about <code class="docutils literal notranslate"><span class="pre">pip</span></code>, see the <a class="reference external" href="/Glossary.html#pip">Glossary entry on pip</a>. If
-the install failed with any issues, see <a class="reference external" href="/Getting-Started.html#windows-troubleshooting">Windows Troubleshooting</a>.
+<p>For more info about <code class="docutils literal notranslate"><span class="pre">pip</span></code>, see the <a class="reference external" href="Glossary.html#pip">Glossary entry on pip</a>. If
+the install failed with any issues, see <a class="reference external" href="Getting-Started.html#windows-troubleshooting">Windows Troubleshooting</a>.
 Next we’ll start our new game, we’ll call it “mygame” here. This creates a new folder where you will be
 creating your new game:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="o">--</span><span class="n">init</span> <span class="n">mygame</span>
@@ -387,7 +392,7 @@ creating your new game:</p>
     <span class="n">mygame</span>\
 </pre></div>
 </div>
-<p>You can <a class="reference external" href="/Server-Conf.html#settings-file">configure Evennia</a> extensively, for example
+<p>You can <a class="reference external" href="Server-Conf.html#settings-file">configure Evennia</a> extensively, for example
 to use a <a class="reference internal" href="Choosing-An-SQL-Server.html"><span class="doc">different database</span></a>. We’ll go with the
 defaults here.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">mygame</span>
@@ -401,7 +406,7 @@ live in the terminal, use <code class="docutils literal notranslate"><span class
 </div></blockquote>
 <p>Your game should now be running! Open a web browser at <code class="docutils literal notranslate"><span class="pre">http://localhost:4001</span></code>
 or point a telnet client to <code class="docutils literal notranslate"><span class="pre">localhost:4000</span></code> and log in with the user you
-created. Check out <a class="reference external" href="/Getting-Started.html#where-to-go-next">where to go next</a>.</p>
+created. Check out <a class="reference external" href="Getting-Started.html#where-to-go-next">where to go next</a>.</p>
 </div>
 <div class="section" id="where-to-go-next">
 <h2>Where to Go Next<a class="headerlink" href="#where-to-go-next" title="Permalink to this headline">¶</a></h2>
@@ -524,7 +529,10 @@ with <code class="docutils literal notranslate"><span class="pre">pip</span> <sp
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Getting Started</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

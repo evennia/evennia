@@ -7,11 +7,13 @@
     <title>Python basic tutorial part two &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Python basic tutorial part two</a></li>
+
+
       </ul>
     </div>  
 
@@ -39,11 +44,11 @@
 <p><a class="reference internal" href="Python-basic-introduction.html"><span class="doc">In the first part</span></a> of this Python-for-Evennia basic tutorial we learned how to run some simple Python code from inside the game. We also made our first new <em>module</em> containing a <em>function</em> that we called. Now we’re going to start exploring the very important subject of <em>objects</em>.</p>
 <p><strong>Contents:</strong></p>
 <ul class="simple">
-<li><p><a class="reference external" href="/Python-basic-tutorial-part-two.html#on-the-subject-of-objects">On the subject of objects</a></p></li>
-<li><p><a class="reference external" href="/Python-basic-tutorial-part-two.html#exploring-the-evennia-library">Exploring the Evennia library</a></p></li>
-<li><p><a class="reference external" href="/Python-basic-tutorial-part-two.html#tweaking-our-character-class">Tweaking our Character class</a></p></li>
-<li><p><a class="reference external" href="/Python-basic-tutorial-part-two.html#the-evennia-shell">The Evennia shell</a></p></li>
-<li><p><a class="reference external" href="/Python-basic-tutorial-part-two.html#where-to-go-from-here">Where to go from here</a></p></li>
+<li><p><a class="reference external" href="Python-basic-tutorial-part-two.html#on-the-subject-of-objects">On the subject of objects</a></p></li>
+<li><p><a class="reference external" href="Python-basic-tutorial-part-two.html#exploring-the-evennia-library">Exploring the Evennia library</a></p></li>
+<li><p><a class="reference external" href="Python-basic-tutorial-part-two.html#tweaking-our-character-class">Tweaking our Character class</a></p></li>
+<li><p><a class="reference external" href="Python-basic-tutorial-part-two.html#the-evennia-shell">The Evennia shell</a></p></li>
+<li><p><a class="reference external" href="Python-basic-tutorial-part-two.html#where-to-go-from-here">Where to go from here</a></p></li>
 </ul>
 <div class="section" id="on-the-subject-of-objects">
 <h2>On the subject of objects<a class="headerlink" href="#on-the-subject-of-objects" title="Permalink to this headline">¶</a></h2>
@@ -144,7 +149,7 @@ object.</p>
    <span class="o">...</span>
 </pre></div>
 </div>
-<p>There are lots of things in there. There are some docs but most of those have to do with the distribution of Evennia and does not concern us right now. The <code class="docutils literal notranslate"><span class="pre">evennia</span></code> subfolder is what we are looking for. <em>This</em> is what you are accessing when you do <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">evennia</span> <span class="pre">import</span> <span class="pre">...</span></code>. It’s set up by Evennia as a good place to find modules when the server starts. The exact layout of the Evennia library <a class="reference external" href="/Directory-Overview.html#evennia-library-layout">is covered by our directory overview</a>. You can also explore it <a class="reference external" href="https://github.com/evennia/evennia/tree/master/evennia">online on github</a>.</p>
+<p>There are lots of things in there. There are some docs but most of those have to do with the distribution of Evennia and does not concern us right now. The <code class="docutils literal notranslate"><span class="pre">evennia</span></code> subfolder is what we are looking for. <em>This</em> is what you are accessing when you do <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">evennia</span> <span class="pre">import</span> <span class="pre">...</span></code>. It’s set up by Evennia as a good place to find modules when the server starts. The exact layout of the Evennia library <a class="reference external" href="Directory-Overview.html#evennia-library-layout">is covered by our directory overview</a>. You can also explore it <a class="reference external" href="https://github.com/evennia/evennia/tree/master/evennia">online on github</a>.</p>
 <p>The structure of the library directly reflects how you import from it.</p>
 <ul class="simple">
 <li><p>To, for example, import <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/utils/utils.py#L201">the text justify function</a> from <code class="docutils literal notranslate"><span class="pre">evennia/utils/utils.py</span></code> you would do <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">evennia.utils.utils</span> <span class="pre">import</span> <span class="pre">justify</span></code>. In your code you could then just call <code class="docutils literal notranslate"><span class="pre">justify(...)</span></code> to access its functionality.</p></li>
@@ -438,7 +443,10 @@ Hello World!
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Python basic tutorial part two</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

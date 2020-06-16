@@ -1,9 +1,12 @@
 # Tutorial NPCs listening
 
 
-This tutorial shows the implementation of an NPC object that responds to characters speaking in their location. In this example the NPC parrots what is said, but any actions could be triggered this way.
+This tutorial shows the implementation of an NPC object that responds to characters speaking in
+their location. In this example the NPC parrots what is said, but any actions could be triggered
+this way.
 
-It is assumed that you already know how to create custom room and character typeclasses, please see the [Basic Game tutorial](Tutorial-for-basic-MUSH-like-game) if you haven't already done this.
+It is assumed that you already know how to create custom room and character typeclasses, please see
+the [Basic Game tutorial](Tutorial-for-basic-MUSH-like-game) if you haven't already done this.
 
 What we will need is simply a new NPC typeclass that can react when someone speaks.
 
@@ -29,7 +32,8 @@ class Npc(Character):
         return "%s said: '%s'" % (from_obj, message)
 ```
 
-When someone in the room speaks to this NPC, its `msg` method will be called. We will modify the NPCs `.msg` method to catch says so the NPC can respond. 
+When someone in the room speaks to this NPC, its `msg` method will be called. We will modify the
+NPCs `.msg` method to catch says so the NPC can respond.
 
 
 ```python
@@ -63,11 +67,23 @@ class Npc(Character):
         super().msg(text=text, from_obj=from_obj, **kwargs) 
 ```
 
-So if the NPC gets a say and that say is not coming from the NPC itself, it will echo it using the `at_heard_say` hook. Some things of note in the above example:
+So if the NPC gets a say and that say is not coming from the NPC itself, it will echo it using the
+`at_heard_say` hook. Some things of note in the above example:
 
-- The `text` input can be on many different forms depending on where this `msg` is called from. Instead of trying to analyze `text` in detail with a range of `if` statements we just assume the form we want and catch the error if it does not match. This simplifies the code considerably. It's called 'leap before you look' and is a Python paradigm that may feel unfamiliar if you are used to other languages. Here we 'swallow' the error silently, which is fine when the code checked is simple. If not we may want to import `evennia.logger.log_trace` and add `log_trace()` in the `except` clause. 
-- We use `execute_cmd` to fire the `say` command back. We could also have called `self.location.msg_contents`  directly but using the Command makes sure all hooks are called (so those seeing the NPC's `say` can in turn react if they want).  
-- Note the comments about `super` at the end. This will trigger the 'default' `msg` (in the parent class) as well. It's not really necessary as long as no one puppets the NPC (by `@ic <npcname>`) but it's wise to keep in there since the puppeting player will be totally blind if `msg()` is never returning anything to them!
+- The `text` input can be on many different forms depending on where this `msg` is called from.
+Instead of trying to analyze `text` in detail with a range of `if` statements we just assume the
+form we want and catch the error if it does not match. This simplifies the code considerably. It's
+called 'leap before you look' and is a Python paradigm that may feel unfamiliar if you are used to
+other languages. Here we 'swallow' the error silently, which is fine when the code checked is
+simple. If not we may want to import `evennia.logger.log_trace` and add `log_trace()` in the
+`except` clause.
+- We use `execute_cmd` to fire the `say` command back. We could also have called
+`self.location.msg_contents`  directly but using the Command makes sure all hooks are called (so
+those seeing the NPC's `say` can in turn react if they want).
+- Note the comments about `super` at the end. This will trigger the 'default' `msg` (in the parent
+class) as well. It's not really necessary as long as no one puppets the NPC (by `@ic <npcname>`) but
+it's wise to keep in there since the puppeting player will be totally blind if `msg()` is never
+returning anything to them!
 
 Now that's done, let's create an NPC and see what it has to say for itself.
 
@@ -76,7 +92,8 @@ Now that's done, let's create an NPC and see what it has to say for itself.
 @create/drop Guild Master:npc.Npc
 ```
 
-(you could also give the path as `typeclasses.npc.Npc`, but Evennia will look into the `typeclasses` folder automatically so this is a little shorter). 
+(you could also give the path as `typeclasses.npc.Npc`, but Evennia will look into the `typeclasses`
+folder automatically so this is a little shorter).
 
     > say hi
     You say, "hi"
@@ -84,6 +101,10 @@ Now that's done, let's create an NPC and see what it has to say for itself.
 
 ## Assorted notes
 
-There are many ways to implement this kind of functionality. An alternative example to overriding `msg` would be to modify the `at_say` hook on the *Character* instead. It could detect that it's sending to an NPC and call the `at_heard_say` hook directly. 
+There are many ways to implement this kind of functionality. An alternative example to overriding
+`msg` would be to modify the `at_say` hook on the *Character* instead. It could detect that it's
+sending to an NPC and call the `at_heard_say` hook directly.
 
-While the tutorial solution has the advantage of being contained only within the NPC class, combining this with using the Character class gives more direct control over how the NPC will react. Which way to go depends on the design requirements of your particular game. 
+While the tutorial solution has the advantage of being contained only within the NPC class,
+combining this with using the Character class gives more direct control over how the NPC will react.
+Which way to go depends on the design requirements of your particular game.

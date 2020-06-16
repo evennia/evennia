@@ -7,11 +7,13 @@
     <title>Coordinates &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Coordinates</a></li>
+
+
       </ul>
     </div>  
 
@@ -41,7 +46,9 @@
 <h1>Adding room coordinates in your game<a class="headerlink" href="#adding-room-coordinates-in-your-game" title="Permalink to this headline">¶</a></h1>
 <p>This tutorial is moderately difficult in content.  You might want to be familiar and at ease with
 some Python concepts (like properties) and possibly Django concepts (like queries), although this
-tutorial will try to walk you through the process and give enough explanations each time.  If you don’t feel very confident with math, don’t hesitate to pause, go to the example section, which shows a tiny map, and try to walk around the code or read the explanation.</p>
+tutorial will try to walk you through the process and give enough explanations each time.  If you
+don’t feel very confident with math, don’t hesitate to pause, go to the example section, which shows
+a tiny map, and try to walk around the code or read the explanation.</p>
 <p>Evennia doesn’t have a coordinate system by default.  Rooms and other objects are linked by location
 and content:</p>
 <ul class="simple">
@@ -187,7 +194,8 @@ properties to easily access and update coordinates.  This is a Pythonic approach
 </pre></div>
 </td></tr></table></div>
 <p>If you aren’t familiar with the concept of properties in Python, I encourage you to read a good
-tutorial on the subject.  <a class="reference external" href="https://www.programiz.com/python-programming/property">This article on Python properties</a>
+tutorial on the subject.  [This article on Python properties](https://www.programiz.com/python-
+programming/property)
 is well-explained and should help you understand the idea.</p>
 <p>Let’s look at our properties for <code class="docutils literal notranslate"><span class="pre">x</span></code>.  First of all is the read property.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
@@ -265,7 +273,8 @@ could add to the <code class="docutils literal notranslate"><span class="pre">Ro
 class methods, since we want to get rooms.</p>
 <div class="section" id="finding-one-room">
 <h3>Finding one room<a class="headerlink" href="#finding-one-room" title="Permalink to this headline">¶</a></h3>
-<p>First, a simple one: how to find a room at a given coordinate?  Say, what is the room at X=0, Y=0, Z=0?</p>
+<p>First, a simple one: how to find a room at a given coordinate?  Say, what is the room at X=0, Y=0,
+Z=0?</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -315,13 +324,15 @@ class methods, since we want to get rooms.</p>
         <span class="k">return</span> <span class="bp">None</span>
 </pre></div>
 </td></tr></table></div>
-<p>This solution includes a bit of <a class="reference external" href="https://docs.djangoproject.com/en/1.11/topics/db/queries/">Django queries</a>.
+<p>This solution includes a bit of <a class="reference external" href="https://docs.djangoproject.com/en/1.11/topics/db/queries/">Django
+queries</a>.
 Basically, what we do is reach for the object manager and search for objects with the matching tags.
 Again, don’t spend too much time worrying about the mechanism, the method is quite easy to use:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Room</span><span class="o">.</span><span class="n">get_room_at</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Notice that this is a class method: you will call it from <code class="docutils literal notranslate"><span class="pre">Room</span></code> (the class), not an instance.  Though you still can:</p>
+<p>Notice that this is a class method: you will call it from <code class="docutils literal notranslate"><span class="pre">Room</span></code> (the class), not an instance.
+Though you still can:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="n">here</span><span class="o">.</span><span class="n">get_room_at</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -329,7 +340,8 @@ Again, don’t spend too much time worrying about the mechanism, the method is q
 <div class="section" id="finding-several-rooms">
 <h3>Finding several rooms<a class="headerlink" href="#finding-several-rooms" title="Permalink to this headline">¶</a></h3>
 <p>Here’s another useful method that allows us to look for rooms around a given coordinate.  This is
-more advanced search and doing some calculation, beware!  Look at the following section if you’re lost.</p>
+more advanced search and doing some calculation, beware!  Look at the following section if you’re
+lost.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -448,7 +460,8 @@ more advanced search and doing some calculation, beware!  Look at the following 
 <li><p>We have specified coordinates as parameters.  We determine a broad range using the distance.
 That is, for each coordinate, we create a list of possible matches.  See the example below.</p></li>
 <li><p>We then search for the rooms within this broader range.  It gives us a square
-around our location.  Some rooms are definitely outside the range.  Again, see the example below to follow the logic.</p></li>
+around our location.  Some rooms are definitely outside the range.  Again, see the example below
+to follow the logic.</p></li>
 <li><p>We filter down the list and sort it by distance from the specified coordinates.</p></li>
 </ol>
 <p>Notice that we only search starting at step 2.  Thus, the Django search doesn’t look and cache all
@@ -467,7 +480,10 @@ optimized to be quick and efficient.</p>
   <span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">4</span>
 </pre></div>
 </div>
-<p>The X coordinates are given below.  The Y coordinates are given on the left.  This is a simple square with 16 rooms: 4 on each line, 4 lines of them.  All the rooms are identified by letters in this example: the first line at the top has rooms A to D, the second E to H, the third I to L and the fourth M to P.  The bottom-left room, X=1 and Y=1, is M.  The upper-right room X=4 and Y=4 is D.</p>
+<p>The X coordinates are given below.  The Y coordinates are given on the left.  This is a simple
+square with 16 rooms: 4 on each line, 4 lines of them.  All the rooms are identified by letters in
+this example: the first line at the top has rooms A to D, the second E to H, the third I to L and
+the fourth M to P.  The bottom-left room, X=1 and Y=1, is M.  The upper-right room X=4 and Y=4 is D.</p>
 <p>So let’s say we want to find all the neighbors, distance 1, from the room J.  J is at X=2, Y=2.</p>
 <p>So we use:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Room</span><span class="o">.</span><span class="n">get_rooms_around</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -475,8 +491,12 @@ optimized to be quick and efficient.</p>
 </pre></div>
 </div>
 <ol class="simple">
-<li><p>First, this method gets all the rooms in a square around J.  So it gets E F G, I J K, M N O.  If you want, draw the square around these coordinates to see what’s happening.</p></li>
-<li><p>Next, we browse over this list and check the real distance between J (X=2, Y=2) and the room.  The four corners of the square are not in this circle.  For instance, the distance between J and M is not 1.  If you draw a circle of center J and radius 1, you’ll notice that the four corners of our square (E, G, M and O) are not in this circle. So we remove them.</p></li>
+<li><p>First, this method gets all the rooms in a square around J.  So it gets E F G, I J K, M N O.  If
+you want, draw the square around these coordinates to see what’s happening.</p></li>
+<li><p>Next, we browse over this list and check the real distance between J (X=2, Y=2) and the room.
+The four corners of the square are not in this circle.  For instance, the distance between J and M
+is not 1.  If you draw a circle of center J and radius 1, you’ll notice that the four corners of our
+square (E, G, M and O) are not in this circle. So we remove them.</p></li>
 <li><p>We sort by distance from J.</p></li>
 </ol>
 <p>So in the end we might obtain something like this:</p>
@@ -560,7 +580,10 @@ optimized to be quick and efficient.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Coordinates</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

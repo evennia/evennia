@@ -97,13 +97,25 @@ class CmdConnect(Command):
 
 Okay, let's review this code, but if you're used to Evennia commands, it shouldn't be too strange:
 
-1. We import `search_channel`.  This is a little helper function that we will use to search for channels by name and aliases, found in `evennia.utils.search`.  It's just more convenient.
+1. We import `search_channel`.  This is a little helper function that we will use to search for
+channels by name and aliases, found in `evennia.utils.search`.  It's just more convenient.
 2. Our class `CmdConnect` contains the body of our command to join a channel.
-3. Notice the key of this command is simply `"+"`.  When you enter `+something` in the game, it will try to find a command key `+something`.  Failing that, it will look at other potential matches.  Evennia is smart enough to understand that when we type `+something`, `+` is the command key and `something` is the command argument.  This will, of course, fail if you have a command beginning by `+` conflicting with the `CmdConnect` key.
-4. We have altered some class attributes, like `auto_help`.  If you want to know what they do and why they have changed here, you can check the [documentation on commands](Commands).
-5. In the command body, we begin by extracting the channel name.  Remember that this name should be in the command arguments (that is, in `self.args`).  Following the same example, if a player enters `+something`, `self.args` should contain `"something"`.  We use `search_channel` to see if this channel exists.
-6. We then check the access level of the channel, to see if the caller can listen to it (not necessarily use it to speak, mind you, just listen to others speak, as these are two different locks on Evennia).
-7. Finally, we connect the caller if he's not already connected to the channel.  We use the channel's `connect` method to do this.  Pretty straightforward eh?
+3. Notice the key of this command is simply `"+"`.  When you enter `+something` in the game, it will
+try to find a command key `+something`.  Failing that, it will look at other potential matches.
+Evennia is smart enough to understand that when we type `+something`, `+` is the command key and
+`something` is the command argument.  This will, of course, fail if you have a command beginning by
+`+` conflicting with the `CmdConnect` key.
+4. We have altered some class attributes, like `auto_help`.  If you want to know what they do and
+why they have changed here, you can check the [documentation on commands](Commands).
+5. In the command body, we begin by extracting the channel name.  Remember that this name should be
+in the command arguments (that is, in `self.args`).  Following the same example, if a player enters
+`+something`, `self.args` should contain `"something"`.  We use `search_channel` to see if this
+channel exists.
+6. We then check the access level of the channel, to see if the caller can listen to it (not
+necessarily use it to speak, mind you, just listen to others speak, as these are two different locks
+on Evennia).
+7. Finally, we connect the caller if he's not already connected to the channel.  We use the
+channel's `connect` method to do this.  Pretty straightforward eh?
 
 Now we'll add a command to leave a channel.  It's almost the same, turned upside down:
 
@@ -426,7 +438,8 @@ add:
             caller (TypedObject): A Character or Account who has entered an ambiguous command.
 
         Returns:
-            A string with identifying information to disambiguate the object, conventionally with a preceding space.
+            A string with identifying information to disambiguate the object, conventionally with a
+preceding space.
         """
         return " (channel)"
 ```
@@ -467,4 +480,5 @@ close from the code I've provided here.  Notice, however, that this resource is
 external to Evennia and not maintained by anyone but the original author of
 this article.
 
-[Read the full example on Github](https://github.com/vincent-lg/avenew/blob/master/commands/comms.py)
+[Read the full example on Github](https://github.com/vincent-
+lg/avenew/blob/master/commands/comms.py)

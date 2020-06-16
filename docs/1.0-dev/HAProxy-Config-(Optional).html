@@ -7,11 +7,13 @@
     <title>HAProxy Config (Optional) &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">HAProxy Config (Optional)</a></li>
+
+
       </ul>
     </div>  
 
@@ -67,11 +72,13 @@
 
 <span class="c1"># Evennia Specifics</span>
 <span class="n">listen</span> <span class="n">evennia</span><span class="o">-</span><span class="n">https</span><span class="o">-</span><span class="n">website</span>
-    <span class="n">bind</span> <span class="o">&lt;</span><span class="n">public</span><span class="o">-</span><span class="n">ip</span><span class="o">-</span><span class="n">address</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">public</span><span class="o">-</span><span class="n">SSL</span><span class="o">-</span><span class="n">port</span><span class="o">--</span><span class="n">probably</span><span class="o">-</span><span class="mi">443</span><span class="o">&gt;</span> <span class="n">ssl</span> <span class="n">no</span><span class="o">-</span><span class="n">sslv3</span> <span class="n">no</span><span class="o">-</span><span class="n">tlsv10</span> <span class="n">crt</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">your</span><span class="o">-</span><span class="n">cert</span><span class="o">.</span><span class="n">pem</span>
+    <span class="n">bind</span> <span class="o">&lt;</span><span class="n">public</span><span class="o">-</span><span class="n">ip</span><span class="o">-</span><span class="n">address</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">public</span><span class="o">-</span><span class="n">SSL</span><span class="o">-</span><span class="n">port</span><span class="o">--</span><span class="n">probably</span><span class="o">-</span><span class="mi">443</span><span class="o">&gt;</span> <span class="n">ssl</span> <span class="n">no</span><span class="o">-</span><span class="n">sslv3</span> <span class="n">no</span><span class="o">-</span><span class="n">tlsv10</span> <span class="n">crt</span>
+<span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">your</span><span class="o">-</span><span class="n">cert</span><span class="o">.</span><span class="n">pem</span>
     <span class="n">server</span> <span class="n">localhost</span> <span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="o">&lt;</span><span class="n">evennia</span><span class="o">-</span><span class="n">web</span><span class="o">-</span><span class="n">port</span><span class="o">-</span><span class="n">probably</span><span class="o">-</span><span class="mi">4001</span><span class="o">&gt;</span>
 
 <span class="n">listen</span> <span class="n">evennia</span><span class="o">-</span><span class="n">secure</span><span class="o">-</span><span class="n">websocket</span>
-    <span class="n">bind</span> <span class="o">&lt;</span><span class="n">public</span><span class="o">-</span><span class="n">ip</span><span class="o">-</span><span class="n">address</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">WEBSOCKET_CLIENT_URL</span> <span class="mi">4002</span><span class="o">&gt;</span> <span class="n">ssl</span> <span class="n">no</span><span class="o">-</span><span class="n">sslv3</span> <span class="n">no</span><span class="o">-</span><span class="n">tlsv10</span> <span class="n">crt</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">your</span><span class="o">-</span><span class="n">cert</span><span class="o">.</span><span class="n">pem</span>
+    <span class="n">bind</span> <span class="o">&lt;</span><span class="n">public</span><span class="o">-</span><span class="n">ip</span><span class="o">-</span><span class="n">address</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">WEBSOCKET_CLIENT_URL</span> <span class="mi">4002</span><span class="o">&gt;</span> <span class="n">ssl</span> <span class="n">no</span><span class="o">-</span><span class="n">sslv3</span> <span class="n">no</span><span class="o">-</span><span class="n">tlsv10</span> <span class="n">crt</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">your</span><span class="o">-</span>
+<span class="n">cert</span><span class="o">.</span><span class="n">pem</span>
     <span class="n">server</span> <span class="n">localhost</span> <span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="o">&lt;</span><span class="n">WEBSOCKET_CLIENT_URL</span> <span class="mi">4002</span><span class="o">&gt;</span>
     <span class="n">timeout</span> <span class="n">client</span> <span class="mi">10</span><span class="n">m</span>
     <span class="n">timeout</span> <span class="n">server</span> <span class="mi">10</span><span class="n">m</span>
@@ -146,7 +153,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">HAProxy Config (Optional)</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

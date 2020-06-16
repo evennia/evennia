@@ -7,11 +7,13 @@
     <title>Turn based Combat System &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Turn based Combat System</a></li>
+
+
       </ul>
     </div>  
 
@@ -36,44 +41,96 @@
             
   <div class="section" id="turn-based-combat-system">
 <h1>Turn based Combat System<a class="headerlink" href="#turn-based-combat-system" title="Permalink to this headline">¶</a></h1>
-<p>This tutorial gives an example of a full, if simplified, combat system for Evennia. It was inspired by the discussions held on the <a class="reference external" href="https://groups.google.com/forum/#%21msg/evennia/wnJNM2sXSfs/-dbLRrgWnYMJ">mailing list</a>.</p>
+<p>This tutorial gives an example of a full, if simplified, combat system for Evennia. It was inspired
+by the discussions held on the <a class="reference external" href="https://groups.google.com/forum/#%21msg/evennia/wnJNM2sXSfs/-dbLRrgWnYMJ">mailing
+list</a>.</p>
 <div class="section" id="overview-of-combat-system-concepts">
 <h2>Overview of combat system concepts<a class="headerlink" href="#overview-of-combat-system-concepts" title="Permalink to this headline">¶</a></h2>
 <p>Most MUDs will use some sort of combat system. There are several main variations:</p>
 <ul class="simple">
-<li><p><em>Freeform</em> - the simplest form of combat to implement, common to MUSH-style roleplaying games. This means the system only supplies dice rollers or maybe commands to compare skills and spit out the result. Dice rolls are done to resolve combat according to the rules of the game and to direct the scene. A game master may be required to resolve rule disputes.</p></li>
-<li><p><em>Twitch</em> - This is the traditional MUD hack&amp;slash style combat. In a twitch system there is often no difference between your normal “move-around-and-explore mode” and the “combat mode”. You enter an attack command and the system will calculate if the attack hits and how much damage was caused. Normally attack commands have some sort of timeout or notion of recovery/balance to reduce the advantage of spamming or client scripting. Whereas the simplest systems just means entering <code class="docutils literal notranslate"><span class="pre">kill</span> <span class="pre">&lt;target&gt;</span></code> over and over, more sophisticated twitch systems include anything from defensive stances to tactical positioning.</p></li>
-<li><p><em>Turn-based</em> - a turn based system means that the system pauses to make sure all combatants can choose their actions before continuing. In some systems, such entered actions happen immediately (like twitch-based) whereas in others the resolution happens simultaneously at the end of the turn. The disadvantage of a turn-based system is that the game must switch to a “combat mode” and one also needs to take special care of how to handle new combatants and the passage of time. The advantage is that success is not dependent on typing speed or of setting up quick client macros. This potentially allows for emoting as part of combat which is an advantage for roleplay-heavy games.</p></li>
+<li><p><em>Freeform</em> - the simplest form of combat to implement, common to MUSH-style roleplaying games.
+This means the system only supplies dice rollers or maybe commands to compare skills and spit out
+the result. Dice rolls are done to resolve combat according to the rules of the game and to direct
+the scene. A game master may be required to resolve rule disputes.</p></li>
+<li><p><em>Twitch</em> - This is the traditional MUD hack&amp;slash style combat. In a twitch system there is often
+no difference between your normal “move-around-and-explore mode” and the “combat mode”. You enter an
+attack command and the system will calculate if the attack hits and how much damage was caused.
+Normally attack commands have some sort of timeout or notion of recovery/balance to reduce the
+advantage of spamming or client scripting. Whereas the simplest systems just means entering <code class="docutils literal notranslate"><span class="pre">kill</span> <span class="pre">&lt;target&gt;</span></code> over and over, more sophisticated twitch systems include anything from defensive stances
+to tactical positioning.</p></li>
+<li><p><em>Turn-based</em> - a turn based system means that the system pauses to make sure all combatants can
+choose their actions before continuing. In some systems, such entered actions happen immediately
+(like twitch-based) whereas in others the resolution happens simultaneously at the end of the turn.
+The disadvantage of a turn-based system is that the game must switch to a “combat mode” and one also
+needs to take special care of how to handle new combatants and the passage of time. The advantage is
+that success is not dependent on typing speed or of setting up quick client macros. This potentially
+allows for emoting as part of combat which is an advantage for roleplay-heavy games.</p></li>
 </ul>
-<p>To implement a freeform combat system all you need is a dice roller and a roleplaying rulebook. See <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/contrib/dice.py">contrib/dice.py</a> for an example dice roller. To implement at twitch-based system you basically need a few combat <a class="reference internal" href="Commands.html"><span class="doc">commands</span></a>, possibly ones with a <a class="reference internal" href="Command-Cooldown.html"><span class="doc">cooldown</span></a>. You also need a <a class="reference internal" href="Implementing-a-game-rule-system.html"><span class="doc">game rule module</span></a> that makes use of it. We will focus on the turn-based variety here.</p>
+<p>To implement a freeform combat system all you need is a dice roller and a roleplaying rulebook. See
+<a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/contrib/dice.py">contrib/dice.py</a> for an
+example dice roller. To implement at twitch-based system you basically need a few combat
+<a class="reference internal" href="Commands.html"><span class="doc">commands</span></a>, possibly ones with a <a class="reference internal" href="Command-Cooldown.html"><span class="doc">cooldown</span></a>. You also need a <a class="reference internal" href="Implementing-a-game-rule-system.html"><span class="doc">game rule
+module</span></a> that makes use of it. We will focus on the turn-based
+variety here.</p>
 </div>
 <div class="section" id="tutorial-overview">
 <h2>Tutorial overview<a class="headerlink" href="#tutorial-overview" title="Permalink to this headline">¶</a></h2>
-<p>This tutorial will implement the slightly more complex turn-based combat system. Our example has the following properties:</p>
+<p>This tutorial will implement the slightly more complex turn-based combat system. Our example has the
+following properties:</p>
 <ul class="simple">
 <li><p>Combat is initiated with <code class="docutils literal notranslate"><span class="pre">attack</span> <span class="pre">&lt;target&gt;</span></code>, this initiates the combat mode.</p></li>
-<li><p>Characters may join an ongoing battle using <code class="docutils literal notranslate"><span class="pre">attack</span> <span class="pre">&lt;target&gt;</span></code> against a character already in combat.</p></li>
-<li><p>Each turn every combating character will get to enter two commands, their internal order matters and they are compared one-to-one in the order given by each combatant.  Use of <code class="docutils literal notranslate"><span class="pre">say</span></code> and <code class="docutils literal notranslate"><span class="pre">pose</span></code> is free.</p></li>
-<li><p>The commands are (in our example) simple; they can either <code class="docutils literal notranslate"><span class="pre">hit</span> <span class="pre">&lt;target&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">feint</span> <span class="pre">&lt;target&gt;</span></code> or <code class="docutils literal notranslate"><span class="pre">parry</span> <span class="pre">&lt;target&gt;</span></code>. They can also <code class="docutils literal notranslate"><span class="pre">defend</span></code>, a generic passive defense. Finally they may choose to <code class="docutils literal notranslate"><span class="pre">disengage/flee</span></code>.</p></li>
-<li><p>When attacking we use a classic <a class="reference external" href="https://en.wikipedia.org/wiki/Rock-paper-scissors">rock-paper-scissors</a> mechanic to determine success: <code class="docutils literal notranslate"><span class="pre">hit</span></code> defeats <code class="docutils literal notranslate"><span class="pre">feint</span></code>, which defeats <code class="docutils literal notranslate"><span class="pre">parry</span></code> which defeats <code class="docutils literal notranslate"><span class="pre">hit</span></code>. <code class="docutils literal notranslate"><span class="pre">defend</span></code> is a general passive action that has a percentage chance to win against <code class="docutils literal notranslate"><span class="pre">hit</span></code> (only).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">disengage/flee</span></code> must be entered two times in a row and will only succeed if there is no <code class="docutils literal notranslate"><span class="pre">hit</span></code> against them in that time. If so they will leave combat mode.</p></li>
-<li><p>Once every player has entered two commands, all commands are resolved in order and the result is reported. A new turn then begins.</p></li>
+<li><p>Characters may join an ongoing battle using <code class="docutils literal notranslate"><span class="pre">attack</span> <span class="pre">&lt;target&gt;</span></code> against a character already in
+combat.</p></li>
+<li><p>Each turn every combating character will get to enter two commands, their internal order matters
+and they are compared one-to-one in the order given by each combatant.  Use of <code class="docutils literal notranslate"><span class="pre">say</span></code> and <code class="docutils literal notranslate"><span class="pre">pose</span></code> is
+free.</p></li>
+<li><p>The commands are (in our example) simple; they can either <code class="docutils literal notranslate"><span class="pre">hit</span> <span class="pre">&lt;target&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">feint</span> <span class="pre">&lt;target&gt;</span></code> or
+<code class="docutils literal notranslate"><span class="pre">parry</span> <span class="pre">&lt;target&gt;</span></code>. They can also <code class="docutils literal notranslate"><span class="pre">defend</span></code>, a generic passive defense. Finally they may choose to
+<code class="docutils literal notranslate"><span class="pre">disengage/flee</span></code>.</p></li>
+<li><p>When attacking we use a classic [rock-paper-scissors](https://en.wikipedia.org/wiki/Rock-paper-
+scissors) mechanic to determine success: <code class="docutils literal notranslate"><span class="pre">hit</span></code> defeats <code class="docutils literal notranslate"><span class="pre">feint</span></code>, which defeats <code class="docutils literal notranslate"><span class="pre">parry</span></code> which defeats
+<code class="docutils literal notranslate"><span class="pre">hit</span></code>. <code class="docutils literal notranslate"><span class="pre">defend</span></code> is a general passive action that has a percentage chance to win against <code class="docutils literal notranslate"><span class="pre">hit</span></code>
+(only).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">disengage/flee</span></code> must be entered two times in a row and will only succeed if there is no <code class="docutils literal notranslate"><span class="pre">hit</span></code>
+against them in that time. If so they will leave combat mode.</p></li>
+<li><p>Once every player has entered two commands, all commands are resolved in order and the result is
+reported. A new turn then begins.</p></li>
 <li><p>If players are too slow the turn will time out and any unset commands will be set to <code class="docutils literal notranslate"><span class="pre">defend</span></code>.</p></li>
 </ul>
 <p>For creating the combat system we will need the following components:</p>
 <ul class="simple">
-<li><p>A combat handler. This is the main mechanic of the system. This is a <a class="reference internal" href="Scripts.html"><span class="doc">Script</span></a> object created for each combat.  It is not assigned to a specific object but is shared by the combating characters and handles all the combat information. Since Scripts are database entities it also means that the combat will not be affected by a server reload.</p></li>
-<li><p>A combat <a class="reference internal" href="Command-Sets.html"><span class="doc">command set</span></a> with the relevant commands needed for combat, such as the various attack/defend options and the <code class="docutils literal notranslate"><span class="pre">flee/disengage</span></code> command to leave the combat mode.</p></li>
-<li><p>A rule resolution system. The basics of making such a module is described in the <a class="reference internal" href="Implementing-a-game-rule-system.html"><span class="doc">rule system tutorial</span></a>. We will only sketch such a module here for our end-turn combat resolution.</p></li>
-<li><p>An <code class="docutils literal notranslate"><span class="pre">attack</span></code> <a class="reference internal" href="Commands.html"><span class="doc">command</span></a> for initiating the combat mode. This is added to the default command set. It will create the combat handler and add the character(s) to it. It will also assign the combat command set to the characters.</p></li>
+<li><p>A combat handler. This is the main mechanic of the system. This is a <a class="reference internal" href="Scripts.html"><span class="doc">Script</span></a> object
+created for each combat.  It is not assigned to a specific object but is shared by the combating
+characters and handles all the combat information. Since Scripts are database entities it also means
+that the combat will not be affected by a server reload.</p></li>
+<li><p>A combat <a class="reference internal" href="Command-Sets.html"><span class="doc">command set</span></a> with the relevant commands needed for combat, such as the
+various attack/defend options and the <code class="docutils literal notranslate"><span class="pre">flee/disengage</span></code> command to leave the combat mode.</p></li>
+<li><p>A rule resolution system. The basics of making such a module is described in the <a class="reference internal" href="Implementing-a-game-rule-system.html"><span class="doc">rule system
+tutorial</span></a>. We will only sketch such a module here for our end-turn
+combat resolution.</p></li>
+<li><p>An <code class="docutils literal notranslate"><span class="pre">attack</span></code> <a class="reference internal" href="Commands.html"><span class="doc">command</span></a> for initiating the combat mode. This is added to the default
+command set. It will create the combat handler and add the character(s) to it. It will also assign
+the combat command set to the characters.</p></li>
 </ul>
 </div>
 <div class="section" id="the-combat-handler">
 <h2>The combat handler<a class="headerlink" href="#the-combat-handler" title="Permalink to this headline">¶</a></h2>
-<p>The <em>combat handler</em> is implemented as a stand-alone <a class="reference internal" href="Scripts.html"><span class="doc">Script</span></a>.  This Script is created when the first Character decides to attack another and is deleted when no one is fighting any more. Each handler represents one instance of combat and one combat only. Each instance of combat can hold any number of characters but each character can only be part of one combat at a time (a player would need to disengage from the first combat before they could join another).</p>
-<p>The reason we don’t store this Script “on” any specific character is because any character may leave the combat at any time. Instead the script holds references to all characters involved in the combat.  Vice-versa, all characters holds a back-reference to the current combat handler. While we don’t use this very much here this might allow the combat commands on the characters to access and update the combat handler state directly.</p>
-<p><em>Note: Another way to implement a combat handler would be to use a normal Python object and handle time-keeping with the <a class="reference internal" href="TickerHandler.html"><span class="doc">TickerHandler</span></a>. This would require either adding custom hook methods on the character or to implement a custom child of the TickerHandler class to track turns. Whereas the TickerHandler is easy to use, a Script offers more power in this case.</em></p>
-<p>Here is a basic combat handler. Assuming our game folder is named <code class="docutils literal notranslate"><span class="pre">mygame</span></code>, we store it in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/combat_handler.py</span></code>:</p>
+<p>The <em>combat handler</em> is implemented as a stand-alone <a class="reference internal" href="Scripts.html"><span class="doc">Script</span></a>.  This Script is created when
+the first Character decides to attack another and is deleted when no one is fighting any more. Each
+handler represents one instance of combat and one combat only. Each instance of combat can hold any
+number of characters but each character can only be part of one combat at a time (a player would
+need to disengage from the first combat before they could join another).</p>
+<p>The reason we don’t store this Script “on” any specific character is because any character may leave
+the combat at any time. Instead the script holds references to all characters involved in the
+combat.  Vice-versa, all characters holds a back-reference to the current combat handler. While we
+don’t use this very much here this might allow the combat commands on the characters to access and
+update the combat handler state directly.</p>
+<p><em>Note: Another way to implement a combat handler would be to use a normal Python object and handle
+time-keeping with the <a class="reference internal" href="TickerHandler.html"><span class="doc">TickerHandler</span></a>. This would require either adding custom hook
+methods on the character or to implement a custom child of the TickerHandler class to track turns.
+Whereas the TickerHandler is easy to use, a Script offers more power in this case.</em></p>
+<p>Here is a basic combat handler. Assuming our game folder is named <code class="docutils literal notranslate"><span class="pre">mygame</span></code>, we store it in
+<code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/combat_handler.py</span></code>:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>  1
   2
   3
@@ -397,12 +454,20 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">msg_all</span><span class="p">(</span><span class="s2">&quot;Next turn begins ...&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<p>This implements all the useful properties of our combat handler. This Script will survive a reboot and will automatically re-assert itself when it comes back online. Even the current state of the combat should be unaffected since it is saved in Attributes at every turn. An important part to note is the use of the Script’s standard <code class="docutils literal notranslate"><span class="pre">at_repeat</span></code> hook and the <code class="docutils literal notranslate"><span class="pre">force_repeat</span></code> method to end each turn. This allows for everything to go through the same mechanisms with minimal repetition of code.</p>
-<p>What is not present in this handler is a way for players to view the actions they set or to change their actions once they have been added (but before the last one has added theirs). We leave this as an exercise.</p>
+<p>This implements all the useful properties of our combat handler. This Script will survive a reboot
+and will automatically re-assert itself when it comes back online. Even the current state of the
+combat should be unaffected since it is saved in Attributes at every turn. An important part to note
+is the use of the Script’s standard <code class="docutils literal notranslate"><span class="pre">at_repeat</span></code> hook and the <code class="docutils literal notranslate"><span class="pre">force_repeat</span></code> method to end each turn.
+This allows for everything to go through the same mechanisms with minimal repetition of code.</p>
+<p>What is not present in this handler is a way for players to view the actions they set or to change
+their actions once they have been added (but before the last one has added theirs). We leave this as
+an exercise.</p>
 </div>
 <div class="section" id="combat-commands">
 <h2>Combat commands<a class="headerlink" href="#combat-commands" title="Permalink to this headline">¶</a></h2>
-<p>Our combat commands - the commands that are to be available to us during the combat - are (in our example) very simple. In a full implementation the commands available might be determined by the weapon(s) held by the player or by which skills they know.</p>
+<p>Our combat commands - the commands that are to be available to us during the combat - are (in our
+example) very simple. In a full implementation the commands available might be determined by the
+weapon(s) held by the player or by which skills they know.</p>
 <p>We create them in <code class="docutils literal notranslate"><span class="pre">mygame/commands/combat.py</span></code>.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
@@ -475,7 +540,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">combat_handler</span><span class="o">.</span><span class="n">check_end_turn</span><span class="p">()</span>
 </pre></div>
 </td></tr></table></div>
-<p>The other commands <code class="docutils literal notranslate"><span class="pre">CmdParry</span></code>, <code class="docutils literal notranslate"><span class="pre">CmdFeint</span></code>, <code class="docutils literal notranslate"><span class="pre">CmdDefend</span></code> and <code class="docutils literal notranslate"><span class="pre">CmdDisengage</span></code> look basically the same. We should also add a custom <code class="docutils literal notranslate"><span class="pre">help</span></code> command to list all the available combat commands and what they do.</p>
+<p>The other commands <code class="docutils literal notranslate"><span class="pre">CmdParry</span></code>, <code class="docutils literal notranslate"><span class="pre">CmdFeint</span></code>, <code class="docutils literal notranslate"><span class="pre">CmdDefend</span></code> and <code class="docutils literal notranslate"><span class="pre">CmdDisengage</span></code> look basically the same.
+We should also add a custom <code class="docutils literal notranslate"><span class="pre">help</span></code> command to list all the available combat commands and what they
+do.</p>
 <p>We just need to put them all in a cmdset. We do this at the end of the same module:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
@@ -521,16 +588,29 @@
 </div>
 <div class="section" id="rules-module">
 <h2>Rules module<a class="headerlink" href="#rules-module" title="Permalink to this headline">¶</a></h2>
-<p>A general way to implement a rule module is found in the <a class="reference internal" href="Implementing-a-game-rule-system.html"><span class="doc">rule system tutorial</span></a>. Proper resolution would likely require us to change our Characters to store things like strength, weapon skills and so on. So for this example we will settle for a very simplistic rock-paper-scissors kind of setup with some randomness thrown in. We will not deal with damage here but just announce the results of each turn. In a real system the Character objects would hold stats to affect their skills, their chosen weapon affect the choices, they would be able to lose health etc.</p>
-<p>Within each turn, there are “sub-turns”, each consisting of one action per character. The actions within each sub-turn happens simultaneously and only once they have all been resolved we move on to the next sub-turn (or end the full turn).</p>
-<p><em>Note: In our simple example the sub-turns don’t affect each other (except for <code class="docutils literal notranslate"><span class="pre">disengage/flee</span></code>), nor do any effects carry over between turns. The real power of a turn-based system would be to add real tactical possibilities here though; For example if your hit got parried you could be out of balance and your next action would be at a disadvantage. A successful feint would open up for a subsequent attack and so on …</em></p>
+<p>A general way to implement a rule module is found in the [rule system tutorial](Implementing-a-game-
+rule-system). Proper resolution would likely require us to change our Characters to store things
+like strength, weapon skills and so on. So for this example we will settle for a very simplistic
+rock-paper-scissors kind of setup with some randomness thrown in. We will not deal with damage here
+but just announce the results of each turn. In a real system the Character objects would hold stats
+to affect their skills, their chosen weapon affect the choices, they would be able to lose health
+etc.</p>
+<p>Within each turn, there are “sub-turns”, each consisting of one action per character. The actions
+within each sub-turn happens simultaneously and only once they have all been resolved we move on to
+the next sub-turn (or end the full turn).</p>
+<p><em>Note: In our simple example the sub-turns don’t affect each other (except for <code class="docutils literal notranslate"><span class="pre">disengage/flee</span></code>),
+nor do any effects carry over between turns. The real power of a turn-based system would be to add
+real tactical possibilities here though; For example if your hit got parried you could be out of
+balance and your next action would be at a disadvantage. A successful feint would open up for a
+subsequent attack and so on …</em></p>
 <p>Our rock-paper-scissor setup works like this:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">hit</span></code> beats <code class="docutils literal notranslate"><span class="pre">feint</span></code> and <code class="docutils literal notranslate"><span class="pre">flee/disengage</span></code>. It has a random chance to fail against <code class="docutils literal notranslate"><span class="pre">defend</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">parry</span></code> beats <code class="docutils literal notranslate"><span class="pre">hit</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">feint</span></code> beats <code class="docutils literal notranslate"><span class="pre">parry</span></code> and is then counted as a <code class="docutils literal notranslate"><span class="pre">hit</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">defend</span></code> does nothing but has a chance to beat <code class="docutils literal notranslate"><span class="pre">hit</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">flee/disengage</span></code> must succeed two times in a row (i.e. not beaten by a <code class="docutils literal notranslate"><span class="pre">hit</span></code> once during the turn). If so the character leaves combat.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flee/disengage</span></code> must succeed two times in a row (i.e. not beaten by a <code class="docutils literal notranslate"><span class="pre">hit</span></code> once during the
+turn). If so the character leaves combat.</p></li>
 </ul>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
@@ -685,11 +765,16 @@
             <span class="n">combat_handler</span><span class="o">.</span><span class="n">remove_character</span><span class="p">(</span><span class="n">char</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<p>To make it simple (and to save space), this example rule module actually resolves each interchange twice - first when it gets to each character and then again when handling the target. Also, since we use the combat handler’s <code class="docutils literal notranslate"><span class="pre">msg_all</span></code> method here, the system will get pretty spammy. To clean it up, one could imagine tracking all the possible interactions to make sure each pair is only handled and reported once.</p>
+<p>To make it simple (and to save space), this example rule module actually resolves each interchange
+twice - first when it gets to each character and then again when handling the target. Also, since we
+use the combat handler’s <code class="docutils literal notranslate"><span class="pre">msg_all</span></code> method here, the system will get pretty spammy. To clean it up,
+one could imagine tracking all the possible interactions to make sure each pair is only handled and
+reported once.</p>
 </div>
 <div class="section" id="combat-initiator-command">
 <h2>Combat initiator command<a class="headerlink" href="#combat-initiator-command" title="Permalink to this headline">¶</a></h2>
-<p>This is the last component we need, a command to initiate combat. This will tie everything together. We store this with the other combat commands.</p>
+<p>This is the last component we need, a command to initiate combat. This will tie everything together.
+We store this with the other combat commands.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -765,11 +850,18 @@
             <span class="n">target</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> attacks you! You are in combat.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>       
 </pre></div>
 </td></tr></table></div>
-<p>The <code class="docutils literal notranslate"><span class="pre">attack</span></code> command will not go into the combat cmdset but rather into the default cmdset. See e.g. the <a class="reference internal" href="Adding-Command-Tutorial.html"><span class="doc">Adding Command Tutorial</span></a> if you are unsure about how to do this.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">attack</span></code> command will not go into the combat cmdset but rather into the default cmdset. See e.g.
+the <a class="reference internal" href="Adding-Command-Tutorial.html"><span class="doc">Adding Command Tutorial</span></a> if you are unsure about how to do this.</p>
 </div>
 <div class="section" id="expanding-the-example">
 <h2>Expanding the example<a class="headerlink" href="#expanding-the-example" title="Permalink to this headline">¶</a></h2>
-<p>At this point you should have a simple but flexible turn-based combat system. We have taken several shortcuts and simplifications in this example. The output to the players is likely too verbose during combat and too limited when it comes to informing about things surrounding it. Methods for changing your commands or list them, view who is in combat etc is likely needed - this will require play testing for each game and style. There is also currently no information displayed for other people happening to be in the same room as the combat - some less detailed information should probably be echoed to the room to
+<p>At this point you should have a simple but flexible turn-based combat system. We have taken several
+shortcuts and simplifications in this example. The output to the players is likely too verbose
+during combat and too limited when it comes to informing about things surrounding it. Methods for
+changing your commands or list them, view who is in combat etc is likely needed - this will require
+play testing for each game and style. There is also currently no information displayed for other
+people happening to be in the same room as the combat - some less detailed information should
+probably be echoed to the room to
 show others what’s going on.</p>
 </div>
 </div>
@@ -833,7 +925,10 @@ show others what’s going on.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Turn based Combat System</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

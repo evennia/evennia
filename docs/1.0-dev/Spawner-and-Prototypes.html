@@ -7,11 +7,13 @@
     <title>Spawner and Prototypes &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Spawner and Prototypes</a></li>
+
+
       </ul>
     </div>  
 
@@ -69,9 +74,13 @@ for more information. Below are further details about how prototypes work and ho
 </div>
 <div class="section" id="the-prototype">
 <h2>The prototype<a class="headerlink" href="#the-prototype" title="Permalink to this headline">¶</a></h2>
-<p>The prototype dictionary can either be created for you by the OLC (see above), be  written manually in a Python module (and then referenced by the <code class="docutils literal notranslate"><span class="pre">&#64;spawn</span></code> command/OLC), or created on-the-fly and manually loaded into the spawner function or <code class="docutils literal notranslate"><span class="pre">&#64;spawn</span></code> command.</p>
-<p>The dictionary defines all possible database-properties of an Object. It has a fixed set of allowed keys. When preparing to store the prototype in the database (or when using the OLC), some
-of these keys are mandatory. When just passing a one-time prototype-dict to the spawner the system is
+<p>The prototype dictionary can either be created for you by the OLC (see above), be  written manually
+in a Python module (and then referenced by the <code class="docutils literal notranslate"><span class="pre">&#64;spawn</span></code> command/OLC), or created on-the-fly and
+manually loaded into the spawner function or <code class="docutils literal notranslate"><span class="pre">&#64;spawn</span></code> command.</p>
+<p>The dictionary defines all possible database-properties of an Object. It has a fixed set of allowed
+keys. When preparing to store the prototype in the database (or when using the OLC), some
+of these keys are mandatory. When just passing a one-time prototype-dict to the spawner the system
+is
 more lenient and will use defaults for keys not explicitly provided.</p>
 <p>In dictionary form, a prototype can look something like this:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
@@ -91,17 +100,22 @@ more lenient and will use defaults for keys not explicitly provided.</p>
 </div>
 <blockquote>
 <div><p>Note that the prototype dict as given on the command line must be a valid Python structure -
-so you need to put quotes around strings etc. For security reasons, a dict inserted from-in game cannot have any
+so you need to put quotes around strings etc. For security reasons, a dict inserted from-in game
+cannot have any
 other advanced Python functionality, such as executable code, <code class="docutils literal notranslate"><span class="pre">lambda</span></code> etc. If builders are supposed
-to be able to use such features, you need to offer them through <a class="reference external" href="/Spawner-and-Prototypes.html#protfuncs">$protfuncs</a>, embedded runnable functions that you have full control to check and vet before running.</p>
+to be able to use such features, you need to offer them through [$protfuncs](Spawner-and-
+Prototypes#protfuncs), embedded runnable functions that you have full control to check and vet
+before running.</p>
 </div></blockquote>
 <div class="section" id="prototype-keys">
 <h3>Prototype keys<a class="headerlink" href="#prototype-keys" title="Permalink to this headline">¶</a></h3>
 <p>All keys starting with <code class="docutils literal notranslate"><span class="pre">prototype_</span></code> are for book keeping.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">prototype_key</span></code> - the ‘name’ of the prototype. While this can sometimes be skipped (such as when
-defining a prototype in a module or feeding a prototype-dict manually to the spawner function), it’s good
-practice to try to include this. It is used for book-keeping and storing of the prototype so you<br />can find it later.</p></li>
+defining a prototype in a module or feeding a prototype-dict manually to the spawner function),
+it’s good
+practice to try to include this. It is used for book-keeping and storing of the prototype so you
+can find it later.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">prototype_parent</span></code> - If given, this should be the <code class="docutils literal notranslate"><span class="pre">prototype_key</span></code> of another prototype stored in
 the system or available in a module. This makes this prototype <em>inherit</em> the keys from the
 parent and only override what is needed. Give a tuple <code class="docutils literal notranslate"><span class="pre">(parent1,</span> <span class="pre">parent2,</span> <span class="pre">...)</span></code> for multiple
@@ -115,19 +129,25 @@ may use the prototype to create new objects.</p></li>
 </ul>
 <p>The remaining keys determine actual aspects of the objects to spawn from this prototype:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code> - the main object identifier. Defaults to “Spawned Object <em>X</em>”, where <em>X</em> is a random integer.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">typeclass</span></code> - A full python-path (from your gamedir) to the typeclass you want to use. If not set, the <code class="docutils literal notranslate"><span class="pre">prototype_parent</span></code> should be
-defined, with <code class="docutils literal notranslate"><span class="pre">typeclass</span></code> defined somewhere in the parent chain. When creating a one-time prototype
-dict just for spawning, one could omit this - <code class="docutils literal notranslate"><span class="pre">settings.BASE_OBJECT_TYPECLASS</span></code> will be used instead.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code> - the main object identifier. Defaults to “Spawned Object <em>X</em>”, where <em>X</em> is a random
+integer.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">typeclass</span></code> - A full python-path (from your gamedir) to the typeclass you want to use. If not
+set, the <code class="docutils literal notranslate"><span class="pre">prototype_parent</span></code> should be
+defined, with <code class="docutils literal notranslate"><span class="pre">typeclass</span></code> defined somewhere in the parent chain. When creating a one-time
+prototype
+dict just for spawning, one could omit this - <code class="docutils literal notranslate"><span class="pre">settings.BASE_OBJECT_TYPECLASS</span></code> will be used
+instead.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">location</span></code> - this should be a <code class="docutils literal notranslate"><span class="pre">#dbref</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">home</span></code> - a valid <code class="docutils literal notranslate"><span class="pre">#dbref</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">location</span></code> or <code class="docutils literal notranslate"><span class="pre">settings.DEFAULT_HOME</span></code> if location does not exist.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">home</span></code> - a valid <code class="docutils literal notranslate"><span class="pre">#dbref</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">location</span></code> or <code class="docutils literal notranslate"><span class="pre">settings.DEFAULT_HOME</span></code> if location does not
+exist.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">destination</span></code> - a valid <code class="docutils literal notranslate"><span class="pre">#dbref</span></code>. Only used by exits.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">permissions</span></code> - list of permission strings, like <code class="docutils literal notranslate"><span class="pre">[&quot;Accounts&quot;,</span> <span class="pre">&quot;may_use_red_door&quot;]</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">locks</span></code> - a <a class="reference internal" href="Locks.html"><span class="doc">lock-string</span></a> like <code class="docutils literal notranslate"><span class="pre">&quot;edit:all();control:perm(Builder)&quot;</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">aliases</span></code> - list of strings for use as aliases</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tags</span></code> - list <a class="reference internal" href="Tags.html"><span class="doc">Tags</span></a>. These are given as tuples <code class="docutils literal notranslate"><span class="pre">(tag,</span> <span class="pre">category,</span> <span class="pre">data)</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">attrs</span></code> - list of <a class="reference internal" href="Attributes.html"><span class="doc">Attributes</span></a>. These are given as tuples <code class="docutils literal notranslate"><span class="pre">(attrname,</span> <span class="pre">value,</span> <span class="pre">category,</span> <span class="pre">lockstring)</span></code></p></li>
-<li><p>Any other keywords are interpreted as non-category <a class="reference internal" href="Attributes.html"><span class="doc">Attributes</span></a> and their values. This is
+<li><p>Any other keywords are interpreted as non-category <a class="reference internal" href="Attributes.html"><span class="doc">Attributes</span></a> and their values.
+This is
 convenient for simple Attributes - use <code class="docutils literal notranslate"><span class="pre">attrs</span></code> for full control of Attributes.</p></li>
 </ul>
 <p>Deprecated as of Evennia 0.8:</p>
@@ -135,7 +155,7 @@ convenient for simple Attributes - use <code class="docutils literal notranslate
 <li><p><code class="docutils literal notranslate"><span class="pre">ndb_&lt;name&gt;</span></code> - sets the value of a non-persistent attribute (<code class="docutils literal notranslate"><span class="pre">&quot;ndb_&quot;</span></code> is stripped from the name).
 This is simply not useful in a prototype and is deprecated.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">exec</span></code> - This accepts a code snippet or a list of code snippets to run. This should not be used -
-use callables or <a class="reference external" href="/Spawner-and-Prototypes.html#protfuncs">$protfuncs</a> instead (see below).</p></li>
+use callables or <a class="reference external" href="Spawner-and-Prototypes.html#protfuncs">$protfuncs</a> instead (see below).</p></li>
 </ul>
 </div>
 <div class="section" id="prototype-values">
@@ -145,7 +165,8 @@ use callables or <a class="reference external" href="/Spawner-and-Prototypes.htm
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;An ugly goblin&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">}</span>
 </pre></div>
 </td></tr></table></div>
-<p>It can also be a <em>callable</em>. This callable is called without arguments whenever the prototype is used to
+<p>It can also be a <em>callable</em>. This callable is called without arguments whenever the prototype is
+used to
 spawn a new object:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="n">_get_a_random_goblin_name</span><span class="p">,</span> <span class="o">...</span><span class="p">}</span>
 </pre></div>
@@ -157,7 +178,8 @@ prototype:</p>
 </td></tr></table></div>
 <div class="section" id="protfuncs">
 <h4>Protfuncs<a class="headerlink" href="#protfuncs" title="Permalink to this headline">¶</a></h4>
-<p>Finally, the value can be a <em>prototype function</em> (<em>Protfunc</em>). These look like simple function calls that you embed in strings and that has a <code class="docutils literal notranslate"><span class="pre">$</span></code> in front, like</p>
+<p>Finally, the value can be a <em>prototype function</em> (<em>Protfunc</em>). These look like simple function calls
+that you embed in strings and that has a <code class="docutils literal notranslate"><span class="pre">$</span></code> in front, like</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;$choice(Urfgar, Rick the smelly, Blargh the foul)&quot;</span><span class="p">,</span>
@@ -165,9 +187,11 @@ prototype:</p>
                        <span class="s2">&quot;He has $randint(2,5) skulls in a chain around his neck.&quot;</span><span class="p">}</span>
 </pre></div>
 </td></tr></table></div>
-<p>At execution time, the place of the protfunc will be replaced with the result of that protfunc being called (this is always a string). A protfunc works in much the same way as an
-<a class="reference external" href="/TextTags.html#inline-functions">InlineFunc</a> - they are actually
-parsed using the same parser - except protfuncs are run every time the prototype is used to spawn a new object (whereas an inlinefunc is called when a text is returned to the user).</p>
+<p>At execution time, the place of the protfunc will be replaced with the result of that protfunc being
+called (this is always a string). A protfunc works in much the same way as an
+<a class="reference external" href="TextTags.html#inline-functions">InlineFunc</a> - they are actually
+parsed using the same parser - except protfuncs are run every time the prototype is used to spawn a
+new object (whereas an inlinefunc is called when a text is returned to the user).</p>
 <p>Here is how a protfunc is defined (same as an inlinefunc).</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
@@ -189,9 +213,12 @@ parsed using the same parser - except protfuncs are run every time the prototype
 </pre></div>
 </td></tr></table></div>
 <blockquote>
-<div><p>Note that we must make sure to validate input and raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> if that fails. Also, it is <em>not</em> possible to use keywords in the call to the protfunc (so something like <code class="docutils literal notranslate"><span class="pre">$echo(text,</span> <span class="pre">align=left)</span></code> is invalid). The <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> requred is for internal evennia use and not used at all for protfuncs (only by inlinefuncs).</p>
+<div><p>Note that we must make sure to validate input and raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> if that fails. Also, it is
+<em>not</em> possible to use keywords in the call to the protfunc (so something like <code class="docutils literal notranslate"><span class="pre">$echo(text,</span> <span class="pre">align=left)</span></code> is invalid). The <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> requred is for internal evennia use and not used at all for
+protfuncs (only by inlinefuncs).</p>
 </div></blockquote>
-<p>To make this protfunc available to builders in-game, add it to a new module and add the path to that module to <code class="docutils literal notranslate"><span class="pre">settings.PROT_FUNC_MODULES</span></code>:</p>
+<p>To make this protfunc available to builders in-game, add it to a new module and add the path to that
+module to <code class="docutils literal notranslate"><span class="pre">settings.PROT_FUNC_MODULES</span></code>:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/server/conf/settings.py</span>
@@ -199,8 +226,11 @@ parsed using the same parser - except protfuncs are run every time the prototype
 <span class="n">PROT_FUNC_MODULES</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;world.myprotfuncs&quot;</span><span class="p">]</span>
 </pre></div>
 </td></tr></table></div>
-<p>All <em>global callables</em> in your added module will be considered a new protfunc. To avoid this (e.g. to have helper functions that are not protfuncs on their own), name your function something starting with <code class="docutils literal notranslate"><span class="pre">_</span></code>.</p>
-<p>The default protfuncs available out of the box are defined in <code class="docutils literal notranslate"><span class="pre">evennia/prototypes/profuncs.py</span></code>. To override the ones available, just add the same-named function in your own protfunc module.</p>
+<p>All <em>global callables</em> in your added module will be considered a new protfunc. To avoid this (e.g.
+to have helper functions that are not protfuncs on their own), name your function something starting
+with <code class="docutils literal notranslate"><span class="pre">_</span></code>.</p>
+<p>The default protfuncs available out of the box are defined in <code class="docutils literal notranslate"><span class="pre">evennia/prototypes/profuncs.py</span></code>. To
+override the ones available, just add the same-named function in your own protfunc module.</p>
 <p>| Protfunc | Description |</p>
 <p>| <code class="docutils literal notranslate"><span class="pre">$random()</span></code> | Returns random value in range [0, 1) |
 | <code class="docutils literal notranslate"><span class="pre">$randint(start,</span> <span class="pre">end)</span></code> | Returns random value in range [start, end] |
@@ -214,11 +244,16 @@ parsed using the same parser - except protfuncs are run every time the prototype
 | <code class="docutils literal notranslate"><span class="pre">$mult(&lt;value1&gt;,</span> <span class="pre">&lt;value2&gt;)</span></code> | Returns value1 * value2 |
 | <code class="docutils literal notranslate"><span class="pre">$div(&lt;value1&gt;,</span> <span class="pre">&lt;value2&gt;)</span></code> | Returns value2 / value1 |
 | <code class="docutils literal notranslate"><span class="pre">$toint(&lt;value&gt;)</span></code> | Returns value converted to integer (or value if not possible) |
-| <code class="docutils literal notranslate"><span class="pre">$eval(&lt;code&gt;)</span></code> | Returns result of <a class="reference external" href="https://docs.python.org/2/library/ast.html#ast.literal_eval">literal-eval</a> of code string. Only simple python expressions. |
-| <code class="docutils literal notranslate"><span class="pre">$obj(&lt;query&gt;)</span></code> | Returns object #dbref searched globally by key, tag or #dbref. Error if more than one found.” |
+| <code class="docutils literal notranslate"><span class="pre">$eval(&lt;code&gt;)</span></code> | Returns result of <a class="reference external" href="https://docs.python.org/2/library/ast.html#ast.literal_eval">literal-
+eval</a> of code string. Only simple
+python expressions. |
+| <code class="docutils literal notranslate"><span class="pre">$obj(&lt;query&gt;)</span></code> | Returns object #dbref searched globally by key, tag or #dbref. Error if more
+than one found.” |
 | <code class="docutils literal notranslate"><span class="pre">$objlist(&lt;query&gt;)</span></code> | Like <code class="docutils literal notranslate"><span class="pre">$obj</span></code>, except always returns a list of zero, one or more results. |
 | <code class="docutils literal notranslate"><span class="pre">$dbref(dbref)</span></code> | Returns argument if it is formed as a #dbref (e.g. #1234), otherwise error.</p>
-<p>For developers with access to Python, using protfuncs in prototypes is generally not useful. Passing real Python functions is a lot more powerful and flexible. Their main use is to allow in-game builders to
+<p>For developers with access to Python, using protfuncs in prototypes is generally not useful. Passing
+real Python functions is a lot more powerful and flexible. Their main use is to allow in-game
+builders to
 do limited coding/scripting for their prototypes without giving them direct access to raw Python.</p>
 </div>
 </div>
@@ -228,12 +263,22 @@ do limited coding/scripting for their prototypes without giving them direct acce
 <p>A prototype can be defined and stored in two ways, either in the database or as a dict in a module.</p>
 <div class="section" id="database-prototypes">
 <h3>Database prototypes<a class="headerlink" href="#database-prototypes" title="Permalink to this headline">¶</a></h3>
-<p>Stored as <a class="reference internal" href="Scripts.html"><span class="doc">Scripts</span></a> in the database. These are sometimes referred to as <em>database-prototypes</em> This is the only way for in-game builders to modify and add prototypes. They have the advantage of being easily modifiable and sharable between builders but you need to work with them using in-game tools.</p>
+<p>Stored as <a class="reference internal" href="Scripts.html"><span class="doc">Scripts</span></a> in the database. These are sometimes referred to as <em>database-
+prototypes</em> This is the only way for in-game builders to modify and add prototypes. They have the
+advantage of being easily modifiable and sharable between builders but you need to work with them
+using in-game tools.</p>
 </div>
 <div class="section" id="module-based-prototypes">
 <h3>Module-based prototypes<a class="headerlink" href="#module-based-prototypes" title="Permalink to this headline">¶</a></h3>
-<p>These prototypes are defined as dictionaries assigned to global variables in one of the modules defined in <code class="docutils literal notranslate"><span class="pre">settings.PROTOTYPE_MODULES</span></code>. They can only be modified from outside the game so they are are necessarily “read-only” from in-game and cannot be modified (but copies of them could be made into database-prototypes). These were the only prototypes available before Evennia 0.8. Module based prototypes can be useful in order for developers to provide read-only “starting” or “base” prototypes to build from or if they just prefer to work offline in an external code editor.</p>
-<p>By default <code class="docutils literal notranslate"><span class="pre">mygame/world/prototypes.py</span></code> is set up for you to add your own prototypes. <em>All global dicts</em> in this module will be considered by Evennia to be a prototype. You could also tell Evennia to look for prototypes in more modules if you want:</p>
+<p>These prototypes are defined as dictionaries assigned to global variables in one of the modules
+defined in <code class="docutils literal notranslate"><span class="pre">settings.PROTOTYPE_MODULES</span></code>. They can only be modified from outside the game so they are
+are necessarily “read-only” from in-game and cannot be modified (but copies of them could be made
+into database-prototypes). These were the only prototypes available before Evennia 0.8. Module based
+prototypes can be useful in order for developers to provide read-only “starting” or “base”
+prototypes to build from or if they just prefer to work offline in an external code editor.</p>
+<p>By default <code class="docutils literal notranslate"><span class="pre">mygame/world/prototypes.py</span></code> is set up for you to add your own prototypes. <em>All global
+dicts</em> in this module will be considered by Evennia to be a prototype. You could also tell Evennia
+to look for prototypes in more modules if you want:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/server/conf.py</span>
@@ -278,7 +323,10 @@ you can spawn a new goblin with</p>
 </pre></div>
 </div>
 <blockquote>
-<div><p>Note: The <code class="docutils literal notranslate"><span class="pre">&#64;spawn</span></code> command is more lenient about the prototype dictionary than shown here. So you can for example skip the <code class="docutils literal notranslate"><span class="pre">prototype_key</span></code> if you are just testing a throw-away prototype. A random hash will be used to please the validation. You could also skip  <code class="docutils literal notranslate"><span class="pre">prototype_parent/typeclass</span></code> - then the typeclass given by <code class="docutils literal notranslate"><span class="pre">settings.BASE_OBJECT_TYPECLASS</span></code> will be used.</p>
+<div><p>Note: The <code class="docutils literal notranslate"><span class="pre">&#64;spawn</span></code> command is more lenient about the prototype dictionary than shown here. So you
+can for example skip the <code class="docutils literal notranslate"><span class="pre">prototype_key</span></code> if you are just testing a throw-away prototype. A random
+hash will be used to please the validation. You could also skip  <code class="docutils literal notranslate"><span class="pre">prototype_parent/typeclass</span></code> - then
+the typeclass given by <code class="docutils literal notranslate"><span class="pre">settings.BASE_OBJECT_TYPECLASS</span></code> will be used.</p>
 </div></blockquote>
 </div>
 <div class="section" id="using-evennia-prototypes-spawner">
@@ -295,12 +343,18 @@ matching list of created objects. Example:</p>
 </pre></div>
 </td></tr></table></div>
 <blockquote>
-<div><p>Hint: Same as when using <code class="docutils literal notranslate"><span class="pre">&#64;spawn</span></code>, when spawning from a one-time prototype dict like this, you can skip otherwise required keys, like <code class="docutils literal notranslate"><span class="pre">prototype_key</span></code> or <code class="docutils literal notranslate"><span class="pre">typeclass</span></code>/<code class="docutils literal notranslate"><span class="pre">prototype_parent</span></code>. Defaults will be used.</p>
+<div><p>Hint: Same as when using <code class="docutils literal notranslate"><span class="pre">&#64;spawn</span></code>, when spawning from a one-time prototype dict like this, you can
+skip otherwise required keys, like <code class="docutils literal notranslate"><span class="pre">prototype_key</span></code> or <code class="docutils literal notranslate"><span class="pre">typeclass</span></code>/<code class="docutils literal notranslate"><span class="pre">prototype_parent</span></code>. Defaults will
+be used.</p>
 </div></blockquote>
-<p>Note that no <code class="docutils literal notranslate"><span class="pre">location</span></code> will be set automatically when using <code class="docutils literal notranslate"><span class="pre">evennia.prototypes.spawner.spawn()</span></code>, you
+<p>Note that no <code class="docutils literal notranslate"><span class="pre">location</span></code> will be set automatically when using <code class="docutils literal notranslate"><span class="pre">evennia.prototypes.spawner.spawn()</span></code>,
+you
 have to specify <code class="docutils literal notranslate"><span class="pre">location</span></code> explicitly in the prototype dict.</p>
-<p>If the prototypes you supply are using <code class="docutils literal notranslate"><span class="pre">prototype_parent</span></code> keywords, the spawner will read prototypes from modules
-in <code class="docutils literal notranslate"><span class="pre">settings.PROTOTYPE_MODULES</span></code> as well as those saved to the database to determine the body of available parents. The <code class="docutils literal notranslate"><span class="pre">spawn</span></code> command takes many optional keywords, you can find its definition <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia.prototypes.spawner#spawn">in the api docs</a>.</p>
+<p>If the prototypes you supply are using <code class="docutils literal notranslate"><span class="pre">prototype_parent</span></code> keywords, the spawner will read prototypes
+from modules
+in <code class="docutils literal notranslate"><span class="pre">settings.PROTOTYPE_MODULES</span></code> as well as those saved to the database to determine the body of
+available parents. The <code class="docutils literal notranslate"><span class="pre">spawn</span></code> command takes many optional keywords, you can find its definition <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia.prototypes.spawner#spawn">in
+the api docs</a>.</p>
 </div>
 </div>
 
@@ -372,7 +426,10 @@ in <code class="docutils literal notranslate"><span class="pre">settings.PROTOTY
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Spawner and Prototypes</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

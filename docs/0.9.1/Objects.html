@@ -7,11 +7,13 @@
     <title>Objects &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Objects</a></li>
+
+
       </ul>
     </div>  
 
@@ -87,7 +92,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">aliases</span></code> - a handler that allows you to add and remove aliases from this object. Use <code class="docutils literal notranslate"><span class="pre">aliases.add()</span></code> to add a new alias and <code class="docutils literal notranslate"><span class="pre">aliases.remove()</span></code> to remove one.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">location</span></code> - a reference to the object currently containing this object.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">home</span></code> is a backup location. The main motivation is to have a safe place to move the object to if its <code class="docutils literal notranslate"><span class="pre">location</span></code> is destroyed. All objects should usually have a home location for safety.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">destination</span></code> - this holds a reference to another object this object links to in some way. Its main use is for <a class="reference external" href="/Objects.html#Exits">Exits</a>, it’s otherwise usually unset.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">destination</span></code> - this holds a reference to another object this object links to in some way. Its main use is for <a class="reference external" href="Objects.html#Exits">Exits</a>, it’s otherwise usually unset.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">nicks</span></code> - as opposed to aliases, a <a class="reference internal" href="Nicks.html"><span class="doc">Nick</span></a> holds a convenient nickname replacement for a real name, word or sequence, only valid for this object. This mainly makes sense if the Object is used as a game character - it can then store briefer shorts, example so as to quickly reference game commands or other characters. Use nicks.add(alias, realname) to add a new one.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">account</span></code> - this holds a reference to a connected <a class="reference internal" href="Accounts.html"><span class="doc">Account</span></a> controlling this object (if any). Note that this is set also if the controlling account is <em>not</em> currently online - to test if an account is online, use the <code class="docutils literal notranslate"><span class="pre">has_account</span></code> property instead.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">sessions</span></code> - if <code class="docutils literal notranslate"><span class="pre">account</span></code> field is set <em>and the account is online</em>, this is a list of all active sessions (server connections) to contact them through (it may be more than one if multiple connections are allowed in settings).</p></li>
@@ -97,7 +102,7 @@
 </ul>
 <p>The last two properties are special:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">cmdset</span></code> - this is a handler that stores all <a class="reference external" href="/Commands.html#Command_Sets">command sets</a> defined on the object (if any).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cmdset</span></code> - this is a handler that stores all <a class="reference external" href="Commands.html#Command_Sets">command sets</a> defined on the object (if any).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">scripts</span></code> - this is a handler that manages <a class="reference internal" href="Scripts.html"><span class="doc">Scripts</span></a> attached to the object (if any).</p></li>
 </ul>
 <p>The Object also has a host of useful utility functions. See the function headers in <code class="docutils literal notranslate"><span class="pre">src/objects/objects.py</span></code> for their arguments and more details.</p>
@@ -107,7 +112,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">search()</span></code> - this is a convenient shorthand to search for a specific object, at a given location or globally. It’s mainly useful when defining commands (in which case the object executing the command is named <code class="docutils literal notranslate"><span class="pre">caller</span></code> and one can do <code class="docutils literal notranslate"><span class="pre">caller.search()</span></code> to find objects in the room to operate on).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">execute_cmd()</span></code> - Lets the object execute the given string as if it was given on the command line.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">move_to</span></code> - perform a full move of this object to a new location.  This is the main move method and will call all relevant hooks, do all checks etc.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">clear_exits()</span></code> - will delete all <a class="reference external" href="/Objects.html#Exits">Exits</a> to <em>and</em> from this object.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clear_exits()</span></code> - will delete all <a class="reference external" href="Objects.html#Exits">Exits</a> to <em>and</em> from this object.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">clear_contents()</span></code> - this will not delete anything, but rather move all contents (except Exits) to their designated <code class="docutils literal notranslate"><span class="pre">Home</span></code> locations.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">delete()</span></code> - deletes this object, first calling <code class="docutils literal notranslate"><span class="pre">clear_exits()</span></code> and
 <code class="docutils literal notranslate"><span class="pre">clear_contents()</span></code>.</p></li>
@@ -122,7 +127,7 @@
 <p>Characters are objects controlled by <a class="reference internal" href="Accounts.html"><span class="doc">Accounts</span></a>. When a new Account
 logs in to Evennia for the first time, a new <code class="docutils literal notranslate"><span class="pre">Character</span></code> object is created and
 the Account object is assigned to the <code class="docutils literal notranslate"><span class="pre">account</span></code> attribute. A <code class="docutils literal notranslate"><span class="pre">Character</span></code> object
-must have a <a class="reference external" href="/Commands.html#Command_Sets">Default Commandset</a> set on itself at
+must have a <a class="reference external" href="Commands.html#Command_Sets">Default Commandset</a> set on itself at
 creation, or the account will not be able to issue any commands! If you just
 inherit your own class from <code class="docutils literal notranslate"><span class="pre">evennia.DefaultCharacter</span></code> and make sure to use
 <code class="docutils literal notranslate"><span class="pre">super()</span></code> to call the parent methods you should be fine. In
@@ -221,7 +226,10 @@ to modify.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Objects</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

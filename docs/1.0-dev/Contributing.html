@@ -7,11 +7,13 @@
     <title>Contributing &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Contributing</a></li>
+
+
       </ul>
     </div>  
 
@@ -51,7 +56,7 @@ about it to your friends … that kind of thing.</p>
 open-source project and any monetary donations you want to offer are completely voluntary. See it as
 a way of announcing that you appreciate the work done - a tip of the hat! A patron donates a
 (usually small) sum every month to show continued support.  If this is not your thing you can also
-show your appreciation via a <a class="reference external" href="https://www.paypal.com/en/cgi-bin/webscr?cmd=_flow&amp;SESSION=TWy_epDPSWqNr4UJCOtVWxl-pO1X1jbKiv_-UBBFWIuVDEZxC0M_2pM6ywO&amp;dispatch=5885d80a13c0db1f8e263663d3faee8d66f31424b43e9a70645c907a6cbd8fb4">one-time donation</a> (this is a PayPal link but you don’t need
+show your appreciation via a <a class="reference external" href="https://www.paypal.com/en/cgi-bin/webscr?cmd=_flow&amp;SESSION=TWy_epDPSWqNr4UJCOtVWxl-">one-time donation</a> (this is a PayPal link but you don’t need
 PayPal yourself).</p>
 </div>
 <div class="section" id="help-with-documentation">
@@ -66,16 +71,17 @@ chat/forum).</p>
 <div class="section" id="contributing-through-a-forked-repository">
 <h2>Contributing through a forked repository<a class="headerlink" href="#contributing-through-a-forked-repository" title="Permalink to this headline">¶</a></h2>
 <p>We always need more eyes and hands on the code. Even if you don’t feel confident with tackling a
-<a class="reference external" href="https://github.com/evennia/evennia/issues">bug or feature</a>, just correcting typos, adjusting formatting or simply <em>using</em> the thing
+[bug or feature][issues], just correcting typos, adjusting formatting or simply <em>using</em> the thing
 and reporting when stuff doesn’t make sense helps us a lot.</p>
 <p>The most elegant way to contribute code to Evennia is to use GitHub to create a <em>fork</em> of the
-Evennia repository and make your changes to that. Refer to the <a class="reference external" href="/Version-Control.html#forking-evennia">Forking Evennia</a> version
+Evennia repository and make your changes to that. Refer to the [Forking Evennia](Version-
+Control#forking-evennia) version
 control instructions for detailed instructions.</p>
 <p>Once you have a fork set up, you can not only work on your own game in a separate branch, you can
 also commit your fixes to Evennia itself. Make separate branches for all Evennia additions you do -
 don’t edit your local <code class="docutils literal notranslate"><span class="pre">master</span></code> or <code class="docutils literal notranslate"><span class="pre">develop</span></code> branches directly. It will make your life a lot easier.
-If you have a change that you think is suitable for the main Evennia repository, you issue a <a class="reference external" href="https://github.com/evennia/evennia/pulls">Pull
-Request</a>. This will let Evennia devs know you have stuff to share. Bug fixes should
+If you have a change that you think is suitable for the main Evennia repository, you issue a [Pull
+Request][pullrequest]. This will let Evennia devs know you have stuff to share. Bug fixes should
 generally be done against the <code class="docutils literal notranslate"><span class="pre">master</span></code> branch of Evennia, while new features/contribs should go into
 the <code class="docutils literal notranslate"><span class="pre">develop</span></code> branch. If you are unsure, just pick one and we’ll figure it out.</p>
 </div>
@@ -83,7 +89,7 @@ the <code class="docutils literal notranslate"><span class="pre">develop</span><
 <h2>Contributing with Patches<a class="headerlink" href="#contributing-with-patches" title="Permalink to this headline">¶</a></h2>
 <p>To help with Evennia development it’s recommended to do so using a fork repository as described
 above. But for small, well isolated fixes you are also welcome to submit your suggested Evennia
-fixes/addendums as a <a class="reference external" href="https://secure.wikimedia.org/wikipedia/en/wiki/Patch_%28computing%29">patch</a>.</p>
+fixes/addendums as a [patch][patch].</p>
 <p>You can include your patch in an Issue or a Mailing list post. Please avoid pasting the full patch
 text directly in your post though, best is to use a site like <a class="reference external" href="http://pastebin.com/">Pastebin</a> and
 just supply the link.</p>
@@ -95,17 +101,53 @@ directory contains game systems that are specialized or useful only to certain t
 are welcome to contribute to the <code class="docutils literal notranslate"><span class="pre">contrib/</span></code> directory. Such contributions should always happen via a
 Forked repository as described above.</p>
 <ul class="simple">
-<li><p>If you are unsure if your idea/code is suitable as a contrib, <em>ask the devs before putting any work into it</em>. This can also be a good idea in order to not duplicate efforts. This can also act as a check that your implementation idea is sound. We are, for example, unlikely to accept contribs that require large modifications of the game directory structure.</p></li>
-<li><p>If your code is intended <em>primarily</em> as an example or shows a concept/principle rather than a working system, it is probably not suitable for <code class="docutils literal notranslate"><span class="pre">contrib/</span></code>. You are instead welcome to use it as part of a <a class="reference external" href="https://github.com/evennia/evennia/wiki/Tutorials">new tutorial</a>!</p></li>
-<li><p>The code should ideally be contained within a single Python module. But if the contribution is large this may not be practical and it should instead be grouped in its own subdirectory (not as loose modules).</p></li>
-<li><p>The contribution should preferably be isolated (only make use of core Evennia) so it can easily be dropped into use. If it does depend on other contribs or third-party modules, these must be clearly documented and part of the installation instructions.</p></li>
-<li><p>The code itself should follow Evennia’s <a class="reference external" href="https://github.com/evennia/evennia/blob/master/CODING_STYLE.md">Code style guidelines</a>.</p></li>
-<li><p>The code must be well documented as described in our <a class="reference external" href="https://github.com/evennia/evennia/blob/master/CODING_STYLE.md#doc-strings">documentation style guide</a>. Expect that your code will be read and should be possible to understand by others. Include comments as well as a header in all modules. If a single file, the header should include info about how to include the contrib in a game (installation instructions). If stored in a subdirectory, this info should go into a new <code class="docutils literal notranslate"><span class="pre">README.md</span></code> file within that directory.</p></li>
-<li><p>Within reason, your contribution should be designed as genre-agnostic as possible. Limit the amount of game-style-specific code. Assume your code will be applied to a very different game than you had in mind when creating it.</p></li>
-<li><p>To make the licensing situation clear we assume all contributions are released with the same <a class="reference internal" href="Licensing.html"><span class="doc">license as Evennia</span></a>. If this is not possible for some reason, talk to us and we’ll handle it on a case-by-case basis.</p></li>
-<li><p>Your contribution must be covered by <a class="reference internal" href="Unit-Testing.html"><span class="doc">unit tests</span></a>. Having unit tests will both help make your code more stable and make sure small changes does not break it without it being noticed, it will also help us test its functionality and merge it quicker. If your contribution is a single module, you can add your unit tests to <code class="docutils literal notranslate"><span class="pre">evennia/contribs/tests.py</span></code>. If your contribution is bigger and in its own sub-directory you could just put the tests in your own <code class="docutils literal notranslate"><span class="pre">tests.py</span></code> file (Evennia will find it automatically).</p></li>
-<li><p>Merging of your code into Evennia is not guaranteed. Be ready to receive feedback and to be asked to make corrections or fix bugs. Furthermore, merging a contrib means the Evennia project takes on the responsibility of maintaining and supporting it. For various reasons this may be deemed to be beyond our manpower. However, if your code were to <em>not</em> be accepted for merger for some reason, we will instead add a link to your online repository so people can still find and use your work if they want.</p></li>
+<li><p>If you are unsure if your idea/code is suitable as a contrib, <em>ask the devs before putting any
+work into it</em>. This can also be a good idea in order to not duplicate efforts. This can also act as
+a check that your implementation idea is sound. We are, for example, unlikely to accept contribs
+that require large modifications of the game directory structure.</p></li>
+<li><p>If your code is intended <em>primarily</em> as an example or shows a concept/principle rather than a
+working system, it is probably not suitable for <code class="docutils literal notranslate"><span class="pre">contrib/</span></code>. You are instead welcome to use it as
+part of a [new tutorial][tutorials]!</p></li>
+<li><p>The code should ideally be contained within a single Python module. But if the contribution is
+large this may not be practical and it should instead be grouped in its own subdirectory (not as
+loose modules).</p></li>
+<li><p>The contribution should preferably be isolated (only make use of core Evennia) so it can easily be
+dropped into use. If it does depend on other contribs or third-party modules, these must be clearly
+documented and part of the installation instructions.</p></li>
+<li><p>The code itself should follow Evennia’s [Code style guidelines][codestyle].</p></li>
+<li><p>The code must be well documented as described in our <a class="reference external" href="https://github.com/evennia/evennia/blob/master/CODING_STYLE.md#doc-strings">documentation style
+guide</a>. Expect that your
+code will be read and should be possible to understand by others. Include comments as well as a
+header in all modules. If a single file, the header should include info about how to include the
+contrib in a game (installation instructions). If stored in a subdirectory, this info should go into
+a new <code class="docutils literal notranslate"><span class="pre">README.md</span></code> file within that directory.</p></li>
+<li><p>Within reason, your contribution should be designed as genre-agnostic as possible. Limit the
+amount of game-style-specific code. Assume your code will be applied to a very different game than
+you had in mind when creating it.</p></li>
+<li><p>To make the licensing situation clear we assume all contributions are released with the same
+<a class="reference internal" href="Licensing.html"><span class="doc">license as Evennia</span></a>. If this is not possible for some reason, talk to us and we’ll
+handle it on a case-by-case basis.</p></li>
+<li><p>Your contribution must be covered by <a class="reference internal" href="Unit-Testing.html"><span class="doc">unit tests</span></a>. Having unit tests will both help
+make your code more stable and make sure small changes does not break it without it being noticed,
+it will also help us test its functionality and merge it quicker. If your contribution is a single
+module, you can add your unit tests to <code class="docutils literal notranslate"><span class="pre">evennia/contribs/tests.py</span></code>. If your contribution is bigger
+and in its own sub-directory you could just put the tests in your own <code class="docutils literal notranslate"><span class="pre">tests.py</span></code> file (Evennia will
+find it automatically).</p></li>
+<li><p>Merging of your code into Evennia is not guaranteed. Be ready to receive feedback and to be asked
+to make corrections or fix bugs. Furthermore, merging a contrib means the Evennia project takes on
+the responsibility of maintaining and supporting it. For various reasons this may be deemed to be
+beyond our manpower. However, if your code were to <em>not</em> be accepted for merger for some reason, we
+will instead add a link to your online repository so people can still find and use your work if they
+want.</p></li>
 </ul>
+<p>pO1X1jbKiv_-
+UBBFWIuVDEZxC0M_2pM6ywO&amp;dispatch=5885d80a13c0db1f8e263663d3faee8d66f31424b43e9a70645c907a6cbd8fb4
+[forking]: https://github.com/evennia/evennia/wiki/Version-Control#wiki-forking-from-evennia
+[pullrequest]: https://github.com/evennia/evennia/pulls
+[issues]: https://github.com/evennia/evennia/issues
+[patch]: https://secure.wikimedia.org/wikipedia/en/wiki/Patch_%28computing%29
+[codestyle]: https://github.com/evennia/evennia/blob/master/CODING_STYLE.md
+[tutorials]: https://github.com/evennia/evennia/wiki/Tutorials</p>
 </div>
 </div>
 
@@ -167,7 +209,10 @@ Forked repository as described above.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Contributing</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

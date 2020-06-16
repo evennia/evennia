@@ -7,11 +7,13 @@
     <title>Weather Tutorial &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Weather Tutorial</a></li>
+
+
       </ul>
     </div>  
 
@@ -36,10 +41,19 @@
             
   <div class="section" id="weather-tutorial">
 <h1>Weather Tutorial<a class="headerlink" href="#weather-tutorial" title="Permalink to this headline">¶</a></h1>
-<p>This tutorial will have us create a simple weather system for our MUD.  The way we want to use this is to have all outdoor rooms echo weather-related messages to the room at regular and semi-random intervals. Things like “Clouds gather above”, “It starts to rain” and so on.</p>
-<p>One could imagine every outdoor room in the game having a script running on themselves that fires regularly. For this particular example it is however more efficient to do it another way, namely by using a “ticker-subscription” model. The principle is simple: Instead of having each Object individually track the time, they instead subscribe to be called by a global ticker who handles time keeping.  Not only does this centralize and organize much of the code in one place, it also has less computing overhead.</p>
-<p>Evennia offers the <a class="reference internal" href="TickerHandler.html"><span class="doc">TickerHandler</span></a> specifically for using the subscription model. We will use it for our weather system.</p>
-<p>We will assume you know how to make your own Typeclasses. If not see one of the beginning tutorials. We will create a new WeatherRoom typeclass that is aware of the day-night cycle.</p>
+<p>This tutorial will have us create a simple weather system for our MUD.  The way we want to use this
+is to have all outdoor rooms echo weather-related messages to the room at regular and semi-random
+intervals. Things like “Clouds gather above”, “It starts to rain” and so on.</p>
+<p>One could imagine every outdoor room in the game having a script running on themselves that fires
+regularly. For this particular example it is however more efficient to do it another way, namely by
+using a “ticker-subscription” model. The principle is simple: Instead of having each Object
+individually track the time, they instead subscribe to be called by a global ticker who handles time
+keeping.  Not only does this centralize and organize much of the code in one place, it also has less
+computing overhead.</p>
+<p>Evennia offers the <a class="reference internal" href="TickerHandler.html"><span class="doc">TickerHandler</span></a> specifically for using the subscription model. We
+will use it for our weather system.</p>
+<p>We will assume you know how to make your own Typeclasses. If not see one of the beginning tutorials.
+We will create a new WeatherRoom typeclass that is aware of the day-night cycle.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -83,9 +97,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">echo</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<p>In the <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> method, we simply added ourselves to the TickerHandler and tell it to call <code class="docutils literal notranslate"><span class="pre">at_weather_update</span></code> every hour (<code class="docutils literal notranslate"><span class="pre">60*60</span></code> seconds). During testing you might want to play with a shorter time duration.</p>
-<p>For this to work we also create a custom hook <code class="docutils literal notranslate"><span class="pre">at_weather_update(*args,</span> <span class="pre">**kwargs)</span></code>, which is the call sign required by TickerHandler hooks.</p>
-<p>Henceforth the room will inform everyone inside it when the weather changes. This particular example is of course very simplistic - the weather echoes are just randomly chosen and don’t care what weather came before it. Expanding it to be more realistic is a useful exercise.</p>
+<p>In the <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> method, we simply added ourselves to the TickerHandler and tell it to
+call <code class="docutils literal notranslate"><span class="pre">at_weather_update</span></code> every hour (<code class="docutils literal notranslate"><span class="pre">60*60</span></code> seconds). During testing you might want to play with a
+shorter time duration.</p>
+<p>For this to work we also create a custom hook <code class="docutils literal notranslate"><span class="pre">at_weather_update(*args,</span> <span class="pre">**kwargs)</span></code>, which is the
+call sign required by TickerHandler hooks.</p>
+<p>Henceforth the room will inform everyone inside it when the weather changes. This particular example
+is of course very simplistic - the weather echoes are just randomly chosen and don’t care what
+weather came before it. Expanding it to be more realistic is a useful exercise.</p>
 </div>
 
 
@@ -133,7 +152,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Weather Tutorial</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

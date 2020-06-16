@@ -7,11 +7,13 @@
     <title>Add a wiki on your website &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Add a wiki on your website</a></li>
+
+
       </ul>
     </div>  
 
@@ -44,9 +49,12 @@ Fortunately, you don’t have to create the features manually, since it has been
 we can integrate their work quite easily with Django.  I have decided to focus on
 the <a class="reference external" href="http://django-wiki.readthedocs.io/">Django-wiki</a>.</p>
 <blockquote>
-<div><p>Note: this article has been updated for Evennia 0.9.  If you’re not yet using this version, be careful, as the django wiki doesn’t support Python 2 anymore.  (Remove this note when enough time has passed.)</p>
+<div><p>Note: this article has been updated for Evennia 0.9.  If you’re not yet using this version, be
+careful, as the django wiki doesn’t support Python 2 anymore.  (Remove this note when enough time
+has passed.)</p>
 </div></blockquote>
-<p>The <a class="reference external" href="http://django-wiki.readthedocs.io/">Django-wiki</a> offers a lot of features associated with wikis, is
+<p>The <a class="reference external" href="http://django-wiki.readthedocs.io/">Django-wiki</a> offers a lot of features associated with
+wikis, is
 actively maintained (at this time, anyway), and isn’t too difficult to install in Evennia.  You can
 see a <a class="reference external" href="https://demo.django.wiki">demonstration of Django-wiki here</a>.</p>
 <div class="section" id="basic-installation">
@@ -73,14 +81,17 @@ one you use to run the <code class="docutils literal notranslate"><span class="p
 </pre></div>
 </div>
 <blockquote>
-<div><p>Note: this will install the last version of Django wiki. Version &gt;0.4 doesn’t support Python 2, so install wiki 0.3 if you haven’t updated to Python 3 yet.</p>
+<div><p>Note: this will install the last version of Django wiki. Version &gt;0.4 doesn’t support Python 2, so
+install wiki 0.3 if you haven’t updated to Python 3 yet.</p>
 </div></blockquote>
 <p>It might take some time, the Django-wiki having some dependencies.</p>
 </div>
 <div class="section" id="adding-the-wiki-in-the-settings">
 <h3>Adding the wiki in the settings<a class="headerlink" href="#adding-the-wiki-in-the-settings" title="Permalink to this headline">¶</a></h3>
 <p>You will need to add a few settings to have the wiki app on your website.  Open your
-<code class="docutils literal notranslate"><span class="pre">server/conf/settings.py</span></code> file and add the following at the bottom (but before importing <code class="docutils literal notranslate"><span class="pre">secret_settings</span></code>).  Here’s what you’ll find in my own setting file (add the whole Django-wiki section):</p>
+<code class="docutils literal notranslate"><span class="pre">server/conf/settings.py</span></code> file and add the following at the bottom (but before importing
+<code class="docutils literal notranslate"><span class="pre">secret_settings</span></code>).  Here’s what you’ll find in my own setting file (add the whole Django-wiki
+section):</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -233,7 +244,8 @@ who can write, a specific article.</p>
 <p>These settings must be placed, as usual, in your <code class="docutils literal notranslate"><span class="pre">server/conf/settings.py</span></code> file.  They take a
 function as argument, said function (or callback) will be called with the article and the user.
 Remember, a Django user, for us, is an account.  So we could check lockstrings on them if needed.
-Here is a default setting to restrict the wiki: only builders can write in it, but anyone (including non-logged in users) can read it.  The superuser has some additional privileges.</p>
+Here is a default setting to restrict the wiki: only builders can write in it, but anyone (including
+non-logged in users) can read it.  The superuser has some additional privileges.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -298,7 +310,9 @@ Here is a default setting to restrict the wiki: only builders can write in it, b
 </pre></div>
 </td></tr></table></div>
 <p>Here, we have created three functions: one to return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the user is the superuser, one to
-return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the user is a builder, one to return <code class="docutils literal notranslate"><span class="pre">True</span></code> no matter what (this includes if the user is anonymous, E.G. if it’s not logged-in).  We then change settings to allow either the superuser or
+return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the user is a builder, one to return <code class="docutils literal notranslate"><span class="pre">True</span></code> no matter what (this includes if the
+user is anonymous, E.G. if it’s not logged-in).  We then change settings to allow either the
+superuser or
 each builder to moderate, read, write, delete, and more.  You can, of course, add more functions,
 adapting them to your need.  This is just a demonstration.</p>
 <p>Providing the <code class="docutils literal notranslate"><span class="pre">WIKI_CAN*...</span></code> settings will bypass the original permission system.  The superuser
@@ -306,23 +320,35 @@ could change permissions of an article, but still, only builders would be able t
 need something more custom, you will have to expand on the functions you use.</p>
 <div class="section" id="managing-wiki-pages-from-evennia">
 <h3>Managing wiki pages from Evennia<a class="headerlink" href="#managing-wiki-pages-from-evennia" title="Permalink to this headline">¶</a></h3>
-<p>Unfortunately, Django wiki doesn’t provide a clear and clean entry point to read and write articles from Evennia and it doesn’t seem to be a very high priority.  If you really need to keep Django wiki and to create and manage wiki pages from your code, you can do so, but this article won’t elaborate, as this is somewhat more technical.</p>
-<p>However, it is a good opportunity to present a small project that has been created more recently: <a class="reference external" href="https://github.com/vincent-lg/evennia-wiki">evennia-wiki</a> has been created to provide a simple wiki, more tailored to Evennia and easier to connect.  It doesn’t, as yet, provide as many options as does Django wiki, but it’s perfectly usable:</p>
+<p>Unfortunately, Django wiki doesn’t provide a clear and clean entry point to read and write articles
+from Evennia and it doesn’t seem to be a very high priority.  If you really need to keep Django wiki
+and to create and manage wiki pages from your code, you can do so, but this article won’t elaborate,
+as this is somewhat more technical.</p>
+<p>However, it is a good opportunity to present a small project that has been created more recently:
+<a class="reference external" href="https://github.com/vincent-lg/evennia-wiki">evennia-wiki</a> has been created to provide a simple
+wiki, more tailored to Evennia and easier to connect.  It doesn’t, as yet, provide as many options
+as does Django wiki, but it’s perfectly usable:</p>
 <ul class="simple">
 <li><p>Pages have an inherent and much-easier to understand hierarchy based on URLs.</p></li>
-<li><p>Article permissions are connected to Evennia groups and are much easier to accommodate specific requirements.</p></li>
+<li><p>Article permissions are connected to Evennia groups and are much easier to accommodate specific
+requirements.</p></li>
 <li><p>Articles can easily be created, read or updated from the Evennia code itself.</p></li>
-<li><p>Markdown is fully-supported with a default integration to Bootstrap to look good on an Evennia website. Tables and table of contents are supported as well as wiki links.</p></li>
+<li><p>Markdown is fully-supported with a default integration to Bootstrap to look good on an Evennia
+website. Tables and table of contents are supported as well as wiki links.</p></li>
 <li><p>The process to override wiki templates makes full use of the <code class="docutils literal notranslate"><span class="pre">template_overrides</span></code> directory.</p></li>
 </ul>
 <p>However evennia-wiki doesn’t yet support:</p>
 <ul class="simple">
-<li><p>Images in markdown and the uploading schema.  If images are important to you, please consider contributing to this new project.</p></li>
+<li><p>Images in markdown and the uploading schema.  If images are important to you, please consider
+contributing to this new project.</p></li>
 <li><p>Modifying permissions on a per page/setting basis.</p></li>
 <li><p>Moving pages to new locations.</p></li>
 <li><p>Viewing page history.</p></li>
 </ul>
-<p>Considering the list of features in Django wiki, obviously other things could be added to the list.  However, these features may be the most important and useful.  Additional ones might not be that necessary.  If you’re interested in supporting this little project, you are more than welcome to <a class="reference external" href="https://github.com/vincent-lg/evennia-wiki">contribute to it</a>.  Thanks!</p>
+<p>Considering the list of features in Django wiki, obviously other things could be added to the list.
+However, these features may be the most important and useful.  Additional ones might not be that
+necessary.  If you’re interested in supporting this little project, you are more than welcome to
+<a class="reference external" href="https://github.com/vincent-lg/evennia-wiki">contribute to it</a>.  Thanks!</p>
 </div>
 </div>
 </div>
@@ -390,7 +416,10 @@ need something more custom, you will have to expand on the functions you use.</p
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Add a wiki on your website</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

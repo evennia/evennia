@@ -7,11 +7,13 @@
     <title>Locks &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Locks</a></li>
+
+
       </ul>
     </div>  
 
@@ -36,7 +41,7 @@
             
   <div class="section" id="locks">
 <h1>Locks<a class="headerlink" href="#locks" title="Permalink to this headline">¶</a></h1>
-<p>For most games it is a good idea to restrict what people can do. In Evennia such restrictions are applied and checked by something called <em>locks</em>. All Evennia entities (<a class="reference internal" href="Commands.html"><span class="doc">Commands</span></a>, <a class="reference internal" href="Objects.html"><span class="doc">Objects</span></a>, <a class="reference internal" href="Scripts.html"><span class="doc">Scripts</span></a>, <a class="reference internal" href="Accounts.html"><span class="doc">Accounts</span></a>, <a class="reference internal" href="Help-System.html"><span class="doc">Help System</span></a>, <a class="reference external" href="/Communications.html#Msg">messages</a> and <a class="reference external" href="/Communications.html#Channels">channels</a>) are accessed through locks.</p>
+<p>For most games it is a good idea to restrict what people can do. In Evennia such restrictions are applied and checked by something called <em>locks</em>. All Evennia entities (<a class="reference internal" href="Commands.html"><span class="doc">Commands</span></a>, <a class="reference internal" href="Objects.html"><span class="doc">Objects</span></a>, <a class="reference internal" href="Scripts.html"><span class="doc">Scripts</span></a>, <a class="reference internal" href="Accounts.html"><span class="doc">Accounts</span></a>, <a class="reference internal" href="Help-System.html"><span class="doc">Help System</span></a>, <a class="reference external" href="Communications.html#Msg">messages</a> and <a class="reference external" href="Communications.html#Channels">channels</a>) are accessed through locks.</p>
 <p>A lock can be thought of as an “access rule” restricting a particular use of an Evennia entity.  Whenever another entity wants that kind of access the lock will analyze that entity in different ways to determine if access should be granted or not. Evennia implements a “lockdown” philosophy - all entities are inaccessible unless you explicitly define a lock that allows some or full access.</p>
 <p>Let’s take an example: An object has a lock on itself that restricts how people may “delete” that object. Apart from knowing that it restricts deletion, the lock also knows that only players with the specific ID of, say, <code class="docutils literal notranslate"><span class="pre">34</span></code> are allowed to delete it. So whenever a player tries to run <code class="docutils literal notranslate"><span class="pre">delete</span></code> on the object, the <code class="docutils literal notranslate"><span class="pre">delete</span></code> command makes sure to check if this player is really allowed to do so. It calls the lock, which in turn checks if the player’s id is <code class="docutils literal notranslate"><span class="pre">34</span></code>. Only then will it allow <code class="docutils literal notranslate"><span class="pre">delete</span></code> to go on with its job.</p>
 <div class="section" id="setting-and-checking-a-lock">
@@ -106,12 +111,12 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">attrcreate</span></code> - who may create new attributes on the object (default True)</p></li>
 </ul>
 </li>
-<li><p><a class="reference external" href="/Objects.html#Characters">Characters</a>:</p>
+<li><p><a class="reference external" href="Objects.html#Characters">Characters</a>:</p>
 <ul>
 <li><p>Same as for Objects</p></li>
 </ul>
 </li>
-<li><p><a class="reference external" href="/Objects.html#Exits">Exits</a>:</p>
+<li><p><a class="reference external" href="Objects.html#Exits">Exits</a>:</p>
 <ul>
 <li><p>Same as for Objects</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">traverse</span></code> - who may pass the exit.</p></li>
@@ -132,7 +137,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">attredit</span></code> - change/delete attribute</p></li>
 </ul>
 </li>
-<li><p><a class="reference external" href="/Communications.html#Channels">Channels</a>:</p>
+<li><p><a class="reference external" href="Communications.html#Channels">Channels</a>:</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">control</span></code> - who is administrating the channel. This means the ability to delete the channel, boot listeners etc.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">send</span></code> - who may send to the channel.</p></li>
@@ -209,7 +214,7 @@
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">true()/all()</span></code> - give access to everyone</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">false()/none()/superuser()</span></code> - give access to none. Superusers bypass the check entirely and are thus the only ones who will pass this check.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">perm(perm)</span></code> - this tries to match a given <code class="docutils literal notranslate"><span class="pre">permission</span></code> property, on an Account firsthand, on a Character second. See <a class="reference external" href="/Locks.html#permissions">below</a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">perm(perm)</span></code> - this tries to match a given <code class="docutils literal notranslate"><span class="pre">permission</span></code> property, on an Account firsthand, on a Character second. See <a class="reference external" href="Locks.html#permissions">below</a>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">perm_above(perm)</span></code> - like <code class="docutils literal notranslate"><span class="pre">perm</span></code> but requires a “higher” permission level than the one given.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">id(num)/dbref(num)</span></code> - checks so the access_object has a certain dbref/id.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">attr(attrname)</span></code> - checks if a certain <a class="reference internal" href="Attributes.html"><span class="doc">Attribute</span></a> exists on accessing_object.</p></li>
@@ -294,7 +299,7 @@
 </pre></div>
 </div>
 <p>Note the use of the <code class="docutils literal notranslate"><span class="pre">/account</span></code> switch. It means you assign the permission to the <a class="reference internal" href="Accounts.html"><span class="doc">Accounts</span></a> Tommy instead of any <a class="reference internal" href="Objects.html"><span class="doc">Character</span></a> that also happens to be named “Tommy”.</p>
-<p>Putting permissions on the <em>Account</em> guarantees that they are kept, <em>regardless</em> of which Character they are currently puppeting. This is especially important to remember when assigning permissions from the <em>hierarchy tree</em> - as mentioned above, an Account’s permissions will overrule that of its character. So to be sure to avoid confusion you should generally put hierarchy permissions on the Account, not on their Characters (but see also <a class="reference external" href="/Locks.html#Quelling">quelling</a>).</p>
+<p>Putting permissions on the <em>Account</em> guarantees that they are kept, <em>regardless</em> of which Character they are currently puppeting. This is especially important to remember when assigning permissions from the <em>hierarchy tree</em> - as mentioned above, an Account’s permissions will overrule that of its character. So to be sure to avoid confusion you should generally put hierarchy permissions on the Account, not on their Characters (but see also <a class="reference external" href="Locks.html#Quelling">quelling</a>).</p>
 <p>Below is an example of an object without any connected account</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
@@ -496,7 +501,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Locks</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

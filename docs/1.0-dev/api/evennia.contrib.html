@@ -7,11 +7,13 @@
     <title>evennia.contrib package &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">evennia.contrib package</a></li>
+
+
       </ul>
     </div>  
 
@@ -222,7 +227,7 @@ your mind as long as the other party has not yet accepted. You can inspect
 the current offer using the ‘offers’ command.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.barter.CmdAccept._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('agree', 'accept')</em><a class="headerlink" href="#evennia.contrib.barter.CmdAccept._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('accept', 'agree')</em><a class="headerlink" href="#evennia.contrib.barter.CmdAccept._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -342,7 +347,7 @@ decline the old offer.</p>
 determine if it’s worth your while.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.barter.CmdEvaluate._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('eval', 'evaluate')</em><a class="headerlink" href="#evennia.contrib.barter.CmdEvaluate._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('evaluate', 'eval')</em><a class="headerlink" href="#evennia.contrib.barter.CmdEvaluate._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -401,7 +406,7 @@ finish trade [:say]</p>
 <p>This ends the trade prematurely. No trade will take place.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.barter.CmdFinish._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('end trade', 'finish trade')</em><a class="headerlink" href="#evennia.contrib.barter.CmdFinish._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('finish trade', 'end trade')</em><a class="headerlink" href="#evennia.contrib.barter.CmdFinish._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -523,7 +528,7 @@ change your deal. You might also want to use ‘say’, ‘emote’ etc to
 try to influence the other part in the deal.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.barter.CmdStatus._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('offers', 'status', 'deal')</em><a class="headerlink" href="#evennia.contrib.barter.CmdStatus._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('status', 'offers', 'deal')</em><a class="headerlink" href="#evennia.contrib.barter.CmdStatus._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -588,7 +593,7 @@ optional say part works like the say command and allows you to add
 info to your choice.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.barter.CmdTrade._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('trade', 'barter')</em><a class="headerlink" href="#evennia.contrib.barter.CmdTrade._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('barter', 'trade')</em><a class="headerlink" href="#evennia.contrib.barter.CmdTrade._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -2092,7 +2097,7 @@ have an in-game existence, there is no concept of location or
 at them with this command.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.chargen.CmdOOCLook._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('look', 'ls', 'l')</em><a class="headerlink" href="#evennia.contrib.chargen.CmdOOCLook._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('l', 'ls', 'look')</em><a class="headerlink" href="#evennia.contrib.chargen.CmdOOCLook._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -2102,7 +2107,7 @@ at them with this command.</p>
 
 <dl class="attribute">
 <dt id="evennia.contrib.chargen.CmdOOCLook.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['ls', 'l']</em><a class="headerlink" href="#evennia.contrib.chargen.CmdOOCLook.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['l', 'ls']</em><a class="headerlink" href="#evennia.contrib.chargen.CmdOOCLook.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -2139,7 +2144,7 @@ that is checked by the &#64;ic command directly.</p>
 
 <dl class="attribute">
 <dt id="evennia.contrib.chargen.CmdOOCLook.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'ls l', 'category': 'general', 'key': 'look', 'tags': '', 'text': '\n    ooc look\n\n    Usage:\n      look\n      look &lt;character&gt;\n\n    This is an OOC version of the look command. Since an Account doesn\'t\n    have an in-game existence, there is no concept of location or\n    &quot;self&quot;.\n\n    If any characters are available for you to control, you may look\n    at them with this command.\n    '}</em><a class="headerlink" href="#evennia.contrib.chargen.CmdOOCLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'l ls', 'category': 'general', 'key': 'look', 'tags': '', 'text': '\n    ooc look\n\n    Usage:\n      look\n      look &lt;character&gt;\n\n    This is an OOC version of the look command. Since an Account doesn\'t\n    have an in-game existence, there is no concept of location or\n    &quot;self&quot;.\n\n    If any characters are available for you to control, you may look\n    at them with this command.\n    '}</em><a class="headerlink" href="#evennia.contrib.chargen.CmdOOCLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -2588,7 +2593,7 @@ inv</p>
 <p>Shows your inventory.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.clothing.CmdInventory._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('inventory', 'i', 'inv')</em><a class="headerlink" href="#evennia.contrib.clothing.CmdInventory._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('i', 'inv', 'inventory')</em><a class="headerlink" href="#evennia.contrib.clothing.CmdInventory._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -3405,7 +3410,7 @@ the module given by settings.CONNECTION_SCREEN_MODULE.</p>
 <p>Use the create command to first create an account before logging in.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.email_login.CmdUnconnectedConnect._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('conn', 'co', 'connect', 'con')</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedConnect._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('connect', 'co', 'con', 'conn')</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedConnect._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -3415,7 +3420,7 @@ the module given by settings.CONNECTION_SCREEN_MODULE.</p>
 
 <dl class="attribute">
 <dt id="evennia.contrib.email_login.CmdUnconnectedConnect.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['co', 'conn', 'con']</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedConnect.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['co', 'con', 'conn']</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedConnect.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -3450,7 +3455,7 @@ there is no object yet before the account has logged in)</p>
 
 <dl class="attribute">
 <dt id="evennia.contrib.email_login.CmdUnconnectedConnect.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'co conn con', 'category': 'general', 'key': 'connect', 'tags': '', 'text': '\n    Connect to the game.\n\n    Usage (at login screen):\n        connect &lt;email&gt; &lt;password&gt;\n\n    Use the create command to first create an account before logging in.\n    '}</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedConnect.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'co con conn', 'category': 'general', 'key': 'connect', 'tags': '', 'text': '\n    Connect to the game.\n\n    Usage (at login screen):\n        connect &lt;email&gt; &lt;password&gt;\n\n    Use the create command to first create an account before logging in.\n    '}</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedConnect.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -3587,7 +3592,7 @@ version is a bit more complicated.</p>
 All it does is display the connect screen.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.email_login.CmdUnconnectedLook._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('look', 'l', '__unloggedin_look_command')</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedLook._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('l', '__unloggedin_look_command', 'look')</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedLook._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -3597,7 +3602,7 @@ All it does is display the connect screen.</p>
 
 <dl class="attribute">
 <dt id="evennia.contrib.email_login.CmdUnconnectedLook.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['look', 'l']</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedLook.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['l', 'look']</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedLook.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -3628,7 +3633,7 @@ All it does is display the connect screen.</p>
 
 <dl class="attribute">
 <dt id="evennia.contrib.email_login.CmdUnconnectedLook.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'look l', 'category': 'general', 'key': '__unloggedin_look_command', 'tags': '', 'text': '\n    This is an unconnected version of the `look` command for simplicity.\n\n    This is called by the server and kicks everything in gear.\n    All it does is display the connect screen.\n    '}</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'l look', 'category': 'general', 'key': '__unloggedin_look_command', 'tags': '', 'text': '\n    This is an unconnected version of the `look` command for simplicity.\n\n    This is called by the server and kicks everything in gear.\n    All it does is display the connect screen.\n    '}</em><a class="headerlink" href="#evennia.contrib.email_login.CmdUnconnectedLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -3791,7 +3796,7 @@ timeslot. The available times are night, morning, afternoon and evening.</p>
 version of the <cite>desc</cite> command.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.extended_room.CmdExtendedRoomDesc._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('describe', 'desc')</em><a class="headerlink" href="#evennia.contrib.extended_room.CmdExtendedRoomDesc._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('desc', 'describe')</em><a class="headerlink" href="#evennia.contrib.extended_room.CmdExtendedRoomDesc._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -3989,7 +3994,7 @@ look <a href="#id64"><span class="problematic" id="id65">*</span></a>&lt;account
 <p>Observes your location, details at your location or objects in your vicinity.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.extended_room.CmdExtendedRoomLook._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('look', 'ls', 'l')</em><a class="headerlink" href="#evennia.contrib.extended_room.CmdExtendedRoomLook._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('l', 'ls', 'look')</em><a class="headerlink" href="#evennia.contrib.extended_room.CmdExtendedRoomLook._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -3999,7 +4004,7 @@ look <a href="#id64"><span class="problematic" id="id65">*</span></a>&lt;account
 
 <dl class="attribute">
 <dt id="evennia.contrib.extended_room.CmdExtendedRoomLook.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['ls', 'l']</em><a class="headerlink" href="#evennia.contrib.extended_room.CmdExtendedRoomLook.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['l', 'ls']</em><a class="headerlink" href="#evennia.contrib.extended_room.CmdExtendedRoomLook.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -4025,7 +4030,7 @@ look <a href="#id64"><span class="problematic" id="id65">*</span></a>&lt;account
 
 <dl class="attribute">
 <dt id="evennia.contrib.extended_room.CmdExtendedRoomLook.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'ls l', 'category': 'general', 'key': 'look', 'tags': '', 'text': '\n    look\n\n    Usage:\n      look\n      look &lt;obj&gt;\n      look &lt;room detail&gt;\n      look *&lt;account&gt;\n\n    Observes your location, details at your location or objects in your vicinity.\n    '}</em><a class="headerlink" href="#evennia.contrib.extended_room.CmdExtendedRoomLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'l ls', 'category': 'general', 'key': 'look', 'tags': '', 'text': '\n    look\n\n    Usage:\n      look\n      look &lt;obj&gt;\n      look &lt;room detail&gt;\n      look *&lt;account&gt;\n\n    Observes your location, details at your location or objects in your vicinity.\n    '}</em><a class="headerlink" href="#evennia.contrib.extended_room.CmdExtendedRoomLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -5529,7 +5534,7 @@ as plain text. Use e.g. ansi line break ||/ to add a new
 paragraph and + + or ansi space ||_ to add extra whitespace.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.multidescer.CmdMultiDesc._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('+desc', 'desc')</em><a class="headerlink" href="#evennia.contrib.multidescer.CmdMultiDesc._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('desc', '+desc')</em><a class="headerlink" href="#evennia.contrib.multidescer.CmdMultiDesc._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -5762,7 +5767,7 @@ these objects are not needed anymore and can be deleted. Components of the puzzl
 will be re-created by use of the <cite>&#64;armpuzzle</cite> command later.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.puzzles.CmdCreatePuzzleRecipe._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('&#64;puzzle', '&#64;puzzlerecipe')</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdCreatePuzzleRecipe._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('&#64;puzzlerecipe', '&#64;puzzle')</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdCreatePuzzleRecipe._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -6068,7 +6073,7 @@ to all the variables defined therein.</p>
 </dl>
 <dl class="attribute">
 <dt id="evennia.contrib.puzzles.CmdUsePuzzleParts._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('use', 'combine')</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdUsePuzzleParts._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('combine', 'use')</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdUsePuzzleParts._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -7130,7 +7135,7 @@ forget griatch</p>
 Using the command without arguments will list all current recogs.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.rpsystem.CmdRecog._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('recog', 'forget', 'recognize')</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdRecog._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('recognize', 'forget', 'recog')</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdRecog._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -7140,7 +7145,7 @@ Using the command without arguments will list all current recogs.</p>
 
 <dl class="attribute">
 <dt id="evennia.contrib.rpsystem.CmdRecog.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['forget', 'recognize']</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdRecog.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['recognize', 'forget']</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdRecog.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -7172,7 +7177,7 @@ Using the command without arguments will list all current recogs.</p>
 
 <dl class="attribute">
 <dt id="evennia.contrib.rpsystem.CmdRecog.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'forget recognize', 'category': 'general', 'key': 'recog', 'tags': '', 'text': '\n    Recognize another person in the same room.\n\n    Usage:\n      recog\n      recog sdesc as alias\n      forget alias\n\n    Example:\n        recog tall man as Griatch\n        forget griatch\n\n    This will assign a personal alias for a person, or forget said alias.\n    Using the command without arguments will list all current recogs.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdRecog.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'recognize forget', 'category': 'general', 'key': 'recog', 'tags': '', 'text': '\n    Recognize another person in the same room.\n\n    Usage:\n      recog\n      recog sdesc as alias\n      forget alias\n\n    Example:\n        recog tall man as Griatch\n        forget griatch\n\n    This will assign a personal alias for a person, or forget said alias.\n    Using the command without arguments will list all current recogs.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdRecog.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -7189,7 +7194,7 @@ Using the command without arguments will list all current recogs.</p>
 <p>Talk to those in your current location.</p>
 <dl class="attribute">
 <dt id="evennia.contrib.rpsystem.CmdSay._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('&quot;', 'say', &quot;'&quot;)</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSay._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('say', '&quot;', &quot;'&quot;)</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSay._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -8239,7 +8244,7 @@ close &lt;door&gt;</p>
 </dl>
 <dl class="attribute">
 <dt id="evennia.contrib.simpledoor.CmdOpenCloseDoor._keyaliases">
-<code class="sig-name descname">_keyaliases</code><em class="property"> = ('close', 'open')</em><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpenCloseDoor._keyaliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_keyaliases</code><em class="property"> = ('open', 'close')</em><a class="headerlink" href="#evennia.contrib.simpledoor.CmdOpenCloseDoor._keyaliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -12666,7 +12671,10 @@ default one</p></li>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">evennia.contrib package</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

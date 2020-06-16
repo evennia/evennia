@@ -7,11 +7,13 @@
     <title>Tutorial NPCs listening &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Tutorial NPCs listening</a></li>
+
+
       </ul>
     </div>  
 
@@ -36,8 +41,11 @@
             
   <div class="section" id="tutorial-npcs-listening">
 <h1>Tutorial NPCs listening<a class="headerlink" href="#tutorial-npcs-listening" title="Permalink to this headline">¶</a></h1>
-<p>This tutorial shows the implementation of an NPC object that responds to characters speaking in their location. In this example the NPC parrots what is said, but any actions could be triggered this way.</p>
-<p>It is assumed that you already know how to create custom room and character typeclasses, please see the <a class="reference internal" href="Tutorial-for-basic-MUSH-like-game.html"><span class="doc">Basic Game tutorial</span></a> if you haven’t already done this.</p>
+<p>This tutorial shows the implementation of an NPC object that responds to characters speaking in
+their location. In this example the NPC parrots what is said, but any actions could be triggered
+this way.</p>
+<p>It is assumed that you already know how to create custom room and character typeclasses, please see
+the <a class="reference internal" href="Tutorial-for-basic-MUSH-like-game.html"><span class="doc">Basic Game tutorial</span></a> if you haven’t already done this.</p>
 <p>What we will need is simply a new NPC typeclass that can react when someone speaks.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
@@ -78,7 +86,8 @@
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> said: &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">from_obj</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<p>When someone in the room speaks to this NPC, its <code class="docutils literal notranslate"><span class="pre">msg</span></code> method will be called. We will modify the NPCs <code class="docutils literal notranslate"><span class="pre">.msg</span></code> method to catch says so the NPC can respond.</p>
+<p>When someone in the room speaks to this NPC, its <code class="docutils literal notranslate"><span class="pre">msg</span></code> method will be called. We will modify the
+NPCs <code class="docutils literal notranslate"><span class="pre">.msg</span></code> method to catch says so the NPC can respond.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -136,18 +145,31 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">from_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> 
 </pre></div>
 </td></tr></table></div>
-<p>So if the NPC gets a say and that say is not coming from the NPC itself, it will echo it using the <code class="docutils literal notranslate"><span class="pre">at_heard_say</span></code> hook. Some things of note in the above example:</p>
+<p>So if the NPC gets a say and that say is not coming from the NPC itself, it will echo it using the
+<code class="docutils literal notranslate"><span class="pre">at_heard_say</span></code> hook. Some things of note in the above example:</p>
 <ul class="simple">
-<li><p>The <code class="docutils literal notranslate"><span class="pre">text</span></code> input can be on many different forms depending on where this <code class="docutils literal notranslate"><span class="pre">msg</span></code> is called from. Instead of trying to analyze <code class="docutils literal notranslate"><span class="pre">text</span></code> in detail with a range of <code class="docutils literal notranslate"><span class="pre">if</span></code> statements we just assume the form we want and catch the error if it does not match. This simplifies the code considerably. It’s called ‘leap before you look’ and is a Python paradigm that may feel unfamiliar if you are used to other languages. Here we ‘swallow’ the error silently, which is fine when the code checked is simple. If not we may want to import <code class="docutils literal notranslate"><span class="pre">evennia.logger.log_trace</span></code> and add <code class="docutils literal notranslate"><span class="pre">log_trace()</span></code> in the <code class="docutils literal notranslate"><span class="pre">except</span></code> clause.</p></li>
-<li><p>We use <code class="docutils literal notranslate"><span class="pre">execute_cmd</span></code> to fire the <code class="docutils literal notranslate"><span class="pre">say</span></code> command back. We could also have called <code class="docutils literal notranslate"><span class="pre">self.location.msg_contents</span></code>  directly but using the Command makes sure all hooks are called (so those seeing the NPC’s <code class="docutils literal notranslate"><span class="pre">say</span></code> can in turn react if they want).</p></li>
-<li><p>Note the comments about <code class="docutils literal notranslate"><span class="pre">super</span></code> at the end. This will trigger the ‘default’ <code class="docutils literal notranslate"><span class="pre">msg</span></code> (in the parent class) as well. It’s not really necessary as long as no one puppets the NPC (by <code class="docutils literal notranslate"><span class="pre">&#64;ic</span> <span class="pre">&lt;npcname&gt;</span></code>) but it’s wise to keep in there since the puppeting player will be totally blind if <code class="docutils literal notranslate"><span class="pre">msg()</span></code> is never returning anything to them!</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">text</span></code> input can be on many different forms depending on where this <code class="docutils literal notranslate"><span class="pre">msg</span></code> is called from.
+Instead of trying to analyze <code class="docutils literal notranslate"><span class="pre">text</span></code> in detail with a range of <code class="docutils literal notranslate"><span class="pre">if</span></code> statements we just assume the
+form we want and catch the error if it does not match. This simplifies the code considerably. It’s
+called ‘leap before you look’ and is a Python paradigm that may feel unfamiliar if you are used to
+other languages. Here we ‘swallow’ the error silently, which is fine when the code checked is
+simple. If not we may want to import <code class="docutils literal notranslate"><span class="pre">evennia.logger.log_trace</span></code> and add <code class="docutils literal notranslate"><span class="pre">log_trace()</span></code> in the
+<code class="docutils literal notranslate"><span class="pre">except</span></code> clause.</p></li>
+<li><p>We use <code class="docutils literal notranslate"><span class="pre">execute_cmd</span></code> to fire the <code class="docutils literal notranslate"><span class="pre">say</span></code> command back. We could also have called
+<code class="docutils literal notranslate"><span class="pre">self.location.msg_contents</span></code>  directly but using the Command makes sure all hooks are called (so
+those seeing the NPC’s <code class="docutils literal notranslate"><span class="pre">say</span></code> can in turn react if they want).</p></li>
+<li><p>Note the comments about <code class="docutils literal notranslate"><span class="pre">super</span></code> at the end. This will trigger the ‘default’ <code class="docutils literal notranslate"><span class="pre">msg</span></code> (in the parent
+class) as well. It’s not really necessary as long as no one puppets the NPC (by <code class="docutils literal notranslate"><span class="pre">&#64;ic</span> <span class="pre">&lt;npcname&gt;</span></code>) but
+it’s wise to keep in there since the puppeting player will be totally blind if <code class="docutils literal notranslate"><span class="pre">msg()</span></code> is never
+returning anything to them!</p></li>
 </ul>
 <p>Now that’s done, let’s create an NPC and see what it has to say for itself.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@reload</span>
 <span class="nd">@create</span><span class="o">/</span><span class="n">drop</span> <span class="n">Guild</span> <span class="n">Master</span><span class="p">:</span><span class="n">npc</span><span class="o">.</span><span class="n">Npc</span>
 </pre></div>
 </div>
-<p>(you could also give the path as <code class="docutils literal notranslate"><span class="pre">typeclasses.npc.Npc</span></code>, but Evennia will look into the <code class="docutils literal notranslate"><span class="pre">typeclasses</span></code> folder automatically so this is a little shorter).</p>
+<p>(you could also give the path as <code class="docutils literal notranslate"><span class="pre">typeclasses.npc.Npc</span></code>, but Evennia will look into the <code class="docutils literal notranslate"><span class="pre">typeclasses</span></code>
+folder automatically so this is a little shorter).</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">say</span> <span class="n">hi</span>
 <span class="n">You</span> <span class="n">say</span><span class="p">,</span> <span class="s2">&quot;hi&quot;</span>
 <span class="n">Guild</span> <span class="n">Master</span> <span class="n">says</span><span class="p">,</span> <span class="s2">&quot;Anna said: &#39;hi&#39;&quot;</span>
@@ -155,8 +177,12 @@
 </div>
 <div class="section" id="assorted-notes">
 <h2>Assorted notes<a class="headerlink" href="#assorted-notes" title="Permalink to this headline">¶</a></h2>
-<p>There are many ways to implement this kind of functionality. An alternative example to overriding <code class="docutils literal notranslate"><span class="pre">msg</span></code> would be to modify the <code class="docutils literal notranslate"><span class="pre">at_say</span></code> hook on the <em>Character</em> instead. It could detect that it’s sending to an NPC and call the <code class="docutils literal notranslate"><span class="pre">at_heard_say</span></code> hook directly.</p>
-<p>While the tutorial solution has the advantage of being contained only within the NPC class, combining this with using the Character class gives more direct control over how the NPC will react. Which way to go depends on the design requirements of your particular game.</p>
+<p>There are many ways to implement this kind of functionality. An alternative example to overriding
+<code class="docutils literal notranslate"><span class="pre">msg</span></code> would be to modify the <code class="docutils literal notranslate"><span class="pre">at_say</span></code> hook on the <em>Character</em> instead. It could detect that it’s
+sending to an NPC and call the <code class="docutils literal notranslate"><span class="pre">at_heard_say</span></code> hook directly.</p>
+<p>While the tutorial solution has the advantage of being contained only within the NPC class,
+combining this with using the Character class gives more direct control over how the NPC will react.
+Which way to go depends on the design requirements of your particular game.</p>
 </div>
 </div>
 
@@ -213,7 +239,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Tutorial NPCs listening</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

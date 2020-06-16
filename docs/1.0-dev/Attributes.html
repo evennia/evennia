@@ -7,11 +7,13 @@
     <title>Attributes &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Attributes</a></li>
+
+
       </ul>
     </div>  
 
@@ -48,7 +53,8 @@ data in properties already defined on entities (such as <code class="docutils li
 specific names and require very specific types of data (for example you couldn’t assign a python
 <em>list</em> to the <code class="docutils literal notranslate"><span class="pre">key</span></code> property no matter how hard you tried).  <code class="docutils literal notranslate"><span class="pre">Attributes</span></code> come into play when you
 want to assign arbitrary data to arbitrary names.</p>
-<p><strong>Attributes are <em>not</em> secure by default and any player may be able to change them unless you <a class="reference external" href="/Attributes.html#locking-and-checking-attributes">prevent this behavior</a>.</strong></p>
+<p><strong>Attributes are <em>not</em> secure by default and any player may be able to change them unless you
+<a class="reference external" href="Attributes.html#locking-and-checking-attributes">prevent this behavior</a>.</strong></p>
 <div class="section" id="the-db-and-ndb-shortcuts">
 <h2>The .db and .ndb shortcuts<a class="headerlink" href="#the-db-and-ndb-shortcuts" title="Permalink to this headline">¶</a></h2>
 <p>To save persistent data on a Typeclassed object you normally use the <code class="docutils literal notranslate"><span class="pre">db</span></code> (DataBase) operator. Let’s
@@ -83,7 +89,8 @@ use <code class="docutils literal notranslate"><span class="pre">ndb</span></cod
 is tracked by the server and will not be purged in various cache-cleanup operations Evennia may do
 while it runs. Data stored on <code class="docutils literal notranslate"><span class="pre">ndb</span></code> (as well as <code class="docutils literal notranslate"><span class="pre">db</span></code>) will also be easily listed by example the
 <code class="docutils literal notranslate"><span class="pre">&#64;examine</span></code> command.</p>
-<p>You can also <code class="docutils literal notranslate"><span class="pre">del</span></code> properties on <code class="docutils literal notranslate"><span class="pre">db</span></code> and <code class="docutils literal notranslate"><span class="pre">ndb</span></code> as normal. This will for example delete an <code class="docutils literal notranslate"><span class="pre">Attribute</span></code>:</p>
+<p>You can also <code class="docutils literal notranslate"><span class="pre">del</span></code> properties on <code class="docutils literal notranslate"><span class="pre">db</span></code> and <code class="docutils literal notranslate"><span class="pre">ndb</span></code> as normal. This will for example delete an
+<code class="docutils literal notranslate"><span class="pre">Attribute</span></code>:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">del</span> <span class="n">rose</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">has_thorns</span>
 </pre></div>
 </td></tr></table></div>
@@ -118,7 +125,7 @@ supplied here to restrict future access and also the call itself may be checked 
 before performing the deletion.  - <code class="docutils literal notranslate"><span class="pre">clear(...)</span></code>  - removes all Attributes from object.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">all(...)</span></code> - returns all Attributes (of the given category) attached to this object.</p></li>
 </ul>
-<p>See <a class="reference external" href="/Attributes.html#locking-and-checking-attributes">this section</a> for more about locking down Attribute
+<p>See <a class="reference external" href="Attributes.html#locking-and-checking-attributes">this section</a> for more about locking down Attribute
 access and editing. The <code class="docutils literal notranslate"><span class="pre">Nattribute</span></code> offers no concept of access control.</p>
 <p>Some examples:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
@@ -147,16 +154,19 @@ access and editing. The <code class="docutils literal notranslate"><span class="
 to <code class="docutils literal notranslate"><span class="pre">attrname</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">value</span></code> - this is the value of the Attribute. This value can be anything which can be pickled -
 objects, lists, numbers or what have you (see
-<a class="reference external" href="/Attributes.html#What_types_of_data_can_I_save_in_an_Attribute">this section</a> for more info). In the example
+<a class="reference external" href="Attributes.html#What_types_of_data_can_I_save_in_an_Attribute">this section</a> for more info). In the
+example
 <code class="docutils literal notranslate"><span class="pre">obj.db.attrname</span> <span class="pre">=</span> <span class="pre">value</span></code>, the <code class="docutils literal notranslate"><span class="pre">value</span></code> is stored here.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">category</span></code> - this is an optional property that is set to None for most Attributes. Setting this
 allows to use Attributes for different functionality. This is usually not needed unless you want
-to use Attributes for very different functionality (<a class="reference internal" href="Nicks.html"><span class="doc">Nicks</span></a> is an example of using Attributes
-in this way). To modify this property you need to use the <a class="reference external" href="/Attributes.html#The_Attribute_Handler">Attribute Handler</a>.</p></li>
+to use Attributes for very different functionality (<a class="reference internal" href="Nicks.html"><span class="doc">Nicks</span></a> is an example of using
+Attributes
+in this way). To modify this property you need to use the <a class="reference external" href="Attributes.html#The_Attribute_Handler">Attribute
+Handler</a>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">strvalue</span></code> - this is a separate value field that only accepts strings. This severely limits the
 data possible to store, but allows for easier database lookups. This property is usually not used
 except when re-using Attributes for some other purpose (<a class="reference internal" href="Nicks.html"><span class="doc">Nicks</span></a> use it). It is only
-accessible via the <a class="reference external" href="/Attributes.html#The_Attribute_Handler">Attribute Handler</a>.</p></li>
+accessible via the <a class="reference external" href="Attributes.html#The_Attribute_Handler">Attribute Handler</a>.</p></li>
 </ul>
 <p>There are also two special properties:</p>
 <ul class="simple">
@@ -181,13 +191,15 @@ useful in a few situations though.</p>
 this is not an issue unless you are reading <em>and</em> writing to your Attribute very often (like many
 times per second). Reading from an already cached Attribute is as fast as reading any Python
 property. But even then this is not likely something to worry about: Apart from Evennia’s own
-caching, modern database systems  themselves also cache data very efficiently for speed. Our default
+caching, modern database systems  themselves also cache data very efficiently for speed. Our
+default
 database even runs completely in RAM if possible, alleviating much of the need to write to disk
 during heavy loads.</p></li>
 <li><p>A more valid reason for using non-persistent data is if you <em>want</em> to lose your state when logging
 off. Maybe you are storing throw-away data that are re-initialized at server startup. Maybe you
 are implementing some caching of your own. Or maybe you are testing a buggy <a class="reference internal" href="Scripts.html"><span class="doc">Script</span></a> that
-does potentially harmful stuff to your character object. With non-persistent storage you can be sure
+does potentially harmful stuff to your character object. With non-persistent storage you can be
+sure
 that whatever is messed up, it’s nothing a server reboot can’t clear up.</p></li>
 <li><p>NAttributes have no restrictions at all on what they can store (see next section), since they
 don’t need to worry about being saved to the database - they work very well for temporary storage.</p></li>
@@ -216,10 +228,12 @@ not a big deal. But if you are accessing the Attribute as part of some big loop 
 amount of reads/writes you should first extract it to a temporary variable, operate on <em>that</em> and
 then save the result back to the Attribute. If you are storing a more complex structure like a
 <code class="docutils literal notranslate"><span class="pre">dict</span></code> or a <code class="docutils literal notranslate"><span class="pre">list</span></code> you should make sure to “disconnect” it from the database before looping over it,
-as mentioned in the <a class="reference external" href="/Attributes.html#retrieving-mutable-objects">Retrieving Mutable Objects</a> section below.</p>
+as mentioned in the <a class="reference external" href="Attributes.html#retrieving-mutable-objects">Retrieving Mutable Objects</a> section
+below.</p>
 <div class="section" id="storing-single-objects">
 <h3>Storing single objects<a class="headerlink" href="#storing-single-objects" title="Permalink to this headline">¶</a></h3>
-<p>With a single object, we mean anything that is <em>not iterable</em>, like numbers, strings or custom class instances without the <code class="docutils literal notranslate"><span class="pre">__iter__</span></code> method.</p>
+<p>With a single object, we mean anything that is <em>not iterable</em>, like numbers, strings or custom class
+instances without the <code class="docutils literal notranslate"><span class="pre">__iter__</span></code> method.</p>
 <ul class="simple">
 <li><p>You can generally store any non-iterable Python entity that can be
 <a class="reference external" href="http://docs.python.org/library/pickle.html">pickled</a>.</p></li>
@@ -268,14 +282,21 @@ entities you can loop over in a for-loop. Attribute-saving supports the followin
 <li><p><a class="reference external" href="https://docs.python.org/2/tutorial/datastructures.html#more-on-lists">Lists</a>, like <code class="docutils literal notranslate"><span class="pre">[1,2,&quot;test&quot;,</span> <span class="pre">&lt;dbobj&gt;]</span></code>.</p></li>
 <li><p><a class="reference external" href="https://docs.python.org/2/tutorial/datastructures.html#dictionaries">Dicts</a>, like <code class="docutils literal notranslate"><span class="pre">{1:2,</span> <span class="pre">&quot;test&quot;:&lt;dbobj&gt;]</span></code>.</p></li>
 <li><p><a class="reference external" href="https://docs.python.org/2/tutorial/datastructures.html#sets">Sets</a>, like <code class="docutils literal notranslate"><span class="pre">{1,2,&quot;test&quot;,&lt;dbobj&gt;}</span></code>.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/2/library/collections.html#collections.OrderedDict">collections.OrderedDict</a>, like <code class="docutils literal notranslate"><span class="pre">OrderedDict((1,2),</span> <span class="pre">(&quot;test&quot;,</span> <span class="pre">&lt;dbobj&gt;))</span></code>.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/2/library/collections.html#collections.deque">collections.Deque</a>, like <code class="docutils literal notranslate"><span class="pre">deque((1,2,&quot;test&quot;,&lt;dbobj&gt;))</span></code>.</p></li>
-<li><p><em>Nestings</em> of any combinations of the above, like lists in dicts or an OrderedDict of tuples, each containing dicts, etc.</p></li>
+<li></li>
+</ul>
+<p><a class="reference external" href="https://docs.python.org/2/library/collections.html#collections.OrderedDict">collections.OrderedDict</a>,
+like <code class="docutils literal notranslate"><span class="pre">OrderedDict((1,2),</span> <span class="pre">(&quot;test&quot;,</span> <span class="pre">&lt;dbobj&gt;))</span></code>.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/2/library/collections.html#collections.deque">collections.Deque</a>, like
+<code class="docutils literal notranslate"><span class="pre">deque((1,2,&quot;test&quot;,&lt;dbobj&gt;))</span></code>.</p></li>
+<li><p><em>Nestings</em> of any combinations of the above, like lists in dicts or an OrderedDict of tuples, each
+containing dicts, etc.</p></li>
 <li><p>All other iterables (i.e. entities with the <code class="docutils literal notranslate"><span class="pre">__iter__</span></code> method) will be converted to a <em>list</em>.
 Since you can use any combination of the above iterables, this is generally not much of a
 limitation.</p></li>
 </ul>
-<p>Any entity listed in the <a class="reference external" href="/Attributes.html#Storing-Single-Objects">Single object</a> section above can be stored in the iterable.</p>
+<p>Any entity listed in the <a class="reference external" href="Attributes.html#Storing-Single-Objects">Single object</a> section above can be
+stored in the iterable.</p>
 <blockquote>
 <div><p>As mentioned in the previous section, database entities (aka typeclasses) are not possible to
 pickle. So when storing an iterable, Evennia must recursively traverse the iterable <em>and all its
@@ -400,7 +421,8 @@ way.</p>
 <h2>Locking and checking Attributes<a class="headerlink" href="#locking-and-checking-attributes" title="Permalink to this headline">¶</a></h2>
 <p>Attributes are normally not locked down by default, but you can easily change that for individual
 Attributes (like those that may be game-sensitive in games with user-level building).</p>
-<p>First you need to set a <em>lock string</em> on your Attribute. Lock strings are specified <a class="reference internal" href="Locks.html"><span class="doc">Locks</span></a>. The relevant lock types are</p>
+<p>First you need to set a <em>lock string</em> on your Attribute. Lock strings are specified <a class="reference internal" href="Locks.html"><span class="doc">Locks</span></a>.
+The relevant lock types are</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">attrread</span></code> - limits who may read the value of the Attribute</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">attredit</span></code> - limits who may set/change this Attribute</p></li>
@@ -509,7 +531,10 @@ those will check for the <code class="docutils literal notranslate"><span class=
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Attributes</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

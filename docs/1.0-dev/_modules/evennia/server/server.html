@@ -7,11 +7,13 @@
     <title>evennia.server.server &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,7 +29,10 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">evennia.server.server</a></li>
+
+
       </ul>
     </div>  
 
@@ -171,7 +176,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># adjust the runtime not with 60s but with the actual elapsed time</span>
         <span class="c1"># in case this may varies slightly from 60s.</span>
-        <span class="n">_GAMETIME_MODULE</span><span class="o">.</span><span class="n">SERVER_RUNTIME</span> <span class="o">+=</span> <span class="p">(</span><span class="n">now</span> <span class="o">-</span> <span class="n">_LAST_SERVER_TIME_SNAPSHOT</span><span class="p">)</span>
+        <span class="n">_GAMETIME_MODULE</span><span class="o">.</span><span class="n">SERVER_RUNTIME</span> <span class="o">+=</span> <span class="n">now</span> <span class="o">-</span> <span class="n">_LAST_SERVER_TIME_SNAPSHOT</span>
     <span class="n">_LAST_SERVER_TIME_SNAPSHOT</span> <span class="o">=</span> <span class="n">now</span>
 
     <span class="c1"># update game time and save it across reloads</span>
@@ -809,7 +814,10 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li> 
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">evennia.server.server</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

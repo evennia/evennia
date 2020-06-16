@@ -7,11 +7,13 @@
     <title>API refactoring &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">API refactoring</a></li>
+
+
       </ul>
     </div>  
 
@@ -45,7 +50,7 @@
 </div>
 <div class="section" id="griatch-sept-2-2019">
 <h2>Griatch (Sept 2, 2019)<a class="headerlink" href="#griatch-sept-2-2019" title="Permalink to this headline">¶</a></h2>
-<p>I don’t agree with removing explicit keywords as suggested by <a class="reference external" href="/API-refactoring.html#reduce-usage-of-optionalpositional-arguments-aug-29-2019">Johnny on Aug 29 below</a>. Overriding such a method can still be done by <code class="docutils literal notranslate"><span class="pre">get(self,</span> <span class="pre">**kwargs)</span></code> if so desired, making the kwargs explicit helps IMO readability of the API. If just giving a generic <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>, one must read the docstring or even the code to see which keywords are valid.</p>
+<p>I don’t agree with removing explicit keywords as suggested by <a class="reference external" href="API-refactoring.html#reduce-usage-of-optionalpositional-arguments-aug-29-2019">Johnny on Aug 29 below</a>. Overriding such a method can still be done by <code class="docutils literal notranslate"><span class="pre">get(self,</span> <span class="pre">**kwargs)</span></code> if so desired, making the kwargs explicit helps IMO readability of the API. If just giving a generic <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>, one must read the docstring or even the code to see which keywords are valid.</p>
 <p>On the other hand, I think it makes sense to as a standard offer an extra <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> at the end of arg-lists for common methods that are expected to be over-ridden. This make the API more flexible by hinting to the dev that they could expand their own over-ridden implementation with their own keyword arguments if so desired.</p>
 </div>
 <hr class="docutils" />
@@ -122,7 +127,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">API refactoring</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

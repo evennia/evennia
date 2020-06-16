@@ -7,11 +7,13 @@
     <title>TextTags &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">TextTags</a></li>
+
+
       </ul>
     </div>  
 
@@ -47,7 +52,7 @@
 <p>To see which colours your client support, use the default <code class="docutils literal notranslate"><span class="pre">&#64;color</span></code> command. This will list all available colours for ANSI and Xterm256 along with the codes you use for them. You can find a list of all the parsed <code class="docutils literal notranslate"><span class="pre">ANSI</span></code>-colour codes in <code class="docutils literal notranslate"><span class="pre">evennia/utils/ansi.py</span></code>.</p>
 <div class="section" id="ansi-colours">
 <h3>ANSI colours<a class="headerlink" href="#ansi-colours" title="Permalink to this headline">¶</a></h3>
-<p>Evennia supports the <code class="docutils literal notranslate"><span class="pre">ANSI</span></code> standard for text. This is by far the most supported MUD-color standard, available in all but the most ancient mud clients. The ANSI colours are <strong>r</strong>ed, <strong>g</strong>reen, <strong>y</strong>ellow, <strong>b</strong>lue, <strong>m</strong>agenta, <strong>c</strong>yan, <strong>w</strong>hite and black. They are abbreviated by their first letter except for black which is abbreviated with the letter <strong>x</strong>. In ANSI there are “bright” and “normal” (darker) versions of each color, adding up to a total of 16 colours to use for foreground text. There are also 8 “background” colours. These have no bright alternative in ANSI (but Evennia uses the <a class="reference external" href="/TextTags.html#xterm256-colours">Xterm256</a> extension behind the scenes to offer them anyway).</p>
+<p>Evennia supports the <code class="docutils literal notranslate"><span class="pre">ANSI</span></code> standard for text. This is by far the most supported MUD-color standard, available in all but the most ancient mud clients. The ANSI colours are <strong>r</strong>ed, <strong>g</strong>reen, <strong>y</strong>ellow, <strong>b</strong>lue, <strong>m</strong>agenta, <strong>c</strong>yan, <strong>w</strong>hite and black. They are abbreviated by their first letter except for black which is abbreviated with the letter <strong>x</strong>. In ANSI there are “bright” and “normal” (darker) versions of each color, adding up to a total of 16 colours to use for foreground text. There are also 8 “background” colours. These have no bright alternative in ANSI (but Evennia uses the <a class="reference external" href="TextTags.html#xterm256-colours">Xterm256</a> extension behind the scenes to offer them anyway).</p>
 <p>To colour your text you put special tags in it. Evennia will parse these and convert them to the correct markup for the client used. If the user’s client/console/display supports ANSI colour, they will see the text in the specified colour, otherwise the tags will be stripped (uncolored text). This works also for non-terminal clients, such as the webclient. For the webclient, Evennia will translate the codes to HTML RGB colors.</p>
 <p>Here is an example of the tags in action:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="o">|</span><span class="n">rThis</span> <span class="n">text</span> <span class="ow">is</span> <span class="n">bright</span> <span class="n">red</span><span class="o">.|</span><span class="n">n</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">normal</span> <span class="n">text</span><span class="o">.</span>
@@ -68,7 +73,7 @@ These are normal-intensity and are thus always given as uppercase, such as
 <li><p><code class="docutils literal notranslate"><span class="pre">|H</span></code> negates the effects <code class="docutils literal notranslate"><span class="pre">|h</span></code> and returns all ANSI foreground colors (<code class="docutils literal notranslate"><span class="pre">|!</span></code> and <code class="docutils literal notranslate"><span class="pre">|</span></code> types) to ‘normal’ intensity. It has no effect on background and Xterm colors.</p></li>
 </ul>
 <blockquote>
-<div><p>Note: The ANSI standard does not actually support bright backgrounds like <code class="docutils literal notranslate"><span class="pre">|[r</span></code> - the standard only supports “normal” intensity backgrounds.  To get around this Evennia instead implements these as <a class="reference external" href="/TextTags.html#xterm256-colours">Xterm256 colours</a> behind the scenes. If the client does not support Xterm256 the ANSI colors will be used instead and there will be no visible difference between using upper- and lower-case background tags.</p>
+<div><p>Note: The ANSI standard does not actually support bright backgrounds like <code class="docutils literal notranslate"><span class="pre">|[r</span></code> - the standard only supports “normal” intensity backgrounds.  To get around this Evennia instead implements these as <a class="reference external" href="TextTags.html#xterm256-colours">Xterm256 colours</a> behind the scenes. If the client does not support Xterm256 the ANSI colors will be used instead and there will be no visible difference between using upper- and lower-case background tags.</p>
 </div></blockquote>
 <p>If you want to display an ANSI marker as output text (without having any effect), you need to escape it by preceding its <code class="docutils literal notranslate"><span class="pre">|</span></code> with another <code class="docutils literal notranslate"><span class="pre">|</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">say</span> <span class="n">The</span> <span class="o">||</span><span class="n">r</span> <span class="n">ANSI</span> <span class="n">marker</span> <span class="n">changes</span> <span class="n">text</span> <span class="n">color</span> <span class="n">to</span> <span class="n">bright</span> <span class="n">red</span><span class="o">.</span>
@@ -351,7 +356,10 @@ These are normal-intensity and are thus always given as uppercase, such as
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">TextTags</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

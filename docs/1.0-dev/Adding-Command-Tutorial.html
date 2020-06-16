@@ -7,11 +7,13 @@
     <title>Adding Command Tutorial &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Adding Command Tutorial</a></li>
+
+
       </ul>
     </div>  
 
@@ -42,12 +47,16 @@ it just <code class="docutils literal notranslate"><span class="pre">mygame</spa
 <div class="section" id="step-1-creating-a-custom-command">
 <h2>Step 1: Creating a custom command<a class="headerlink" href="#step-1-creating-a-custom-command" title="Permalink to this headline">¶</a></h2>
 <ol class="simple">
-<li><p>Open <code class="docutils literal notranslate"><span class="pre">mygame/commands/command.py</span></code> in a text editor. This is just one place commands could be placed but you get it setup from the onset as an easy place to start. It also already contains some example code.</p></li>
+<li><p>Open <code class="docutils literal notranslate"><span class="pre">mygame/commands/command.py</span></code> in a text editor. This is just one place commands could be
+placed but you get it setup from the onset as an easy place to start. It also already contains some
+example code.</p></li>
 <li><p>Create a new class in <code class="docutils literal notranslate"><span class="pre">command.py</span></code> inheriting from <code class="docutils literal notranslate"><span class="pre">default_cmds.MuxCommand</span></code>. Let’s call it
 <code class="docutils literal notranslate"><span class="pre">CmdEcho</span></code> in this example.</p></li>
 <li><p>Set the class variable <code class="docutils literal notranslate"><span class="pre">key</span></code> to a good command name, like  <code class="docutils literal notranslate"><span class="pre">echo</span></code>.</p></li>
-<li><p>Give your class a useful <em>docstring</em>. A docstring is the string at the very top of a class or function/method. The docstring at the top of the command class is read by Evennia to become the help entry for the Command (see
-<a class="reference external" href="/Help-System.html#command-auto-help-system">Command Auto-help</a>).</p></li>
+<li><p>Give your class a useful <em>docstring</em>. A docstring is the string at the very top of a class or
+function/method. The docstring at the top of the command class is read by Evennia to become the help
+entry for the Command (see
+<a class="reference external" href="Help-System.html#command-auto-help-system">Command Auto-help</a>).</p></li>
 <li><p>Define a class method <code class="docutils literal notranslate"><span class="pre">func(self)</span></code> that echoes your input back to you.</p></li>
 </ol>
 <p>Below is an example how this all could look for the echo command:</p>
@@ -145,8 +154,10 @@ the game. Use <code class="docutils literal notranslate"><span class="pre">help<
 <p>If you have trouble, make sure to check the log for error messages (probably due to syntax errors in
 your command definition).</p>
 <blockquote>
-<div><p>Note: Typing <code class="docutils literal notranslate"><span class="pre">echotest</span></code> will also work. It will be handled as the command <code class="docutils literal notranslate"><span class="pre">echo</span></code> directly followed by
-its argument <code class="docutils literal notranslate"><span class="pre">test</span></code> (which will end up in <code class="docutils literal notranslate"><span class="pre">self.args).</span> <span class="pre">To</span> <span class="pre">change</span> <span class="pre">this</span> <span class="pre">behavior,</span> <span class="pre">you</span> <span class="pre">can</span> <span class="pre">add</span> <span class="pre">the</span> </code>arg_regex<code class="docutils literal notranslate"><span class="pre">property</span> <span class="pre">alongside</span></code>key<code class="docutils literal notranslate"><span class="pre">,</span> </code>help_category` etc. <a class="reference external" href="/Commands.html#on-arg_regex">See the arg_regex documentation</a> for more info.</p>
+<div><p>Note: Typing <code class="docutils literal notranslate"><span class="pre">echotest</span></code> will also work. It will be handled as the command <code class="docutils literal notranslate"><span class="pre">echo</span></code> directly followed
+by
+its argument <code class="docutils literal notranslate"><span class="pre">test</span></code> (which will end up in <code class="docutils literal notranslate"><span class="pre">self.args).</span> <span class="pre">To</span> <span class="pre">change</span> <span class="pre">this</span> <span class="pre">behavior,</span> <span class="pre">you</span> <span class="pre">can</span> <span class="pre">add</span> <span class="pre">the</span> </code>arg_regex<code class="docutils literal notranslate"><span class="pre">property</span> <span class="pre">alongside</span></code>key<code class="docutils literal notranslate"><span class="pre">,</span> </code>help_category` etc. <a class="reference external" href="Commands.html#on-arg_regex">See the arg_regex
+documentation</a> for more info.</p>
 </div></blockquote>
 <p>If you want to overload existing default commands (such as <code class="docutils literal notranslate"><span class="pre">look</span></code> or <code class="docutils literal notranslate"><span class="pre">get</span></code>), just add your new
 command with the same key as the old one - it will then replace it. Just remember that you must use
@@ -219,9 +230,10 @@ object is first created. This means that if you already have existing objects in
 using that typeclass, they will not have been initiated the same way. There are many ways to update
 them; since it’s a one-time update you can usually just simply loop through them. As superuser, try
 the following:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@py</span> <span class="kn">from</span> <span class="nn">typeclasses.objects</span> <span class="k">import</span> <span class="n">MyObject</span><span class="p">;</span> <span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;mycmdset.MyCmdSet&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">MyObject</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@py</span> <span class="kn">from</span> <span class="nn">typeclasses.objects</span> <span class="k">import</span> <span class="n">MyObject</span><span class="p">;</span> <span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;mycmdset.MyCmdSet&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span>
 </pre></div>
 </div>
+<p>MyObject.objects.all()]</p>
 <p>This goes through all objects in your database having the right typeclass, adding the new cmdset to
 each. The good news is that you only have to do this if you want to post-add <em>cmdsets</em>. If you just
 want to add a new <em>command</em>, you can simply add that command to the cmdset’s <code class="docutils literal notranslate"><span class="pre">at_cmdset_creation</span></code>
@@ -295,7 +307,10 @@ default character cmdset defaults to being defined as</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Adding Command Tutorial</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

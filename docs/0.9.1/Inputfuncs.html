@@ -7,11 +7,13 @@
     <title>Inputfuncs &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Inputfuncs</a></li>
+
+
       </ul>
     </div>  
 
@@ -36,7 +41,7 @@
             
   <div class="section" id="inputfuncs">
 <h1>Inputfuncs<a class="headerlink" href="#inputfuncs" title="Permalink to this headline">¶</a></h1>
-<p>An <em>inputfunc</em> is an Evennia function that handles a particular input (an <a class="reference internal" href="OOB.html"><span class="doc">inputcommand</span></a>) from the client. The inputfunc is the last destination for the inputcommand along the <a class="reference external" href="/Messagepath.html#the-ingoing-message-path">ingoing message path</a>. The inputcommand always has the form <code class="docutils literal notranslate"><span class="pre">(commandname,</span> <span class="pre">(args),</span> <span class="pre">{kwargs})</span></code> and Evennia will use this to try to find and call an inputfunc on the form</p>
+<p>An <em>inputfunc</em> is an Evennia function that handles a particular input (an <a class="reference internal" href="OOB.html"><span class="doc">inputcommand</span></a>) from the client. The inputfunc is the last destination for the inputcommand along the <a class="reference external" href="Messagepath.html#the-ingoing-message-path">ingoing message path</a>. The inputcommand always has the form <code class="docutils literal notranslate"><span class="pre">(commandname,</span> <span class="pre">(args),</span> <span class="pre">{kwargs})</span></code> and Evennia will use this to try to find and call an inputfunc on the form</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">commandname</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># ...</span>
@@ -252,7 +257,10 @@ Output: <code class="docutils literal notranslate"><span class="pre">(&quot;get_
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Inputfuncs</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

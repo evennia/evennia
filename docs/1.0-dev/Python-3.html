@@ -7,11 +7,13 @@
     <title>Python 3 &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Python 3</a></li>
+
+
       </ul>
     </div>  
 
@@ -37,7 +42,8 @@
   <div class="section" id="python-3">
 <h1>Python 3<a class="headerlink" href="#python-3" title="Permalink to this headline">¶</a></h1>
 <blockquote>
-<div><p><em>Note: Evennia only supports Python 2.7+ at this time. This page gathers various development information relevant to server developers.</em></p>
+<div><p><em>Note: Evennia only supports Python 2.7+ at this time. This page gathers various development
+information relevant to server developers.</em></p>
 </div></blockquote>
 <p>Django can work with Python 2 and 3 already, though changes may be required to how the Evennia code
 uses it. Twisted has much Python 3 compatibility, but not all modules within it have been ported
@@ -54,17 +60,21 @@ it still works correctly with Twisted on Python 3.</p>
 <h1>“Strings”<a class="headerlink" href="#strings" title="Permalink to this headline">¶</a></h1>
 <p>Broadly (and perhaps over-simplified):</p>
 <ul class="simple">
-<li><p>Twisted <a class="reference external" href="http://twistedmatrix.com/trac/wiki/FrequentlyAskedQuestions#WhydontTwistedsnetworkmethodssupportUnicodeobjectsaswellasstrings">expects bytes</a></p></li>
-<li><p>Django <a class="reference external" href="https://docs.djangoproject.com/en/1.8/topics/python3/#unicode-literals">expects “” to be unicode</a></p></li>
+<li><p>Twisted <a class="reference external" href="http://twistedmatrix.com/trac/wiki/FrequentlyAskedQuestions#WhydontTwistedsnetworkmethodssupportUnicodeobjectsaswellasstrings">expects
+bytes</a></p></li>
+<li><p>Django [expects “” to be unicode](https://docs.djangoproject.com/en/1.8/topics/python3/#unicode-
+literals)</p></li>
 </ul>
-<p>I think we should use (roughly speaking) “” for unicode and b”” for bytes everywhere, but I need to look at the impacts of this more closely.</p>
+<p>I think we should use (roughly speaking) “” for unicode and b”” for bytes everywhere, but I need to
+look at the impacts of this more closely.</p>
 </div>
 <div class="section" id="links">
 <h1>Links<a class="headerlink" href="#links" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><p>http://twistedmatrix.com/documents/current/core/howto/python3.html</p></li>
 <li><p>https://twistedmatrix.com/trac/wiki/Plan/Python3</p></li>
-<li><p><a class="reference external" href="https://twistedmatrix.com/trac/query?status=assigned&amp;status=new&amp;status=reopened&amp;group=status&amp;milestone=Python-3.x">Twisted Python3 bugs</a></p></li>
+<li><p><a class="reference external" href="https://twistedmatrix.com/trac/query?status=assigned&amp;status=new&amp;status=reopened&amp;group=status&amp;milestone=Python-3.x">Twisted Python3
+bugs</a></p></li>
 </ul>
 </div>
 <div class="section" id="twisted-module-status">
@@ -181,7 +191,10 @@ it still works correctly with Twisted on Python 3.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Python 3</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

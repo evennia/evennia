@@ -7,11 +7,13 @@
     <title>Tutorial Tweeting Game Stats &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Tutorial Tweeting Game Stats</a></li>
+
+
       </ul>
     </div>  
 
@@ -36,8 +41,11 @@
             
   <div class="section" id="tutorial-tweeting-game-stats">
 <h1>Tutorial Tweeting Game Stats<a class="headerlink" href="#tutorial-tweeting-game-stats" title="Permalink to this headline">¶</a></h1>
-<p>This tutorial will create a simple script that will send a tweet to your already configured twitter account. Please see: <a class="reference internal" href="How-to-connect-Evennia-to-Twitter.html"><span class="doc">How to connect Evennia to Twitter</span></a> if you haven’t already done so.</p>
-<p>The script could be expanded to cover a variety of statistics you might wish to tweet about regularly, from player deaths to how much currency is in the economy etc.</p>
+<p>This tutorial will create a simple script that will send a tweet to your already configured twitter
+account. Please see: <a class="reference internal" href="How-to-connect-Evennia-to-Twitter.html"><span class="doc">How to connect Evennia to Twitter</span></a> if you
+haven’t already done so.</p>
+<p>The script could be expanded to cover a variety of statistics you might wish to tweet about
+regularly, from player deaths to how much currency is in the economy etc.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -101,7 +109,10 @@
 61
 62
 63
-64</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># evennia/typeclasses/tweet_stats.py</span>
+64
+65
+66
+67</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># evennia/typeclasses/tweet_stats.py</span>
 
 <span class="kn">import</span> <span class="nn">twitter</span>
 <span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
@@ -145,12 +156,15 @@
             <span class="n">nobjs</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
             <span class="n">base_char_typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span>
             <span class="n">nchars</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_typeclass_path</span><span class="o">=</span><span class="n">base_char_typeclass</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
-            <span class="n">nrooms</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_location__isnull</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">db_typeclass_path</span><span class="o">=</span><span class="n">base_char_typeclass</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
-            <span class="n">nexits</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_location__isnull</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">db_destination__isnull</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+            <span class="n">nrooms</span> <span class="o">=</span>
+<span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_location__isnull</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">db_typeclass_path</span><span class="o">=</span><span class="n">base_char_typeclass</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+            <span class="n">nexits</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_location__isnull</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+<span class="n">db_destination__isnull</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
             <span class="n">nother</span> <span class="o">=</span> <span class="n">nobjs</span> <span class="o">-</span> <span class="n">nchars</span> <span class="o">-</span> <span class="n">nrooms</span> <span class="o">-</span> <span class="n">nexits</span>
             <span class="n">tweet</span> <span class="o">=</span> <span class="s2">&quot;Chars: </span><span class="si">%s</span><span class="s2">, Rooms: </span><span class="si">%s</span><span class="s2">, Objects: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">nchars</span><span class="p">,</span> <span class="n">nrooms</span><span class="p">,</span> <span class="n">nother</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span> 
-            <span class="k">if</span> <span class="n">tweet_output</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span> <span class="c1">##Number of prototypes and 3 random keys - taken from @spawn command</span>
+            <span class="k">if</span> <span class="n">tweet_output</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span> <span class="c1">##Number of prototypes and 3 random keys - taken from @spawn</span>
+<span class="n">command</span>
                 <span class="n">prototypes</span> <span class="o">=</span> <span class="n">spawner</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">return_prototypes</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
             
                 <span class="n">keys</span> <span class="o">=</span> <span class="n">prototypes</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
@@ -167,13 +181,19 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="s2">&quot;Tweet Error: When attempting to tweet </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">tweet</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<p>In the <code class="docutils literal notranslate"><span class="pre">at_script_creation</span></code> method, we configure the script to fire immediately (useful for testing) and setup the delay (1 day) as well as script information seen when you use <code class="docutils literal notranslate"><span class="pre">&#64;scripts</span></code></p>
-<p>In the <code class="docutils literal notranslate"><span class="pre">at_repeat</span></code> method (which is called immediately and then at interval seconds later) we setup the Twitter API (just like in the initial configuration of twitter).  numberTweetOutputs is used to show how many different types of outputs we have (in this case 2).  We then build the tweet based on randomly choosing between these outputs.</p>
+<p>In the <code class="docutils literal notranslate"><span class="pre">at_script_creation</span></code> method, we configure the script to fire immediately (useful for testing)
+and setup the delay (1 day) as well as script information seen when you use <code class="docutils literal notranslate"><span class="pre">&#64;scripts</span></code></p>
+<p>In the <code class="docutils literal notranslate"><span class="pre">at_repeat</span></code> method (which is called immediately and then at interval seconds later) we setup
+the Twitter API (just like in the initial configuration of twitter).  numberTweetOutputs is used to
+show how many different types of outputs we have (in this case 2).  We then build the tweet based on
+randomly choosing between these outputs.</p>
 <ol class="simple">
 <li><p>Shows the number of Player Characters, Rooms and Other/Objects</p></li>
 <li><p>Shows the number of prototypes currently in the game and then selects 3 random keys to show</p></li>
 </ol>
-<p><a class="reference internal" href="Scripts.html"><span class="doc">Scripts Information</span></a> will show you how to add it as a Global script, however, for testing it may be useful to start/stop it quickly from within the game.  Assuming that you create the file as <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/tweet_stats.py</span></code> it can be started by using the following command</p>
+<p><a class="reference internal" href="Scripts.html"><span class="doc">Scripts Information</span></a> will show you how to add it as a Global script, however, for testing
+it may be useful to start/stop it quickly from within the game.  Assuming that you create the file
+as <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/tweet_stats.py</span></code> it can be started by using the following command</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@script</span> <span class="n">Here</span> <span class="o">=</span> <span class="n">tweet_stats</span><span class="o">.</span><span class="n">TweetStats</span>
 </pre></div>
 </div>
@@ -224,7 +244,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Tutorial Tweeting Game Stats</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

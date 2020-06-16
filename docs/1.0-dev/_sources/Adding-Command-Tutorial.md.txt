@@ -3,15 +3,19 @@
 This is a quick first-time tutorial expanding on the [Commands](Commands) documentation. 
 
 Let's assume you have just downloaded Evennia, installed it and created your game folder (let's call
-it just `mygame` here). Now you want to try to add a new command. This is the fastest way to do it. 
+it just `mygame` here). Now you want to try to add a new command. This is the fastest way to do it.
 
 ## Step 1: Creating a custom command
 
-1. Open `mygame/commands/command.py` in a text editor. This is just one place commands could be placed but you get it setup from the onset as an easy place to start. It also already contains some example code.
+1. Open `mygame/commands/command.py` in a text editor. This is just one place commands could be
+placed but you get it setup from the onset as an easy place to start. It also already contains some
+example code.
 1. Create a new class in `command.py` inheriting from `default_cmds.MuxCommand`. Let's call it
    `CmdEcho` in this example.
 1. Set the class variable `key` to a good command name, like  `echo`.
-1. Give your class a useful _docstring_. A docstring is the string at the very top of a class or function/method. The docstring at the top of the command class is read by Evennia to become the help entry for the Command (see
+1. Give your class a useful _docstring_. A docstring is the string at the very top of a class or
+function/method. The docstring at the top of the command class is read by Evennia to become the help
+entry for the Command (see
    [Command Auto-help](Help-System#command-auto-help-system)).
 1. Define a class method `func(self)` that echoes your input back to you. 
 
@@ -79,8 +83,11 @@ the game. Use `help echo` to see the documentation for the command.
 If you have trouble, make sure to check the log for error messages (probably due to syntax errors in
 your command definition).
 
-> Note: Typing `echotest` will also work. It will be handled as the command `echo` directly followed by
-its argument `test` (which will end up in `self.args). To change this behavior, you can add the `arg_regex` property alongside `key`, `help_category` etc. [See the arg_regex documentation](Commands#on-arg_regex) for more info. 
+> Note: Typing `echotest` will also work. It will be handled as the command `echo` directly followed
+by
+its argument `test` (which will end up in `self.args). To change this behavior, you can add the
+`arg_regex` property alongside `key`, `help_category` etc. [See the arg_regex
+documentation](Commands#on-arg_regex) for more info.
 
 If you want to overload existing default commands (such as `look` or `get`), just add your new
 command with the same key as the old one - it will then replace it. Just remember that you must use
@@ -145,7 +152,8 @@ using that typeclass, they will not have been initiated the same way. There are 
 them; since it's a one-time update you can usually just simply loop through them. As superuser, try
 the following: 
 
-     @py from typeclasses.objects import MyObject; [o.cmdset.add("mycmdset.MyCmdSet") for o in MyObject.objects.all()]
+     @py from typeclasses.objects import MyObject; [o.cmdset.add("mycmdset.MyCmdSet") for o in
+MyObject.objects.all()]
 
 This goes through all objects in your database having the right typeclass, adding the new cmdset to
 each. The good news is that you only have to do this if you want to post-add *cmdsets*. If you just

@@ -19,13 +19,15 @@ you would like covered, please let us know.
 
 ### Install `mod_wsgi`
 
-- *Fedora/RHEL* - Apache HTTP Server and `mod_wsgi` are available in the standard package repositories for Fedora and RHEL:
+- *Fedora/RHEL* - Apache HTTP Server and `mod_wsgi` are available in the standard package
+repositories for Fedora and RHEL:
     ```
     $ dnf install httpd mod_wsgi
     or
     $ yum install httpd mod_wsgi
     ```
-- *Ubuntu/Debian* -  Apache HTTP Server and `mod_wsgi` are available in the standard package repositories for Ubuntu and Debian:
+- *Ubuntu/Debian* -  Apache HTTP Server and `mod_wsgi` are available in the standard package
+repositories for Ubuntu and Debian:
    ```
    $ apt-get update
    $ apt-get install apache2 libapache2-mod-wsgi
@@ -67,7 +69,8 @@ Ubuntu), you may tell `mod_wsgi` to reload by using the `touch` command on
 changed, it will force a code reload. Any modifications to the code will not be propagated to the
 live instance of your site until reloaded.
 
-If you are not running in daemon mode or want to force the issue, simply restart or reload apache2 to apply your changes.
+If you are not running in daemon mode or want to force the issue, simply restart or reload apache2
+to apply your changes.
 
 ### Further notes and hints:
 
@@ -87,20 +90,24 @@ Not confirmed, but worth trying if there are trouble.
 ## `mod_proxy` and `mod_ssl` setup
 
 Below are steps on running Evennia using a front-end proxy (Apache HTTP), `mod_proxy_http`,
-`mod_proxy_wstunnel`, and `mod_ssl`. `mod_proxy_http` and `mod_proxy_wstunnel` will simply be referred to as
+`mod_proxy_wstunnel`, and `mod_ssl`. `mod_proxy_http` and `mod_proxy_wstunnel` will simply be
+referred to as
 `mod_proxy` below. 
 
 ### Install `mod_ssl`
 
-- *Fedora/RHEL* - Apache HTTP Server and `mod_ssl` are available in the standard package repositories for Fedora and RHEL:
+- *Fedora/RHEL* - Apache HTTP Server and `mod_ssl` are available in the standard package
+repositories for Fedora and RHEL:
     ```
     $ dnf install httpd mod_ssl
     or
     $ yum install httpd mod_ssl
     
     ```
-- *Ubuntu/Debian* - Apache HTTP Server and `mod_sslj`kl are installed together in the `apache2` package and available in the
-standard package repositories for Ubuntu and Debian. `mod_ssl` needs to be enabled after installation:
+- *Ubuntu/Debian* - Apache HTTP Server and `mod_sslj`kl are installed together in the `apache2`
+package and available in the
+standard package repositories for Ubuntu and Debian. `mod_ssl` needs to be enabled after
+installation:
     ```
     $ apt-get update
     $ apt-get install apache2 

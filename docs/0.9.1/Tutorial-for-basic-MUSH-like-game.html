@@ -7,11 +7,13 @@
     <title>Tutorial for basic MUSH like game &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Tutorial for basic MUSH like game</a></li>
+
+
       </ul>
     </div>  
 
@@ -419,7 +424,7 @@ You +attack with a combat score of 12!
 <div class="section" id="npc-system">
 <h2>NPC system<a class="headerlink" href="#npc-system" title="Permalink to this headline">¶</a></h2>
 <p>Here we will re-use the Character class by introducing a command that can create NPC objects. We should also be able to set its Power and order it around.</p>
-<p>There are a few ways to define the NPC class. We could in theory create a custom typeclass for it and put a custom NPC-specific cmdset on all NPCs. This cmdset could hold all manipulation commands. Since we expect NPC manipulation to be a common occurrence among the user base however, we will instead put all relevant NPC commands in the default command set and limit eventual access with <a class="reference external" href="/Locks.html#Permissions">Permissions and Locks</a>.</p>
+<p>There are a few ways to define the NPC class. We could in theory create a custom typeclass for it and put a custom NPC-specific cmdset on all NPCs. This cmdset could hold all manipulation commands. Since we expect NPC manipulation to be a common occurrence among the user base however, we will instead put all relevant NPC commands in the default command set and limit eventual access with <a class="reference external" href="Locks.html#Permissions">Permissions and Locks</a>.</p>
 <div class="section" id="creating-an-npc-with-createnpc">
 <h3>Creating an NPC with +createNPC<a class="headerlink" href="#creating-an-npc-with-createnpc" title="Permalink to this headline">¶</a></h3>
 <p>We need a command for creating the NPC, this is a very straightforward command:</p>
@@ -505,7 +510,7 @@ You +attack with a combat score of 12!
                                                 <span class="n">exclude</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span>        
 </pre></div>
 </td></tr></table></div>
-<p>Here we define a <code class="docutils literal notranslate"><span class="pre">+createnpc</span></code> (<code class="docutils literal notranslate"><span class="pre">+createNPC</span></code> works too) that is callable by everyone <em>not</em> having the <code class="docutils literal notranslate"><span class="pre">nonpcs</span></code> “<a class="reference external" href="/Locks.html#Permissions">permission</a>” (in Evennia, a “permission” can just as well be used to block access, it depends on the lock we define). We create the NPC object in the caller’s current location, using our custom <code class="docutils literal notranslate"><span class="pre">Character</span></code> typeclass to do so.</p>
+<p>Here we define a <code class="docutils literal notranslate"><span class="pre">+createnpc</span></code> (<code class="docutils literal notranslate"><span class="pre">+createNPC</span></code> works too) that is callable by everyone <em>not</em> having the <code class="docutils literal notranslate"><span class="pre">nonpcs</span></code> “<a class="reference external" href="Locks.html#Permissions">permission</a>” (in Evennia, a “permission” can just as well be used to block access, it depends on the lock we define). We create the NPC object in the caller’s current location, using our custom <code class="docutils literal notranslate"><span class="pre">Character</span></code> typeclass to do so.</p>
 <p>We set an extra lock condition on the NPC, which we will use to check who may edit the NPC later – we allow the creator to do so, and anyone with the Builders permission (or higher). See <a class="reference internal" href="Locks.html"><span class="doc">Locks</span></a> for more information about the lock system.</p>
 <p>Note that we just give the object default permissions (by not specifying the <code class="docutils literal notranslate"><span class="pre">permissions</span></code> keyword to the <code class="docutils literal notranslate"><span class="pre">create_object()</span></code> call).  In some games one might want to give the NPC the same permissions as the Character creating them, this might be a security risk though.</p>
 <p>Add this command to your default cmdset the same way you did the <code class="docutils literal notranslate"><span class="pre">+attack</span></code> command earlier. <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> and it will be available to test.</p>
@@ -845,7 +850,10 @@ as the <a class="reference internal" href="Developer-Central.html"><span class="
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Tutorial for basic MUSH like game</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

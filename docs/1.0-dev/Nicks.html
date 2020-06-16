@@ -7,11 +7,13 @@
     <title>Nicks &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Nicks</a></li>
+
+
       </ul>
     </div>  
 
@@ -36,11 +41,18 @@
             
   <div class="section" id="nicks">
 <h1>Nicks<a class="headerlink" href="#nicks" title="Permalink to this headline">¶</a></h1>
-<p><em>Nicks</em>, short for <em>Nicknames</em> is a system allowing an object (usually a <a class="reference internal" href="Accounts.html"><span class="doc">Account</span></a>) to assign custom replacement names for other game entities.</p>
-<p>Nicks are not to be confused with <em>Aliases</em>. Setting an Alias on a game entity actually changes an inherent attribute on that entity, and everyone in the game will be able to use that alias to address the entity thereafter. A <em>Nick</em> on the other hand, is used to map a different way <em>you alone</em> can refer to that entity. Nicks are also commonly used to replace your input text which means you can create your own aliases to default commands.</p>
-<p>Default Evennia use Nicks in three flavours that determine when Evennia actually tries to do the substitution.</p>
+<p><em>Nicks</em>, short for <em>Nicknames</em> is a system allowing an object (usually a <a class="reference internal" href="Accounts.html"><span class="doc">Account</span></a>) to
+assign custom replacement names for other game entities.</p>
+<p>Nicks are not to be confused with <em>Aliases</em>. Setting an Alias on a game entity actually changes an
+inherent attribute on that entity, and everyone in the game will be able to use that alias to
+address the entity thereafter. A <em>Nick</em> on the other hand, is used to map a different way <em>you
+alone</em> can refer to that entity. Nicks are also commonly used to replace your input text which means
+you can create your own aliases to default commands.</p>
+<p>Default Evennia use Nicks in three flavours that determine when Evennia actually tries to do the
+substitution.</p>
 <ul class="simple">
-<li><p>inputline - replacement is attempted whenever you write anything on the command line. This is the default.</p></li>
+<li><p>inputline - replacement is attempted whenever you write anything on the command line. This is the
+default.</p></li>
 <li><p>objects - replacement is only attempted when referring to an object</p></li>
 <li><p>accounts - replacement is only attempted when referring an account</p></li>
 </ul>
@@ -48,11 +60,13 @@
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">nick</span> <span class="n">ls</span> <span class="o">=</span> <span class="n">look</span>
 </pre></div>
 </div>
-<p>This is a good one for unix/linux users who are accustomed to using the <code class="docutils literal notranslate"><span class="pre">ls</span></code> command in their daily life. It is equivalent to <code class="docutils literal notranslate"><span class="pre">nick/inputline</span> <span class="pre">ls</span> <span class="pre">=</span> <span class="pre">look</span></code>.</p>
+<p>This is a good one for unix/linux users who are accustomed to using the <code class="docutils literal notranslate"><span class="pre">ls</span></code> command in their daily
+life. It is equivalent to <code class="docutils literal notranslate"><span class="pre">nick/inputline</span> <span class="pre">ls</span> <span class="pre">=</span> <span class="pre">look</span></code>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">nick</span><span class="o">/</span><span class="nb">object</span> <span class="n">mycar2</span> <span class="o">=</span> <span class="n">The</span> <span class="n">red</span> <span class="n">sports</span> <span class="n">car</span> 
 </pre></div>
 </div>
-<p>With this example, substitutions will only be done specifically for commands expecting an object reference, such as</p>
+<p>With this example, substitutions will only be done specifically for commands expecting an object
+reference, such as</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">look</span> <span class="n">mycar2</span> 
 </pre></div>
 </div>
@@ -64,7 +78,8 @@
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@find</span> <span class="o">*</span><span class="n">tom</span> 
 </pre></div>
 </div>
-<p>One can use nicks to speed up input. Below we add ourselves a quicker way to build red buttons. In the future just writing <em>rb</em> will be enough to execute that whole long string.</p>
+<p>One can use nicks to speed up input. Below we add ourselves a quicker way to build red buttons. In
+the future just writing <em>rb</em> will be enough to execute that whole long string.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">nick</span> <span class="n">rb</span> <span class="o">=</span> <span class="nd">@create</span> <span class="n">button</span><span class="p">:</span><span class="n">examples</span><span class="o">.</span><span class="n">red_button</span><span class="o">.</span><span class="n">RedButton</span>
 </pre></div>
 </div>
@@ -76,9 +91,13 @@
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> nick build $1 $2 = @create/drop $1;$2
 </pre></div>
 </div>
-<p>This will catch space separated arguments and store them in the the tags <code class="docutils literal notranslate"><span class="pre">$1</span></code> and <code class="docutils literal notranslate"><span class="pre">$2</span></code>, to be inserted in the replacement string. This example allows you to do <code class="docutils literal notranslate"><span class="pre">build</span> <span class="pre">box</span> <span class="pre">crate</span></code> and have Evennia see <code class="docutils literal notranslate"><span class="pre">&#64;create/drop</span> <span class="pre">box;crate</span></code>. You may use any <code class="docutils literal notranslate"><span class="pre">$</span></code> numbers between 1 and 99, but the markers must match between the nick pattern and the replacement.</p>
+<p>This will catch space separated arguments and store them in the the tags <code class="docutils literal notranslate"><span class="pre">$1</span></code> and <code class="docutils literal notranslate"><span class="pre">$2</span></code>, to be
+inserted in the replacement string. This example allows you to do <code class="docutils literal notranslate"><span class="pre">build</span> <span class="pre">box</span> <span class="pre">crate</span></code> and have Evennia
+see <code class="docutils literal notranslate"><span class="pre">&#64;create/drop</span> <span class="pre">box;crate</span></code>. You may use any <code class="docutils literal notranslate"><span class="pre">$</span></code> numbers between 1 and 99, but the markers must
+match between the nick pattern and the replacement.</p>
 <blockquote>
-<div><p>If you want to catch “the rest” of a command argument, make sure to put a <code class="docutils literal notranslate"><span class="pre">$</span></code> tag <em>with no spaces to the right of it</em> - it will then receive everything up until the end of the line.</p>
+<div><p>If you want to catch “the rest” of a command argument, make sure to put a <code class="docutils literal notranslate"><span class="pre">$</span></code> tag <em>with no spaces
+to the right of it</em> - it will then receive everything up until the end of the line.</p>
 </div></blockquote>
 <p>You can also use <a class="reference external" href="http://www.linfo.org/wildcard.html">shell-type wildcards</a>:</p>
 <ul class="simple">
@@ -89,7 +108,9 @@
 </ul>
 <div class="section" id="coding-with-nicks">
 <h2>Coding with nicks<a class="headerlink" href="#coding-with-nicks" title="Permalink to this headline">¶</a></h2>
-<p>Nicks are stored as the <code class="docutils literal notranslate"><span class="pre">Nick</span></code> database model and are referred from the normal Evennia <a class="reference internal" href="Objects.html"><span class="doc">object</span></a> through the <code class="docutils literal notranslate"><span class="pre">nicks</span></code> property - this is known as the <em>NickHandler</em>. The NickHandler offers effective error checking, searches and conversion.</p>
+<p>Nicks are stored as the <code class="docutils literal notranslate"><span class="pre">Nick</span></code> database model and are referred from the normal Evennia
+<a class="reference internal" href="Objects.html"><span class="doc">object</span></a> through the <code class="docutils literal notranslate"><span class="pre">nicks</span></code> property - this is known as the <em>NickHandler</em>. The NickHandler
+offers effective error checking, searches and conversion.</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -125,14 +146,21 @@
       <span class="nb">object</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;rose&quot;</span><span class="p">,</span> <span class="n">nick_type</span><span class="o">=</span><span class="s2">&quot;object&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<p>In a command definition you can reach the nick handler through <code class="docutils literal notranslate"><span class="pre">self.caller.nicks</span></code>. See the <code class="docutils literal notranslate"><span class="pre">nick</span></code> command in <code class="docutils literal notranslate"><span class="pre">evennia/commands/default/general.py</span></code> for more examples.</p>
-<p>As a last note, The Evennia <a class="reference internal" href="Communications.html"><span class="doc">channel</span></a> alias systems are using nicks with the <code class="docutils literal notranslate"><span class="pre">nick_type=&quot;channel&quot;</span></code> in order to allow users to create their own custom aliases to channels.</p>
+<p>In a command definition you can reach the nick handler through <code class="docutils literal notranslate"><span class="pre">self.caller.nicks</span></code>. See the <code class="docutils literal notranslate"><span class="pre">nick</span></code>
+command in <code class="docutils literal notranslate"><span class="pre">evennia/commands/default/general.py</span></code> for more examples.</p>
+<p>As a last note, The Evennia <a class="reference internal" href="Communications.html"><span class="doc">channel</span></a> alias systems are using nicks with the
+<code class="docutils literal notranslate"><span class="pre">nick_type=&quot;channel&quot;</span></code> in order to allow users to create their own custom aliases to channels.</p>
 </div>
 </div>
 <div class="section" id="advanced-note">
 <h1>Advanced note<a class="headerlink" href="#advanced-note" title="Permalink to this headline">¶</a></h1>
-<p>Internally, nicks are <a class="reference internal" href="Attributes.html"><span class="doc">Attributes</span></a> saved with the <code class="docutils literal notranslate"><span class="pre">db_attrype</span></code> set to “nick” (normal Attributes has this set to <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
-<p>The nick stores the replacement data in the Attribute.db_value field as a tuple with four fields <code class="docutils literal notranslate"><span class="pre">(regex_nick,</span> <span class="pre">template_string,</span> <span class="pre">raw_nick,</span> <span class="pre">raw_template)</span></code>. Here <code class="docutils literal notranslate"><span class="pre">regex_nick</span></code> is the converted regex representation of the <code class="docutils literal notranslate"><span class="pre">raw_nick</span></code> and the <code class="docutils literal notranslate"><span class="pre">template-string</span></code> is a version of the <code class="docutils literal notranslate"><span class="pre">raw_template</span></code> prepared for efficient replacement of any <code class="docutils literal notranslate"><span class="pre">$</span></code>- type markers. The <code class="docutils literal notranslate"><span class="pre">raw_nick</span></code> and <code class="docutils literal notranslate"><span class="pre">raw_template</span></code> are basically the unchanged strings you enter to the <code class="docutils literal notranslate"><span class="pre">nick</span></code> command (with unparsed <code class="docutils literal notranslate"><span class="pre">$</span></code> etc).</p>
+<p>Internally, nicks are <a class="reference internal" href="Attributes.html"><span class="doc">Attributes</span></a> saved with the <code class="docutils literal notranslate"><span class="pre">db_attrype</span></code> set to “nick” (normal
+Attributes has this set to <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
+<p>The nick stores the replacement data in the Attribute.db_value field as a tuple with four fields
+<code class="docutils literal notranslate"><span class="pre">(regex_nick,</span> <span class="pre">template_string,</span> <span class="pre">raw_nick,</span> <span class="pre">raw_template)</span></code>. Here <code class="docutils literal notranslate"><span class="pre">regex_nick</span></code> is the converted regex
+representation of the <code class="docutils literal notranslate"><span class="pre">raw_nick</span></code> and the <code class="docutils literal notranslate"><span class="pre">template-string</span></code> is a version of the <code class="docutils literal notranslate"><span class="pre">raw_template</span></code>
+prepared for efficient replacement of any <code class="docutils literal notranslate"><span class="pre">$</span></code>- type markers. The <code class="docutils literal notranslate"><span class="pre">raw_nick</span></code> and <code class="docutils literal notranslate"><span class="pre">raw_template</span></code> are
+basically the unchanged strings you enter to the <code class="docutils literal notranslate"><span class="pre">nick</span></code> command (with unparsed <code class="docutils literal notranslate"><span class="pre">$</span></code> etc).</p>
 <p>If you need to access the tuple for some reason, here’s how:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
@@ -197,7 +225,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Nicks</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

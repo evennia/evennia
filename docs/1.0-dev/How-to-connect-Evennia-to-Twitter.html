@@ -7,11 +7,13 @@
     <title>How to connect Evennia to Twitter &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">How to connect Evennia to Twitter</a></li>
+
+
       </ul>
     </div>  
 
@@ -36,12 +41,19 @@
             
   <div class="section" id="how-to-connect-evennia-to-twitter">
 <h1>How to connect Evennia to Twitter<a class="headerlink" href="#how-to-connect-evennia-to-twitter" title="Permalink to this headline">¶</a></h1>
-<p><a class="reference external" href="http://en.wikipedia.org/wiki/twitter">Twitter</a> is an online social networking service that enables users to send and read short 280-character messages called “tweets”. Following is a short tutorial explaining how to enable users to send tweets from inside Evennia.</p>
+<p><a class="reference external" href="http://en.wikipedia.org/wiki/twitter">Twitter</a> is an online social networking service that enables
+users to send and read short 280-character messages called “tweets”. Following is a short tutorial
+explaining how to enable users to send tweets from inside Evennia.</p>
 <div class="section" id="configuring-twitter">
 <h2>Configuring Twitter<a class="headerlink" href="#configuring-twitter" title="Permalink to this headline">¶</a></h2>
-<p>You must first have a Twitter account. Log in and register an App at the <a class="reference external" href="https://apps.twitter.com/">Twitter Dev Site</a>. Make sure you enable access to “write” tweets!</p>
-<p>To tweet from Evennia you will need both the “API Token” and the “API secret” strings as well as the “Access Token” and “Access Secret” strings.</p>
-<p>Twitter changed their requirements to require a Mobile number on the Twitter account to register new apps with write access.  If you’re unable to do this, please see <a class="reference external" href="https://dev.twitter.com/notifications/new-apps-registration">this Dev post</a> which describes how to get around it.</p>
+<p>You must first have a Twitter account. Log in and register an App at the <a class="reference external" href="https://apps.twitter.com/">Twitter Dev
+Site</a>. Make sure you enable access to “write” tweets!</p>
+<p>To tweet from Evennia you will need both the “API Token” and the “API secret” strings as well as the
+“Access Token” and “Access Secret” strings.</p>
+<p>Twitter changed their requirements to require a Mobile number on the Twitter account to register new
+apps with write access.  If you’re unable to do this, please see <a class="reference external" href="https://dev.twitter.com/notifications/new-apps-registration">this Dev
+post</a> which describes how to get around
+it.</p>
 </div>
 <div class="section" id="install-the-twitter-python-module">
 <h2>Install the twitter python module<a class="headerlink" href="#install-the-twitter-python-module" title="Permalink to this headline">¶</a></h2>
@@ -52,8 +64,12 @@
 </div>
 <div class="section" id="a-basic-tweet-command">
 <h2>A basic tweet command<a class="headerlink" href="#a-basic-tweet-command" title="Permalink to this headline">¶</a></h2>
-<p>Evennia doesn’t have a <code class="docutils literal notranslate"><span class="pre">tweet</span></code> command out of the box so you need to write your own little <a class="reference internal" href="Commands.html"><span class="doc">Command</span></a> in order to tweet. If you are unsure about how commands work and how to add them, it can be an idea to go through the <a class="reference internal" href="Adding-Command-Tutorial.html"><span class="doc">Adding a Command Tutorial</span></a> before continuing.</p>
-<p>You can create the command in a separate command module (something like <code class="docutils literal notranslate"><span class="pre">mygame/commands/tweet.py</span></code>) or together with your other custom commands, as you prefer.</p>
+<p>Evennia doesn’t have a <code class="docutils literal notranslate"><span class="pre">tweet</span></code> command out of the box so you need to write your own little
+<a class="reference internal" href="Commands.html"><span class="doc">Command</span></a> in order to tweet. If you are unsure about how commands work and how to add
+them, it can be an idea to go through the <a class="reference internal" href="Adding-Command-Tutorial.html"><span class="doc">Adding a Command Tutorial</span></a>
+before continuing.</p>
+<p>You can create the command in a separate command module (something like <code class="docutils literal notranslate"><span class="pre">mygame/commands/tweet.py</span></code>)
+or together with your other custom commands, as you prefer.</p>
 <p>This is how it can look:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
@@ -145,8 +161,12 @@
 </pre></div>
 </td></tr></table></div>
 <p>Be sure to substitute your own actual API/Access keys and secrets in the appropriate places.</p>
-<p>We default to limiting tweet access to players with <code class="docutils literal notranslate"><span class="pre">Developers</span></code>-level access <em>or</em> to those players that have the permission “tweet” (allow individual characters to tweet with <code class="docutils literal notranslate"><span class="pre">&#64;perm/player</span> <span class="pre">playername</span> <span class="pre">=</span> <span class="pre">tweet</span></code>). You may change the <a class="reference internal" href="Locks.html"><span class="doc">lock</span></a> as you feel is appropriate. Change the overall permission to <code class="docutils literal notranslate"><span class="pre">Players</span></code> if you want everyone to be able to tweet.</p>
-<p>Now add this command to your default command set (e.g in <code class="docutils literal notranslate"><span class="pre">mygame/commands/defalt_cmdsets.py</span></code>”) and reload the server. From now on those with access can simply use <code class="docutils literal notranslate"><span class="pre">tweet</span> <span class="pre">&lt;message&gt;</span></code> to see the tweet posted from the game’s Twitter account.</p>
+<p>We default to limiting tweet access to players with <code class="docutils literal notranslate"><span class="pre">Developers</span></code>-level access <em>or</em> to those players
+that have the permission “tweet” (allow individual characters to tweet with <code class="docutils literal notranslate"><span class="pre">&#64;perm/player</span> <span class="pre">playername</span> <span class="pre">=</span> <span class="pre">tweet</span></code>). You may change the <a class="reference internal" href="Locks.html"><span class="doc">lock</span></a> as you feel is appropriate. Change the overall
+permission to <code class="docutils literal notranslate"><span class="pre">Players</span></code> if you want everyone to be able to tweet.</p>
+<p>Now add this command to your default command set (e.g in <code class="docutils literal notranslate"><span class="pre">mygame/commands/defalt_cmdsets.py</span></code>”) and
+reload the server. From now on those with access can simply use <code class="docutils literal notranslate"><span class="pre">tweet</span> <span class="pre">&lt;message&gt;</span></code> to see the tweet
+posted from the game’s Twitter account.</p>
 </div>
 <div class="section" id="next-steps">
 <h2>Next Steps<a class="headerlink" href="#next-steps" title="Permalink to this headline">¶</a></h2>
@@ -157,7 +177,9 @@
 <li><p>Changing locks to make tweeting open to more people</p></li>
 <li><p>Echo your tweets to an in-game channel</p></li>
 </ul>
-<p>Rather than using an explicit command you can set up a Script to send automatic tweets, for example to post updated game stats. See the <a class="reference internal" href="Tutorial-Tweeting-Game-Stats.html"><span class="doc">Tweeting Game Stats tutorial</span></a> for help.</p>
+<p>Rather than using an explicit command you can set up a Script to send automatic tweets, for example
+to post updated game stats. See the <a class="reference internal" href="Tutorial-Tweeting-Game-Stats.html"><span class="doc">Tweeting Game Stats tutorial</span></a> for
+help.</p>
 </div>
 </div>
 
@@ -217,7 +239,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">How to connect Evennia to Twitter</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

@@ -7,11 +7,13 @@
     <title>Commands &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Commands</a></li>
+
+
       </ul>
     </div>  
 
@@ -136,7 +141,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">cmdstring</span></code> - the matched key for the command. This would be <em>look</em> in our example.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">args</span></code> - this is the rest of the string, except the command name. So if the string entered was <em>look at sword</em>, <code class="docutils literal notranslate"><span class="pre">args</span></code> would be “ <em>at sword</em>”. Note the space kept - Evennia would correctly interpret <code class="docutils literal notranslate"><span class="pre">lookat</span> <span class="pre">sword</span></code> too. This is useful for things like <code class="docutils literal notranslate"><span class="pre">/switches</span></code> that should not use space. In the <code class="docutils literal notranslate"><span class="pre">MuxCommand</span></code> class used for default commands, this space is stripped. Also see the <code class="docutils literal notranslate"><span class="pre">arg_regex</span></code> property if you want to enforce a space to make <code class="docutils literal notranslate"><span class="pre">lookat</span> <span class="pre">sword</span></code> give a command-not-found error.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">obj</span></code> - the game <a class="reference internal" href="Objects.html"><span class="doc">Object</span></a> on which this command is defined.  This need not be the caller, but since <code class="docutils literal notranslate"><span class="pre">look</span></code> is a common (default) command, this is probably defined directly on <em>BigGuy</em> - so <code class="docutils literal notranslate"><span class="pre">obj</span></code> will point to BigGuy.  Otherwise <code class="docutils literal notranslate"><span class="pre">obj</span></code> could be an Account or any interactive object with commands defined on it, like in the example of the “check time” command defined on a “Clock” object.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cmdset</span></code> - this is a reference to the merged CmdSet (see below) from which this command was matched. This variable is rarely used, it’s main use is for the <a class="reference external" href="/Help-System.html#command-auto-help-system">auto-help system</a> (<em>Advanced note: the merged cmdset need NOT be the same as <code class="docutils literal notranslate"><span class="pre">BigGuy.cmdset</span></code>.  The merged set can be a combination of the cmdsets from other objects in the room, for example</em>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cmdset</span></code> - this is a reference to the merged CmdSet (see below) from which this command was matched. This variable is rarely used, it’s main use is for the <a class="reference external" href="Help-System.html#command-auto-help-system">auto-help system</a> (<em>Advanced note: the merged cmdset need NOT be the same as <code class="docutils literal notranslate"><span class="pre">BigGuy.cmdset</span></code>.  The merged set can be a combination of the cmdsets from other objects in the room, for example</em>).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">raw_string</span></code> - this is the raw input coming from the user, without stripping any surrounding whitespace. The only thing that is stripped is the ending newline marker.</p></li>
 </ul>
 <div class="section" id="other-useful-utility-methods">
@@ -162,8 +167,8 @@ display to the user. They are useful for creating listings and forms with colors
 <li><p><code class="docutils literal notranslate"><span class="pre">locks</span></code> (string) - a <a class="reference internal" href="Locks.html"><span class="doc">lock definition</span></a>, usually on the form <code class="docutils literal notranslate"><span class="pre">cmd:&lt;lockfuncs&gt;</span></code>. Locks is a rather big topic, so until you learn more about locks, stick to giving the lockstring <code class="docutils literal notranslate"><span class="pre">&quot;cmd:all()&quot;</span></code> to make the command available to everyone (if you don’t provide a lock string, this will be assigned for you).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">help_category</span></code> (optional string) - setting this helps to structure the auto-help into categories. If none is set, this will be set to <em>General</em>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">save_for_next</span></code> (optional boolean). This defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, a copy of this command object (along with any changes you have done to it) will be stored by the system and can be accessed by the next command by retrieving <code class="docutils literal notranslate"><span class="pre">self.caller.ndb.last_cmd</span></code>. The next run command will either clear or replace the storage.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">arg_regex</span></code> (optional raw string): Used to force the parser to limit itself and tell it when the command-name ends and arguments begin (such as requiring this to be a space or a /switch). This is done with a regular expression. <a class="reference external" href="/Commands.html#on-arg_regex">See the arg_regex section</a> for the details.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">auto_help</span></code> (optional boolean). Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>. This allows for turning off the <a class="reference external" href="/Help-System.html#command-auto-help-system">auto-help system</a> on a per-command basis. This could be useful if you either want to write your help entries manually or hide the existence of a command from <code class="docutils literal notranslate"><span class="pre">help</span></code>’s generated list.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">arg_regex</span></code> (optional raw string): Used to force the parser to limit itself and tell it when the command-name ends and arguments begin (such as requiring this to be a space or a /switch). This is done with a regular expression. <a class="reference external" href="Commands.html#on-arg_regex">See the arg_regex section</a> for the details.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">auto_help</span></code> (optional boolean). Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>. This allows for turning off the <a class="reference external" href="Help-System.html#command-auto-help-system">auto-help system</a> on a per-command basis. This could be useful if you either want to write your help entries manually or hide the existence of a command from <code class="docutils literal notranslate"><span class="pre">help</span></code>’s generated list.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">is_exit</span></code> (bool) - this marks the command as being used for an in-game exit. This is, by default, set by all Exit objects and you should not need to set it manually unless you make your own Exit system. It is used for optimization and allows the cmdhandler to easily disregard this command when the cmdset has its <code class="docutils literal notranslate"><span class="pre">no_exits</span></code> flag set.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">is_channel</span></code> (bool)- this marks the command as being used for an in-game channel. This is, by default, set by all Channel objects and you should not need to set it manually unless you make your own Channel system.  is used for optimization and allows the cmdhandler to easily disregard this command when its cmdset has its <code class="docutils literal notranslate"><span class="pre">no_channels</span></code> flag set.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">msg_all_sessions</span></code> (bool): This affects the behavior of the <code class="docutils literal notranslate"><span class="pre">Command.msg</span></code> method. If unset (default), calling <code class="docutils literal notranslate"><span class="pre">self.msg(text)</span></code> from the Command will always only send text to the Session that actually triggered this Command. If set however, <code class="docutils literal notranslate"><span class="pre">self.msg(text)</span></code> will send to all Sessions relevant to the object this Command sits on. Just which Sessions receives the text depends on the object and the server’s <code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE</span></code>.</p></li>
@@ -453,7 +458,7 @@ everyone while waiting for that user to input their text. Inside a Command’s
 <div class="section" id="dynamic-commands">
 <h2>Dynamic Commands<a class="headerlink" href="#dynamic-commands" title="Permalink to this headline">¶</a></h2>
 <p><em>Note: This is an advanced topic.</em></p>
-<p>Normally Commands are created as fixed classes and used without modification. There are however situations when the exact key, alias or other properties is not possible (or impractical) to pre-code (<a class="reference external" href="/Commands.html#Exits">Exits</a> is an example of this).</p>
+<p>Normally Commands are created as fixed classes and used without modification. There are however situations when the exact key, alias or other properties is not possible (or impractical) to pre-code (<a class="reference external" href="Commands.html#Exits">Exits</a> is an example of this).</p>
 <p>To create a command with a dynamic call signature, first define the command body normally in a class (set your <code class="docutils literal notranslate"><span class="pre">key</span></code>, <code class="docutils literal notranslate"><span class="pre">aliases</span></code> to default values), then use the following call (assuming the command class you created is named <code class="docutils literal notranslate"><span class="pre">MyCommand</span></code>):</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
@@ -470,8 +475,8 @@ everyone while waiting for that user to input their text. Inside a Command’s
 <div class="section" id="exits">
 <h2>Exits<a class="headerlink" href="#exits" title="Permalink to this headline">¶</a></h2>
 <p><em>Note: This is an advanced topic.</em></p>
-<p>Exits are examples of the use of a <a class="reference external" href="/Commands.html#Dynamic_Commands">Dynamic Command</a>.</p>
-<p>The functionality of <a class="reference internal" href="Objects.html"><span class="doc">Exit</span></a> objects in Evennia is not hard-coded in the engine. Instead Exits are normal <a class="reference internal" href="Typeclasses.html"><span class="doc">typeclassed</span></a> objects that auto-create a <a class="reference external" href="/Commands.html#CmdSets">CmdSet</a> on themselves when they load. This cmdset has a single dynamically created Command with the same properties (key, aliases and locks) as the Exit object itself. When entering the name of the exit, this dynamic exit-command is triggered and (after access checks) moves the Character to the exit’s destination.
+<p>Exits are examples of the use of a <a class="reference external" href="Commands.html#Dynamic_Commands">Dynamic Command</a>.</p>
+<p>The functionality of <a class="reference internal" href="Objects.html"><span class="doc">Exit</span></a> objects in Evennia is not hard-coded in the engine. Instead Exits are normal <a class="reference internal" href="Typeclasses.html"><span class="doc">typeclassed</span></a> objects that auto-create a <a class="reference external" href="Commands.html#CmdSets">CmdSet</a> on themselves when they load. This cmdset has a single dynamically created Command with the same properties (key, aliases and locks) as the Exit object itself. When entering the name of the exit, this dynamic exit-command is triggered and (after access checks) moves the Character to the exit’s destination.
 Whereas you could customize the Exit object and its command to achieve completely different behaviour, you will usually be fine just using the appropriate <code class="docutils literal notranslate"><span class="pre">traverse_*</span></code> hooks on the Exit object. But if you are interested in really changing how things work under the hood, check out <code class="docutils literal notranslate"><span class="pre">evennia/objects/objects.py</span></code> for how the <code class="docutils literal notranslate"><span class="pre">Exit</span></code> typeclass is set up.</p>
 </div>
 <div class="section" id="command-instances-are-re-used">
@@ -542,8 +547,8 @@ Whereas you could customize the Exit object and its command to achieve completel
 <li><p>The caller’s own currently active CmdSet.</p></li>
 <li><p>CmdSets defined on the current account, if caller is a puppeted object.</p></li>
 <li><p>CmdSets defined on the Session itself.</p></li>
-<li><p>The active CmdSets of eventual objects in the same location (if any). This includes commands on <a class="reference external" href="/Objects.html#Exits">Exits</a>.</p></li>
-<li><p>Sets of dynamically created <em>System commands</em> representing available <a class="reference external" href="/Communications.html#Channels">Communications</a>.</p></li>
+<li><p>The active CmdSets of eventual objects in the same location (if any). This includes commands on <a class="reference external" href="Objects.html#Exits">Exits</a>.</p></li>
+<li><p>Sets of dynamically created <em>System commands</em> representing available <a class="reference external" href="Communications.html#Channels">Communications</a>.</p></li>
 </ul>
 </li>
 <li><p>All CmdSets <em>of the same priority</em> are merged together in groups.  Grouping avoids order-dependent issues of merging multiple same-prio sets onto lower ones.</p></li>
@@ -659,7 +664,10 @@ thus do so asynchronously, using callbacks.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">Commands</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

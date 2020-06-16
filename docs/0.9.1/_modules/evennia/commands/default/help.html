@@ -7,11 +7,13 @@
     <title>evennia.commands.default.help &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -27,7 +29,10 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">evennia.commands.default.help</a></li>
+
+
       </ul>
     </div>  
 
@@ -131,9 +136,7 @@
     <span class="c1"># matches (objs), suggestions (strs)</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="p">[</span><span class="n">mapping</span><span class="p">[</span><span class="n">match</span><span class="p">[</span><span class="s2">&quot;ref&quot;</span><span class="p">]]</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">],</span>
-        <span class="p">[</span>
-            <span class="nb">str</span><span class="p">(</span><span class="n">match</span><span class="p">[</span><span class="s2">&quot;ref&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches</span>
-        <span class="p">],</span>  <span class="c1"># + f&quot; (score {match[&#39;score&#39;]})&quot;)   # good debug</span>
+        <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">match</span><span class="p">[</span><span class="s2">&quot;ref&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">],</span>  <span class="c1"># + f&quot; (score {match[&#39;score&#39;]})&quot;)   # good debug</span>
     <span class="p">)</span>
 
 
@@ -179,10 +182,7 @@
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">help_more</span><span class="p">:</span>
             <span class="n">usemore</span> <span class="o">=</span> <span class="kc">True</span>
 
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">protocol_key</span> <span class="ow">in</span> <span class="p">(</span>
-                <span class="s2">&quot;websocket&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;ajax/comet&quot;</span><span class="p">,</span>
-            <span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">protocol_key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;websocket&quot;</span><span class="p">,</span> <span class="s2">&quot;ajax/comet&quot;</span><span class="p">,):</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_saved_webclient_options</span>
                     <span class="k">if</span> <span class="n">options</span> <span class="ow">and</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;helppopup&quot;</span><span class="p">]:</span>
@@ -216,9 +216,7 @@
         <span class="k">if</span> <span class="n">title</span><span class="p">:</span>
             <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;|CHelp for |w</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="n">title</span>
         <span class="k">if</span> <span class="n">aliases</span><span class="p">:</span>
-            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; |C(aliases: </span><span class="si">%s</span><span class="s2">|C)|n&quot;</span> <span class="o">%</span> <span class="p">(</span>
-                <span class="s2">&quot;|C,|n &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;|w</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="n">ali</span> <span class="k">for</span> <span class="n">ali</span> <span class="ow">in</span> <span class="n">aliases</span><span class="p">)</span>
-            <span class="p">)</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; |C(aliases: </span><span class="si">%s</span><span class="s2">|C)|n&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;|C,|n &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;|w</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="n">ali</span> <span class="k">for</span> <span class="n">ali</span> <span class="ow">in</span> <span class="n">aliases</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">help_text</span><span class="p">:</span>
             <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">dedent</span><span class="p">(</span><span class="n">help_text</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span>
         <span class="k">if</span> <span class="n">suggested</span><span class="p">:</span>
@@ -245,22 +243,15 @@
             <span class="n">category_str</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;-- {category.title()} &quot;</span>
             <span class="n">grid</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">ANSIString</span><span class="p">(</span>
-                    <span class="n">category_clr</span>
-                    <span class="o">+</span> <span class="n">category_str</span>
-                    <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">width</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">category_str</span><span class="p">))</span>
-                    <span class="o">+</span> <span class="n">topic_clr</span>
+                    <span class="n">category_clr</span> <span class="o">+</span> <span class="n">category_str</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">width</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">category_str</span><span class="p">))</span> <span class="o">+</span> <span class="n">topic_clr</span>
                 <span class="p">)</span>
             <span class="p">)</span>
             <span class="n">verbatim_elements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
 
-            <span class="n">entries</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
-                <span class="nb">set</span><span class="p">(</span><span class="n">hdict_cmds</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="n">hdict_db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="p">[]))</span>
-            <span class="p">)</span>
+            <span class="n">entries</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">hdict_cmds</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="n">hdict_db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="p">[])))</span>
             <span class="n">grid</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">entries</span><span class="p">)</span>
 
-        <span class="n">gridrows</span> <span class="o">=</span> <span class="n">format_grid</span><span class="p">(</span>
-            <span class="n">grid</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;  &quot;</span><span class="p">,</span> <span class="n">verbatim_elements</span><span class="o">=</span><span class="n">verbatim_elements</span>
-        <span class="p">)</span>
+        <span class="n">gridrows</span> <span class="o">=</span> <span class="n">format_grid</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;  &quot;</span><span class="p">,</span> <span class="n">verbatim_elements</span><span class="o">=</span><span class="n">verbatim_elements</span><span class="p">)</span>
         <span class="n">gridrows</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">gridrows</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">gridrows</span></div>
 
@@ -332,9 +323,7 @@
         <span class="c1"># retrieve all available commands and database topics</span>
         <span class="n">all_cmds</span> <span class="o">=</span> <span class="p">[</span><span class="n">cmd</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">cmdset</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_show_help</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">caller</span><span class="p">)]</span>
         <span class="n">all_topics</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">topic</span>
-            <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="n">HelpEntry</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">topic</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">topic</span> <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="n">HelpEntry</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="k">if</span> <span class="n">topic</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="p">]</span>
         <span class="n">all_categories</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
             <span class="nb">set</span><span class="p">(</span>
@@ -359,11 +348,7 @@
             <span class="k">return</span>
 
         <span class="c1"># Try to access a particular help entry or category</span>
-        <span class="n">entries</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="p">[</span><span class="n">cmd</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">all_cmds</span> <span class="k">if</span> <span class="n">cmd</span><span class="p">]</span>
-            <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">HelpEntry</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
-            <span class="o">+</span> <span class="n">all_categories</span>
-        <span class="p">)</span>
+        <span class="n">entries</span> <span class="o">=</span> <span class="p">[</span><span class="n">cmd</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">all_cmds</span> <span class="k">if</span> <span class="n">cmd</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">HelpEntry</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">())</span> <span class="o">+</span> <span class="n">all_categories</span>
 
         <span class="k">for</span> <span class="n">match_query</span> <span class="ow">in</span> <span class="p">[</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{query}</span><span class="s2">~1&quot;</span><span class="p">,</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{query}</span><span class="s2">*&quot;</span><span class="p">]:</span>
             <span class="c1"># We first do an exact word-match followed by a start-by query</span>
@@ -498,9 +483,7 @@
         <span class="c1"># check if we have an old entry with the same name</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">querystr</span> <span class="ow">in</span> <span class="n">topicstrlist</span><span class="p">:</span>
-                <span class="n">old_entry</span> <span class="o">=</span> <span class="n">HelpEntry</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">find_topicmatch</span><span class="p">(</span>
-                    <span class="n">querystr</span>
-                <span class="p">)</span>  <span class="c1"># also search by alias</span>
+                <span class="n">old_entry</span> <span class="o">=</span> <span class="n">HelpEntry</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">find_topicmatch</span><span class="p">(</span><span class="n">querystr</span><span class="p">)</span>  <span class="c1"># also search by alias</span>
                 <span class="k">if</span> <span class="n">old_entry</span><span class="p">:</span>
                     <span class="n">old_entry</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">old_entry</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
                     <span class="k">break</span>
@@ -522,11 +505,7 @@
                 <span class="n">helpentry</span> <span class="o">=</span> <span class="n">old_entry</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">helpentry</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_help_entry</span><span class="p">(</span>
-                    <span class="n">topicstr</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">,</span>
-                    <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span>
-                    <span class="n">locks</span><span class="o">=</span><span class="n">lockstring</span><span class="p">,</span>
-                    <span class="n">aliases</span><span class="o">=</span><span class="n">aliases</span><span class="p">,</span>
+                    <span class="n">topicstr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="n">lockstring</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="n">aliases</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_editing_help</span> <span class="o">=</span> <span class="n">helpentry</span>
 
@@ -543,9 +522,7 @@
         <span class="k">if</span> <span class="s2">&quot;append&quot;</span> <span class="ow">in</span> <span class="n">switches</span> <span class="ow">or</span> <span class="s2">&quot;merge&quot;</span> <span class="ow">in</span> <span class="n">switches</span> <span class="ow">or</span> <span class="s2">&quot;extend&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
             <span class="c1"># merge/append operations</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">old_entry</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                    <span class="s2">&quot;Could not find topic &#39;</span><span class="si">%s</span><span class="s2">&#39;. You must give an exact name.&quot;</span> <span class="o">%</span> <span class="n">topicstr</span>
-                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Could not find topic &#39;</span><span class="si">%s</span><span class="s2">&#39;. You must give an exact name.&quot;</span> <span class="o">%</span> <span class="n">topicstr</span><span class="p">)</span>
                 <span class="k">return</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You must supply text to append/merge.&quot;</span><span class="p">)</span>
@@ -592,9 +569,7 @@
                 <span class="n">topicstr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="n">lockstring</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="n">aliases</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">new_entry</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                    <span class="s2">&quot;Topic &#39;</span><span class="si">%s</span><span class="s2">&#39;</span><span class="si">%s</span><span class="s2"> was successfully created.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">topicstr</span><span class="p">,</span> <span class="n">aliastxt</span><span class="p">)</span>
-                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Topic &#39;</span><span class="si">%s</span><span class="s2">&#39;</span><span class="si">%s</span><span class="s2"> was successfully created.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">topicstr</span><span class="p">,</span> <span class="n">aliastxt</span><span class="p">))</span>
                 <span class="k">if</span> <span class="s2">&quot;edit&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
                     <span class="c1"># open the line editor to edit the helptext</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_editing_help</span> <span class="o">=</span> <span class="n">new_entry</span>
@@ -609,8 +584,7 @@
                     <span class="k">return</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                    <span class="s2">&quot;Error when creating topic &#39;</span><span class="si">%s</span><span class="s2">&#39;</span><span class="si">%s</span><span class="s2">! Contact an admin.&quot;</span>
-                    <span class="o">%</span> <span class="p">(</span><span class="n">topicstr</span><span class="p">,</span> <span class="n">aliastxt</span><span class="p">)</span>
+                    <span class="s2">&quot;Error when creating topic &#39;</span><span class="si">%s</span><span class="s2">&#39;</span><span class="si">%s</span><span class="s2">! Contact an admin.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">topicstr</span><span class="p">,</span> <span class="n">aliastxt</span><span class="p">)</span>
                 <span class="p">)</span></div></div>
 </pre></div>
 
@@ -653,7 +627,10 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li> 
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">evennia.commands.default.help</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

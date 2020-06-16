@@ -5,14 +5,16 @@
 their own custom client protocol.*
 
 
-A [PortalSession](Sessions#Portal-and-Server-Sessions) is the basic data object representing an external
+A [PortalSession](Sessions#Portal-and-Server-Sessions) is the basic data object representing an
+external
 connection to the Evennia [Portal](Portal-And-Server) -- usually a human player running a mud client
 of some kind.  The way they connect (the language the player's client and Evennia use to talk to
 each other) is called the connection *Protocol*. The most common such protocol for MUD:s is the
 *Telnet* protocol. All Portal Sessions are stored and managed by the Portal's *sessionhandler*.
 
 It's technically sometimes hard to separate the concept of *PortalSession* from the concept of
-*Protocol* since both depend heavily on the other (they are often created as the same class). When data flows through this part of the system, this is how it goes 
+*Protocol* since both depend heavily on the other (they are often created as the same class). When
+data flows through this part of the system, this is how it goes
 
 ```
 # In the Portal
@@ -25,7 +27,10 @@ You <->
             InputFunc  
 ```
 
-(See the [Message Path](Messagepath) for the bigger picture of how data flows through Evennia). The parts that needs to be customized to make your own custom protocol is the `Protocol + PortalSession` (which translates between data coming in/out over the wire to/from Evennia internal representation) as well as the `InputFunc` (which handles incoming data).
+(See the [Message Path](Messagepath) for the bigger picture of how data flows through Evennia). The
+parts that needs to be customized to make your own custom protocol is the `Protocol + PortalSession`
+(which translates between data coming in/out over the wire to/from Evennia internal representation)
+as well as the `InputFunc` (which handles incoming data).
 
 ## Adding custom Protocols
 
@@ -47,7 +52,8 @@ modules, you could do the following:
     PORTAL_SERVICES_PLUGIN_MODULES.append('server.conf.my_portal_plugins')
 ```
 
-When adding a new connection you'll most likely only need to add new things to the `PORTAL_SERVICES_PLUGIN_MODULES`.
+When adding a new connection you'll most likely only need to add new things to the
+`PORTAL_SERVICES_PLUGIN_MODULES`.
 
 This module can contain whatever you need to define your protocol, but it *must* contain a function
 `start_plugin_services(app)`. This is called by the Portal as part of its upstart. The function
@@ -93,7 +99,10 @@ Writing a stable communication protocol from scratch is not something we'll cove
 trivial task. The good news is that Twisted offers implementations of many common protocols, ready
 for adapting.
 
-Writing a protocol implementation in Twisted usually involves creating a class inheriting from an already existing Twisted protocol class and from `evennia.server.session.Session` (multiple inheritance), then overloading the methods that particular protocol uses to link them to the Evennia-specific inputs. 
+Writing a protocol implementation in Twisted usually involves creating a class inheriting from an
+already existing Twisted protocol class and from `evennia.server.session.Session` (multiple
+inheritance), then overloading the methods that particular protocol uses to link them to the
+Evennia-specific inputs.
 
 Here's a example to show the concept: 
 
@@ -192,7 +201,8 @@ class MyCustomClient(TwistedClient, Session):
          self.data_out(**{cmdname: str(args)})
 
 ```
-The principle here is that the Twisted-specific methods are overridden to redirect inputs/outputs to the Evennia-specific methods. 
+The principle here is that the Twisted-specific methods are overridden to redirect inputs/outputs to
+the Evennia-specific methods.
 
 ### Sending data out
 
@@ -202,11 +212,18 @@ To send data out through this protocol, you'd need to get its Session and then y
     session.msg(text="foo")
 ```
 
-The message will pass through the system such that the sessionhandler will dig out the session and check if it has a `send_text` method (it has). It will then pass the "foo" into that method, which in our case means sending "foo" across the network. 
+The message will pass through the system such that the sessionhandler will dig out the session and
+check if it has a `send_text` method (it has). It will then pass the "foo" into that method, which
+in our case means sending "foo" across the network.
 
 ### Receiving data 
 
-Just because the protocol is there, does not mean Evennia knows what to do with it. An [Inputfunc](Inputfuncs) must exist to receive it. In the case of the `text` input exemplified above, Evennia alredy handles this input - it will parse it as a Command name followed by its inputs. So handle that you need to simply add a cmdset with commands on your receiving Session (and/or the Object/Character it is puppeting). If not you may need to add your own Inputfunc (see the [Inputfunc](Inputfuncs) page for how to do this. 
+Just because the protocol is there, does not mean Evennia knows what to do with it. An
+[Inputfunc](Inputfuncs) must exist to receive it. In the case of the `text` input exemplified above,
+Evennia alredy handles this input - it will parse it as a Command name followed by its inputs. So
+handle that you need to simply add a cmdset with commands on your receiving Session (and/or the
+Object/Character it is puppeting). If not you may need to add your own Inputfunc (see the
+[Inputfunc](Inputfuncs) page for how to do this.
 
 These might not be as clear-cut in all protocols, but the principle is there. These four basic
 components - however they are accessed - links to the *Portal Session*, which is the actual common

@@ -7,11 +7,13 @@
     <title>NPC shop Tutorial &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">NPC shop Tutorial</a></li>
+
+
       </ul>
     </div>  
 
@@ -422,7 +427,7 @@ _________________________________________________________
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The shop </span><span class="si">%s</span><span class="s2"> was created!&quot;</span> <span class="o">%</span> <span class="n">shop</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<p>Our typeclass is simple and so is our <code class="docutils literal notranslate"><span class="pre">buildshop</span></code> command. The command (which is for Builders only) just takes the name of the shop and builds the front room and a store room to go with it (always named <code class="docutils literal notranslate"><span class="pre">&quot;&lt;shopname&gt;-storage&quot;</span></code>. It connects the rooms with a two-way exit. You need to add <code class="docutils literal notranslate"><span class="pre">CmdBuildShop</span></code> <a class="reference external" href="/Adding-Command-Tutorial.html#step-2-adding-the-command-to-a-default-cmdset">to the default cmdset</a> before you can use it. Once having created the shop you can now <code class="docutils literal notranslate"><span class="pre">&#64;teleport</span></code> to it or <code class="docutils literal notranslate"><span class="pre">&#64;open</span></code> a new exit to it. You could also easily expand the above command to automatically create exits to and from the new shop from your current location.</p>
+<p>Our typeclass is simple and so is our <code class="docutils literal notranslate"><span class="pre">buildshop</span></code> command. The command (which is for Builders only) just takes the name of the shop and builds the front room and a store room to go with it (always named <code class="docutils literal notranslate"><span class="pre">&quot;&lt;shopname&gt;-storage&quot;</span></code>. It connects the rooms with a two-way exit. You need to add <code class="docutils literal notranslate"><span class="pre">CmdBuildShop</span></code> <a class="reference external" href="Adding-Command-Tutorial.html#step-2-adding-the-command-to-a-default-cmdset">to the default cmdset</a> before you can use it. Once having created the shop you can now <code class="docutils literal notranslate"><span class="pre">&#64;teleport</span></code> to it or <code class="docutils literal notranslate"><span class="pre">&#64;open</span></code> a new exit to it. You could also easily expand the above command to automatically create exits to and from the new shop from your current location.</p>
 <p>To avoid customers walking in and stealing everything, we create a <a class="reference internal" href="Locks.html"><span class="doc">Lock</span></a> on the storage door. It’s a simple lock that requires the one entering to carry an object named <code class="docutils literal notranslate"><span class="pre">&lt;shopname&gt;-storekey</span></code>. We even create such a key object and drop it in the shop for the new shop keeper to pick up.</p>
 <blockquote>
 <div><p>If players are given the right to name their own objects, this simple lock is not very secure and you need to come up with a more robust lock-key solution.</p>
@@ -504,7 +509,10 @@ _________________________________________________________
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">NPC shop Tutorial</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">

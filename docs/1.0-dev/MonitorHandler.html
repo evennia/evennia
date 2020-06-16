@@ -7,11 +7,13 @@
     <title>MonitorHandler &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +27,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">MonitorHandler</a></li>
+
+
       </ul>
     </div>  
 
@@ -36,11 +41,15 @@
             
   <div class="section" id="monitorhandler">
 <h1>MonitorHandler<a class="headerlink" href="#monitorhandler" title="Permalink to this headline">¶</a></h1>
-<p>The <em>MonitorHandler</em> is a system for watching changes in properties or Attributes on objects. A monitor can be thought of as a sort of trigger that responds to change.</p>
-<p>The main use for the MonitorHandler is to report changes to the client; for example the client Session may ask Evennia to monitor the value of the Characer’s <code class="docutils literal notranslate"><span class="pre">health</span></code> attribute and report whenever it changes. This way the client could for example update its health bar graphic as needed.</p>
+<p>The <em>MonitorHandler</em> is a system for watching changes in properties or Attributes on objects. A
+monitor can be thought of as a sort of trigger that responds to change.</p>
+<p>The main use for the MonitorHandler is to report changes to the client; for example the client
+Session may ask Evennia to monitor the value of the Characer’s <code class="docutils literal notranslate"><span class="pre">health</span></code> attribute and report
+whenever it changes. This way the client could for example update its health bar graphic as needed.</p>
 <div class="section" id="using-the-monitorhandler">
 <h2>Using the MonitorHandler<a class="headerlink" href="#using-the-monitorhandler" title="Permalink to this headline">¶</a></h2>
-<p>The MontorHandler is accessed from the singleton <code class="docutils literal notranslate"><span class="pre">evennia.MONITOR_HANDLER</span></code>. The code for the handler is in <code class="docutils literal notranslate"><span class="pre">evennia.scripts.monitorhandler</span></code>.</p>
+<p>The MontorHandler is accessed from the singleton <code class="docutils literal notranslate"><span class="pre">evennia.MONITOR_HANDLER</span></code>. The code for the handler
+is in <code class="docutils literal notranslate"><span class="pre">evennia.scripts.monitorhandler</span></code>.</p>
 <p>Here’s how to add a new monitor:</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
@@ -52,10 +61,19 @@
 </pre></div>
 </td></tr></table></div>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">obj</span></code> (<a class="reference internal" href="Typeclasses.html"><span class="doc">Typeclassed</span></a> entity) - the object to monitor. Since this must be typeclassed, it means you can’t monitor changes on <a class="reference internal" href="Sessions.html"><span class="doc">Sessions</span></a> with the monitorhandler, for example.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">fieldname</span></code> (str) - the name of a field or <a class="reference internal" href="Attributes.html"><span class="doc">Attribute</span></a> on <code class="docutils literal notranslate"><span class="pre">obj</span></code>. If you want to monitor a database field you must specify its full name, including the starting <code class="docutils literal notranslate"><span class="pre">db_</span></code> (like <code class="docutils literal notranslate"><span class="pre">db_key</span></code>, <code class="docutils literal notranslate"><span class="pre">db_location</span></code> etc). Any names not starting with <code class="docutils literal notranslate"><span class="pre">db_</span></code> are instead assumed to be the names of Attributes. This difference matters, since the MonitorHandler will automatically know to watch the <code class="docutils literal notranslate"><span class="pre">db_value</span></code> field of the Attribute.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">callback</span></code>(callable) - This will be called as <code class="docutils literal notranslate"><span class="pre">callback(fieldname=fieldname,</span> <span class="pre">obj=obj,</span> <span class="pre">**kwargs)</span></code> when the field updates.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">idstring</span></code> (str) - this is used to separate multiple monitors on the same object and fieldname. This is required in order to properly identify and remove the monitor later. It’s also used for saving it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">obj</span></code> (<a class="reference internal" href="Typeclasses.html"><span class="doc">Typeclassed</span></a> entity) - the object to monitor. Since this must be
+typeclassed, it means you can’t monitor changes on <a class="reference internal" href="Sessions.html"><span class="doc">Sessions</span></a> with the monitorhandler, for
+example.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fieldname</span></code> (str) - the name of a field or <a class="reference internal" href="Attributes.html"><span class="doc">Attribute</span></a> on <code class="docutils literal notranslate"><span class="pre">obj</span></code>. If you want to
+monitor a database field you must specify its full name, including the starting <code class="docutils literal notranslate"><span class="pre">db_</span></code> (like
+<code class="docutils literal notranslate"><span class="pre">db_key</span></code>, <code class="docutils literal notranslate"><span class="pre">db_location</span></code> etc). Any names not starting with <code class="docutils literal notranslate"><span class="pre">db_</span></code> are instead assumed to be the names
+of Attributes. This difference matters, since the MonitorHandler will automatically know to watch
+the <code class="docutils literal notranslate"><span class="pre">db_value</span></code> field of the Attribute.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">callback</span></code>(callable) - This will be called as <code class="docutils literal notranslate"><span class="pre">callback(fieldname=fieldname,</span> <span class="pre">obj=obj,</span> <span class="pre">**kwargs)</span></code>
+when the field updates.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">idstring</span></code> (str) - this is used to separate multiple monitors on the same object and fieldname.
+This is required in order to properly identify and remove the monitor later. It’s also used for
+saving it.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">persistent</span></code> (bool) - if True, the monitor will survive a server reboot.</p></li>
 </ul>
 <p>Example:</p>
@@ -102,8 +120,11 @@
 <span class="n">monitorhandler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="n">_some_other_monitor_callback</span><span class="p">,</span> <span class="n">id_string</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
-<p>A monitor is uniquely identified by the combination of the <em>object instance</em> it is monitoring, the <em>name</em> of the field/attribute to monitor on that object and its <code class="docutils literal notranslate"><span class="pre">idstring</span></code> (<code class="docutils literal notranslate"><span class="pre">obj</span></code> + <code class="docutils literal notranslate"><span class="pre">fieldname</span></code> + <code class="docutils literal notranslate"><span class="pre">idstring</span></code>). The <code class="docutils literal notranslate"><span class="pre">idstring</span></code> will be the empty string unless given explicitly.</p>
-<p>So to “un-monitor” the above you need to supply enough information for the system to uniquely find the monitor to remove:</p>
+<p>A monitor is uniquely identified by the combination of the <em>object instance</em> it is monitoring, the
+<em>name</em> of the field/attribute to monitor on that object and its <code class="docutils literal notranslate"><span class="pre">idstring</span></code> (<code class="docutils literal notranslate"><span class="pre">obj</span></code> + <code class="docutils literal notranslate"><span class="pre">fieldname</span></code> +
+<code class="docutils literal notranslate"><span class="pre">idstring</span></code>). The <code class="docutils literal notranslate"><span class="pre">idstring</span></code> will be the empty string unless given explicitly.</p>
+<p>So to “un-monitor” the above you need to supply enough information for the system to uniquely find
+the monitor to remove:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">monitorhandler</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;desc&quot;</span><span class="p">)</span>
 <span class="n">monitorhandler</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
 <span class="n">monitorhandler</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">)</span>
@@ -165,7 +186,10 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+<li class="nav-item nav-item-last"><a href="#">MonitorHandler</a></li>
+
+
       </ul>
     </div>
     <div class="footer" role="contentinfo">
