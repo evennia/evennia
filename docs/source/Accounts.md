@@ -85,7 +85,8 @@ Account also has the following custom properties:
 - `sessions` - an instance of
   [ObjectSessionHandler](github:evennia.objects.objects#objectsessionhandler)
   managing all connected Sessions (physical connections) this object listens to (Note: In older
-  versions of Evennia, this was a list). The so-called `session-id` (used in many places) is found as
+  versions of Evennia, this was a list). The so-called `session-id` (used in many places) is found
+as
   a property `sessid` on each Session instance.
 - `is_superuser` (bool: True/False) - if this account is a superuser.
 
@@ -93,7 +94,8 @@ Special handlers:
 - `cmdset` - This holds all the current [Commands](Commands) of this Account. By default these are
   the commands found in the cmdset defined by `settings.CMDSET_ACCOUNT`.
 - `nicks` - This stores and handles [Nicks](Nicks), in the same way as nicks it works on Objects.
-  For Accounts, nicks are primarily used to store custom aliases for [Channels](Communications#Channels).
+  For Accounts, nicks are primarily used to store custom aliases for
+[Channels](Communications#Channels).
  
 Selection of special methods (see `evennia.DefaultAccount` for details):
 - `get_puppet` - get a currently puppeted object connected to the Account and a given session id, if

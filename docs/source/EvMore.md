@@ -35,4 +35,3 @@ paging.
 
 The pager takes several more keyword arguments for controlling the message output. See the
 [evmore-API](github:evennia.utils.evmore) for more info.
-

@@ -5,7 +5,8 @@ You control Evennia from your game folder (we refer to it as `mygame/` here), us
 program. If the `evennia` program is not available on the command line you must first install
 Evennia as described in the [Getting Started](Getting-Started) page.
 
-> Hint: If you ever try the `evennia` command and get an error complaining that the command is not available, make sure your [virtualenv](Glossary#virtualenv) is active. 
+> Hint: If you ever try the `evennia` command and get an error complaining that the command is not
+available, make sure your [virtualenv](Glossary#virtualenv) is active.
 
 Below are described the various management options. Run
 
@@ -60,12 +61,14 @@ Evennia under the control of some other type of process.
 ## Reloading
 
 The act of *reloading* means the Portal will tell the Server to shut down and then boot it back up
-again. Everyone will get a message and the game will be briefly paused for all accounts as the server
+again. Everyone will get a message and the game will be briefly paused for all accounts as the
+server
 reboots. Since they are connected to the *Portal*, their connections are not lost.
 
 
 Reloading is as close to a "warm reboot" you can get. It reinitializes all code of Evennia, but
-doesn't kill "persistent" [Scripts](Scripts). It also calls `at_server_reload()` hooks on all objects so you
+doesn't kill "persistent" [Scripts](Scripts). It also calls `at_server_reload()` hooks on all
+objects so you
 can save eventual temporary properties you want.
 
 From in-game the `@reload` command is used. You can also reload the server from outside the game:
@@ -78,7 +81,8 @@ blocks in-game input.
 ## Resetting
 
 *Resetting* is the equivalent of a "cold reboot" - the Server will shut down and then restarted
-again, but will behave as if it was fully shut down. As opposed to a "real" shutdown, no accounts will be disconnected during a
+again, but will behave as if it was fully shut down. As opposed to a "real" shutdown, no accounts
+will be disconnected during a
 reset. A reset will however purge all non-persistent scripts and will call `at_server_shutdown()`
 hooks. It can be a good way to clean unsafe scripts during development, for example.
 
@@ -143,7 +147,8 @@ Note that this functionality is not supported on Windows.
 
 ## Django options
 
-The `evennia` program will also pass-through options used by the `django-admin`. These operate on the database in various ways.
+The `evennia` program will also pass-through options used by the `django-admin`. These operate on
+the database in various ways.
 
 ```bash
 
@@ -153,7 +158,8 @@ The `evennia` program will also pass-through options used by the `django-admin`.
 
 ```
 
-For (many) more options, see [the django-admin docs](https://docs.djangoproject.com/en/1.7/ref/django-admin/#usage).
+For (many) more options, see [the django-admin
+docs](https://docs.djangoproject.com/en/1.7/ref/django-admin/#usage).
 
 ## Advanced handling of Evennia processes
 

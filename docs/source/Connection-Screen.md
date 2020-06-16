@@ -16,7 +16,8 @@ When you first connect to your game you are greeted by Evennia's default connect
      Enter help for more info. look will re-show this screen.
     ==============================================================
 
-Effective, but not very exciting. You will most likely want to change this to be more unique for your game. This is simple: 
+Effective, but not very exciting. You will most likely want to change this to be more unique for
+your game. This is simple:
 
 1. Edit `mygame/server/conf/connection_screens.py`.
 1. [Reload](Start-Stop-Reload) Evennia. 

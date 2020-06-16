@@ -3,11 +3,24 @@
 
 ## Introduction
 
-This tutorial will create a simple web-based interface for generating a new in-game Character. Accounts will need to have first logged into the website (with their `AccountDB` account). Once finishing character generation the Character will be created immediately and the Accounts can then log into the game and play immediately (the Character will not require staff approval or anything like that). This guide does not go over how to create an AccountDB on the website with the right permissions to transfer to their web-created characters.
+This tutorial will create a simple web-based interface for generating a new in-game Character.
+Accounts will need to have first logged into the website (with their `AccountDB` account). Once
+finishing character generation the Character will be created immediately and the Accounts can then
+log into the game and play immediately (the Character will not require staff approval or anything
+like that). This guide does not go over how to create an AccountDB on the website with the right
+permissions to transfer to their web-created characters.
 
-It is probably most useful to set `MULTISESSION_MODE = 2` or `3` (which gives you a character-selection screen when you log into the game later). Other modes can be used with some adaptation to auto-puppet the new Character.
+It is probably most useful to set `MULTISESSION_MODE = 2` or `3` (which gives you a character-
+selection screen when you log into the game later). Other modes can be used with some adaptation to
+auto-puppet the new Character.
 
-You should have some familiarity with how Django sets up its Model Template View framework. You need to understand what is happening in the basic [Web Character View tutorial](Web-Character-View-Tutorial). If you don’t understand the listed tutorial or have a grasp of Django basics, please look at the [Django tutorial](https://docs.djangoproject.com/en/1.8/intro/) to get a taste of what Django does, before throwing Evennia into the mix (Evennia shares its API and attributes with the website interface). This guide will outline the format of the models, views, urls, and html templates needed. 
+You should have some familiarity with how Django sets up its Model Template View framework. You need
+to understand what is happening in the basic [Web Character View tutorial](Web-Character-View-
+Tutorial). If you don’t understand the listed tutorial or have a grasp of Django basics, please look
+at the [Django tutorial](https://docs.djangoproject.com/en/1.8/intro/) to get a taste of what Django
+does, before throwing Evennia into the mix (Evennia shares its API and attributes with the website
+interface). This guide will outline the format of the models, views, urls, and html templates
+needed.
 
 ## Pictures
 
@@ -19,19 +32,22 @@ Index page, with no character application yet done:
 ![Index page, with no character application yet done.](https://lh3.googleusercontent.com/-57KuSWHXQ_M/VWcULN152tI/AAAAAAAAEZg/kINTmVlHf6M/w425-h189-no/webchargen_index2.gif)
 ***
 
-Having clicked the "create" link you get to create your character (here we will only have name and background, you can add whatever is needed to fit your game):
+Having clicked the "create" link you get to create your character (here we will only have name and
+background, you can add whatever is needed to fit your game):
 
 ***
 ![Character creation.](https://lh3.googleusercontent.com/-ORiOEM2R_yQ/VWcUKgy84rI/AAAAAAAAEZY/B3CBh3FHii4/w607-h60-no/webchargen_creation.gif)
 ***
 
-Back to the index page. Having entered our character application (we called our character "TestApp") you see it listed:
+Back to the index page. Having entered our character application (we called our character "TestApp")
+you see it listed:
 
 ***
 ![Having entered an application.](https://lh6.googleusercontent.com/-HlxvkvAimj4/VWcUKjFxEiI/AAAAAAAAEZo/gLppebr05JI/w321-h194-no/webchargen_index1.gif)
 ***
 
-We can also view an already written character application by clicking on it - this brings us to the *detail* page:
+We can also view an already written character application by clicking on it - this brings us to the
+*detail* page:
 
 ***
 ![Detail view of character application.](https://lh6.googleusercontent.com/-2m1UhSE7s_k/VWcUKfLRfII/AAAAAAAAEZc/UFmBOqVya4k/w267-h175-no/webchargen_detail.gif)
@@ -43,13 +59,19 @@ Assuming your game is named "mygame", navigate to your `mygame/` directory, and 
 
     evennia startapp chargen
 
-This will initialize a new Django app we choose to call "chargen". It is directory containing some basic starting things Django needs. You will need to move this directory: for the time being, it is in your `mygame` directory. Better to move it in your `mygame/web` directory, so you have `mygame/web/chargen` in the end.
+This will initialize a new Django app we choose to call "chargen". It is directory containing some
+basic starting things Django needs. You will need to move this directory: for the time being, it is
+in your `mygame` directory. Better to move it in your `mygame/web` directory, so you have
+`mygame/web/chargen` in the end.
 
-Next, navigate to `mygame/server/conf/settings.py` and add or edit the following line to make Evennia (and Django) aware of our new app:
+Next, navigate to `mygame/server/conf/settings.py` and add or edit the following line to make
+Evennia (and Django) aware of our new app:
 
     INSTALLED_APPS += ('web.chargen',)
 
-After this, we will get into defining our *models* (the description of the database storage), *views* (the server-side website content generators), *urls* (how the web browser finds the pages) and *templates* (how the web page should be structured).
+After this, we will get into defining our *models* (the description of the database storage),
+*views* (the server-side website content generators), *urls* (how the web browser finds the pages)
+and *templates* (how the web page should be structured).
 
 ### Installing - Checkpoint:
 
@@ -60,19 +82,24 @@ After this, we will get into defining our *models* (the description of the datab
 
 Models are created in `mygame/web/chargen/models.py`.
 
-A [Django database model](New-Models) is a Python class that describes the database storage of the data you want to manage. Any data you choose to store is stored in the same database as the game and you have access to all the game's objects here. 
+A [Django database model](New-Models) is a Python class that describes the database storage of the
+data you want to manage. Any data you choose to store is stored in the same database as the game and
+you have access to all the game's objects here.
 
-We need to define what a character application actually is. This will differ from game to game so for this tutorial we will define a simple character sheet with the following database fields: 
+We need to define what a character application actually is. This will differ from game to game so
+for this tutorial we will define a simple character sheet with the following database fields:
 
 
 * `app_id` (AutoField): Primary key for this character application sheet.
 * `char_name` (CharField): The new character's name.
 * `date_applied` (DateTimeField): Date that this application was received.
 * `background` (TextField): Character story background.
-* `account_id` (IntegerField): Which account ID does this application belong to? This is an AccountID from the AccountDB object.
+* `account_id` (IntegerField): Which account ID does this application belong to? This is an
+AccountID from the AccountDB object.
 * `submitted` (BooleanField): `True`/`False` depending on if the application has been submitted yet.
 
-> Note: In a full-fledged game, you’d likely want them to be able to select races, skills, attributes and so on.
+> Note: In a full-fledged game, you’d likely want them to be able to select races, skills,
+attributes and so on.
 
 Our `models.py` file should look something like this: 
 
@@ -90,18 +117,28 @@ class CharApp(models.Model):
     submitted = models.BooleanField(default=False)
 ```
 
-You should consider how you are going to link your application to your account. For this tutorial, we are using the account_id attribute on our character application model in order to keep track of which characters are owned by which accounts. Since the account id is a primary key in Evennia, it is a good candidate, as you will never have two of the same IDs in Evennia. You can feel free to use anything else, but for the purposes of this guide, we are going to use account ID to join the character applications with the proper account.
+You should consider how you are going to link your application to your account. For this tutorial,
+we are using the account_id attribute on our character application model in order to keep track of
+which characters are owned by which accounts. Since the account id is a primary key in Evennia, it
+is a good candidate, as you will never have two of the same IDs in Evennia. You can feel free to use
+anything else, but for the purposes of this guide, we are going to use account ID to join the
+character applications with the proper account.
 
 ### Model - Checkpoint:
 
-* you should have filled out `mygame/web/chargen/models.py` with the model class shown above (eventually adding fields matching what you need for your game). 
+* you should have filled out `mygame/web/chargen/models.py` with the model class shown above
+(eventually adding fields matching what you need for your game).
 
 ## Create Views
 
-*Views* are server-side constructs that make dynamic data available to a web page. We are going to add them to `mygame/web/chargen.views.py`. Each view in our example represents the backbone of a specific web page. We will use three views and three pages here: 
+*Views* are server-side constructs that make dynamic data available to a web page. We are going to
+add them to `mygame/web/chargen.views.py`. Each view in our example represents the backbone of a
+specific web page. We will use three views and three pages here:
 
-* The index (managing `index.html`). This is what you see when you navigate to `http://yoursite.com/chargen`.
-* The detail display sheet (manages `detail.html`). A page that passively displays the stats of a given Character.
+* The index (managing `index.html`). This is what you see when you navigate to
+`http://yoursite.com/chargen`.
+* The detail display sheet (manages `detail.html`). A page that passively displays the stats of a
+given Character.
 * Character creation sheet (manages `create.html`). This is the main form with fields to fill in. 
 
 ### *Index* view
@@ -127,12 +164,14 @@ def index(request):
 
 ### *Detail* view
 
-Our detail page will have pertinent character application information our users can see. Since this is a basic demonstration, our detail page will only show two fields:
+Our detail page will have pertinent character application information our users can see. Since this
+is a basic demonstration, our detail page will only show two fields:
 
 * Character name
 * Character background
 
-We will use the account ID again just to double-check that whoever tries to check our character page is actually the account who owns the application.
+We will use the account ID again just to double-check that whoever tries to check our character page
+is actually the account who owns the application.
 
 ```python
 # file mygame/web/chargen.views.py
@@ -150,9 +189,12 @@ def detail(request, app_id):
 
 ## *Creating* view
 
-Predictably, our *create* function will be the most complicated of the views, as it needs to accept information from the user, validate the information, and send the information to the server. Once the form content is validated will actually create a playable Character.
+Predictably, our *create* function will be the most complicated of the views, as it needs to accept
+information from the user, validate the information, and send the information to the server. Once
+the form content is validated will actually create a playable Character.
 
-The form itself we will define first. In our simple example we are just looking for the Character's name and background. This form we create in `mygame/web/chargen/forms.py`: 
+The form itself we will define first. In our simple example we are just looking for the Character's
+name and background. This form we create in `mygame/web/chargen/forms.py`:
 
 ```python
 # file mygame/web/chargen/forms.py
@@ -213,7 +255,10 @@ def creating(request):
     return render(request, 'chargen/create.html', {'form': form})
 ```
 
-> Note also that we basically create the character using the Evennia API, and we grab the proper permissions from the `AccountDB` object and copy them to the character object. We take the user permissions attribute and turn that list of strings into a string object in order for the create_object function to properly process the permissions.
+> Note also that we basically create the character using the Evennia API, and we grab the proper
+permissions from the `AccountDB` object and copy them to the character object. We take the user
+permissions attribute and turn that list of strings into a string object in order for the
+create_object function to properly process the permissions.
 
 Most importantly, the following attributes must be set on the created character object:
 
@@ -223,7 +268,10 @@ Most importantly, the following attributes must be set on the created character 
 * Character name (key)
 * The Character's home room location (`#2` by default)
 
-Other attributes are strictly speaking optional, such as the `background` attribute on our character. It may be a good idea to decompose this function and create a separate _create_character function in order to set up your character object the account owns. But with the Evennia API, setting custom attributes is as easy as doing it in the meat of your Evennia game directory.
+Other attributes are strictly speaking optional, such as the `background` attribute on our
+character. It may be a good idea to decompose this function and create a separate _create_character
+function in order to set up your character object the account owns. But with the Evennia API,
+setting custom attributes is as easy as doing it in the meat of your Evennia game directory.
 
 After all of this, our `views.py` file should look like something like this:
 
@@ -296,12 +344,14 @@ def creating(request):
 ### Create Views - Checkpoint:
 
 * you’ve defined a `views.py` that has an index, detail, and creating functions.
-* you’ve defined a forms.py with the `AppForm` class needed by the `creating` function of `views.py`.
+* you’ve defined a forms.py with the `AppForm` class needed by the `creating` function of
+`views.py`.
 * your `mygame/web/chargen` directory should now have a `views.py` and `forms.py` file
 
 ## Create URLs
 
-URL patterns helps redirect requests from the web browser to the right views. These patterns are created in `mygame/web/chargen/urls.py`. 
+URL patterns helps redirect requests from the web browser to the right views. These patterns are
+created in `mygame/web/chargen/urls.py`.
 
 ```python
 # file mygame/web/chargen/urls.py
@@ -319,9 +369,13 @@ urlpatterns = [
 ]
 ```
 
-You could change the format as you desire. To make it more secure, you could remove app_id from the "detail" url, and instead just fetch the account’s applications using a unifying field like account_id to find all the character application objects to display.
+You could change the format as you desire. To make it more secure, you could remove app_id from the
+"detail" url, and instead just fetch the account’s applications using a unifying field like
+account_id to find all the character application objects to display.
 
-We must also update the main `mygame/web/urls.py` file (that is, one level up from our chargen app), so the main website knows where our app's views are located. Find the `patterns` variable, and change it to include:
+We must also update the main `mygame/web/urls.py` file (that is, one level up from our chargen app),
+so the main website knows where our app's views are located. Find the `patterns` variable, and
+change it to include:
 
 ```python
 # in file mygame/web/urls.py
@@ -351,15 +405,21 @@ urlpatterns = custom_patterns + urlpatterns
 
 ## HTML Templates
 
-So we have our url patterns, views, and models defined. Now we must define our HTML templates that the actual user will see and interact with. For this tutorial we us the basic *prosimii* template that comes with Evennia.
+So we have our url patterns, views, and models defined. Now we must define our HTML templates that
+the actual user will see and interact with. For this tutorial we us the basic *prosimii* template
+that comes with Evennia.
 
-Take note that we use `user.is_authenticated` to make sure that the user cannot create a character without logging in.
+Take note that we use `user.is_authenticated` to make sure that the user cannot create a character
+without logging in.
 
 These files will all go into the `/mygame/web/chargen/templates/chargen/` directory.
 
 ### index.html
 
-This HTML template should hold a list of all the applications the account currently has active. For this demonstration, we will only list the applications that the account has submitted. You could easily adjust this to include saved applications, or other types of applications if you have different kinds.
+This HTML template should hold a list of all the applications the account currently has active. For
+this demonstration, we will only list the applications that the account has submitted. You could
+easily adjust this to include saved applications, or other types of applications if you have
+different kinds.
 
 Please refer back to `views.py` to see where we define the variables these templates make use of.
 
@@ -387,7 +447,10 @@ Please refer back to `views.py` to see where we define the variables these templ
 
 ### detail.html
 
-This page should show a detailed character sheet of their application. This will only show their name and character background. You will likely want to extend this to show many more fields for your game. In a full-fledged character generation, you may want to extend the boolean attribute of submitted to allow accounts to save character applications and submit them later.
+This page should show a detailed character sheet of their application. This will only show their
+name and character background. You will likely want to extend this to show many more fields for your
+game. In a full-fledged character generation, you may want to extend the boolean attribute of
+submitted to allow accounts to save character applications and submit them later.
 
 ```html
 <!-- file mygame/web/chargen/templates/chargen/detail.html-->
@@ -412,7 +475,11 @@ This page should show a detailed character sheet of their application. This will
 
 ### create.html
 
-Our create HTML template will use the Django form we defined back in views.py/forms.py to drive the majority of the application process. There will be a form input for every field we defined in forms.py, which is handy. We have used POST as our method because we are sending information to the server that will update the database. As an alternative, GET would be much less secure. You can read up on documentation elsewhere on the web for GET vs. POST.
+Our create HTML template will use the Django form we defined back in views.py/forms.py to drive the
+majority of the application process. There will be a form input for every field we defined in
+forms.py, which is handy. We have used POST as our method because we are sending information to the
+server that will update the database. As an alternative, GET would be much less secure. You can read
+up on documentation elsewhere on the web for GET vs. POST.
 
 ```html
 <!-- file mygame/web/chargen/templates/chargen/create.html-->
@@ -434,7 +501,8 @@ Our create HTML template will use the Django form we defined back in views.py/fo
 
 ### Templates - Checkpoint: 
 
-* Create a `index.html`, `detail.html` and `create.html` template in your `mygame/web/chargen/templates/chargen` directory
+* Create a `index.html`, `detail.html` and `create.html` template in your
+`mygame/web/chargen/templates/chargen` directory
 
 ## Activating your new character generation
 
@@ -457,29 +525,49 @@ evennia makemigrations
 evennia migrate
 ```
 
-This will create and update the models. If you see any errors at this stage, read the traceback carefully, it should be relatively easy to figure out where the error is. 
+This will create and update the models. If you see any errors at this stage, read the traceback
+carefully, it should be relatively easy to figure out where the error is.
 
-Login to the website (you need to have previously registered an Player account with the game to do this). Next you navigate to `http://yourwebsite.com/chargen` (if you are running locally this will be something like `http://localhost:4001/chargen` and you will see your new app in action. 
+Login to the website (you need to have previously registered an Player account with the game to do
+this). Next you navigate to `http://yourwebsite.com/chargen` (if you are running locally this will
+be something like `http://localhost:4001/chargen` and you will see your new app in action.
 
-This should hopefully give you a good starting point in figuring out how you’d like to approach your own web generation. The main difficulties are in setting the appropriate settings on your newly created character object. Thankfully, the Evennia API makes this easy.
+This should hopefully give you a good starting point in figuring out how you’d like to approach your
+own web generation. The main difficulties are in setting the appropriate settings on your newly
+created character object. Thankfully, the Evennia API makes this easy.
 
 ## Adding a no CAPCHA reCAPCHA on your character generation
 
-As sad as it is, if your server is open to the web, bots might come to visit and take advantage of your open form to create hundreds, thousands, millions of characters if you give them the opportunity.  This section shows you how to use the [No CAPCHA reCAPCHA](https://www.google.com/recaptcha/intro/invisible.html) designed by Google.  Not only is it easy to use, it is user-friendly... for humans.  A simple checkbox to check, except if Google has some suspicion, in which case you will have a more difficult test with an image and the usual text inside.  It's worth pointing out that, as long as Google doesn't suspect you of being a robot, this is quite useful, not only for common users, but to screen-reader users, to which reading inside of an image is pretty difficult, if not impossible.  And to top it all, it will be so easy to add in your website.
+As sad as it is, if your server is open to the web, bots might come to visit and take advantage of
+your open form to create hundreds, thousands, millions of characters if you give them the
+opportunity.  This section shows you how to use the [No CAPCHA
+reCAPCHA](https://www.google.com/recaptcha/intro/invisible.html) designed by Google.  Not only is it
+easy to use, it is user-friendly... for humans.  A simple checkbox to check, except if Google has
+some suspicion, in which case you will have a more difficult test with an image and the usual text
+inside.  It's worth pointing out that, as long as Google doesn't suspect you of being a robot, this
+is quite useful, not only for common users, but to screen-reader users, to which reading inside of
+an image is pretty difficult, if not impossible.  And to top it all, it will be so easy to add in
+your website.
 
 ### Step 1: Obtain a SiteKey and secret from Google
 
-The first thing is to ask Google for a way to safely authenticate your website to their service.  To do it, we need to create a site key and a secret.  Go to [https://www.google.com/recaptcha/admin](https://www.google.com/recaptcha/admin) to create such a site key.  It's quite easy when you have a Google account.
+The first thing is to ask Google for a way to safely authenticate your website to their service.  To
+do it, we need to create a site key and a secret.  Go to
+[https://www.google.com/recaptcha/admin](https://www.google.com/recaptcha/admin) to create such a
+site key.  It's quite easy when you have a Google account.
 
-When you have created your site key, save it safely.  Also copy your secret key as well.  You should find both information on the web page.  Both would contain a lot of letters and figures.
+When you have created your site key, save it safely.  Also copy your secret key as well.  You should
+find both information on the web page.  Both would contain a lot of letters and figures.
 
 ### Step 2: installing and configuring the dedicated Django app
 
-Since Evennia runs on Django, the easiest way to add our CAPCHA and perform the proper check is to install the dedicated Django app.  Quite easy:
+Since Evennia runs on Django, the easiest way to add our CAPCHA and perform the proper check is to
+install the dedicated Django app.  Quite easy:
 
     pip install django-nocaptcha-recaptcha
 
-And add it to the installed apps in your settings.  In your `mygame/server/conf/settings.py`, you might have something like this:
+And add it to the installed apps in your settings.  In your `mygame/server/conf/settings.py`, you
+might have something like this:
 
 ```python
 # ...
@@ -489,7 +577,8 @@ INSTALLED_APPS += (
 )
 ```
 
-Don't close the setting file just yet.  We have to add in the site key and secret key.  You can add them below:
+Don't close the setting file just yet.  We have to add in the site key and secret key.  You can add
+them below:
 
 ```python
 # NoReCAPCHA site key
@@ -500,7 +589,9 @@ NORECAPTCHA_SECRET_KEY = "PUT YOUR SECRET KEY HERE"
 
 ### Step 3: Adding the CAPCHA to our form
 
-Finally we have to add the CAPCHA to our form.  It will be pretty easy too.  First, open your `web/chargen/forms.py` file.  We're going to add a new field, but hopefully, all the hard work has been done for us.  Update at your convenience, You might end up with something like this:
+Finally we have to add the CAPCHA to our form.  It will be pretty easy too.  First, open your
+`web/chargen/forms.py` file.  We're going to add a new field, but hopefully, all the hard work has
+been done for us.  Update at your convenience, You might end up with something like this:
 
 ```python
 from django import forms
@@ -514,13 +605,17 @@ class AppForm(forms.Form):
 
 As you see, we added a line of import (line 2) and a field in our form.
 
-And lastly, we need to update our HTML file to add in the Google library.  You can open `web/chargen/templates/chargen/create.html`.  There's only one line to add:
+And lastly, we need to update our HTML file to add in the Google library.  You can open
+`web/chargen/templates/chargen/create.html`.  There's only one line to add:
 
 ```html
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 ```
 
-And you should put it at the bottom of the page.  Just before the closing body would be good, but for the time being, the base page doesn't provide a footer block, so we'll put it in the content block.  Note that it's not the best place, but it will work.  In the end, your `web/chargen/templates/chargen/create.html` file should look like this:
+And you should put it at the bottom of the page.  Just before the closing body would be good, but
+for the time being, the base page doesn't provide a footer block, so we'll put it in the content
+block.  Note that it's not the best place, but it will work.  In the end, your
+`web/chargen/templates/chargen/create.html` file should look like this:
 
 ```html
 {% extends "base.html" %}
@@ -539,4 +634,6 @@ And you should put it at the bottom of the page.  Just before the closing body w
 {% endblock %}
 ```
 
-Reload and open [http://localhost:4001/chargen/create](http://localhost:4001/chargen/create/) and you should see your beautiful CAPCHA just before the "submit" button.  Try not to check the checkbox to see what happens.  And do the same while checking the checkbox!
+Reload and open [http://localhost:4001/chargen/create](http://localhost:4001/chargen/create/) and
+you should see your beautiful CAPCHA just before the "submit" button.  Try not to check the checkbox
+to see what happens.  And do the same while checking the checkbox!

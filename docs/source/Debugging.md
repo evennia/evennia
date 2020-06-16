@@ -2,7 +2,8 @@
 
 
 Sometimes, an error is not trivial to resolve. A few simple `print` statements is not enough to find
-the cause of the issue. Running a *debugger* can then be very helpful and save a lot of time. Debugging
+the cause of the issue. Running a *debugger* can then be very helpful and save a lot of time.
+Debugging
 means running Evennia under control of a special *debugger* program. This allows you to stop the
 action at a given point, view the current state and step forward through the program to see how its
 logic works.
@@ -87,7 +88,8 @@ in your console, and you will find it here. Below is an example with `pdb`.
 
 ### Listing surrounding lines of code
 
-When you have the `pdb` prompt `(Pdb)`, you can type in different commands to explore the code.  The first one you should know is `list` (you can type `l` for short):
+When you have the `pdb` prompt `(Pdb)`, you can type in different commands to explore the code.  The
+first one you should know is `list` (you can type `l` for short):
 
 ```
 (Pdb) l
@@ -205,7 +207,8 @@ None
 (Pdb)
 ```
 
-We have entered the `test` command without parameter, so no object could be found in the search (`self.args` is an empty string).
+We have entered the `test` command without parameter, so no object could be found in the search
+(`self.args` is an empty string).
 
 Let's allow the command to continue and try to use an object name as parameter (although, we should
 fix that bug too, it would be better):
@@ -279,12 +282,15 @@ command is not needed much in `pudb` since it displays the code directly in its 
 
 | Pdb/PuDB command | To do what |
 | ----------- | ---------- |
-| list (or l) | List the lines around the point of execution (not needed for `pudb`, it will show this directly). |
+| list (or l) | List the lines around the point of execution (not needed for `pudb`, it will show
+this directly). |
 | print (or p) | Display one or several variables. |
 | `!` | Run Python code (using a `!` is often optional). |
 | continue (or c) | Continue execution and terminate the debugger for this time. |
 | next (or n) | Execute the current line and goes to the next one. |
 | step (or s) | Step inside of a function or method to examine it. |
-| `<RETURN>` | Repeat the last command (don't type `n` repeatedly, just type it once and then press `<RETURN>` to repeat it). |
+| `<RETURN>` | Repeat the last command (don't type `n` repeatedly, just type it once and then press
+`<RETURN>` to repeat it). |
 
-If you want to learn more about debugging with Pdb, you will find an [interesting tutorial on that topic here](https://pymotw.com/3/pdb/).
+If you want to learn more about debugging with Pdb, you will find an [interesting tutorial on that
+topic here](https://pymotw.com/3/pdb/).

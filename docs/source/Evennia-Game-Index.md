@@ -29,7 +29,9 @@ mind.
 
 ## Manual Settings 
 
-If you don't want to use the wizard (maybe because you already have the client installed from an earlier version), you can also configure your index entry in your settings file (`mygame/server/conf/settings.py`). Add the following: 
+If you don't want to use the wizard (maybe because you already have the client installed from an
+earlier version), you can also configure your index entry in your settings file
+(`mygame/server/conf/settings.py`). Add the following:
 
 ```python
 GAME_INDEX_ENABLED = True 

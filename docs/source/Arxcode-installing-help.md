@@ -22,8 +22,12 @@ better match with the vanilla Evennia install.
 
 Firstly, set aside a folder/directory on your drive for everything to follow. 
 
-You need to start by installing [Evennia](http://www.evennia.com) by following most of the [Getting Started
-Instructions](Getting-Started) for your OS. The difference is that you need to `git clone https://github.com/TehomCD/evennia.git` instead of Evennia's repo because Arx uses TehomCD's older Evennia 0.8 [fork](https://github.com/TehomCD/evennia), notably still using Python2. This detail is important if referring to newer Evennia documentation. 
+You need to start by installing [Evennia](http://www.evennia.com) by following most of the [Getting
+Started
+Instructions](Getting-Started) for your OS. The difference is that you need to `git clone
+https://github.com/TehomCD/evennia.git` instead of Evennia's repo because Arx uses TehomCD's older
+Evennia 0.8 [fork](https://github.com/TehomCD/evennia), notably still using Python2. This detail is
+important if referring to newer Evennia documentation.
 
 If you are new to Evennia it's *highly* recommended that you run through the
 instructions in full - including initializing and starting a new empty game and connecting to it.
@@ -33,7 +37,8 @@ operating system. You can also drop into our
 [forums](https://groups.google.com/forum/#%21forum/evennia), join `#evennia` on `irc.freenode.net`
 or chat from the linked [Discord Server](https://discord.gg/NecFePw). 
 
-After installing you should have a `virtualenv` running and you should have the following file structure in your set-aside folder: 
+After installing you should have a `virtualenv` running and you should have the following file
+structure in your set-aside folder:
 
 ```
 vienv/
@@ -58,7 +63,8 @@ Cd to the root of your directory and clone the released source code from github:
 A new folder `myarx` should appear next to the ones you already had. You could rename this to
 something else if you want. 
 
-Cd into `myarx`. If you wonder about the structure of the game dir, you can [read more about it here](Directory-Overview). 
+Cd into `myarx`. If you wonder about the structure of the game dir, you can [read more about it
+here](Directory-Overview).
 
 ### Clean up settings
 
@@ -84,7 +90,8 @@ except ImportError:
 ```
 
 > Note: Indents and capitalization matter in Python. Make indents 4 spaces (not tabs) for your own
-> sanity. If you want a starter on Python in Evennia, [you can look here](Python-basic-introduction).
+> sanity. If you want a starter on Python in Evennia, [you can look here](Python-basic-
+introduction).
 
 This will import Arx' base settings and override them with the Evennia-default telnet port and give
 the game a name. The slogan changes the sub-text shown under the name of your game in the website
@@ -172,7 +179,8 @@ run steps 7-8 and 10 to create and connect to your in-came Character.
    account. Move to where you want the new staffer character to appear. 
 8. In the game client, run `@create/drop <staffername>:typeclasses.characters.Character`, where
    `<staffername>` is usually the same name you used for the Staffer account you created in the
-   Admin earlier (if you are creating a Character for your superuser, use your superuser account name).
+   Admin earlier (if you are creating a Character for your superuser, use your superuser account
+name).
    This creates a new in-game Character and places it in your current location.
 9. Have the new Admin player log into the game.
 10. Have the new Admin puppet the character with `@ic StafferName`. 
@@ -182,8 +190,10 @@ Now that you have a Character and an Account object, there's a few additional th
 do in order for some commands to function properly. You can either execute these as in-game commands
 while `@ic` (controlling your character object).
 
-1. `@py from web.character.models import RosterEntry;RosterEntry.objects.create(player=self.player, character=self)`
-2. `@py from world.dominion.models import PlayerOrNpc, AssetOwner;dompc = PlayerOrNpc.objects.create(player = self.player);AssetOwner.objects.create(player=dompc)`
+1. `@py from web.character.models import RosterEntry;RosterEntry.objects.create(player=self.player,
+character=self)`
+2. `@py from world.dominion.models import PlayerOrNpc, AssetOwner;dompc =
+PlayerOrNpc.objects.create(player = self.player);AssetOwner.objects.create(player=dompc)`
 
 Those steps will give you a 'RosterEntry', 'PlayerOrNpc', and 'AssetOwner' objects. RosterEntry
 explicitly connects a character and account object together, even while offline, and contains
@@ -195,7 +205,9 @@ AssetOwner holds information about a character or organization's money and resou
 
 ## Alternate guide by Pax for installing on Windows
 
-If for some reason you cannot use the Windows Subsystem for Linux (which would use instructions identical to the ones above), it's possible to get Evennia running under Anaconda for Windows. The process is a little bit trickier.
+If for some reason you cannot use the Windows Subsystem for Linux (which would use instructions
+identical to the ones above), it's possible to get Evennia running under Anaconda for Windows. The
+process is a little bit trickier.
 
  Make sure you have:
  * Git for Windows               https://git-scm.com/download/win

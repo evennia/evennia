@@ -1,6 +1,7 @@
 # Administrative Docs
 
-The following pages are aimed at game administrators -- the higher-ups that possess shell access and are responsible for managing the game.
+The following pages are aimed at game administrators -- the higher-ups that possess shell access and
+are responsible for managing the game.
 
 ### Installation and Early Life
 
@@ -13,12 +14,14 @@ The following pages are aimed at game administrators -- the higher-ups that poss
 - [Making your game available online](Online-Setup)
   - [Hosting options](Online-Setup#hosting-options)
   - [Securing your server with SSL/Let's Encrypt](Online-Setup#ssl)
-- [Listing your game](Evennia-Game-Index) at the online [Evennia game index](http://games.evennia.com)
+- [Listing your game](Evennia-Game-Index) at the online [Evennia game
+index](http://games.evennia.com)
 
 ### Customizing the server
 
 - [Changing the Settings](Server-Conf#Settings-file) 
-    - [Available Master Settings](https://github.com/evennia/evennia/blob/master/evennia/settings_default.py)
+    - [Available Master
+Settings](https://github.com/evennia/evennia/blob/master/evennia/settings_default.py)
 - [Change Evennia's language](Internationalization) (internationalization)
 - [Apache webserver configuration](Apache-Config) (optional)
 - [Changing text encodings used by the server](Text-Encodings)

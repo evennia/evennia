@@ -73,26 +73,34 @@ EvMenu(caller, menu_data,
    new [CmdSet](Command-Sets) assigned to it, for handling the menu.
  - `menu_data` (str, module or dict): is a module or python path to a module where the global-level
    functions will each be considered to be a menu node. Their names in the module will be the names
-   by which they are referred to in the module. Importantly, function names starting with an underscore
-   `_` will be ignored by the loader. Alternatively, this can be a direct mapping `{"nodename":function, ...}`.
+   by which they are referred to in the module. Importantly, function names starting with an
+underscore
+   `_` will be ignored by the loader. Alternatively, this can be a direct mapping
+`{"nodename":function, ...}`.
  - `startnode` (str): is the name of the menu-node to start the menu at. Changing this means that
    you can jump into a menu tree at different positions depending on circumstance and thus possibly
    re-use menu entries.
- - `cmdset_mergetype` (str): This is usually one of "Replace" or "Union" (see [CmdSets](Command-Sets).
+ - `cmdset_mergetype` (str): This is usually one of "Replace" or "Union" (see [CmdSets](Command-
+Sets).
    The first means that the menu is exclusive - the user has no access to any other commands while
-   in the menu. The Union mergetype means the menu co-exists with previous commands (and may overload
+   in the menu. The Union mergetype means the menu co-exists with previous commands (and may
+overload
    them, so be careful as to what to name your menu entries in this case).
  - `cmdset_priority` (int): The priority with which to merge in the menu cmdset. This allows for
    advanced usage.
  - `auto_quit`, `auto_look`, `auto_help` (bool): If either of these are `True`, the menu
    automatically makes a `quit`, `look` or `help` command available to the user. The main reason why
-   you'd want to turn this off is if  you want to use the aliases "q", "l" or "h" for something in your
-   menu. Nevertheless, at least `quit` is highly recommend - if `False`, the menu *must* itself supply
-   an "exit node" (a node without any options), or the user will be stuck in the menu until the server
+   you'd want to turn this off is if  you want to use the aliases "q", "l" or "h" for something in
+your
+   menu. Nevertheless, at least `quit` is highly recommend - if `False`, the menu *must* itself
+supply
+   an "exit node" (a node without any options), or the user will be stuck in the menu until the
+server
    reloads (or eternally if the menu is `persistent`)!
  - `cmd_on_exit` (str): This command string will be executed right *after* the menu has closed down.
    From experience, it's useful to trigger a "look" command to make sure the user is aware of the
-   change of state; but any command can be used. If set to `None`, no command will be triggered after
+   change of state; but any command can be used. If set to `None`, no command will be triggered
+after
    exiting the menu.
  - `persistent` (bool) - if `True`, the menu will survive a reload (so the user will not be kicked
    out by the reload - make sure they can exit on their own!)
@@ -134,7 +142,8 @@ def menunodename3(caller, raw_string, **kwargs):
 
 ```
 
-> While all of the above forms are okay, it's recommended to stick to the third and last form since it
+> While all of the above forms are okay, it's recommended to stick to the third and last form since
+it
 > gives the most flexibility. The previous forms are mainly there for backwards compatibility with
 > existing menus from a time when EvMenu was less able.
 
@@ -173,11 +182,13 @@ help text is not given, the menu will give a generic error message when using `h
 
 #### options
 
-The `options` list describe all the choices available to the user when viewing this node. If `options` is
+The `options` list describe all the choices available to the user when viewing this node. If
+`options` is
 returned as `None`, it means that this node is an *Exit node* - any text is displayed and then the
 menu immediately exits, running the `exit_cmd` if given.
 
-Otherwise, `options` should be a list (or tuple) of dictionaries, one for each option. If only one option is
+Otherwise, `options` should be a list (or tuple) of dictionaries, one for each option. If only one
+option is
 available, a single dictionary can also be returned. This is how it could look:
 
 
@@ -212,7 +223,8 @@ Defend: Hold back and defend yourself
 
 ##### option-key 'key'
 
-The option's `key` is what the user should enter in order to choose that option. If given as a tuple, the
+The option's `key` is what the user should enter in order to choose that option. If given as a
+tuple, the
 first string of that tuple will be what is shown on-screen while the rest are aliases for picking
 that option. In the above example, the user could enter "Attack" (or "attack", it's not
 case-sensitive), "a" or "att" in order to attack the goblin. Aliasing is useful for adding custom
@@ -306,7 +318,8 @@ function as
 Here, `raw_string` is always the input the user entered to make that choice and `kwargs` are the
 same as those `kwargs` that already entered the *current* node (they are passed on).
 
-Alternatively the `goto` could point to a "goto-callable". Such callables are usually defined in the same
+Alternatively the `goto` could point to a "goto-callable". Such callables are usually defined in the
+same
 module as the menu nodes and given names starting with `_` (to avoid being parsed as nodes
 themselves). These callables will be called the same as a node function - `callable(caller,
 raw_string, **kwargs)`, where `raw_string` is what the user entered on this node and `**kwargs` is
@@ -318,7 +331,8 @@ kwargs passed into it depending on which option was actually chosen.
 
 The "goto callable" must either return a string `"nodename"` or a tuple `("nodename", mykwargs)`.
 This will lead to the next node being called as either `nodename(caller, raw_string, **kwargs)` or
-`nodename(caller, raw_string, **mykwargs)` - so this allows changing (or replacing) the options going
+`nodename(caller, raw_string, **mykwargs)` - so this allows changing (or replacing) the options
+going
 into the next node depending on what option was chosen.
 
 There is one important case - if the goto-callable returns `None` for a `nodename`, *the current
@@ -418,15 +432,20 @@ See `evennia/utils/evmenu.py` for the details of their default implementations.
 - **[Dynamic goto](EvMenu#example-dynamic-goto)** - jumping to different nodes based on response
 - **[Set caller properties](EvMenu#example-set-caller-properties)** - a menu that changes things
 - **[Getting arbitrary input](EvMenu#example-get-arbitrary-input)** - entering text
-- **[Storing data between nodes](EvMenu#example-storing-data-between-nodes)** - keeping states and information while in the menu
-- **[Repeating the same node](EvMenu#example-repeating-the-same-node)** - validating within the node before moving to the next
+- **[Storing data between nodes](EvMenu#example-storing-data-between-nodes)** - keeping states and
+information while in the menu
+- **[Repeating the same node](EvMenu#example-repeating-the-same-node)** - validating within the node
+before moving to the next
 - **[Full Menu](EvMenu#example-full-menu):** a complete example
-- **[Yes/No prompt](EvMenu#example-yesno-prompt)** - entering text with limited possible responses (this is *not* using EvMenu but the conceptually similar yet technically unrelated `get_input` helper function accessed as `evennia.utils.evmenu.get_input`).
+- **[Yes/No prompt](EvMenu#example-yesno-prompt)** - entering text with limited possible responses
+(this is *not* using EvMenu but the conceptually similar yet technically unrelated `get_input`
+helper function accessed as `evennia.utils.evmenu.get_input`).
 
 
 ### Example: Simple branching menu
 
-Below is an example of a simple branching menu node leading to different other nodes depending on choice:
+Below is an example of a simple branching menu node leading to different other nodes depending on
+choice:
 
 ```python
 # in mygame/world/mychargen.py
@@ -656,7 +675,8 @@ all nodes. At the end we look at it and, if we accept the character the menu wil
 result to permanent storage and exit.
 
 > One point to remember though is that storage on `caller.ndb._menutree` is not persistent across
-> `@reloads`. If you are using a persistent menu (using `EvMenu(..., persistent=True)` you should use
+> `@reloads`. If you are using a persistent menu (using `EvMenu(..., persistent=True)` you should
+use
 > `caller.db` to store in-menu data like this as well. You must then yourself make sure to clean it
 > when the user exits the menu.
 

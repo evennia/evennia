@@ -34,11 +34,13 @@ defaults
 
 # Evennia Specifics
 listen evennia-https-website
-    bind <public-ip-address>:<public-SSL-port--probably-443> ssl no-sslv3 no-tlsv10 crt /path/to/your-cert.pem
+    bind <public-ip-address>:<public-SSL-port--probably-443> ssl no-sslv3 no-tlsv10 crt
+/path/to/your-cert.pem
     server localhost 127.0.0.1:<evennia-web-port-probably-4001>
 
 listen evennia-secure-websocket
-    bind <public-ip-address>:<WEBSOCKET_CLIENT_URL 4002> ssl no-sslv3 no-tlsv10 crt /path/to/your-cert.pem
+    bind <public-ip-address>:<WEBSOCKET_CLIENT_URL 4002> ssl no-sslv3 no-tlsv10 crt /path/to/your-
+cert.pem
     server localhost 127.0.0.1:<WEBSOCKET_CLIENT_URL 4002>
     timeout client 10m
     timeout server 10m

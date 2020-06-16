@@ -63,7 +63,10 @@ class MyScript(DefaultScript):
         # do stuff every minute 
 ```
 
-In `mygame/typeclasses/scripts.py` is the `Script` class which inherits from `DefaultScript` already. This is provided as your own base class to do with what you like: You can tweak `Script` if you want to change the default behavior and it is usually convenient to inherit from this instead. Here's an example: 
+In `mygame/typeclasses/scripts.py` is the `Script` class which inherits from `DefaultScript`
+already. This is provided as your own base class to do with what you like: You can tweak `Script` if
+you want to change the default behavior and it is usually convenient to inherit from this instead.
+Here's an example:
 
 ```python
     # for example in mygame/typeclasses/scripts.py  
@@ -140,47 +143,89 @@ command in-game.
 
 ## Properties and functions defined on Scripts
 
-A Script has all the properties of a typeclassed object, such as `db` and `ndb`(see [Typeclasses](Typeclasses)). Setting `key` is useful in order to manage scripts (delete them by name etc). These are usually set up in the Script's typeclass, but can also be assigned on the fly as keyword arguments to `evennia.create_script`.
+A Script has all the properties of a typeclassed object, such as `db` and `ndb`(see
+[Typeclasses](Typeclasses)). Setting `key` is useful in order to manage scripts (delete them by name
+etc). These are usually set up in the Script's typeclass, but can also be assigned on the fly as
+keyword arguments to `evennia.create_script`.
 
 - `desc` - an optional description of the script's function. Seen in script listings.
-- `interval` - how often the script should run. If `interval == 0` (default), this script has no timing component, will not repeat and will exist forever. This is useful for Scripts used for storage or acting as bases for various non-time dependent game systems. 
-- `start_delay` - (bool), if we should wait `interval` seconds before firing for the first time or not. 
-- `repeats` - How many times we should repeat, assuming `interval > 0`. If repeats is set to `<= 0`, the script will repeat indefinitely. Note that *each* firing of the script (including the first one) counts towards this value. So a `Script` with `start_delay=False` and `repeats=1` will start, immediately fire and shut down right away.
-- `persistent`- if this script should survive a server *reset* or server *shutdown*. (You don't need to set this for it to survive a normal reload - the script will be paused and seamlessly restart after the reload is complete).
+- `interval` - how often the script should run. If `interval == 0` (default), this script has no
+timing component, will not repeat and will exist forever. This is useful for Scripts used for
+storage or acting as bases for various non-time dependent game systems.
+- `start_delay` - (bool), if we should wait `interval` seconds before firing for the first time or
+not.
+- `repeats` - How many times we should repeat, assuming `interval > 0`. If repeats is set to `<= 0`,
+the script will repeat indefinitely. Note that *each* firing of the script (including the first one)
+counts towards this value. So a `Script` with `start_delay=False` and `repeats=1` will start,
+immediately fire and shut down right away.
+- `persistent`- if this script should survive a server *reset* or server *shutdown*. (You don't need
+to set this for it to survive a normal reload - the script will be paused and seamlessly restart
+after the reload is complete).
 
 There is one special property:
 
-- `obj` - the [Object](Objects) this script is attached to (if any).  You should not need to set this manually. If you add the script to the Object with `myobj.scripts.add(myscriptpath)` or give `myobj` as an argument to the `utils.create.create_script` function, the `obj` property will be set to `myobj` for you.
+- `obj` - the [Object](Objects) this script is attached to (if any).  You should not need to set
+this manually. If you add the script to the Object with `myobj.scripts.add(myscriptpath)` or give
+`myobj` as an argument to the `utils.create.create_script` function, the `obj` property will be set
+to `myobj` for you.
 
 It's also imperative to know the hook functions. Normally, overriding
 these are all the customization you'll need to do in Scripts. You can
 find longer descriptions of these in `src/scripts/scripts.py`.
 
-- `at_script_creation()` - this is usually where the script class sets things like `interval` and `repeats`; things that control how the script runs. It is only called once - when the script is first created.
-- `is_valid()` - determines if the script should still be running or not. This is called when running `obj.scripts.validate()`, which you can run manually, but which is also called by Evennia during certain situations such as reloads. This is also useful for using scripts as state managers. If the method returns `False`, the script is stopped and cleanly removed.
-- `at_start()` - this is called when the script starts or is unpaused. For persistent scripts this is at least once ever server startup. Note that this will *always* be called right away, also if `start_delay` is `True`.
-- `at_repeat()` - this is called every `interval` seconds, or not at all. It is called right away at startup, unless `start_delay` is `True`, in which case the system will wait `interval` seconds before calling.
-- `at_stop()` - this is called when the script stops for whatever reason. It's a good place to do custom cleanup.
-- `at_server_reload()` - this is called whenever the server is warm-rebooted (e.g. with the `@reload` command). It's a good place to save non-persistent data you might want to survive a reload.
+- `at_script_creation()` - this is usually where the script class sets things like `interval` and
+`repeats`; things that control how the script runs. It is only called once - when the script is
+first created.
+- `is_valid()` - determines if the script should still be running or not. This is called when
+running `obj.scripts.validate()`, which you can run manually, but which is also called by Evennia
+during certain situations such as reloads. This is also useful for using scripts as state managers.
+If the method returns `False`, the script is stopped and cleanly removed.
+- `at_start()` - this is called when the script starts or is unpaused. For persistent scripts this
+is at least once ever server startup. Note that this will *always* be called right away, also if
+`start_delay` is `True`.
+- `at_repeat()` - this is called every `interval` seconds, or not at all. It is called right away at
+startup, unless `start_delay` is `True`, in which case the system will wait `interval` seconds
+before calling.
+- `at_stop()` - this is called when the script stops for whatever reason. It's a good place to do
+custom cleanup.
+- `at_server_reload()` - this is called whenever the server is warm-rebooted (e.g. with the
+`@reload` command). It's a good place to save non-persistent data you might want to survive a
+reload.
 - `at_server_shutdown()` - this is called when a system reset or systems shutdown is invoked.
 
 Running methods (usually called automatically by the engine, but possible to also invoke manually)
 
-- `start()` - this will start the script. This is called automatically whenever you add a new script to a handler. `at_start()` will be called.
-- `stop()` - this will stop the script and delete it. Removing a script from a handler will stop it automatically. `at_stop()` will be called.
-- `pause()` - this pauses a running script, rendering it inactive, but not deleting it. All properties are saved and timers can be resumed. This is called automatically when the server reloads and will *not* lead to the *at_stop()* hook being called. This is a suspension of the script, not a change of state.
-- `unpause()` - resumes a previously paused script. The `at_start()` hook *will* be called to allow it to reclaim its internal state. Timers etc are restored to what they were before pause. The server automatically unpauses all paused scripts after a server reload.
-- `force_repeat()` - this will forcibly step the script, regardless of when it would otherwise have fired. The timer will reset and the `at_repeat()` hook is called as normal. This also counts towards the total number of repeats, if limited. 
-- `time_until_next_repeat()` - for timed scripts, this returns the time in seconds until it next fires. Returns `None` if `interval==0`.
-- `remaining_repeats()` - if the Script should run a limited amount of times, this tells us how many are currently left.  
-- `reset_callcount(value=0)` - this allows you to reset the number of times the Script has fired. It only makes sense if `repeats > 0`. 
-- `restart(interval=None, repeats=None, start_delay=None)` - this method allows you to restart the Script in-place with different run settings. If you do, the `at_stop` hook will be called and the Script brought to a halt, then the `at_start` hook will be called as the Script starts up with your (possibly changed) settings. Any keyword left at `None` means to not change the original setting. 
+- `start()` - this will start the script. This is called automatically whenever you add a new script
+to a handler. `at_start()` will be called.
+- `stop()` - this will stop the script and delete it. Removing a script from a handler will stop it
+automatically. `at_stop()` will be called.
+- `pause()` - this pauses a running script, rendering it inactive, but not deleting it. All
+properties are saved and timers can be resumed. This is called automatically when the server reloads
+and will *not* lead to the *at_stop()* hook being called. This is a suspension of the script, not a
+change of state.
+- `unpause()` - resumes a previously paused script. The `at_start()` hook *will* be called to allow
+it to reclaim its internal state. Timers etc are restored to what they were before pause. The server
+automatically unpauses all paused scripts after a server reload.
+- `force_repeat()` - this will forcibly step the script, regardless of when it would otherwise have
+fired. The timer will reset and the `at_repeat()` hook is called as normal. This also counts towards
+the total number of repeats, if limited.
+- `time_until_next_repeat()` - for timed scripts, this returns the time in seconds until it next
+fires. Returns `None` if `interval==0`.
+- `remaining_repeats()` - if the Script should run a limited amount of times, this tells us how many
+are currently left.
+- `reset_callcount(value=0)` - this allows you to reset the number of times the Script has fired. It
+only makes sense if `repeats > 0`.
+- `restart(interval=None, repeats=None, start_delay=None)` - this method allows you to restart the
+Script in-place with different run settings. If you do, the `at_stop` hook will be called and the
+Script brought to a halt, then the `at_start` hook will be called as the Script starts up with your
+(possibly changed) settings. Any keyword left at `None` means to not change the original setting.
 
 
 ## Global Scripts
 
 A script does not have to be connected to an in-game object. If not it is
-called a *Global script*. You can create global scripts by simply not supplying an object to store it on:
+called a *Global script*. You can create global scripts by simply not supplying an object to store
+it on:
 
 ```python
      # adding a global script
@@ -210,10 +255,13 @@ GLOBAL_SCRIPTS.weather.db.current_weather = "Cloudy"
 > Note that global scripts appear as properties on `GLOBAL_SCRIPTS` based on their `key`. 
 If you were to create two global scripts with the same `key` (even with different typeclasses),
 the `GLOBAL_SCRIPTS` container will only return one of them (which one depends on order in 
-the database). Best is to organize your scripts so that this does not happen. Otherwise, use `evennia.search_script` to get exactly the script you want. 
+the database). Best is to organize your scripts so that this does not happen. Otherwise, use
+`evennia.search_script` to get exactly the script you want.
 
 There are two ways to make a script appear as a property on `GLOBAL_SCRIPTS`. The first is 
-to manually create a new global script with `create_script` as mentioned above. Often you want this to happen automatically when the server starts though. For this you can use the setting `GLOBAL_SCRIPTS`:
+to manually create a new global script with `create_script` as mentioned above. Often you want this
+to happen automatically when the server starts though. For this you can use the setting
+`GLOBAL_SCRIPTS`:
 
 ```python
 GLOBAL_SCRIPTS = {
@@ -230,13 +278,19 @@ GLOBAL_SCRIPTS = {
     }
 }
 ```
-Here the key (`myscript` and `storagescript` above) is required, all other fields are optional. If `typeclass` is not given, a script of type `settings.BASE_SCRIPT_TYPECLASS` is assumed. The keys related to timing and intervals are only needed if the script is timed.
+Here the key (`myscript` and `storagescript` above) is required, all other fields are optional. If
+`typeclass` is not given, a script of type `settings.BASE_SCRIPT_TYPECLASS` is assumed. The keys
+related to timing and intervals are only needed if the script is timed.
 
-Evennia will use the information in `settings.GLOBAL_SCRIPTS` to automatically create and start these
-scripts when the server starts (unless they already exist, based on their `key`). You need to reload the server before the setting is read and new scripts become available. You can then find the `key` you gave as properties on `evennia.GLOBAL_SCRIPTS` 
+Evennia will use the information in `settings.GLOBAL_SCRIPTS` to automatically create and start
+these
+scripts when the server starts (unless they already exist, based on their `key`). You need to reload
+the server before the setting is read and new scripts become available. You can then find the `key`
+you gave as properties on `evennia.GLOBAL_SCRIPTS`
 (such as `evennia.GLOBAL_SCRIPTS.storagescript`). 
  
-> Note: Make sure that your Script typeclass does not have any critical errors. If so, you'll see errors in your log and your Script will temporarily fall back to being a `DefaultScript` type. 
+> Note: Make sure that your Script typeclass does not have any critical errors. If so, you'll see
+errors in your log and your Script will temporarily fall back to being a `DefaultScript` type.
 
 Moreover, a script defined this way is *guaranteed* to exist when you try to access it:
 ```python
@@ -247,10 +301,14 @@ GLOBAL_SCRIPTS.storagescript.stop()
 # but below now it's recreated again! 
 storage = GLOBAL_SCRIPTS.storagescript
 ```
-That is, if the script is deleted, next time you get it from `GLOBAL_SCRIPTS`, it will use the information
+That is, if the script is deleted, next time you get it from `GLOBAL_SCRIPTS`, it will use the
+information
 in settings to recreate it for you.
 
-> Note that if your goal with the Script is to store persistent data, you should set it as `persistent=True`, either in `settings.GLOBAL_SCRIPTS` or in the Scripts typeclass. Otherwise any data you wanted to store on it will be gone (since a new script of the same name is restarted instead). 
+> Note that if your goal with the Script is to store persistent data, you should set it as
+`persistent=True`, either in `settings.GLOBAL_SCRIPTS` or in the Scripts typeclass. Otherwise any
+data you wanted to store on it will be gone (since a new script of the same name is restarted
+instead).
 
 ## Dealing with Errors
 

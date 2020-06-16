@@ -1,7 +1,9 @@
 # EvEditor
 
 
-Evennia offers a powerful in-game line editor in `evennia.utils.eveditor.EvEditor`. This editor, mimicking the well-known VI line editor. It offers line-by-line editing, undo/redo, line deletes, search/replace, fill, dedent and more. 
+Evennia offers a powerful in-game line editor in `evennia.utils.eveditor.EvEditor`. This editor,
+mimicking the well-known VI line editor. It offers line-by-line editing, undo/redo, line deletes,
+search/replace, fill, dedent and more.
 
 ### Launching the editor
 
@@ -16,10 +18,15 @@ EvEditor(caller,
 ```
 
  - `caller` (Object or Account): The user of the editor.
- - `loadfunc` (callable, optional): This is a function called when the editor is first started. It is called with `caller` as its only argument. The return value from this function is used as the starting text in the editor buffer.
- - `savefunc` (callable, optional): This is called when the user saves their buffer in the editor is called with two arguments, `caller` and `buffer`, where `buffer` is the current buffer. 
- - `quitfunc` (callable, optional): This is called when the user quits the editor. If given, all cleanup and exit messages to the user must be handled by this function. 
- - `key` (str, optional): This text will be displayed as an identifier and reminder while editing. It has no other mechanical function.
+ - `loadfunc` (callable, optional): This is a function called when the editor is first started. It
+is called with `caller` as its only argument. The return value from this function is used as the
+starting text in the editor buffer.
+ - `savefunc` (callable, optional): This is called when the user saves their buffer in the editor is
+called with two arguments, `caller` and `buffer`, where `buffer` is the current buffer.
+ - `quitfunc` (callable, optional): This is called when the user quits the editor. If given, all
+cleanup and exit messages to the user must be handled by this function.
+ - `key` (str, optional): This text will be displayed as an identifier and reminder while editing.
+It has no other mechanical function.
  - `persistent` (default `False`): if set to `True`, the editor will survive a reboot.
 
 ### Example of usage
@@ -60,7 +67,10 @@ class CmdSetTestAttr(Command):
 
 ### Persistent editor
 
-If you set the `persistent` keyword to `True` when creating the editor, it will remain open even when reloading the game.  In order to be persistent, an editor needs to have its callback functions (`loadfunc`, `savefunc` and `quitfunc`) as top-level functions defined in the module.  Since these functions will be stored, Python will need to find them.
+If you set the `persistent` keyword to `True` when creating the editor, it will remain open even
+when reloading the game.  In order to be persistent, an editor needs to have its callback functions
+(`loadfunc`, `savefunc` and `quitfunc`) as top-level functions defined in the module.  Since these
+functions will be stored, Python will need to find them.
 
 ```python
 from evennia import Command
@@ -99,7 +109,8 @@ class CmdSetTestAttr(Command):
 
 ### Line editor usage
 
-The editor mimics the `VIM` editor as best as possible. The below is an excerpt of the return from the in-editor help command (`:h`).
+The editor mimics the `VIM` editor as best as possible. The below is an excerpt of the return from
+the in-editor help command (`:h`).
 
 ```
  <txt>  - any non-command is appended to the end of the buffer.
@@ -145,14 +156,26 @@ The editor mimics the `VIM` editor as best as possible. The below is an excerpt 
 
 ### The EvEditor to edit code
 
-The `EvEditor` is also used to edit some Python code in Evennia.  The `@py` command supports an `/edit` switch that will open the EvEditor in code mode.  This mode isn't significantly different from the standard one, except it handles automatic indentation of blocks and a few options to control this behavior.
+The `EvEditor` is also used to edit some Python code in Evennia.  The `@py` command supports an
+`/edit` switch that will open the EvEditor in code mode.  This mode isn't significantly different
+from the standard one, except it handles automatic indentation of blocks and a few options to
+control this behavior.
 
 - `:<` to remove a level of indentation for the future lines.
 - `:+` to add a level of indentation for the future lines.
 - `:=` to disable automatic indentation altogether.
 
-Automatic indentation is there to make code editing more simple.  Python needs correct indentation, not as an aesthetic addition, but as a requirement to determine beginning and ending of blocks.  The EvEditor will try to guess the next level of indentation.  If you type a block "if", for instance, the EvEditor will propose you an additional level of indentation at the next line.  This feature cannot be perfect, however, and sometimes, you will have to use the above options to handle indentation.
+Automatic indentation is there to make code editing more simple.  Python needs correct indentation,
+not as an aesthetic addition, but as a requirement to determine beginning and ending of blocks.  The
+EvEditor will try to guess the next level of indentation.  If you type a block "if", for instance,
+the EvEditor will propose you an additional level of indentation at the next line.  This feature
+cannot be perfect, however, and sometimes, you will have to use the above options to handle
+indentation.
 
-`:=` can be used to turn automatic indentation off completely.  This can be very useful when trying to paste several lines of code that are already correctly indented, for instance.
+`:=` can be used to turn automatic indentation off completely.  This can be very useful when trying
+to paste several lines of code that are already correctly indented, for instance.
 
-To see the EvEditor in code mode, you can use the `@py/edit` command.  Type in your code (on one or several lines).  You can then use the `:w` option (save without quitting) and the code you have typed will be executed.  The `:!` will do the same thing.  Executing code while not closing the editor can be useful if you want to test the code you have typed but add new lines after your test.
+To see the EvEditor in code mode, you can use the `@py/edit` command.  Type in your code (on one or
+several lines).  You can then use the `:w` option (save without quitting) and the code you have
+typed will be executed.  The `:!` will do the same thing.  Executing code while not closing the
+editor can be useful if you want to test the code you have typed but add new lines after your test.

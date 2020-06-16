@@ -4,24 +4,30 @@
 """
 Format given files to a max width.
 
+Usage:
+    python fmtwidth.py --width 79 ../source/*.md
+
 """
 import glob
 import textwrap
 import argparse
+
+_DEFAULT_WIDTH = 100
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
 
     parser.add_argument("files")
-    parser.add_argument("-w", '--width', dest="width", type=int, default=79)
+    parser.add_argument("-w", '--width', dest="width", type=int, default=_DEFAULT_WIDTH)
 
     args = parser.parse_args()
 
     filepaths = glob.glob(args.files)
+    width = args.width
 
     wrapper = textwrap.TextWrapper(
-        width=args.width,
+        width=width,
         break_long_words=False,
         expand_tabs=True,
     )
@@ -29,8 +35,13 @@ if __name__ == "__main__":
     count = 0
     for filepath in filepaths:
         with open(filepath, 'r') as fil:
-            txt = fil.read()
-            txt = "\n".join(wrapper.wrap(txt))
+            lines = fil.readlines()
+
+            outlines = [
+                "\n".join(wrapper.wrap(line)) if len(line) > width else line.strip('\n')
+                for line in lines
+            ]
+            txt = "\n".join(outlines)
         with open(filepath, 'w') as fil:
             fil.write(txt)
             count += 1
