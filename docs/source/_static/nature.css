@@ -16,7 +16,7 @@
 body {
     font-family: Arial, sans-serif;
     font-size: 100%;
-    background-color: #fff;
+    background-color: #eee;
     color: #555;
     margin: 0;
     padding: 0;
@@ -29,7 +29,6 @@ div.documentwrapper {
 
 div.bodywrapper {
     margin: 0 0 0 230px;
-    height: 88vh;
 }
 
 hr {
@@ -46,7 +45,6 @@ div.body {
     padding: 0 30px 30px 30px;
     font-size: 0.9em;
     margin-top: -9px;
-    height: 85vh;
 }
 
 div.footer {
@@ -198,15 +196,14 @@ div.body h6 {
 }
 
 a.headerlink {
-    color: #cfdde8;
+    color: #7caeb7;
     font-size: 0.8em;
     padding: 0 4px 0 4px;
     text-decoration: none;
 }
 
 a.headerlink:hover {
-    /*! background-color: #c60f0f; */
-    color: #9bced7;
+    color: #7caeb7;
 }
 
 div.body p, div.body dd, div.body li {
