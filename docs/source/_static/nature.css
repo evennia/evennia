@@ -10,11 +10,13 @@
  */
 
 @import url("basic.css");
+@import url(https://fonts.googleapis.com/css?family=Arvo:400,700,400italic);
+@import url(https://fonts.googleapis.com/css?family=Open%20Sans:400,700,400italic);
 
 /* -- page layout ----------------------------------------------------------- */
 
 body {
-    font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family:"Open Sans", Helvetica, Arial, sans-serif;
     font-size: 100%;
     background-color: #eee;
     color: #555;
@@ -286,12 +288,12 @@ code {
     color: #6e0e0e;
     /* padding: 1px 2px; */
     font-size: 1.1em;
-    font-family: monospace;
+	  font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
     font-weight: bold;
 }
 
 .viewcode-back {
-    font-family: Arial, sans-serif;
+	  font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
 }
 
 div.viewcode-block:target {
