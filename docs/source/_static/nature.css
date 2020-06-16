@@ -14,7 +14,7 @@
 /* -- page layout ----------------------------------------------------------- */
 
 body {
-    font-family: Arial, sans-serif;
+    font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 100%;
     background-color: #eee;
     color: #555;
@@ -93,7 +93,7 @@ div.sphinxsidebarwrapper{
 
 div.sphinxsidebar h3,
 div.sphinxsidebar h4 {
-    font-family: Arial, sans-serif;
+	  font-family: Arvo, sans-serif;
     color: #4f4f4f;
     font-size: 1.2em;
     font-weight: normal;
@@ -130,7 +130,7 @@ div.sphinxsidebar a {
 
 div.sphinxsidebar input {
     border: 1px solid #ccc;
-    font-family: sans-serif;
+	  font-family: Arvo, sans-serif;
     font-size: 1em;
 }
 
@@ -165,7 +165,7 @@ div.body h3,
 div.body h4,
 div.body h5,
 div.body h6 {
-    font-family: Arial, sans-serif;
+	  font-family: Arvo, Monaco, serif;
     background-color: #f7f7f3;
     font-weight: normal;
     color: #212224;
