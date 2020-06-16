@@ -75,7 +75,8 @@ line quite pointless for processing any data from the function. Instead one has 
             print(r)
     ```
 
-- `at_return_kwargs` - an optional dictionary that will be fed as keyword arguments to the `at_return` callback.
+- `at_return_kwargs` - an optional dictionary that will be fed as keyword arguments to the
+`at_return` callback.
 - `at_err(e)` (the *errback*) is called if the asynchronous function fails and raises an exception.
   This exception is passed to the errback wrapped in a *Failure* object `e`. If you do not supply an
   errback of your own, Evennia will automatically add one that silently writes errors to the evennia
@@ -111,11 +112,13 @@ An example of making an asynchronous call from inside a [Command](Commands) defi
                self.caller.msg("There was an error: %s" % e)
 
            # do the async call, setting all callbacks
-           utils.run_async(long_running_function, at_return=at_return_function, at_err=at_err_function) 
+           utils.run_async(long_running_function, at_return=at_return_function,
+at_err=at_err_function)
 ```
 
 That's it - from here on we can forget about `long_running_function` and go on with what else need
-to be done. *Whenever* it finishes, the `at_return_function` function will be called and the final value will
+to be done. *Whenever* it finishes, the `at_return_function` function will be called and the final
+value will
 pop up for us to see. If not we will see an error message. 
 
 ## delay
@@ -147,7 +150,8 @@ Wait 10 seconds and 'Test!' should be echoed back to you.
 
 ## The @interactive decorator 
 
-As of Evennia 0.9, the `@interactive` [decorator](https://realpython.com/primer-on-python-decorators/)
+As of Evennia 0.9, the `@interactive` [decorator](https://realpython.com/primer-on-python-
+decorators/)
 is available. This makes any function or method possible to 'pause' and/or await player input
 in an interactive way.
 
@@ -223,7 +227,8 @@ expected, but they may appear with delays or in groups.
 ## Further reading
 
 Technically, `run_async` is just a very thin and simplified wrapper around a
-[Twisted Deferred](http://twistedmatrix.com/documents/9.0.0/core/howto/defer.html) object; the wrapper sets
+[Twisted Deferred](http://twistedmatrix.com/documents/9.0.0/core/howto/defer.html) object; the
+wrapper sets
 up a default errback also if none is supplied. If you know what you are doing there is nothing
 stopping you from bypassing the utility function, building a more sophisticated callback chain after
 your own liking.

@@ -20,7 +20,7 @@ are found `mygame/typeclasses/objects.py`, `mygame/typeclasses/rooms.py` etc.
 
 For your own game you will most likely want to expand on these very simple beginnings. It's normal
 to want your Characters to have various attributes, for example. Maybe Rooms should hold extra
-information or even *all* Objects in your game should have properties not included in basic Evennia. 
+information or even *all* Objects in your game should have properties not included in basic Evennia.
 
 ## Change Default Rooms, Exits, Character Typeclass
 

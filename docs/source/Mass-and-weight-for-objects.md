@@ -40,7 +40,8 @@ non-default mass would be stored on the `mass` [[Attributes]] of the objects.
 
 You can add a `get_mass` definition to characters and rooms, also.
 
-If you were in a one metric-ton elevator with four other friends also wearing armor and carrying gold bricks, you might wonder if this elevator's going to move, and how fast.
+If you were in a one metric-ton elevator with four other friends also wearing armor and carrying
+gold bricks, you might wonder if this elevator's going to move, and how fast.
 
 Assuming the unit is grams and the elevator itself weights 1,000 kilograms, it would already be
 `@set elevator/mass=1000000`, we're `@set me/mass=85000` and our armor is `@set armor/mass=50000`.

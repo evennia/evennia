@@ -14,7 +14,8 @@ Markdown files are simple text files that can be edited with a normal text edito
 contain raw HTML directives (but that is very rarely needed). They primarly use
 the [Markdown][commonmark] syntax. See [the syntax section below](#Editing-syntax) for more help.
 
-> Note: Don't edit the files in `evennia/docs/source/api/`. These are auto-generated and your changes
+> Note: Don't edit the files in `evennia/docs/source/api/`. These are auto-generated and your
+changes
 > will be lost.
 
 ## Building the docs locally
@@ -176,7 +177,8 @@ available at https://evennia.github.io/evennia/latest/.
 
 # Editing syntax
 
-The format used for Evennia's docs is [Markdown][commonmark-help] (Commonmark). While markdown supports a
+The format used for Evennia's docs is [Markdown][commonmark-help] (Commonmark). While markdown
+supports a
 few alternative forms for some of these, we try to stick to the below forms for consistency.
 
 ### Italic/Bold
@@ -188,14 +190,16 @@ We generally use underscores for italics and double-asterisks for bold:
 
 ### Headings
 
-We use `#` to indicate sections/headings. The more `#` the more of a sub-heading it is (will get smaller
+We use `#` to indicate sections/headings. The more `#` the more of a sub-heading it is (will get
+smaller
 and smaller font).
 
 - `# Heading`
 - `## SubHeading`
 - `## SubSubHeading`
 
-> Don't reuse the same heading/subheading name over and over in the same document. While Markdown does not prevent
+> Don't reuse the same heading/subheading name over and over in the same document. While Markdown
+does not prevent
 it, it makes it impossible to link to those duplicates properly (see next section).
 
 ### Lists
@@ -241,7 +245,8 @@ an explicit [Note](#Note).
 - `[linktext](url_or_ref)` - gives a clickable link [linktext][linkdemo].
 
 The `url_or_ref` can either be a full `http://...` url or an internal _reference_. For example, use
-`[my document](My-Document)` to link to the document `evennia/docs/source/My-Document.md`. Avoid using
+`[my document](My-Document)` to link to the document `evennia/docs/source/My-Document.md`. Avoid
+using
 full `http://` linking unless really referring to an external resource.
 
 - `[linktext](ref#heading-name)`
@@ -252,7 +257,8 @@ would be a link `[cool stuff](My-Document#Cool-Stuff)`.
 
 - `[linktext][linkref]` - refer to a reference defined later in the document.
 
-Urls can get long and if you are using the same url in many places it can get a little cluttered. So you can also put
+Urls can get long and if you are using the same url in many places it can get a little cluttered. So
+you can also put
 the url as a 'footnote' at the end of your document
 and refer to it by putting your reference within square brackets `[ ]`. Here's an example:
 
@@ -291,7 +297,8 @@ The Evennia documentation supports some special reference shortcuts in links:
 
     This will create a link to the auto-generated `evennia/source/api/evennia.objects.rst` document.
 
-    Since api-docs are generated alongside the documentation, this will always be the api docs for the
+    Since api-docs are generated alongside the documentation, this will always be the api docs for
+the
     current version/branch of the docs.
 
 ##### Bug reports/feature request
@@ -309,7 +316,8 @@ The Evennia documentation supports some special reference shortcuts in links:
 ### Verbatim text
 
 It's common to want to mark something to be displayed verbatim - just as written - without any
-Markdown parsing. In running text, this is done using backticks (\`), like \`verbatim text\` becomes `verbatim text`.
+Markdown parsing. In running text, this is done using backticks (\`), like \`verbatim text\` becomes
+`verbatim text`.
 
 If you want to put the verbatim text on its own line, you can do so easily by simply indenting
 it 4 spaces (add empty lines on each side for readability too):
@@ -333,7 +341,8 @@ Everything within these backticks will be verbatim.
 
 ### Code blocks
 
-A special case is code examples - we want them to get code-highlighting for readability. This is done by using
+A special case is code examples - we want them to get code-highlighting for readability. This is
+done by using
 the triple-backticks and specify which language we use:
 
 ````
@@ -356,7 +365,8 @@ def a_python_func(x):
 
 Markdown is easy to read and use. But while it does most of what we need, there are some things it's
 not quite as expressive as it needs to be. For this we need to fall back to the [ReST][ReST] markup
-language which the documentation system uses under the hood. This is done by specifying `eval_rst` as
+language which the documentation system uses under the hood. This is done by specifying `eval_rst`
+as
 the name of the `language` of a literal block:
 
 ````
@@ -367,7 +377,8 @@ the name of the `language` of a literal block:
 ```
 ````
 
-There is also a short-hand form for starting a [ReST directive][ReST-directives] without need for `eval_rst`:
+There is also a short-hand form for starting a [ReST directive][ReST-directives] without need for
+`eval_rst`:
 
 ````
 ```directive:: possible-option
@@ -597,21 +608,27 @@ for more flexibility. It also provides a link to the code block, identified by i
             self.caller.msg(self.args.strip())
 ```
 Here, `:linenos:` turns on line-numbers and `:emphasize-lines:` allows for emphasizing certain lines
-in a different color. The `:caption:` shows an instructive text and `:name:` is used to reference this
+in a different color. The `:caption:` shows an instructive text and `:name:` is used to reference
+this
 block through the link that will appear (so it should be unique for a give document).
 
 > The default markdown syntax will actually generate a code-block ReST instruction like this
-> automatically for us behind the scenes. The automatic generation can't know things like emphasize-lines
+> automatically for us behind the scenes. The automatic generation can't know things like emphasize-
+lines
 > or caption since that's not a part of the Markdown specification.
 
 # Technical
 
-Evennia leverages [Sphinx][sphinx] with the [recommonmark][recommonmark] extension, which allows us to write our
-docs in light-weight Markdown (more specifically [CommonMark][commonmark], like on github) rather than ReST.
-The recommonmark extension however also allows us to use ReST selectively in the places were it is more
+Evennia leverages [Sphinx][sphinx] with the [recommonmark][recommonmark] extension, which allows us
+to write our
+docs in light-weight Markdown (more specifically [CommonMark][commonmark], like on github) rather
+than ReST.
+The recommonmark extension however also allows us to use ReST selectively in the places were it is
+more
 expressive than the simpler (but much easier) Markdown.
 
-For [autodoc-generation][sphinx-autodoc] generation, we use the sphinx-[napoleon][sphinx-napoleon] extension
+For [autodoc-generation][sphinx-autodoc] generation, we use the sphinx-[napoleon][sphinx-napoleon]
+extension
 to understand our friendly Google-style docstrings used in classes and functions etc.
 
 
@@ -620,7 +637,8 @@ to understand our friendly Google-style docstrings used in classes and functions
 [recommonmark]: https://recommonmark.readthedocs.io/en/latest/index.html
 [commonmark]: https://spec.commonmark.org/current/
 [commonmark-help]: https://commonmark.org/help/
-[sphinx-autodoc]: http://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc
+[sphinx-autodoc]: http://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-
+sphinx.ext.autodoc
 [sphinx-napoleon]: http://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html
 [getting-started]: Getting-Started
 [contributing]: Contributing

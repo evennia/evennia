@@ -1,17 +1,23 @@
 # Tutorial Vehicles
 
 
-This tutorial explains how you can create vehicles that can move around in your world. The tutorial will explain how to create a train, but this can be equally applied to create other kind of vehicles (cars, planes, boats, spaceships, submarines, ...).
+This tutorial explains how you can create vehicles that can move around in your world. The tutorial
+will explain how to create a train, but this can be equally applied to create other kind of vehicles
+(cars, planes, boats, spaceships, submarines, ...).
 
 ## How it works
 
-Objects in Evennia have an interesting property: you can put any object inside another object. This is most obvious in rooms: a room in Evennia is just like any other game object (except rooms tend to not themselves be inside anything else).
+Objects in Evennia have an interesting property: you can put any object inside another object. This
+is most obvious in rooms: a room in Evennia is just like any other game object (except rooms tend to
+not themselves be inside anything else).
 
-Our train will be similar: it will be an object that other objects can get inside. We then simply move the Train, which brings along everyone inside it.
+Our train will be similar: it will be an object that other objects can get inside. We then simply
+move the Train, which brings along everyone inside it.
 
 ## Creating our train object
 
-The first step we need to do is create our train object, including a new typeclass.  To do this, create a new file, for instance in `mygame/typeclasses/train.py` with the following content:
+The first step we need to do is create our train object, including a new typeclass.  To do this,
+create a new file, for instance in `mygame/typeclasses/train.py` with the following content:
 
 ```python
 # file mygame/typeclasses/train.py
@@ -32,7 +38,8 @@ Now we can create our train in our game:
 @create/drop train:train.TrainObject
 ```
 
-Now this is just an object that doesn't do much yet... but we can already force our way inside it and back (assuming we created it in limbo). 
+Now this is just an object that doesn't do much yet... but we can already force our way inside it
+and back (assuming we created it in limbo).
 
 ```
 @tel train 
@@ -41,9 +48,19 @@ Now this is just an object that doesn't do much yet... but we can already force 
 
 ## Entering and leaving the train
 
-Using the `@tel`command like shown above is obviously not what we want. `@tel` is an admin command and normal players will thus never be able to enter the train! It is also not really a good idea to use [Exits](Objects#exits) to get in and out of the train - Exits are (at least by default) objects too. They point to a specific destination. If we put an Exit in this room leading inside the train it would stay here when the train moved away (still leading into the train like a magic portal!). In the same way, if we put an Exit object inside the train, it would always point back to this room, regardless of where the Train has moved. Now, one *could* define custom Exit types that move with the train or change their destination in the right way - but this seems to be a pretty cumbersome solution.
+Using the `@tel`command like shown above is obviously not what we want. `@tel` is an admin command
+and normal players will thus never be able to enter the train! It is also not really a good idea to
+use [Exits](Objects#exits) to get in and out of the train - Exits are (at least by default) objects
+too. They point to a specific destination. If we put an Exit in this room leading inside the train
+it would stay here when the train moved away (still leading into the train like a magic portal!). In
+the same way, if we put an Exit object inside the train, it would always point back to this room,
+regardless of where the Train has moved. Now, one *could* define custom Exit types that move with
+the train or change their destination in the right way - but this seems to be a pretty cumbersome
+solution.
 
-What we will do instead is to create some new [commands](Commands): one for entering the train and another for leaving it again. These will be stored *on the train object* and will thus be made available to whomever is either inside it or in the same room as the train. 
+What we will do instead is to create some new [commands](Commands): one for entering the train and
+another for leaving it again. These will be stored *on the train object* and will thus be made
+available to whomever is either inside it or in the same room as the train.
 
 Let's create a new command module as `mygame/commands/train.py`:
 
@@ -99,9 +116,13 @@ class CmdSetTrain(CmdSet):
         self.add(CmdEnterTrain())
         self.add(CmdLeaveTrain())
 ```
-Note that while this seems like a lot of text, the majority of lines here are taken up by documentation.
+Note that while this seems like a lot of text, the majority of lines here are taken up by
+documentation.
 
-These commands are work in a pretty straightforward way: `CmdEnterTrain` moves the location of the player to inside the train and `CmdLeaveTrain` does the opposite: it moves the player back to the current location of the train (back outside to its current location). We stacked them in a [cmdset](Command-Sets) `CmdSetTrain` so they can be used.
+These commands are work in a pretty straightforward way: `CmdEnterTrain` moves the location of the
+player to inside the train and `CmdLeaveTrain` does the opposite: it moves the player back to the
+current location of the train (back outside to its current location). We stacked them in a
+[cmdset](Command-Sets) `CmdSetTrain` so they can be used.
 
 To make the commands work we need to add this cmdset to our train typeclass:
 
@@ -118,7 +139,8 @@ class TrainObject(DefaultObject):
 
 ```
 
-If we now `@reload` our game and reset our train, those commands should work and we can now enter and leave the train:
+If we now `@reload` our game and reset our train, those commands should work and we can now enter
+and leave the train:
 
 ```
 @reload
@@ -127,15 +149,27 @@ enter train
 leave train
 ```
 
-Note the switches used with the `@typeclass` command: The `/force` switch is necessary to assign our object the same typeclass we already have. The `/reset` re-triggers the typeclass' `at_object_creation()` hook (which is otherwise only called the very first an instance is created). As seen above, when this hook is called on our train, our new cmdset will be loaded. 
+Note the switches used with the `@typeclass` command: The `/force` switch is necessary to assign our
+object the same typeclass we already have. The `/reset` re-triggers the typeclass'
+`at_object_creation()` hook (which is otherwise only called the very first an instance is created).
+As seen above, when this hook is called on our train, our new cmdset will be loaded.
 
 ## Locking down the commands
 
-If you have played around a bit, you've probably figured out that you can use `leave train` when outside the train and `enter train` when inside. This doesn't make any sense ... so let's go ahead and fix that.  We need to tell Evennia that you can not enter the train when you're already inside or leave the train when you're outside. One solution to this is [locks](Locks): we will lock down the commands so that they can only be called if the player is at the correct location.
+If you have played around a bit, you've probably figured out that you can use `leave train` when
+outside the train and `enter train` when inside. This doesn't make any sense ... so let's go ahead
+and fix that.  We need to tell Evennia that you can not enter the train when you're already inside
+or leave the train when you're outside. One solution to this is [locks](Locks): we will lock down
+the commands so that they can only be called if the player is at the correct location.
 
-Right now commands defaults to the lock `cmd:all()`. The `cmd` lock type in combination with the `all()` lock function means that everyone can run those commands as long as they are in the same room as the train *or* inside the train. We're going to change this to check the location of the player and *only* allow access if they are inside the train.
+Right now commands defaults to the lock `cmd:all()`. The `cmd` lock type in combination with the
+`all()` lock function means that everyone can run those commands as long as they are in the same
+room as the train *or* inside the train. We're going to change this to check the location of the
+player and *only* allow access if they are inside the train.
 
-First of all we need to create a new lock function. Evennia comes with many lock functions built-in already, but none that we can use for locking a command in this particular case. Create a new entry in `mygame/server/conf/lockfuncs.py`:
+First of all we need to create a new lock function. Evennia comes with many lock functions built-in
+already, but none that we can use for locking a command in this particular case. Create a new entry
+in `mygame/server/conf/lockfuncs.py`:
 
 ```python
 
@@ -150,11 +184,19 @@ def cmdinside(accessing_obj, accessed_obj, *args, **kwargs):
     return accessed_obj.obj == accessing_obj.location
 
 ```
-If you didn't know, Evennia is by default set up to use all functions in this module as lock functions (there is a setting variable that points to it). 
+If you didn't know, Evennia is by default set up to use all functions in this module as lock
+functions (there is a setting variable that points to it).
 
-Our new lock function, `cmdinside`, is to be used by Commands.  The `accessed_obj` is the Command object (in our case this will be `CmdEnterTrain` and `CmdLeaveTrain`) — Every command has an `obj` property: this is the the object on which the command "sits".  Since we added those commands to our train object, the `.obj` property will be set to the train object. Conversely, `accessing_obj` is the object that called the command: in our case it's the Character trying to enter or leave the train.
+Our new lock function, `cmdinside`, is to be used by Commands.  The `accessed_obj` is the Command
+object (in our case this will be `CmdEnterTrain` and `CmdLeaveTrain`) — Every command has an `obj`
+property: this is the the object on which the command "sits".  Since we added those commands to our
+train object, the `.obj` property will be set to the train object. Conversely, `accessing_obj` is
+the object that called the command: in our case it's the Character trying to enter or leave the
+train.
 
-What this function does is to check that the player's location is the same as the train object. If it is, it means the player is inside the train. Otherwise it means the player is somewhere else and the check will fail.
+What this function does is to check that the player's location is the same as the train object. If
+it is, it means the player is inside the train. Otherwise it means the player is somewhere else and
+the check will fail.
 
 The next step is to actually use this new lock function to create a lock of type `cmd`:
 
@@ -172,20 +214,29 @@ class CmdLeaveTrain(Command):
     # ...
 ```
 
-Notice how we use the `not` here so that we can use the same `cmdinside` to check if we are inside and outside, without having to create two separate lock functions. After a `@reload` our commands should be locked down appropriately and you should only be able to use them at the right places. 
+Notice how we use the `not` here so that we can use the same `cmdinside` to check if we are inside
+and outside, without having to create two separate lock functions. After a `@reload` our commands
+should be locked down appropriately and you should only be able to use them at the right places.
 
-> Note: If you're logged in as the super user (user `#1`) then this lock will not work: the super user ignores lock functions. In order to use this functionality you need to `@quell` first.
+> Note: If you're logged in as the super user (user `#1`) then this lock will not work: the super
+user ignores lock functions. In order to use this functionality you need to `@quell` first.
 
 ## Making our train move
 
-Now that we can enter and leave the train correctly, it's time to make it move.  There are different things we need to consider for this:
+Now that we can enter and leave the train correctly, it's time to make it move.  There are different
+things we need to consider for this:
 
-* Who can control your vehicle? The first player to enter it, only players that have a certain "drive" skill, automatically?
-* Where should it go? Can the player steer the vehicle to go somewhere else or will it always follow the same route?
+* Who can control your vehicle? The first player to enter it, only players that have a certain
+"drive" skill, automatically?
+* Where should it go? Can the player steer the vehicle to go somewhere else or will it always follow
+the same route?
 
-For our example train we're going to go with automatic movement through a predefined route (its track). The train will stop for a bit at the start and end of the route to allow players to enter and leave it.
+For our example train we're going to go with automatic movement through a predefined route (its
+track). The train will stop for a bit at the start and end of the route to allow players to enter
+and leave it.
 
-Go ahead and create some rooms for our train. Make a list of the room ids along the route (using the `@ex` command).
+Go ahead and create some rooms for our train. Make a list of the room ids along the route (using the
+`@ex` command).
 
 ```
 @dig/tel South station
@@ -245,11 +296,14 @@ class TrainObject(DefaultObject):
             self.msg_contents("The train is moving forward to %s." % (room.name, ))
 ```
 
-We added a lot of code here. Since we changed the `at_object_creation` to add in variables we will have to reset our train object like earlier (using the `@typeclass/force/reset` command).
+We added a lot of code here. Since we changed the `at_object_creation` to add in variables we will
+have to reset our train object like earlier (using the `@typeclass/force/reset` command).
 
-We are keeping track of a few different things now: whether the train is moving or standing still, which direction the train is heading to and what rooms the train will pass through.
+We are keeping track of a few different things now: whether the train is moving or standing still,
+which direction the train is heading to and what rooms the train will pass through.
 
-We also added some methods: one to start moving the train, another to stop and a third that actually moves the train to the next room in the list. Or makes it stop driving if it reaches the last stop.
+We also added some methods: one to start moving the train, another to stop and a third that actually
+moves the train to the next room in the list. Or makes it stop driving if it reaches the last stop.
 
 Let's try it out, using `@py` to call the new train functionality:
 
@@ -264,9 +318,13 @@ You should see the train moving forward one step along the rail road.
 
 ## Adding in scripts
 
-If we wanted full control of the train we could now just add a command to step it along the track when desired. We want the train to move on its own though, without us having to force it by manually calling the `goto_next_room` method.
+If we wanted full control of the train we could now just add a command to step it along the track
+when desired. We want the train to move on its own though, without us having to force it by manually
+calling the `goto_next_room` method.
 
-To do this we will create two [scripts](Scripts): one script that runs when the train has stopped at a station and is responsible for starting the train again after a while. The other script will take care of the driving.
+To do this we will create two [scripts](Scripts): one script that runs when the train has stopped at
+a station and is responsible for starting the train again after a while. The other script will take
+care of the driving.
 
 Let's make a new file in `mygame/typeclasses/trainscript.py`
 
@@ -311,9 +369,12 @@ class TrainDrivingScript(DefaultScript):
         self.obj.scripts.add(TrainStoppedScript)
 ```
 
-Those scripts work as a state system: when the train is stopped, it waits for 30 seconds and then starts again. When the train is driving, it moves to the next room every second. The train is always in one of those two states - both scripts take care of adding the other one once they are done.
+Those scripts work as a state system: when the train is stopped, it waits for 30 seconds and then
+starts again. When the train is driving, it moves to the next room every second. The train is always
+in one of those two states - both scripts take care of adding the other one once they are done.
 
-As a last step we need to link the stopped-state script to our train, reload the game and reset our train again., and we're ready to ride it around!
+As a last step we need to link the stopped-state script to our train, reload the game and reset our
+train again., and we're ready to ride it around!
 
 ```python
 # file typeclasses/train.py
@@ -350,8 +411,12 @@ Our train will stop 30 seconds at each end station and then turn around to go ba
 This train is very basic and still has some flaws. Some more things to do:
 
 * Make it look like a train.
-* Make it impossible to exit and enter the train mid-ride. This could be made by having the enter/exit commands check so the train is not moving before allowing the caller to proceed.
+* Make it impossible to exit and enter the train mid-ride. This could be made by having the
+enter/exit commands check so the train is not moving before allowing the caller to proceed.
 * Have train conductor commands that can override the automatic start/stop.
 * Allow for in-between stops between the start- and end station
-* Have a rail road track instead of hard-coding the rooms in the train object. This could for example be a custom [Exit](Objects#exits) only traversable by trains. The train will follow the track. Some track segments can split to lead to two different rooms and a player can switch the direction to which room it goes.
+* Have a rail road track instead of hard-coding the rooms in the train object. This could for
+example be a custom [Exit](Objects#exits) only traversable by trains. The train will follow the
+track. Some track segments can split to lead to two different rooms and a player can switch the
+direction to which room it goes.
 * Create another kind of vehicle!

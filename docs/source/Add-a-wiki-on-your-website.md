@@ -10,9 +10,12 @@ Fortunately, you don't have to create the features manually, since it has been d
 we can integrate their work quite easily with Django.  I have decided to focus on
 the [Django-wiki](http://django-wiki.readthedocs.io/).
 
-> Note: this article has been updated for Evennia 0.9.  If you're not yet using this version, be careful, as the django wiki doesn't support Python 2 anymore.  (Remove this note when enough time has passed.)
+> Note: this article has been updated for Evennia 0.9.  If you're not yet using this version, be
+careful, as the django wiki doesn't support Python 2 anymore.  (Remove this note when enough time
+has passed.)
 
-The [Django-wiki](http://django-wiki.readthedocs.io/) offers a lot of features associated with wikis, is
+The [Django-wiki](http://django-wiki.readthedocs.io/) offers a lot of features associated with
+wikis, is
 actively maintained (at this time, anyway), and isn't too difficult to install in Evennia.  You can
 see a [demonstration of Django-wiki here](https://demo.django.wiki).
 
@@ -37,14 +40,17 @@ Install the wiki using pip:
 
     pip install wiki
 
-> Note: this will install the last version of Django wiki. Version >0.4 doesn't support Python 2, so install wiki 0.3 if you haven't updated to Python 3 yet.
+> Note: this will install the last version of Django wiki. Version >0.4 doesn't support Python 2, so
+install wiki 0.3 if you haven't updated to Python 3 yet.
 
 It might take some time, the Django-wiki having some dependencies.
 
 ### Adding the wiki in the settings
 
 You will need to add a few settings to have the wiki app on your website.  Open your
-`server/conf/settings.py` file and add the following at the bottom (but before importing `secret_settings`).  Here's what you'll find in my own setting file (add the whole Django-wiki section):
+`server/conf/settings.py` file and add the following at the bottom (but before importing
+`secret_settings`).  Here's what you'll find in my own setting file (add the whole Django-wiki
+section):
 
 ```python
 r"""
@@ -144,7 +150,8 @@ who can write, a specific article.
 These settings must be placed, as usual, in your `server/conf/settings.py` file.  They take a
 function as argument, said function (or callback) will be called with the article and the user.
 Remember, a Django user, for us, is an account.  So we could check lockstrings on them if needed.
-Here is a default setting to restrict the wiki: only builders can write in it, but anyone (including non-logged in users) can read it.  The superuser has some additional privileges.
+Here is a default setting to restrict the wiki: only builders can write in it, but anyone (including
+non-logged in users) can read it.  The superuser has some additional privileges.
 
 ```python
 # In server/conf/settings.py
@@ -181,7 +188,9 @@ WIKI_CAN_READ = is_anyone
 ```
 
 Here, we have created three functions: one to return `True` if the user is the superuser, one to
-return `True` if the user is a builder, one to return `True` no matter what (this includes if the user is anonymous, E.G. if it's not logged-in).  We then change settings to allow either the superuser or
+return `True` if the user is a builder, one to return `True` no matter what (this includes if the
+user is anonymous, E.G. if it's not logged-in).  We then change settings to allow either the
+superuser or
 each builder to moderate, read, write, delete, and more.  You can, of course, add more functions,
 adapting them to your need.  This is just a demonstration.
 
@@ -191,21 +200,33 @@ need something more custom, you will have to expand on the functions you use.
 
 ### Managing wiki pages from Evennia
 
-Unfortunately, Django wiki doesn't provide a clear and clean entry point to read and write articles from Evennia and it doesn't seem to be a very high priority.  If you really need to keep Django wiki and to create and manage wiki pages from your code, you can do so, but this article won't elaborate, as this is somewhat more technical.
+Unfortunately, Django wiki doesn't provide a clear and clean entry point to read and write articles
+from Evennia and it doesn't seem to be a very high priority.  If you really need to keep Django wiki
+and to create and manage wiki pages from your code, you can do so, but this article won't elaborate,
+as this is somewhat more technical.
 
-However, it is a good opportunity to present a small project that has been created more recently: [evennia-wiki](https://github.com/vincent-lg/evennia-wiki) has been created to provide a simple wiki, more tailored to Evennia and easier to connect.  It doesn't, as yet, provide as many options as does Django wiki, but it's perfectly usable:
+However, it is a good opportunity to present a small project that has been created more recently:
+[evennia-wiki](https://github.com/vincent-lg/evennia-wiki) has been created to provide a simple
+wiki, more tailored to Evennia and easier to connect.  It doesn't, as yet, provide as many options
+as does Django wiki, but it's perfectly usable:
 
 - Pages have an inherent and much-easier to understand hierarchy based on URLs.
-- Article permissions are connected to Evennia groups and are much easier to accommodate specific requirements.
+- Article permissions are connected to Evennia groups and are much easier to accommodate specific
+requirements.
 - Articles can easily be created, read or updated from the Evennia code itself.
-- Markdown is fully-supported with a default integration to Bootstrap to look good on an Evennia website. Tables and table of contents are supported as well as wiki links.
+- Markdown is fully-supported with a default integration to Bootstrap to look good on an Evennia
+website. Tables and table of contents are supported as well as wiki links.
 - The process to override wiki templates makes full use of the `template_overrides` directory.
 
 However evennia-wiki doesn't yet support:
 
-- Images in markdown and the uploading schema.  If images are important to you, please consider contributing to this new project.
+- Images in markdown and the uploading schema.  If images are important to you, please consider
+contributing to this new project.
 - Modifying permissions on a per page/setting basis.
 - Moving pages to new locations.
 - Viewing page history.
 
-Considering the list of features in Django wiki, obviously other things could be added to the list.  However, these features may be the most important and useful.  Additional ones might not be that necessary.  If you're interested in supporting this little project, you are more than welcome to [contribute to it](https://github.com/vincent-lg/evennia-wiki).  Thanks!
+Considering the list of features in Django wiki, obviously other things could be added to the list.
+However, these features may be the most important and useful.  Additional ones might not be that
+necessary.  If you're interested in supporting this little project, you are more than welcome to
+[contribute to it](https://github.com/vincent-lg/evennia-wiki).  Thanks!
