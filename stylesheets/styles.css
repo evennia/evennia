@@ -43,7 +43,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 p, ul, ol, table, dl {
-  margin:0 0 22px;
+  margin:0 0 20px;
 }
 
 h1, h2, h3 {
@@ -151,7 +151,7 @@ img {
 
 p img {
   display: inline;
-  margin: 0;
+  margin: 0px;
   padding: 0;
   vertical-align: middle;
   text-align: center;
@@ -214,13 +214,16 @@ td {
 
 /* Header */
 
+.logo {
+  padding-left: 15px;
+}
+
 header {
 	background-color: #d7d6d4;
 	color: #2C2C2C;
   width:170px;
   float:left;
   position:fixed;
-	border: 1px solid #000;
 	-webkit-border-top-right-radius: 4px;
 	-webkit-border-bottom-right-radius: 4px;
 	-moz-border-radius-topright: 4px;
@@ -309,9 +312,14 @@ a.github {
 	background: url(../images/octocat-small.png) no-repeat 1px;
 }
 
-a.buttons:hover {
-	color: #6084f1;
-	text-decoration: none;
+a.buttons {
+	-webkit-font-smoothing: antialiased;
+	/*! background: url(../images/arrow-down.png) no-repeat; */
+	font-weight: normal;
+	/*! text-shadow: rgba(0, 0, 0, 0.4) 0 -1px 0; */
+	padding: 2px 2px 2px 22px;
+	height: 30px;
+  color: #474747;
 }
 
 /* Section - for main page content */
@@ -344,17 +352,16 @@ footer {
     float:none;
     position:static;
     width:auto;
+    height:auto;
   }
+
 
 	footer {
 		border-top: 1px solid #ccc;
 		margin:0 84px 0 50px;
 		padding:0;
+    height:auto;
 	}
-
-  header {
-    padding-right:320px;
-  }
 
   section {
     padding:20px 84px 20px 50px;
@@ -370,6 +377,13 @@ footer {
     right:130px;
     top:84px;
   }
+
+  .linksection {
+    position: absolute;
+    top: -57px;
+    right: -21px;
+  }
+
 }
 
 @media print, screen and (max-width: 720px) {
@@ -394,12 +408,33 @@ footer {
   header ul, header p.view {
     position:static;
   }
+
+  .linksection {
+    position: absolute;
+    top: 22px;
+    right: 84px;
+  }
+
+  div.linksection > ul > li {
+    margin-bottom: 0px;
+  }
+
 }
+
 
 @media print, screen and (max-width: 480px) {
 
   header ul li.download {
     display:none;
+  }
+
+  header {
+    display:none;
+  }
+
+  div.linksection > ul > li {
+    margin-bottom: 0px;
+    display:unset
   }
 
 	footer {
@@ -411,6 +446,7 @@ footer {
 	}
 
 }
+
 
 @media print {
   body {
