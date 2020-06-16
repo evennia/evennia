@@ -92,9 +92,7 @@ def help_search_with_index(query, candidate_entries, suggestion_maxnum=5):
     # matches (objs), suggestions (strs)
     return (
         [mapping[match["ref"]] for match in matches],
-        [
-            str(match["ref"]) for match in matches
-        ],  # + f" (score {match['score']})")   # good debug
+        [str(match["ref"]) for match in matches],  # + f" (score {match['score']})")   # good debug
     )
 
 
@@ -140,10 +138,7 @@ class CmdHelp(Command):
         if type(self).help_more:
             usemore = True
 
-            if self.session and self.session.protocol_key in (
-                "websocket",
-                "ajax/comet",
-            ):
+            if self.session and self.session.protocol_key in ("websocket", "ajax/comet",):
                 try:
                     options = self.account.db._saved_webclient_options
                     if options and options["helppopup"]:
@@ -177,9 +172,7 @@ class CmdHelp(Command):
         if title:
             string += "|CHelp for |w%s|n" % title
         if aliases:
-            string += " |C(aliases: %s|C)|n" % (
-                "|C,|n ".join("|w%s|n" % ali for ali in aliases)
-            )
+            string += " |C(aliases: %s|C)|n" % ("|C,|n ".join("|w%s|n" % ali for ali in aliases))
         if help_text:
             string += "\n%s" % dedent(help_text.rstrip())
         if suggested:
@@ -206,22 +199,15 @@ class CmdHelp(Command):
             category_str = f"-- {category.title()} "
             grid.append(
                 ANSIString(
-                    category_clr
-                    + category_str
-                    + "-" * (width - len(category_str))
-                    + topic_clr
+                    category_clr + category_str + "-" * (width - len(category_str)) + topic_clr
                 )
             )
             verbatim_elements.append(len(grid) - 1)
 
-            entries = sorted(
-                set(hdict_cmds.get(category, []) + hdict_db.get(category, []))
-            )
+            entries = sorted(set(hdict_cmds.get(category, []) + hdict_db.get(category, [])))
             grid.extend(entries)
 
-        gridrows = format_grid(
-            grid, width, sep="  ", verbatim_elements=verbatim_elements
-        )
+        gridrows = format_grid(grid, width, sep="  ", verbatim_elements=verbatim_elements)
         gridrows = ANSIString("\n").join(gridrows)
         return gridrows
 
@@ -293,9 +279,7 @@ class CmdHelp(Command):
         # retrieve all available commands and database topics
         all_cmds = [cmd for cmd in cmdset if self.check_show_help(cmd, caller)]
         all_topics = [
-            topic
-            for topic in HelpEntry.objects.all()
-            if topic.access(caller, "view", default=True)
+            topic for topic in HelpEntry.objects.all() if topic.access(caller, "view", default=True)
         ]
         all_categories = list(
             set(
@@ -320,11 +304,7 @@ class CmdHelp(Command):
             return
 
         # Try to access a particular help entry or category
-        entries = (
-            [cmd for cmd in all_cmds if cmd]
-            + list(HelpEntry.objects.all())
-            + all_categories
-        )
+        entries = [cmd for cmd in all_cmds if cmd] + list(HelpEntry.objects.all()) + all_categories
 
         for match_query in [f"{query}~1", f"{query}*"]:
             # We first do an exact word-match followed by a start-by query
@@ -459,9 +439,7 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
         # check if we have an old entry with the same name
         try:
             for querystr in topicstrlist:
-                old_entry = HelpEntry.objects.find_topicmatch(
-                    querystr
-                )  # also search by alias
+                old_entry = HelpEntry.objects.find_topicmatch(querystr)  # also search by alias
                 if old_entry:
                     old_entry = list(old_entry)[0]
                     break
@@ -483,11 +461,7 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
                 helpentry = old_entry
             else:
                 helpentry = create.create_help_entry(
-                    topicstr,
-                    self.rhs,
-                    category=category,
-                    locks=lockstring,
-                    aliases=aliases,
+                    topicstr, self.rhs, category=category, locks=lockstring, aliases=aliases,
                 )
             self.caller.db._editing_help = helpentry
 
@@ -504,9 +478,7 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
         if "append" in switches or "merge" in switches or "extend" in switches:
             # merge/append operations
             if not old_entry:
-                self.msg(
-                    "Could not find topic '%s'. You must give an exact name." % topicstr
-                )
+                self.msg("Could not find topic '%s'. You must give an exact name." % topicstr)
                 return
             if not self.rhs:
                 self.msg("You must supply text to append/merge.")
@@ -553,9 +525,7 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
                 topicstr, self.rhs, category=category, locks=lockstring, aliases=aliases
             )
             if new_entry:
-                self.msg(
-                    "Topic '%s'%s was successfully created." % (topicstr, aliastxt)
-                )
+                self.msg("Topic '%s'%s was successfully created." % (topicstr, aliastxt))
                 if "edit" in switches:
                     # open the line editor to edit the helptext
                     self.caller.db._editing_help = new_entry
@@ -570,6 +540,5 @@ class CmdSetHelp(COMMAND_DEFAULT_CLASS):
                     return
             else:
                 self.msg(
-                    "Error when creating topic '%s'%s! Contact an admin."
-                    % (topicstr, aliastxt)
+                    "Error when creating topic '%s'%s! Contact an admin." % (topicstr, aliastxt)
                 )

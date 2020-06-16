@@ -162,6 +162,7 @@ class Attribute(IAttribute, SharedMemoryModel):
     """
     This attribute is stored via Django. Most Attributes will be using this class.
     """
+
     #
     # Attribute Database Model setup
     #
@@ -269,9 +270,11 @@ class Attribute(IAttribute, SharedMemoryModel):
 
     value = property(__value_get, __value_set, __value_del)
 
+
 #
 # Handlers making use of the Attribute model
 #
+
 
 class IAttributeBackend:
     """
@@ -336,8 +339,10 @@ class IAttributeBackend:
         if not _TYPECLASS_AGGRESSIVE_CACHE:
             return
         attrs = self.query_all()
-        self._cache = {f"{to_str(attr.key).lower()}-{attr.category.lower() if attr.category else None}": attr
-                       for attr in attrs}
+        self._cache = {
+            f"{to_str(attr.key).lower()}-{attr.category.lower() if attr.category else None}": attr
+            for attr in attrs
+        }
         self._cache_complete = True
 
     def _get_cache_key(self, key, category):
@@ -623,7 +628,9 @@ class IAttributeBackend:
                 # update an existing attribute object
                 self.do_batch_update_attribute(attr_obj, category, lockstring, new_value, strattr)
             else:
-                new_attr = self.do_create_attribute(keystr, category, lockstring, new_value, strvalue=strattr)
+                new_attr = self.do_create_attribute(
+                    keystr, category, lockstring, new_value, strvalue=strattr
+                )
                 new_attrobjs.append(new_attr)
         if new_attrobjs:
             self.do_batch_finish(new_attrobjs)
@@ -696,8 +703,13 @@ class IAttributeBackend:
             attrs = self._cache.values()
 
         if accessing_obj:
-            self.do_batch_delete([attr for attr in attrs if attr.access(accessing_obj, self._attredit,
-                                                                        default=default_access)])
+            self.do_batch_delete(
+                [
+                    attr
+                    for attr in attrs
+                    if attr.access(accessing_obj, self._attredit, default=default_access)
+                ]
+            )
         else:
             # have to cast the results to a list or we'll get a RuntimeError for removing from the dict we're iterating
             self.do_batch_delete(list(attrs))
@@ -765,7 +777,9 @@ class InMemoryAttributeBackend(IAttributeBackend):
 
         strvalue has no meaning for InMemory attributes.
         """
-        new_attr = self._attrclass(pk=self._next_id(), key=key, category=category, lock_storage=lockstring, value=value)
+        new_attr = self._attrclass(
+            pk=self._next_id(), key=key, category=category, lock_storage=lockstring, value=value
+        )
         self._storage[(key, category)] = new_attr
         self._category_storage[category].append(new_attr)
         return new_attr
@@ -805,6 +819,7 @@ class ModelAttributeBackend(IAttributeBackend):
     """
     Uses Django models for storing Attributes.
     """
+
     _attrclass = Attribute
     _m2m_fieldname = "db_attributes"
 
@@ -844,9 +859,7 @@ class ModelAttributeBackend(IAttributeBackend):
         }
         return [
             conn.attribute
-            for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(
-                **query
-            )
+            for conn in getattr(self.obj, self._m2m_fieldname).through.objects.filter(**query)
         ]
 
     def do_create_attribute(self, key, category, lockstring, value, strvalue):
@@ -855,7 +868,7 @@ class ModelAttributeBackend(IAttributeBackend):
             "db_category": category,
             "db_model": self._model,
             "db_lock_storage": lockstring if lockstring else "",
-            "db_attrtype": self._attrtype
+            "db_attrtype": self._attrtype,
         }
         if strvalue:
             kwargs["db_value"] = None
@@ -901,6 +914,7 @@ class AttributeHandler:
     """
     Handler for adding Attributes to the object.
     """
+
     _attrcreate = "attrcreate"
     _attredit = "attredit"
     _attrread = "attrread"
