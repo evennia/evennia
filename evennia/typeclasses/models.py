@@ -36,7 +36,12 @@ from django.urls import reverse
 from django.utils.encoding import smart_str
 from django.utils.text import slugify
 
-from evennia.typeclasses.attributes import Attribute, AttributeHandler, ModelAttributeBackend, InMemoryAttributeBackend
+from evennia.typeclasses.attributes import (
+    Attribute,
+    AttributeHandler,
+    ModelAttributeBackend,
+    InMemoryAttributeBackend,
+)
 from evennia.typeclasses.attributes import DbHolder
 from evennia.typeclasses.tags import Tag, TagHandler, AliasHandler, PermissionHandler
 
@@ -121,6 +126,7 @@ class TypeclassBase(SharedMemoryModelBase):
         signals.post_save.connect(call_at_first_save, sender=new_class)
         signals.pre_delete.connect(remove_attributes_on_delete, sender=new_class)
         return new_class
+
 
 #
 # Main TypedObject abstraction

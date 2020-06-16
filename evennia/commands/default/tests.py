@@ -265,16 +265,17 @@ class TestGeneral(CommandTest):
 
 
 class TestHelp(CommandTest):
-
     def setUp(self):
         super().setUp()
         # we need to set up a logger here since lunr takes over the logger otherwise
         import logging
+
         logging.basicConfig(level=logging.ERROR)
 
     def tearDown(self):
         super().tearDown()
         import logging
+
         logging.disable(level=logging.ERROR)
 
     def test_help(self):

@@ -35,8 +35,8 @@ extensions = [
     "sphinx.ext.githubpages",
 ]
 
-source_suffix = ['.md', '.rst']
-master_doc = 'index'
+source_suffix = [".md", ".rst"]
+master_doc = "index"
 
 # make sure sectionlabel references can be used as path/to/file:heading
 autosectionlabel_prefix_document = True
@@ -74,9 +74,9 @@ smv_tag_whitelist = r"^$"
 # html_theme = 'scrolls'
 # html_theme = 'agogo'
 # html_theme = "traditional"
-html_theme = 'nature'
+html_theme = "nature"
 ## html_theme = 'pyramid'
-#html_theme = 'bizstyle'
+# html_theme = 'bizstyle'
 # html_theme = 'epub'
 
 # Custom extras for sidebar
@@ -100,23 +100,23 @@ pygments_style = "sphinx"
 # -- Options for LaTeX output ------------------------------------------------
 # experimental, not working well atm
 
-latex_engine = 'xelatex'
-latex_show_urls = 'footnote'
+latex_engine = "xelatex"
+latex_show_urls = "footnote"
 latex_elements = {
-    'papersize': 'a4paper',
-    'fncychap': r'\usepackage[Bjarne]{fncychap}',
-    'fontpkg': r'\usepackage{times,amsmath,amsfonts,amssymb,amsthm}',
-    'preamble': r'''
+    "papersize": "a4paper",
+    "fncychap": r"\usepackage[Bjarne]{fncychap}",
+    "fontpkg": r"\usepackage{times,amsmath,amsfonts,amssymb,amsthm}",
+    "preamble": r"""
         \usepackage[utf8]{fontenc}
         \usepackage{amsmath,amsfonts,amssymb,amsthm}
         \usepackage[math-style=literal]{unicode-math}
         \usepackage{newunicodechar}
         \usepackage{graphicx}
-    '''
+    """,
 }
 latex_documents = [
-    (master_doc,  'main.tex', 'Sphinx format', 'Evennia', 'report'),
-    ("toc", 'toc.tex', 'TOC', 'Evennia', 'report')
+    (master_doc, "main.tex", "Sphinx format", "Evennia", "report"),
+    ("toc", "toc.tex", "TOC", "Evennia", "report"),
 ]
 
 
@@ -139,7 +139,7 @@ def url_resolver(url):
         return _github_issue_choose
 
     elif url.startswith(githubstart):
-        urlpath = url[len(githubstart):]
+        urlpath = url[len(githubstart) :]
         if not (urlpath.startswith("develop/") or urlpath.startswith("master")):
             urlpath = "master/" + urlpath
         return _github_code_root + urlpath
@@ -240,13 +240,15 @@ napoleon_use_rtype = True
 # -- Main config setup ------------------------------------------
 # last setup steps for some plugins
 
+
 def setup(app):
     app.connect("autodoc-skip-member", autodoc_skip_member)
     app.add_transform(AutoStructify)
 
     # build toctree file
-    sys.path.insert(1, os.path.join(os.path.dirname(os.path.dirname(__file__)), 'docs'))
+    sys.path.insert(1, os.path.join(os.path.dirname(os.path.dirname(__file__)), "docs"))
     from docs.pylib import create_toctree
+
     create_toctree.create_toctree()
     print("Updated source/toc.md file")
 
