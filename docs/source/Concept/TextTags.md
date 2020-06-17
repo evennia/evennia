@@ -4,7 +4,7 @@
 This documentation details the various text tags supported by Evennia, namely *colours*, *command
 links* and *inline functions*.
 
-There is also an [Understanding Color Tags](Understanding-Color-Tags) tutorial which expands on the
+There is also an [Understanding Color Tags](Howto/Understanding-Color-Tags) tutorial which expands on the
 use of ANSI color tags and the pitfalls of mixing ANSI and Xterms256 color tags in the same context.
 
 ## Coloured text
@@ -23,7 +23,7 @@ equipment by people who are blind or have otherwise diminished eyesight.
 
 So a good rule of thumb is to use colour to enhance your game but don't *rely* on it to display
 critical information. If you are coding the game, you can add functionality to let users disable
-colours as they please, as described [here](Manually-Configuring-Color).
+colours as they please, as described [here](Howto/Manually-Configuring-Color).
 
 To see which colours your client support, use the default `@color` command. This will list all
 available colours for ANSI and Xterm256 along with the codes you use for them. You can find a list
@@ -37,7 +37,7 @@ available in all but the most ancient mud clients. The ANSI colours are **r**ed,
 first letter except for black which is abbreviated with the letter **x**. In ANSI there are "bright"
 and "normal" (darker) versions of each color, adding up to a total of 16 colours to use for
 foreground text. There are also 8 "background" colours. These have no bright alternative in ANSI
-(but Evennia uses the [Xterm256](TextTags#xterm256-colours) extension behind the scenes to offer
+(but Evennia uses the [Xterm256](Concept/TextTags#xterm256-colours) extension behind the scenes to offer
 them anyway).
 
 To colour your text you put special tags in it. Evennia will parse these and convert them to the
@@ -76,7 +76,7 @@ set bright/normal explicitly.  Technically, `|h|!G` is identical to `|g`.
 
 > Note: The ANSI standard does not actually support bright backgrounds like `|[r` - the standard
 only supports "normal" intensity backgrounds.  To get around this Evennia instead implements these
-as [Xterm256 colours](TextTags#xterm256-colours) behind the scenes. If the client does not support
+as [Xterm256 colours](Concept/TextTags#xterm256-colours) behind the scenes. If the client does not support
 Xterm256 the ANSI colors will be used instead and there will be no visible difference between using
 upper- and lower-case background tags.
 
@@ -269,7 +269,7 @@ errors if desired).
 Note that whereas the function should accept `**kwargs`, keyword inputs are *not* usable in the call
 to the inlinefunction. The `kwargs` part is instead intended for Evennia to be able to supply extra
 information. Currently Evennia sends a single keyword to every inline function and that is
-`session`, which holds the [serversession](Sessions) this text is targeted at. Through the session
+`session`, which holds the [serversession](Component/Sessions) this text is targeted at. Through the session
 object, a lot of dynamic possibilities are opened up for your inline functions.
 
 The `settings.INLINEFUNC_MODULES` configuration option is a list that decides which modules should

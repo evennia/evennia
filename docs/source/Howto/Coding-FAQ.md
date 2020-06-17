@@ -7,28 +7,28 @@ exists before answering - maybe you can clarify that answer rather than to make 
 
 ## Table of Contents
 
-- [Removing default commands](Coding-FAQ#removing-default-commands)
-- [Preventing character from moving based on a condition](Coding-FAQ#preventing-character-from-
+- [Removing default commands](Howto/Coding-FAQ#removing-default-commands)
+- [Preventing character from moving based on a condition](Howto/Coding-FAQ#preventing-character-from-
 moving-based-on-a-condition)
-- [Reference initiating object in an EvMenu command](Coding-FAQ#reference-initiating-object-in-an-
+- [Reference initiating object in an EvMenu command](Howto/Coding-FAQ#reference-initiating-object-in-an-
 evmenu-command)
-- [Adding color to default Evennia Channels](Coding-FAQ#adding-color-to-default-evennia-channels)
-- [Selectively turn off commands in a room](Coding-FAQ#selectively-turn-off-commands-in-a-room)
-- [Select Command based on a condition](Coding-FAQ#select-command-based-on-a-condition)
-- [Automatically updating code when reloading](Coding-FAQ#automatically-updating-code-when-
+- [Adding color to default Evennia Channels](Howto/Coding-FAQ#adding-color-to-default-evennia-channels)
+- [Selectively turn off commands in a room](Howto/Coding-FAQ#selectively-turn-off-commands-in-a-room)
+- [Select Command based on a condition](Howto/Coding-FAQ#select-command-based-on-a-condition)
+- [Automatically updating code when reloading](Howto/Coding-FAQ#automatically-updating-code-when-
 reloading)
-- [Changing all exit messages](Coding-FAQ#changing-all-exit-messages)
-- [Add parsing with the "to" delimiter](Coding-FAQ#add-parsing-with-the-to-delimiter)
-- [Store last used session IP address](Coding-FAQ#store-last-used-session-ip-address)
-- [Use wide characters with EvTable](Coding-FAQ#non-latin-characters-in-evtable)
+- [Changing all exit messages](Howto/Coding-FAQ#changing-all-exit-messages)
+- [Add parsing with the "to" delimiter](Howto/Coding-FAQ#add-parsing-with-the-to-delimiter)
+- [Store last used session IP address](Howto/Coding-FAQ#store-last-used-session-ip-address)
+- [Use wide characters with EvTable](Howto/Coding-FAQ#non-latin-characters-in-evtable)
 
 ## Removing default commands
-**Q:** How does one *remove* (not replace) e.g. the default `get` [Command](Commands) from the
-Character [Command Set](Command-Sets)?
+**Q:** How does one *remove* (not replace) e.g. the default `get` [Command](Component/Commands) from the
+Character [Command Set](Component/Command-Sets)?
 
 **A:** Go to `mygame/commands/default_cmdsets.py`. Find the `CharacterCmdSet` class. It has one
 method named `at_cmdset_creation`. At the end of that method, add the following line:
-`self.remove(default_cmds.CmdGet())`. See the [Adding Commands Tutorial](Adding-Command-Tutorial)
+`self.remove(default_cmds.CmdGet())`. See the [Adding Commands Tutorial](Howto/StartingTutorial/Adding-Command-Tutorial)
 for more info.
 
 ## Preventing character from moving based on a condition
@@ -36,7 +36,7 @@ for more info.
 combat, immobilized, etc.)
 
 **A:** The `at_before_move` hook is called by Evennia just before performing any move. If it returns
-`False`, the move is aborted. Let's say we want to check for an [Attribute](Attributes) `cantmove`.
+`False`, the move is aborted. Let's say we want to check for an [Attribute](Component/Attributes) `cantmove`.
 Add the following code to the `Character` class:
 
 ```python
@@ -52,7 +52,7 @@ def at_before_move(self, destination):
 **Q:** An object has a Command on it starts up an EvMenu instance. How do I capture a reference to
 that object for use in the menu?
 
-**A:** When an [EvMenu](EvMenu) is started, the menu object is stored as `caller.ndb._menutree`.
+**A:** When an [EvMenu](Component/EvMenu) is started, the menu object is stored as `caller.ndb._menutree`.
 This is a good place to store menu-specific things since it will clean itself up when the menu
 closes. When initiating the menu, any additional keywords you give will be available for you as
 properties on this menu object:
@@ -101,7 +101,7 @@ CHANNEL_COLORS`.
 **Q:** I want certain commands to turn off in a given room. They should still work normally for
 staff.
 
-**A:** This is done using a custom cmdset on a room [locked with the 'call' lock type](Locks). Only
+**A:** This is done using a custom cmdset on a room [locked with the 'call' lock type](Component/Locks). Only
 if this lock is passed will the commands on the room be made available to an object inside it. Here
 is an example of a room where certain commands are disabled for non-staff:
 
@@ -142,7 +142,7 @@ superusers).
 command to only be available on a full moon, from midnight to three in-game time.
 
 **A:** This is easiest accomplished by putting the "werewolf" command on the Character as normal,
-but to [lock](Locks) it with the "cmd" type lock. Only if the "cmd" lock type is passed will the
+but to [lock](Component/Locks) it with the "cmd" type lock. Only if the "cmd" lock type is passed will the
 command be available.
 
 ```python
@@ -157,7 +157,7 @@ class CmdWerewolf(Command):
     def func(self):
         # ...
 ```
-Add this to the [default cmdset as usual](Adding-Command-Tutorial). The `is_full_moon` [lock
+Add this to the [default cmdset as usual](Howto/StartingTutorial/Adding-Command-Tutorial). The `is_full_moon` [lock
 function](Locks#lock-functions) does not yet exist. We must create that:
 
 ```python

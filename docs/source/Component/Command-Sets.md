@@ -1,7 +1,7 @@
 # Command Sets
 
 
-Command Sets are intimately linked with [Commands](Commands) and you should be familiar with
+Command Sets are intimately linked with [Commands](Component/Commands) and you should be familiar with
 Commands before reading this page. The two pages were split for ease of reading.
 
 A *Command Set* (often referred to as a CmdSet or cmdset) is the basic unit for storing one or more
@@ -11,7 +11,7 @@ classes in a command set is the way to make commands available to use in your ga
 When storing a CmdSet on an object, you will make the commands in that command set available to the
 object. An example is the default command set stored on new Characters. This command set contains
 all the useful commands, from `look` and `inventory` to `@dig` and `@reload`
-([permissions](Locks#Permissions) then limit which players may use them, but that's a separate
+([permissions](Component/Locks#Permissions) then limit which players may use them, but that's a separate
 topic).
 
 When an account enters a command, cmdsets from the Account, Character, its location, and elsewhere
@@ -26,7 +26,7 @@ on. The tutorial world included with Evennia showcases a dark room that replaces
 commands with its own versions because the Character cannot see.
 
 If you want a quick start into defining your first commands and using them with command sets, you
-can head over to the [Adding Command Tutorial](Adding-Command-Tutorial) which steps through things
+can head over to the [Adding Command Tutorial](Howto/StartingTutorial/Adding-Command-Tutorial) which steps through things
 without the explanations.
 
 ## Defining Command Sets
@@ -112,11 +112,11 @@ back even if all other cmdsets fail or are removed. It is always persistent and 
 by `cmdset.delete()`. To remove a default cmdset you must explicitly call `cmdset.remove_default()`.
 
 Command sets are often added to an object in its `at_object_creation` method. For more examples of
-adding commands, read the [Step by step tutorial](Adding-Command-Tutorial). Generally you can
+adding commands, read the [Step by step tutorial](Howto/StartingTutorial/Adding-Command-Tutorial). Generally you can
 customize which command sets are added to your objects by using `self.cmdset.add()` or
 `self.cmdset.add_default()`.
 
-> Important: Commands are identified uniquely by key *or* alias (see [Commands](Commands)). If any
+> Important: Commands are identified uniquely by key *or* alias (see [Commands](Component/Commands)). If any
 overlap exists, two commands are considered identical. Adding a Command to a command set that
 already has an identical command will *replace* the previous command. This is very important. You
 must take this behavior into account when attempting to overload any default Evennia commands with
@@ -127,7 +127,7 @@ new one that has a matching alias.
 
 There are several extra flags that you can set on CmdSets in order to modify how they work. All are
 optional and will be set to defaults otherwise.  Since many of these relate to *merging* cmdsets,
-you might want to read the [Adding and Merging Command Sets](Command-Sets#adding-and-merging-
+you might want to read the [Adding and Merging Command Sets](Component/Command-Sets#adding-and-merging-
 command-sets) section for some of these to make sense.
 
 - `key` (string) - an identifier for the cmdset. This is optional, but should be unique. It is used
@@ -195,15 +195,15 @@ priority determines what is used.
 
 ## Command Sets Searched
 
-When a user issues a command, it is matched against the [merged](Command-Sets#adding-and-merging-
+When a user issues a command, it is matched against the [merged](Component/Command-Sets#adding-and-merging-
 command-sets) command sets available to the player at the moment. Which those are may change at any
 time (such as when the player walks into the room with the `Window` object described earlier).
 
 The currently valid command sets are collected from the following sources:
 
-- The cmdsets stored on the currently active [Session](Sessions). Default is the empty
+- The cmdsets stored on the currently active [Session](Component/Sessions). Default is the empty
 `SessionCmdSet` with merge priority `-20`.
-- The cmdsets defined on the [Account](Accounts). Default is the AccountCmdSet with merge priority
+- The cmdsets defined on the [Account](Component/Accounts). Default is the AccountCmdSet with merge priority
 `-10`.
 - All cmdsets on the Character/Object (assuming the Account is currently puppeting such a
 Character/Object). Merge priority `0`.
@@ -215,14 +215,14 @@ included if `no_objs` option is active in the merge stack.
 `no_objs` option is active in the merge stack.
 - The cmdsets of Exits in the location. Merge priority `+101`. Will not be included if `no_exits`
 *or* `no_objs` option is active in the merge stack.
-- The [channel](Communications) cmdset containing commands for posting to all channels the account
+- The [channel](Component/Communications) cmdset containing commands for posting to all channels the account
 or character is currently connected to. Merge priority `+101`. Will not be included if `no_channels`
 option is active in the merge stack.
 
 Note that an object does not *have* to share its commands with its surroundings. A Character's
 cmdsets should not be shared for example, or all other Characters would get multi-match errors just
 by being in the same room. The ability of an object to share its cmdsets is managed by its `call`
-[lock](Locks). For example, [Character objects](Objects) defaults to `call:false()` so that any
+[lock](Component/Locks). For example, [Character objects](Component/Objects) defaults to `call:false()` so that any
 cmdsets on them can only be accessed by themselves, not by other objects around them. Another
 example might be to lock an object with `call:inside()` to only make their commands available to
 objects inside them, or `cmd:holds()` to make their commands available only if they are held.

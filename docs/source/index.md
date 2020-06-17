@@ -20,7 +20,7 @@ This is the manual of [Evennia](http://www.evennia.com), the open source Python
 There is [a lengthier Evennia introduction](Evennia-Introduction) you may want
 to read. It's also good to know [how to get help](How-To-Get-And-Give-Help).
 
-- The [Getting Started](Getting-Started) page helps installing and starting Evennia for the first
+- The [Getting Started](Setup/Getting-Started) page helps installing and starting Evennia for the first
 time.
 - The [Admin Docs](Administrative-Docs) covers running and maintaining an Evennia server.
 - The [Builder Docs](Builder-Docs) helps for starting to build a game world using Evennia.

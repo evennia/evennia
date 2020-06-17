@@ -38,7 +38,10 @@ def create_toctree():
                                "accept doc-files with the same name, even in different folders.")
         docref_map[fname] = url
 
+    # normal reference-links [txt](urls)
     ref_regex = re.compile(r"\[(?P<txt>[\w -\[\]]+?)\]\((?P<url>.+?)\)", re.I + re.S + re.U)
+    # in document references
+    ref_doc_regex = re.compile(r"\[(?P<txt>[\w -]+?)\]:\s+?(?P<url>.+?)(?=$|\n)", re.I + re.S + re.U)
 
     def _sub(match):
         grpdict = match.groupdict()
@@ -49,10 +52,26 @@ def create_toctree():
         fname, *anchor = url.rsplit("#", 1)
         if fname in docref_map:
             urlout = docref_map[fname] + ('#' + anchor[0] if anchor else '')
-            print(f"  Remapped link [{txt}]({url}) -> [{txt}]({urlout})")
+            if urlout != url:
+                print(f"  Remapped link [{txt}]({url}) -> [{txt}]({urlout})")
         else:
             urlout = url
         return f"[{txt}]({urlout})"
+
+    def _sub_doc(match):
+        grpdict = match.groupdict()
+        txt, url = grpdict['txt'], grpdict['url']
+        fname, *part = url.rsplit("/", 1)
+        fname = part[0] if part else fname
+        fname = fname.rsplit(".", 1)[0]
+        fname, *anchor = url.rsplit("#", 1)
+        if fname in docref_map:
+            urlout = docref_map[fname] + ('#' + anchor[0] if anchor else '')
+            if urlout != url:
+                print(f"  Remapped link [{txt}]: {url} -> [{txt}]: {urlout}")
+        else:
+            urlout = url
+        return f"[{txt}]: {urlout}"
 
     # replace / correct links in all files
     count = 0
@@ -60,6 +79,7 @@ def create_toctree():
         with open(path, 'r') as fil:
             intxt = fil.read()
             outtxt = ref_regex.sub(_sub, intxt)
+            outtxt = ref_doc_regex.sub(_sub_doc, outtxt)
         if intxt != outtxt:
             with open(path, 'w') as fil:
                 fil.write(outtxt)
@@ -73,13 +93,16 @@ def create_toctree():
     with open(_TOC_FILE, "w") as fil:
         fil.write("# Toc\n")
 
-        for ref  in sorted(docref_map.values()):
+        for ref in sorted(docref_map.values()):
 
             if ref == "toc":
                 continue
 
             linkname = ref.replace("-", " ")
-            fil.write(f"\n- [{linkname}]({ref}.md)")
+            fil.write(f"\n- [{linkname}]({ref})")
+
+        # we add a self-reference so the toc itself is also a part of a toctree
+        fil.write("\n\n```toctree::\n  :hidden:\n\n  toc\n```")
 
 if __name__ == "__main__":
     create_toctree()

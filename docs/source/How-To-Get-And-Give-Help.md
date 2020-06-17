@@ -56,12 +56,10 @@ Evennia patron on Patreon][patreon]! This is a great way to tip your hat and sho
 appreciate the work done with the server! Finally, if you want to encourage the community to resolve
 a particular
 
-[form]:
-https://docs.google.com/spreadsheet/viewform?hl=en_US&formkey=dGN0VlJXMWpCT3VHaHpscDEzY1RoZGc6MQ#gid=0
+[form]: https://docs.google.com/spreadsheet/viewform?hl=en_US&formkey=dGN0VlJXMWpCT3VHaHpscDEzY1RoZGc6MQ#gid=0
 [group]: http://groups.google.com/group/evennia/
 [issues]: https://github.com/evennia/evennia/issues
-[issues-master]:
-https://github.com/evennia/evennia/issues?utf8=%E2%9C%93&q=is%3Aissue%20is%3Aopen%20label%3Abug%20label%3Amaster-
+[issues-master]: https://github.com/evennia/evennia/issues?utf8=%E2%9C%93&q=is%3Aissue%20is%3Aopen%20label%3Abug%20label%3Amaster-
 branch
 [chat]: http://webchat.freenode.net/?channels=evennia
 [paypal]: https://www.paypal.com/se/cgi-

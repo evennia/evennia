@@ -82,7 +82,7 @@ and *templates* (how the web page should be structured).
 
 Models are created in `mygame/web/chargen/models.py`.
 
-A [Django database model](New-Models) is a Python class that describes the database storage of the
+A [Django database model](Concept/New-Models) is a Python class that describes the database storage of the
 data you want to manage. Any data you choose to store is stored in the same database as the game and
 you have access to all the game's objects here.
 
@@ -262,9 +262,9 @@ create_object function to properly process the permissions.
 
 Most importantly, the following attributes must be set on the created character object:
 
-* Evennia [permissions](Locks#permissions) (copied from the `AccountDB`).
-* The right `puppet` [locks](Locks) so the Account can actually play as this Character later.
-* The relevant Character [typeclass](Typeclasses)
+* Evennia [permissions](Component/Locks#permissions) (copied from the `AccountDB`).
+* The right `puppet` [locks](Component/Locks) so the Account can actually play as this Character later.
+* The relevant Character [typeclass](Component/Typeclasses)
 * Character name (key)
 * The Character's home room location (`#2` by default)
 

@@ -12,7 +12,7 @@ mimics the API of a `Msg` but has no connection to the database.
 ## Msg
 
 The `Msg` object is the basic unit of communication in Evennia. A message works a little like an
-e-mail; it always has a sender (a [Account](Accounts)) and one or more recipients. The recipients
+e-mail; it always has a sender (a [Account](Component/Accounts)) and one or more recipients. The recipients
 may be either other Accounts, or a *Channel* (see below). You can mix recipients to send the message
 to both Channels and Accounts if you like.
 
@@ -22,16 +22,16 @@ have 'mailboxes' with the messages they want to keep.
 
 ### Properties defined on `Msg`
 
-- `senders` - this is a reference to one or many [Account](Accounts) or [Objects](Objects) (normally
+- `senders` - this is a reference to one or many [Account](Component/Accounts) or [Objects](Component/Objects) (normally
 *Characters*) sending the message.  This could also be an *External Connection* such as a message
 coming in over IRC/IMC2 (see below). There is usually only one sender, but the types can also be
 mixed in any combination.
-- `receivers` - a list of target [Accounts](Accounts), [Objects](Objects) (usually *Characters*) or
+- `receivers` - a list of target [Accounts](Component/Accounts), [Objects](Component/Objects) (usually *Characters*) or
 *Channels* to send the message to. The types of receivers can be mixed in any combination.
 - `header` - this is a text field for storing a title or header for the message. 
 - `message` - the actual text being sent.
 - `date_sent` - when message was sent (auto-created).
-- `locks` - a [lock definition](Locks).
+- `locks` - a [lock definition](Component/Locks).
 - `hide_from` - this can optionally hold a list of objects, accounts or channels to hide this `Msg`
 from. This relationship is stored in the database primarily for optimization reasons, allowing for
 quickly post-filter out messages not intended for a given target.  There is no in-game methods for
@@ -48,16 +48,16 @@ system expecting a `Msg` but when you don't actually want to save anything.
 
 ## Channels
 
-Channels are [Typeclassed](Typeclasses) entities, which mean they can be easily extended and their
+Channels are [Typeclassed](Component/Typeclasses) entities, which mean they can be easily extended and their
 functionality modified. To change which channel typeclass Evennia uses, change
 settings.BASE_CHANNEL_TYPECLASS.
 
 Channels act as generic distributors of messages. Think of them as "switch boards" redistributing
 `Msg` or `TempMsg` objects. Internally they hold a list of "listening" objects and any `Msg` (or
 `TempMsg`) sent to the channel will be distributed out to all channel listeners. Channels have
-[Locks](Locks) to limit who may listen and/or send messages through them.
+[Locks](Component/Locks) to limit who may listen and/or send messages through them.
 
-The *sending* of text to a channel is handled by a dynamically created [Command](Commands) that
+The *sending* of text to a channel is handled by a dynamically created [Command](Component/Commands) that
 always have the same name as the channel. This is created for each channel by the global
 `ChannelHandler`. The Channel command is added to the Account's cmdset and normal command locks are
 used to determine which channels are possible to write to. When subscribing to a channel, you can
@@ -109,5 +109,5 @@ for channel communication (since the default ChannelCommand instead logs to a fi
 - `aliases` - alternative native names for channels
 - `desc` - optional description of channel (seen in listings)
 - `keep_log` (bool) - if the channel should store messages (default)
-- `locks` - A [lock definition](Locks). Channels normally use the access_types `send, control` and
+- `locks` - A [lock definition](Component/Locks). Channels normally use the access_types `send, control` and
 `listen`.

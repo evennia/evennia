@@ -16,11 +16,11 @@ system.
 
 - **self** / **me** - the calling object (i.e. you)
 - **here** - the current caller's location
-- **obj** - a dummy [Object](Objects) instance
-- **evennia** - Evennia's [flat API](Evennia-API) - through this you can access all of Evennia.
+- **obj** - a dummy [Object](Component/Objects) instance
+- **evennia** - Evennia's [flat API](Coding/Evennia-API) - through this you can access all of Evennia.
 
 For accessing other objects in the same room you need to use `self.search(name)`. For objects in
-other locations, use one of the `evennia.search_*` methods. See [below](Execute-Python-Code#finding-
+other locations, use one of the `evennia.search_*` methods. See [below](Howto/StartingTutorial/Execute-Python-Code#finding-
 objects).
 
 ## Returning output
@@ -117,4 +117,4 @@ of other editing features, such as tab-completion and `__doc__`-string reading.
     In [2]: evennia.managers.objects.all()
     Out[3]: [<ObjectDB: Harry>, <ObjectDB: Limbo>, ...]
 
-See the page about the [Evennia-API](Evennia-API) for more things to explore. 
+See the page about the [Evennia-API](Coding/Evennia-API) for more things to explore. 

@@ -7,7 +7,7 @@ Discord](https://discord.gg/NecFePw), which is mirrored to IRC._
 
 [IRC (Internet Relay Chat)](http://en.wikipedia.org/wiki/Internet_Relay_Chat) is a long standing
 chat protocol used by many open-source projects for communicating in real time. By connecting one of
-Evennia's [Channels](Communications) to an IRC channel you can communicate also with people not on
+Evennia's [Channels](Component/Communications) to an IRC channel you can communicate also with people not on
 an mud themselves. You can also use IRC if you are only running your Evennia MUD locally on your
 computer (your game doesn't need to be open to the public)! All you need is an internet connection.
 For IRC operation you also need [twisted.words](http://twistedmatrix.com/trac/wiki/TwistedWords).

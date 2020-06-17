@@ -1,14 +1,14 @@
 # Commands
 
 
-Commands are intimately linked to [Command Sets](Command-Sets) and you need to read that page too to
+Commands are intimately linked to [Command Sets](Component/Command-Sets) and you need to read that page too to
 be familiar with how the command system works. The two pages were split for easy reading.
 
 The basic way for users to communicate with the game is through *Commands*. These can be commands
 directly related to the game world such as *look*, *get*, *drop* and so on, or administrative
 commands such as *examine* or *@dig*.
 
-The [default commands](Default-Command-Help) coming with Evennia are 'MUX-like' in that they use @
+The [default commands](Component/Default-Command-Help) coming with Evennia are 'MUX-like' in that they use @
 for admin commands, support things like switches, syntax with the '=' symbol etc, but there is
 nothing that prevents you from implementing a completely different command scheme for your game. You
 can find the default commands in `evennia/commands/default`. You should not edit these directly -
@@ -28,7 +28,7 @@ object in various ways. Consider a "Tree" object with a cmdset defining the comm
 *chop down*. Or a "Clock" with a cmdset containing the single command *check time*.
 
 This page goes into full detail about how to use Commands. To fully use them you must also read the
-page detailing [Command Sets](Command-Sets).  There is also a step-by-step [Adding Command
+page detailing [Command Sets](Component/Command-Sets).  There is also a step-by-step [Adding Command
 Tutorial](Adding-Command-Tutorial) that will get you started quickly without the extra explanations.
 
 ## Defining Commands
@@ -80,15 +80,15 @@ In Evennia there are three types of objects that may call the command.  It is im
 of this since this will also assign appropriate `caller`, `session`, `sessid` and `account`
 properties on the command body at runtime. Most often the calling type is `Session`.
 
-* A [Session](Sessions). This is by far the most common case when a user is entering a command in
+* A [Session](Component/Sessions). This is by far the most common case when a user is entering a command in
 their client.
-    * `caller` - this is set to the puppeted [Object](Objects) if such an object exists. If no
+    * `caller` - this is set to the puppeted [Object](Component/Objects) if such an object exists. If no
 puppet is found, `caller` is set equal to `account`. Only if an Account is not found either (such as
 before being logged in) will this be set to the Session object itself.
-    * `session` - a reference to the [Session](Sessions) object itself.
+    * `session` - a reference to the [Session](Component/Sessions) object itself.
     * `sessid` - `sessid.id`, a unique integer identifier of the session.
-    * `account` - the [Account](Accounts) object connected to this Session. None if not logged in.
-* An [Account](Accounts). This only happens if `account.execute_cmd()` was used. No Session
+    * `account` - the [Account](Component/Accounts) object connected to this Session. None if not logged in.
+* An [Account](Component/Accounts). This only happens if `account.execute_cmd()` was used. No Session
 information can be obtained in this case.
     * `caller` - this is set to the puppeted Object if such an object can be determined (without
 Session info this can only be determined in `MULTISESSION_MODE=0` or `1`). If no puppet is found,
@@ -96,7 +96,7 @@ this is equal to `account`.
     * `session` - `None*`
     * `sessid` - `None*`
     * `account` - Set to the Account object.
-* An [Object](Objects). This only happens if `object.execute_cmd()` was used (for example by an
+* An [Object](Component/Objects). This only happens if `object.execute_cmd()` was used (for example by an
 NPC).
     * `caller` - This is set to the calling Object in question.
     * `session` - `None*`
@@ -119,10 +119,10 @@ it the following properties:
 - `caller` - The character BigGuy, in this example. This is a reference to the object executing the
 command. The value of this depends on what type of object is calling the command; see the previous
 section.
-- `session` - the [Session](Sessions) Bob uses to connect to the game and control BigGuy (see also
+- `session` - the [Session](Component/Sessions) Bob uses to connect to the game and control BigGuy (see also
 previous section).
 - `sessid` - the unique id of `self.session`, for quick lookup.
-- `account` - the [Account](Accounts) Bob (see previous section).
+- `account` - the [Account](Component/Accounts) Bob (see previous section).
 - `cmdstring` - the matched key for the command. This would be *look* in our example.
 - `args` - this is the rest of the string, except the command name. So if the string entered was
 *look at sword*, `args` would be " *at sword*". Note the space kept - Evennia would correctly
@@ -130,7 +130,7 @@ interpret `lookat sword` too. This is useful for things like `/switches` that sh
 In the `MuxCommand` class used for default commands, this space is stripped. Also see the
 `arg_regex` property if you want to enforce a space to make `lookat sword` give a command-not-found
 error.
-- `obj` - the game [Object](Objects) on which this command is defined.  This need not be the caller,
+- `obj` - the game [Object](Component/Objects) on which this command is defined.  This need not be the caller,
 but since `look` is a common (default) command, this is probably defined directly on *BigGuy* - so
 `obj` will point to BigGuy.  Otherwise `obj` could be an Account or any interactive object with
 commands defined on it, like in the example of the "check time" command defined on a "Clock" object.
@@ -168,7 +168,7 @@ key can consist of more than one word, like "press button" or "pull left lever".
 either matches. This is important for merging cmdsets described below.
 - `aliases` (optional list) - a list of alternate names for the command (`["glance", "see", "l"]`).
 Same name rules as for `key` applies.
-- `locks` (string) - a [lock definition](Locks), usually on the form `cmd:<lockfuncs>`. Locks is a
+- `locks` (string) - a [lock definition](Component/Locks), usually on the form `cmd:<lockfuncs>`. Locks is a
 rather big topic, so until you learn more about locks, stick to giving the lockstring `"cmd:all()"`
 to make the command available to everyone (if you don't provide a lock string, this will be assigned
 for you).
@@ -180,7 +180,7 @@ by the next command by retrieving `self.caller.ndb.last_cmd`. The next run comma
 or replace the storage.
 - `arg_regex` (optional raw string): Used to force the parser to limit itself and tell it when the
 command-name ends and arguments begin (such as requiring this to be a space or a /switch). This is
-done with a regular expression. [See the arg_regex section](Commands#on-arg_regex) for the details.
+done with a regular expression. [See the arg_regex section](Component/Commands#on-arg_regex) for the details.
 - `auto_help` (optional boolean). Defaults to `True`. This allows for turning off the [auto-help
 system](Help-System#command-auto-help-system) on a per-command basis. This could be useful if you
 either want to write your help entries manually or hide the existence of a command from `help`'s
@@ -218,7 +218,7 @@ from this method will be returned from the execution as a Twisted Deferred.
 
 Finally, you should always make an informative [doc
 string](http://www.python.org/dev/peps/pep-0257/#what-is-a-docstring) (`__doc__`) at the top of your
-class. This string is dynamically read by the [Help System](Help-System) to create the help entry
+class. This string is dynamically read by the [Help System](Component/Help-System) to create the help entry
 for this command. You should decide on a way to format your help and stick to that.
 
 Below is how you define a simple alternative "`smile`" command:
@@ -276,7 +276,7 @@ default commands thus need to implement `parse()` at all, but can assume the
 incoming string is already split up and parsed in suitable ways by its parent.
 
 Before you can actually use the command in your game, you must now store it
-within a *command set*. See the [Command Sets](Command-Sets) page.
+within a *command set*. See the [Command Sets](Component/Command-Sets) page.
 
 ### On arg_regex
 
@@ -427,7 +427,7 @@ will show.
 
 > Note again that the `yield` keyword does not store state.  If the game reloads while waiting for
 the user to answer, the user will have to start over. It is not a good idea to use `yield` for
-important or complex choices, a persistent [EvMenu](EvMenu) might be more appropriate in this case.
+important or complex choices, a persistent [EvMenu](Component/EvMenu) might be more appropriate in this case.
 
 ## System commands
 
@@ -457,7 +457,7 @@ display the "Huh?" error message.
 matches.
 - User is not allowed to execute the command (`syscmdkeys.CMD_NOPERM`) - Default is to display the
 "Huh?" error message.
-- Channel (`syscmdkeys.CMD_CHANNEL`) - This is a [Channel](Communications) name of a channel you are
+- Channel (`syscmdkeys.CMD_CHANNEL`) - This is a [Channel](Component/Communications) name of a channel you are
 subscribing to - Default is to relay the command's argument to that channel. Such commands are
 created by the Comm system on the fly depending on your subscriptions.
 - New session connection (`syscmdkeys.CMD_LOGINSTART`). This command name should be put in the
@@ -484,7 +484,7 @@ work.
 
 Normally Commands are created as fixed classes and used without modification. There are however
 situations when the exact key, alias or other properties is not possible (or impractical) to pre-
-code ([Exits](Commands#Exits) is an example of this).
+code ([Exits](Component/Commands#Exits) is an example of this).
 
 To create a command with a dynamic call signature, first define the command body normally in a class
 (set your `key`, `aliases` to default values), then use the following call (assuming the command
@@ -508,10 +508,10 @@ make your command completely customized at run-time.
 
 *Note: This is an advanced topic.*
 
-Exits are examples of the use of a [Dynamic Command](Commands#Dynamic_Commands).
+Exits are examples of the use of a [Dynamic Command](Component/Commands#Dynamic_Commands).
 
-The functionality of [Exit](Objects) objects in Evennia is not hard-coded in the engine. Instead
-Exits are normal [typeclassed](Typeclasses) objects that auto-create a [CmdSet](Commands#CmdSets) on
+The functionality of [Exit](Component/Objects) objects in Evennia is not hard-coded in the engine. Instead
+Exits are normal [typeclassed](Component/Typeclasses) objects that auto-create a [CmdSet](Component/Commands#CmdSets) on
 themselves when they load. This cmdset has a single dynamically created Command with the same
 properties (key, aliases and locks) as the Exit object itself. When entering the name of the exit,
 this dynamic exit-command is triggered and (after access checks) moves the Character to the exit's
@@ -609,9 +609,9 @@ cmdset, ignore.
     - CmdSets defined on the current account, if caller is a puppeted object.
     - CmdSets defined on the Session itself.
     - The active CmdSets of eventual objects in the same location (if any). This includes commands
-on [Exits](Objects#Exits).
+on [Exits](Component/Objects#Exits).
     - Sets of dynamically created *System commands* representing available
-[Communications](Communications#Channels).
+[Communications](Component/Communications#Channels).
 7. All CmdSets *of the same priority* are merged together in groups.  Grouping avoids order-
 dependent issues of merging multiple same-prio sets onto lower ones.
 8. All the grouped CmdSets are *merged* in reverse priority into one combined CmdSet according to
