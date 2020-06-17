@@ -6,6 +6,7 @@ directive somewhere.
 """
 
 import re
+from sphinx.errors import DocumentError
 from pathlib import Path
 from os.path import abspath, dirname, join as pathjoin, sep
 
@@ -34,8 +35,10 @@ def create_toctree():
         url = url.rsplit(".", 1)[0]
         fname = fname.rsplit(".", 1)[0]
         if fname in docref_map:
-            raise RuntimeError(f"'{url}' and '{docref_map[fname]}': Auto-link correction does not "
-                               "accept doc-files with the same name, even in different folders.")
+            raise DocumentError(
+                f" Tried to add '{url}.md' when '{docref_map[fname]}.md' already exists.\n"
+                " Evennia's auto-link-corrector does not accept doc-files with the same \n"
+                " name, even in different folders. Rename one.\n")
         docref_map[fname] = url
 
     # normal reference-links [txt](urls)
