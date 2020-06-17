@@ -24,7 +24,6 @@ def create_toctree():
     for path in Path(_SOURCE_DIR).rglob("*.md"):
         # find the source/ part of the path and strip it out
         # support nesting of 3 within source/ dir
-        # from pudb import debugger;debugger.Debugger().set_trace()
         fname = path.name
         if fname in _IGNORE_FILES:
             # this is the name including .md
@@ -32,6 +31,7 @@ def create_toctree():
         ind = path.parts[-4:].index("source")
         pathparts = path.parts[-4 + 1 + ind:]
         url = "/".join(pathparts)
+        url = url.rsplit(".", 1)[0]
         fname = fname.rsplit(".", 1)[0]
         if fname in docref_map:
             raise RuntimeError(f"'{url}' and '{docref_map[fname]}': Auto-link correction does not "
@@ -50,7 +50,7 @@ def create_toctree():
         fname = fname.rsplit(".", 1)[0]
         urlout = docref_map.get(fname, url)
         if url != urlout:
-            print(f"Remapped link [{txt}]({url}) -> [{txt}]({urlout})")
+            print(f"  Remapped link [{txt}]({url}) -> [{txt}]({urlout})")
         return f"[{txt}]({urlout})"
 
     # replace / correct links in all files
