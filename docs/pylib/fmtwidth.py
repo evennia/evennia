@@ -5,7 +5,7 @@
 Format given files to a max width.
 
 Usage:
-    python fmtwidth.py --width 79 ../source/*.md
+    python fmtwidth.py --width 79 ../source/**.md
 
 """
 import glob
@@ -23,7 +23,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    filepaths = glob.glob(args.files)
+    filepaths = glob.glob(args.files, recursive=True)
     width = args.width
 
     wrapper = textwrap.TextWrapper(
