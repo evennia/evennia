@@ -15,10 +15,10 @@
 
 This is the manual of [Evennia](http://www.evennia.com), the open source Python
 `MU*` creation system. Want to help improve the docs? See the page on
-[Contributing to docs](Contributing-Docs)!
+[Contributing to the docs](Contributing-Docs)!
 
-There is [a lengthier introduction](Evennia-Introduction) to read. You might also want to read about
-[how to get and give help](How-To-Get-And-Give-Help).
+There is [a lengthier Evennia introduction](Evennia-Introduction) you may want
+to read. It's also good to know [how to get help](How-To-Get-And-Give-Help).
 
 - The [Getting Started](Getting-Started) page helps installing and starting Evennia for the first
 time.
