@@ -46,31 +46,39 @@ def create_toctree():
     def _sub(match):
         grpdict = match.groupdict()
         txt, url = grpdict['txt'], grpdict['url']
-        fname, *part = url.rsplit("/", 1)
-        fname = part[0] if part else fname
-        fname = fname.rsplit(".", 1)[0]
-        fname, *anchor = url.rsplit("#", 1)
-        if fname in docref_map:
-            urlout = docref_map[fname] + ('#' + anchor[0] if anchor else '')
-            if urlout != url:
-                print(f"  Remapped link [{txt}]({url}) -> [{txt}]({urlout})")
-        else:
+
+        if "http" in url and "://" in url:
             urlout = url
+        else:
+            fname, *part = url.rsplit("/", 1)
+            fname = part[0] if part else fname
+            fname = fname.rsplit(".", 1)[0]
+            fname, *anchor = fname.rsplit("#", 1)
+            if fname in docref_map:
+                urlout = docref_map[fname] + ('#' + anchor[0] if anchor else '')
+                if urlout != url:
+                    print(f"  Remapped link [{txt}]({url}) -> [{txt}]({urlout})")
+            else:
+                urlout = url
         return f"[{txt}]({urlout})"
 
     def _sub_doc(match):
         grpdict = match.groupdict()
         txt, url = grpdict['txt'], grpdict['url']
-        fname, *part = url.rsplit("/", 1)
-        fname = part[0] if part else fname
-        fname = fname.rsplit(".", 1)[0]
-        fname, *anchor = url.rsplit("#", 1)
-        if fname in docref_map:
-            urlout = docref_map[fname] + ('#' + anchor[0] if anchor else '')
-            if urlout != url:
-                print(f"  Remapped link [{txt}]: {url} -> [{txt}]: {urlout}")
-        else:
+
+        if "http" in url and "://" in url:
             urlout = url
+        else:
+            fname, *part = url.rsplit("/", 1)
+            fname = part[0] if part else fname
+            fname = fname.rsplit(".", 1)[0]
+            fname, *anchor = fname.rsplit("#", 1)
+            if fname in docref_map:
+                urlout = docref_map[fname] + ('#' + anchor[0] if anchor else '')
+                if urlout != url:
+                    print(f"  Remapped link [{txt}]: {url} -> [{txt}]: {urlout}")
+            else:
+                urlout = url
         return f"[{txt}]: {urlout}"
 
     # replace / correct links in all files
