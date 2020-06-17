@@ -8,7 +8,7 @@ ways to customize the server and expand it with your own plugins.
 
 The "Settings" file referenced throughout the documentation is the file
 `mygame/server/conf/settings.py`. This is automatically created on the first run of `evennia --init`
-(see the [Getting Started](Getting-Started) page).
+(see the [Getting Started](Setup/Getting-Started) page).
 
 Your new `settings.py` is relatively bare out of the box. Evennia's core settings file is actually
 [evennia/settings_default.py](https://github.com/evennia/evennia/blob/master/evennia/settings_default.py)
@@ -66,15 +66,15 @@ other things that must run in your game but which has no database persistence.
 - `connection_screens.py` - all global string variables in this module are interpreted by Evennia as
 a greeting screen to show when an Account first connects. If more than one string variable is
 present in the module a random one will be picked.
-- `inlinefuncs.py` - this is where you can define custom [Inline functions](TextTags#inlinefuncs).
-- `inputfuncs.py` - this is where you define custom [Input functions](Inputfuncs) to handle data
+- `inlinefuncs.py` - this is where you can define custom [Inline functions](Concept/TextTags#inlinefuncs).
+- `inputfuncs.py` - this is where you define custom [Input functions](Component/Inputfuncs) to handle data
 from the client.
 - `lockfuncs.py` - this is one of many possible modules to hold your own "safe" *lock functions* to
-make available to Evennia's [Locks](Locks).
+make available to Evennia's [Locks](Component/Locks).
 - `mssp.py` - this holds meta information about your game. It is used by MUD search engines (which
 you often have to register with) in order to display what kind of game you are running along with
     statistics such as number of online accounts and online status.
-- `oobfuncs.py` - in here you can define custom [OOB functions](OOB).
+- `oobfuncs.py` - in here you can define custom [OOB functions](Concept/OOB).
 - `portal_services_plugin.py` - this allows for adding your own custom services/protocols to the
 Portal. It must define one particular function that will be called by Evennia at startup. There can
 be any number of service plugin modules, all will be imported and used if defined. More info can be

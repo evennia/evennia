@@ -35,7 +35,7 @@ implementations indeed.
 
 The server ships with a default set of player commands that are similar to the MUX command set. We
 *do not* aim specifically to be a MUX server, but we had to pick some default to go with (see
-[this](Soft-Code) for more about our original motivations).  It's easy to remove or add commands, or
+[this](Concept/Soft-Code) for more about our original motivations).  It's easy to remove or add commands, or
 to have the command syntax mimic other systems, like Diku, LP, MOO and so on. Or why not create a
 new and better command system of your own design.
 
@@ -47,7 +47,7 @@ a [screenshot](Screenshot).
 
 Once you installed Evennia yourself it comes with its own tutorial - this shows off some of the
 possibilities _and_ gives you a small single-player quest to play. The tutorial takes only one
-single in-game command to install as explained [here](Tutorial-World-Introduction).
+single in-game command to install as explained [here](Contrib/Tutorial-World-Introduction).
 
 ## Brief summary of features
 
@@ -104,7 +104,7 @@ For more extensive feature information, see the [Developer Central](Developer-Ce
 
 ## What you need to know to work with Evennia
 
-Assuming you have Evennia working (see the [quick start instructions](Getting-Started)) and have
+Assuming you have Evennia working (see the [quick start instructions](Setup/Getting-Started)) and have
 gotten as far as to start the server and connect to it with the client of your choice, here's what
 you need to know depending on your skills and needs.
 
@@ -142,8 +142,8 @@ programming](http://www.tutorialspoint.com/python/python_classes_objects.htm), u
 [Classes](http://docs.python.org/tutorial/classes.html), their methods and properties
 
 Obviously, the more things you feel comfortable with, the easier time you'll have to find your way.
-With just basic knowledge you should be able to define your own [Commands](Commands), create custom
-[Objects](Objects) as well as make your world come alive with basic [Scripts](Scripts). You can
+With just basic knowledge you should be able to define your own [Commands](Component/Commands), create custom
+[Objects](Component/Objects) as well as make your world come alive with basic [Scripts](Component/Scripts). You can
 definitely build a whole advanced and customized game from extending Evennia's examples only.
 
 ### I know my Python stuff and I am willing to use it!
@@ -175,9 +175,9 @@ chat](http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9
 on IRC. This allows you to chat directly with other developers new and old as well as with the devs
 of Evennia itself. This chat is logged (you can find links on http://www.evennia.com) and can also
 be searched from the same place for discussion topics you are interested in.
-2. Read the [Game Planning](Game-Planning) wiki page. It gives some ideas for your work flow and the
+2. Read the [Game Planning](Howto/Game-Planning) wiki page. It gives some ideas for your work flow and the
 state of mind you should aim for - including cutting down the scope of your game for its first
 release.
-3. Do the [Tutorial for basic MUSH-like game](Tutorial-for-basic-MUSH-like-game) carefully from
+3. Do the [Tutorial for basic MUSH-like game](Howto/StartingTutorial/Tutorial-for-basic-MUSH-like-game) carefully from
 beginning to end and try to understand what does what. Even if you are not interested in a MUSH for
 your own game, you will end up with a small (very small) game that you can build or learn from.

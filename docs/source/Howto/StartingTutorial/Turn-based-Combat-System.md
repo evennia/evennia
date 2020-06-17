@@ -31,7 +31,7 @@ allows for emoting as part of combat which is an advantage for roleplay-heavy ga
 To implement a freeform combat system all you need is a dice roller and a roleplaying rulebook. See
 [contrib/dice.py](https://github.com/evennia/evennia/blob/master/evennia/contrib/dice.py) for an
 example dice roller. To implement at twitch-based system you basically need a few combat
-[commands](Commands), possibly ones with a [cooldown](Command-Cooldown). You also need a [game rule
+[commands](Component/Commands), possibly ones with a [cooldown](Howto/Command-Cooldown). You also need a [game rule
 module](Implementing-a-game-rule-system) that makes use of it. We will focus on the turn-based
 variety here.
 
@@ -61,22 +61,22 @@ reported. A new turn then begins.
 
 For creating the combat system we will need the following components:
 
-- A combat handler. This is the main mechanic of the system. This is a [Script](Scripts) object
+- A combat handler. This is the main mechanic of the system. This is a [Script](Component/Scripts) object
 created for each combat.  It is not assigned to a specific object but is shared by the combating
 characters and handles all the combat information. Since Scripts are database entities it also means
 that the combat will not be affected by a server reload.
-- A combat [command set](Command-Sets) with the relevant commands needed for combat, such as the
+- A combat [command set](Component/Command-Sets) with the relevant commands needed for combat, such as the
 various attack/defend options and the `flee/disengage` command to leave the combat mode.
 - A rule resolution system. The basics of making such a module is described in the [rule system
 tutorial](Implementing-a-game-rule-system). We will only sketch such a module here for our end-turn
 combat resolution.
-- An `attack` [command](Commands) for initiating the combat mode. This is added to the default
+- An `attack` [command](Component/Commands) for initiating the combat mode. This is added to the default
 command set. It will create the combat handler and add the character(s) to it. It will also assign
 the combat command set to the characters.
 
 ## The combat handler
 
-The _combat handler_ is implemented as a stand-alone [Script](Scripts).  This Script is created when
+The _combat handler_ is implemented as a stand-alone [Script](Component/Scripts).  This Script is created when
 the first Character decides to attack another and is deleted when no one is fighting any more. Each
 handler represents one instance of combat and one combat only. Each instance of combat can hold any
 number of characters but each character can only be part of one combat at a time (a player would
@@ -89,7 +89,7 @@ don't use this very much here this might allow the combat commands on the charac
 update the combat handler state directly.
 
 _Note: Another way to implement a combat handler would be to use a normal Python object and handle
-time-keeping with the [TickerHandler](TickerHandler). This would require either adding custom hook
+time-keeping with the [TickerHandler](Component/TickerHandler). This would require either adding custom hook
 methods on the character or to implement a custom child of the TickerHandler class to track turns.
 Whereas the TickerHandler is easy to use, a Script offers more power in this case._
 
@@ -506,7 +506,7 @@ class CmdAttack(Command):
 ```
 
 The `attack` command will not go into the combat cmdset but rather into the default cmdset. See e.g.
-the [Adding Command Tutorial](Adding-Command-Tutorial) if you are unsure about how to do this.
+the [Adding Command Tutorial](Howto/StartingTutorial/Adding-Command-Tutorial) if you are unsure about how to do this.
 
 ## Expanding the example
 

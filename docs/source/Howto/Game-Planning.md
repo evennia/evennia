@@ -132,7 +132,7 @@ Talker-type game you *will* have to bite the bullet and code your game (or find 
 do it for you).
 
 Even if you won't code anything yourself, as a designer you need to at least understand the basic
-paradigms of Evennia, such as [Objects](Objects), [Commands](Commands) and [Scripts](Scripts) and
+paradigms of Evennia, such as [Objects](Component/Objects), [Commands](Component/Commands) and [Scripts](Component/Scripts) and
 how they hang together. We recommend you go through the [Tutorial World](Tutorial-World-
 Introduction) in detail (as well as glancing at its code) to get at least a feel for what is
 involved behind the scenes. You could also look through the tutorial for [building a game from
@@ -144,7 +144,7 @@ The earlier you revise problems, the easier they will be to fix.
 
 A good idea is to host your code online (publicly or privately) using version control. Not only will
 this make it easy for multiple coders to collaborate (and have a bug-tracker etc), it also means
-your work is backed up at all times. The [Version Control](Version-Control) tutorial has
+your work is backed up at all times. The [Version Control](Coding/Version-Control) tutorial has
 instructions for setting up a sane developer environment with proper version control.
 
 ### "Tech Demo" Building
@@ -199,7 +199,7 @@ flag and let people try it! Call upon your alpha-players to try everything - the
 to break your game in ways that you never could have imagined. In Alpha you might be best off to
 focus on inviting friends and maybe other MUD developers, people who you can pester to give proper
 feedback and bug reports (there *will* be bugs, there is no way around it). Follow the quick
-instructions for [Online Setup](Online-Setup) to make your game visible online. If you hadn't
+instructions for [Online Setup](Setup/Online-Setup) to make your game visible online. If you hadn't
 already, make sure to put up your game on the [Evennia game index](http://games.evennia.com/) so
 people know it's in the works (actually, even pre-alpha games are allowed in the index so don't be
 shy)!

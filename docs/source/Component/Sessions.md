@@ -5,14 +5,14 @@ An Evennia *Session* represents one single established connection to the server.
 Evennia session, it is possible for a person to connect multiple times, for example using different
 clients in multiple windows. Each such connection is represented by a session object.
 
-A session object has its own [cmdset](Command-Sets), usually the "unloggedin" cmdset. This is what
+A session object has its own [cmdset](Component/Command-Sets), usually the "unloggedin" cmdset. This is what
 is used to show the login screen and to handle commands to create a new account (or
-[Account](Accounts) in evennia lingo) read initial help and to log into the game with an existing
+[Account](Component/Accounts) in evennia lingo) read initial help and to log into the game with an existing
 account. A session object can either be "logged in" or not.  Logged in means that the user has
 authenticated. When this happens the session is associated with an Account object (which is what
 holds account-centric stuff). The account can then in turn puppet any number of objects/characters.
 
-> Warning: A Session is not *persistent* - it is not a [Typeclass](Typeclasses) and has no
+> Warning: A Session is not *persistent* - it is not a [Typeclass](Component/Typeclasses) and has no
 connection to the database. The Session will go away when a user disconnects and you will lose any
 custom data on it if the server reloads. The `.db` handler on Sessions is there to present a uniform
 API (so you can assume `.db` exists even if you don't know if you receive an Object or a Session),
@@ -26,13 +26,13 @@ Here are some important properties available on (Server-)Sessions
 - `sessid` - The unique session-id. This is an integer starting from 1.
 - `address` - The connected client's address. Different protocols give different information here.
 - `logged_in` - `True` if the user authenticated to this session.
-- `account` - The [Account](Accounts) this Session is attached to. If not logged in yet, this is
+- `account` - The [Account](Component/Accounts) this Session is attached to. If not logged in yet, this is
 `None`.
-- `puppet` - The [Character/Object](Objects) currently puppeted by this Account/Session combo. If
+- `puppet` - The [Character/Object](Component/Objects) currently puppeted by this Account/Session combo. If
 not logged in or in OOC mode, this is `None`.
-- `ndb` - The [Non-persistent Attribute](Attributes) handler.
+- `ndb` - The [Non-persistent Attribute](Component/Attributes) handler.
 - `db` - As noted above, Sessions don't have regular Attributes. This is an alias to `ndb`.
-- `cmdset` - The Session's [CmdSetHandler](Command-Sets)
+- `cmdset` - The Session's [CmdSetHandler](Component/Command-Sets)
 
 Session statistics are mainly used internally by Evennia.
 
@@ -99,7 +99,7 @@ transparently detect which session was triggering the command (if any) and redir
 `command.msg()` is often the safest bet.
 
 You can get the `session` in two main ways: 
-* [Accounts](Accounts) and [Objects](Objects) (including Characters) have a `sessions` property.
+* [Accounts](Component/Accounts) and [Objects](Component/Objects) (including Characters) have a `sessions` property.
 This is a *handler* that tracks all Sessions attached to or puppeting them. Use e.g.
 `accounts.sessions.get()` to get a list of Sessions attached to that entity.
 * A Command instance has a `session` property that always points back to the Session that triggered
@@ -132,7 +132,7 @@ changes carefully.
 
 *Note: This is considered an advanced topic. You don't need to know this on a first read-through.*
 
-Evennia is split into two parts, the [Portal and the Server](Portal-And-Server). Each side tracks
+Evennia is split into two parts, the [Portal and the Server](Component/Portal-And-Server). Each side tracks
 its own Sessions, syncing them to each other.
 
 The "Session" we normally refer to is actually the `ServerSession`. Its counter-part on the Portal
@@ -172,7 +172,7 @@ server reboot (assuming the Portal is not stopped at the same time, obviously).
 Both the Portal and Server each have a *sessionhandler* to manage the connections. These handlers
 are global entities contain all methods for relaying data across the AMP bridge. All types of
 Sessions hold a reference to their respective Sessionhandler (the property is called
-`sessionhandler`) so they can relay data. See [protocols](Custom-Protocols) for more info
+`sessionhandler`) so they can relay data. See [protocols](Concept/Custom-Protocols) for more info
 on building new protocols.
 
 To get all Sessions in the game (i.e. all currently connected clients), you access the server-side

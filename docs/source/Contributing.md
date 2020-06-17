@@ -92,7 +92,7 @@ you had in mind when creating it.
 * To make the licensing situation clear we assume all contributions are released with the same
 [license as Evennia](Licensing). If this is not possible for some reason, talk to us and we'll
 handle it on a case-by-case basis.
-* Your contribution must be covered by [unit tests](Unit-Testing). Having unit tests will both help
+* Your contribution must be covered by [unit tests](Coding/Unit-Testing). Having unit tests will both help
 make your code more stable and make sure small changes does not break it without it being noticed,
 it will also help us test its functionality and merge it quicker. If your contribution is a single
 module, you can add your unit tests to `evennia/contribs/tests.py`. If your contribution is bigger

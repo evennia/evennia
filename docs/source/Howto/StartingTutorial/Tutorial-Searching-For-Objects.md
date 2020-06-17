@@ -9,8 +9,8 @@ explains Evennia's tools for searching.
 ## Things to search for
 
 The first thing to consider is the base type of the thing you are searching for. Evennia organizes
-its database into a few main tables: [Objects](Objects), [Accounts](Accounts), [Scripts](Scripts),
-[Channels](Communications#channels), [Messages](Communication#Msg) and [Help Entries](Help-System).
+its database into a few main tables: [Objects](Component/Objects), [Accounts](Component/Accounts), [Scripts](Component/Scripts),
+[Channels](Component/Communications#channels), [Messages](Communication#Msg) and [Help Entries](Component/Help-System).
 Most of the time you'll likely spend your time searching for Objects and the occasional Accounts.
 
 So to find an entity, what can be searched for? 
@@ -22,20 +22,20 @@ the database field for `.key` is instead named `username` (this is a Django requ
 don't specify search-type, you'll usually search based on key. *Aliases* are extra names given to
 Objects using something like `@alias` or `obj.aliases.add('name')`. The main search functions (see
 below) will automatically search for aliases whenever you search by-key.
- - [Tags](Tags) are the main way to group and identify objects in Evennia. Tags can most often be
+ - [Tags](Component/Tags) are the main way to group and identify objects in Evennia. Tags can most often be
 used (sometimes together with keys) to uniquely identify an object. For example, even though you
 have two locations with the same name, you can separate them by their tagging (this is how Evennia
 implements 'zones' seen in other systems). Tags can also have categories, to further organize your
 data for quick lookups.
- - An object's [Attributes](Attributes) can also used to find an object. This can be very useful but
+ - An object's [Attributes](Component/Attributes) can also used to find an object. This can be very useful but
 since Attributes can store almost any data they are far less optimized to search for than Tags or
 keys.
-- The object's [Typeclass](Typeclasses) indicate the sub-type of entity. A Character, Flower or
+- The object's [Typeclass](Component/Typeclasses) indicate the sub-type of entity. A Character, Flower or
 Sword are all types of Objects. A Bot is a kind of Account. The database field is called
 `typeclass_path` and holds the full Python-path to the class. You can usually specify the
 `typeclass` as an argument to Evennia's search functions as well as use the class directly to limit
 queries.
-- The `location` is only relevant for [Objects](Objects) but is a very common way to weed down the
+- The `location` is only relevant for [Objects](Component/Objects) but is a very common way to weed down the
 number of candidates before starting to search. The reason is that most in-game commands tend to
 operate on things nearby (in the same room) so the choices can be limited from the start.
 - The database id or the '#dbref' is unique (and never re-used) within each database table. So while
@@ -50,7 +50,7 @@ around and searching by Tags and/or keys will usually get you what you need.
 
 ## Getting objects inside another
 
-All in-game [Objects](Objects) have a `.contents` property that returns all objects 'inside' them
+All in-game [Objects](Component/Objects) have a `.contents` property that returns all objects 'inside' them
 (that is, all objects which has its `.location` property set to that object. This is a simple way to
 get everything in a room and is also faster since this lookup is cached and won't hit the database.
 
@@ -64,7 +64,7 @@ location except `obj`.
 
 ## Searching using `Object.search`
 
-Say you have a [command](Commands), and you want it to do something to a target. You might be
+Say you have a [command](Component/Commands), and you want it to do something to a target. You might be
 wondering how you retrieve that target in code, and that's where Evennia's search utilities come in.
 In the most common case, you'll often use the `search` method of the `Object` or `Account`
 typeclasses. In a command, the `.caller` property will refer back to the object using the command
@@ -133,7 +133,7 @@ class CmdListHangouts(default_cmds.MuxCommand):
                         ", ".join(str(ob) for ob in hangouts)))
 ```
 
-This uses the `search_tag` function to find all objects previously tagged with [Tags](Tags)
+This uses the `search_tag` function to find all objects previously tagged with [Tags](Component/Tags)
 "hangout" and with category "location tags".
 
 Other important search methods in `utils.search` are
@@ -303,7 +303,7 @@ nice enough to alias the `db_key` field so you can normally just do `char.key` t
 name, the database field is actually called `db_key` and the real name must be used for the purpose
 of building a query.
 
-> Don't confuse database fields with [Attributes](Attributes) you set via `obj.db.attr = 'foo'` or
+> Don't confuse database fields with [Attributes](Component/Attributes) you set via `obj.db.attr = 'foo'` or
 `obj.attributes.add()`. Attributes are custom database entities *linked* to an object. They are not
 separate fields *on* that object like `db_key` or `db_location` are. You can get attached Attributes
 manually through the `db_attributes` many-to-many field in the same way as `db_tags` above.

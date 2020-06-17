@@ -5,8 +5,7 @@
     WARNING: This system is still WIP and many things are bound to change!
 ```
 
-Contributing to the docs is is like [contributing to the rest of Evennia][contributing]:
-Check out the branch of Evennia you want to edit the documentation for. Create your
+Contributing to the docs is is like [contributing to the rest of Evennia][contributing]: Check out the branch of Evennia you want to edit the documentation for. Create your
 own work-branch, make your changes to files in `evennia/docs/source/` and make a PR for it!
 
 The documentation source files are `*.md` (Markdown) files found in `evennia/docs/source/`.
@@ -544,8 +543,7 @@ a plain HTML string in the markdown like so:
 
 #### Tables
 
-A table is specified using [ReST table syntax][ReST-tables]:
-
+A table is specified using [ReST table syntax][ReST-tables]: 
 ````
 ```eval_rst
 
@@ -670,7 +668,7 @@ to understand our friendly Google-style docstrings used in classes and functions
 [commonmark-help]: https://commonmark.org/help/
 [sphinx-autodoc]: http://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc
 [sphinx-napoleon]: http://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html
-[getting-started]: Getting-Started
+[getting-started]: Setup/Getting-Started
 [contributing]: Contributing
 [ReST]: https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html
 [ReST-tables]: https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html#tables

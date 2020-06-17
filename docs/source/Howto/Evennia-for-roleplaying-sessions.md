@@ -44,7 +44,7 @@ to show your renewed GM status to the other accounts.
 
 ### The permission hierarchy
 
-Evennia has the following [permission hierarchy](Building-Permissions#assigning-permissions) out of
+Evennia has the following [permission hierarchy](Concept/Building-Permissions#assigning-permissions) out of
 the box: *Players, Helpers, Builders, Admins* and finally *Developers*. We could change these but
 then we'd need to update our Default commands to use the changes. We want to keep this simple, so
 instead we map our different roles on top of this permission ladder.
@@ -60,7 +60,7 @@ everyone.
 5. `Developers`-level permission are the server administrators, the ones with the ability to
 restart/shutdown the server as well as changing the permission levels.
 
-> The [superuser](Building-Permissions#the-super-user) is not part of the hierarchy and actually
+> The [superuser](Concept/Building-Permissions#the-super-user) is not part of the hierarchy and actually
 completely bypasses it. We'll assume server admin(s) will "just" be Developers.
 
 ### How to grant permissions
@@ -102,7 +102,7 @@ its name will have the string`(GM)` added to the end.
 #### Character modification
 
 Let's first start by customizing the Character. We recommend you browse the beginning of the
-[Account](Accounts) page to make sure you know how Evennia differentiates between the OOC "Account
+[Account](Component/Accounts) page to make sure you know how Evennia differentiates between the OOC "Account
 objects" (not to be confused with the `Accounts` permission, which is just a string specifying your
 access) and the IC "Character objects".
 
@@ -142,7 +142,7 @@ Above, we change how the Character's name is displayed: If the account controlli
 a GM, we attach the string `(GM)` to the Character's name so everyone can tell who's the boss. If we
 ourselves are Developers or GM's we will see database ids attached to Characters names, which can
 help if doing database searches against Characters of exactly the same name. We base the "gm-
-ingness" on having an flag (an [Attribute](Attributes)) named `is_gm`. We'll make sure new GM's
+ingness" on having an flag (an [Attribute](Component/Attributes)) named `is_gm`. We'll make sure new GM's
 actually get this flag below.
 
 > **Extra exercise:** This will only show the `(GM)` text on *Characters* puppeted by a GM account,
@@ -152,7 +152,7 @@ that is, it will show only to those in the same location. If we wanted it to als
 
 #### New @gm/@ungm command
 
-We will describe in some detail how to create and add an Evennia [command](Commands) here with the
+We will describe in some detail how to create and add an Evennia [command](Component/Commands) here with the
 hope that we don't need to be as detailed when adding commands in the future. We will build on
 Evennia's default "mux-like" commands here.
 
@@ -704,7 +704,7 @@ access after the fact.
 
 ## Channels
 
-Evennia comes with [Channels](Communications#Channels) in-built and they are described fully in the
+Evennia comes with [Channels](Component/Communications#Channels) in-built and they are described fully in the
 documentation. For brevity, here are the relevant commands for normal use:
 
 * `@ccreate new_channel;alias;alias = short description` - Creates a new channel.

@@ -10,7 +10,7 @@ Here are some pointers to get you going.
 
 Evennia is developed using Python. Even if you are more of a designer than a coder, it is wise to
 learn how to read and understand basic Python code. If you are new to Python, or need a refresher,
-take a look at our two-part [Python introduction](Python-basic-introduction).
+take a look at our two-part [Python introduction](Howto/StartingTutorial/Python-basic-introduction).
 
 ### Explore Evennia interactively
 
@@ -31,7 +31,7 @@ This will open an Evennia-aware python shell (using ipython). From within this s
     evennia.<TAB>
 
 That is, enter `evennia.` and press the `<TAB>` key. This will show you all the resources made
-available at the top level of Evennia's  "flat API". See the [flat API](Evennia-API) page for more
+available at the top level of Evennia's  "flat API". See the [flat API](Coding/Evennia-API) page for more
 info on how to explore it efficiently.
 
 You can complement your exploration by peeking at the sections of the much more detailed [Developer
@@ -52,7 +52,7 @@ using such a checker can be a good start to weed out the simple problems.
 
 ### Plan before you code
 
-Before you start coding away at your dream game, take a look at our [Game Planning](Game-Planning)
+Before you start coding away at your dream game, take a look at our [Game Planning](Howto/Game-Planning)
 page. It might hopefully help you avoid some common pitfalls and time sinks.
 
 ### Code in your game folder, not in the evennia/ repository
@@ -98,7 +98,5 @@ chat](http://webchat.freenode.net/?channels=evennia) are also there for you.
 
 And finally, of course, have fun!
 
-[feature-request]:
-(https://github.com/evennia/evennia/issues/new?title=Feature+Request%3a+%3Cdescriptive+title+here%3E&body=%23%23%23%23+Description+of+the+suggested+feature+and+how+it+is+supposed+to+work+for+the+admin%2fend+user%3a%0D%0A%0D%0A%0D%0A%23%23%23%23+A+list+of+arguments+for+why+you+think+this+new+feature+should+be+included+in+Evennia%3a%0D%0A%0D%0A1.%0D%0A2.%0D%0A%0D%0A%23%23%23%23+Extra+information%2c+such+as+requirements+or+ideas+on+implementation%3a%0D%0A%0D%0A
-[bug]:
-https://github.com/evennia/evennia/issues/new?title=Bug%3a+%3Cdescriptive+title+here%3E&body=%23%23%23%23+Steps+to+reproduce+the+issue%3a%0D%0A%0D%0A1.+%0D%0A2.+%0D%0A3.+%0D%0A%0D%0A%23%23%23%23+What+I+expect+to+see+and+what+I+actually+see+%28tracebacks%2c+error+messages+etc%29%3a%0D%0A%0D%0A%0D%0A%0D%0A%23%23%23%23+Extra+information%2c+such+as+Evennia+revision%2frepo%2fbranch%2c+operating+system+and+ideas+for+how+to+solve%3a%0D%0A%0D%0A
+[feature-request]: (https://github.com/evennia/evennia/issues/new?title=Feature+Request%3a+%3Cdescriptive+title+here%3E&body=%23%23%23%23+Description+of+the+suggested+feature+and+how+it+is+supposed+to+work+for+the+admin%2fend+user%3a%0D%0A%0D%0A%0D%0A%23%23%23%23+A+list+of+arguments+for+why+you+think+this+new+feature+should+be+included+in+Evennia%3a%0D%0A%0D%0A1.%0D%0A2.%0D%0A%0D%0A%23%23%23%23+Extra+information%2c+such+as+requirements+or+ideas+on+implementation%3a%0D%0A%0D%0A
+[bug]: https://github.com/evennia/evennia/issues/new?title=Bug%3a+%3Cdescriptive+title+here%3E&body=%23%23%23%23+Steps+to+reproduce+the+issue%3a%0D%0A%0D%0A1.+%0D%0A2.+%0D%0A3.+%0D%0A%0D%0A%23%23%23%23+What+I+expect+to+see+and+what+I+actually+see+%28tracebacks%2c+error+messages+etc%29%3a%0D%0A%0D%0A%0D%0A%0D%0A%23%23%23%23+Extra+information%2c+such+as+Evennia+revision%2frepo%2fbranch%2c+operating+system+and+ideas+for+how+to+solve%3a%0D%0A%0D%0A
