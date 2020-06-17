@@ -38,9 +38,7 @@ def create_toctree():
                                "accept doc-files with the same name, even in different folders.")
         docref_map[fname] = url
 
-    ref_regex = re.compile(r"\[(?P<txt>[\w -\[\]]+?)\]\((?P<url>"
-                           + r"|".join(docref_map)
-                           + r")\)", re.I + re.S + re.U)
+    ref_regex = re.compile(r"\[(?P<txt>[\w -\[\]]+?)\]\((?P<url>.+?)\)", re.I + re.S + re.U)
 
     def _sub(match):
         grpdict = match.groupdict()
@@ -48,9 +46,12 @@ def create_toctree():
         fname, *part = url.rsplit("/", 1)
         fname = part[0] if part else fname
         fname = fname.rsplit(".", 1)[0]
-        urlout = docref_map.get(fname, url)
-        if url != urlout:
+        fname, *anchor = url.rsplit("#", 1)
+        if fname in docref_map:
+            urlout = docref_map[fname] + ('#' + anchor[0] if anchor else '')
             print(f"  Remapped link [{txt}]({url}) -> [{txt}]({urlout})")
+        else:
+            urlout = url
         return f"[{txt}]({urlout})"
 
     # replace / correct links in all files
