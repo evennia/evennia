@@ -26,7 +26,7 @@ time.
 - The [Builder Docs](Builder-Docs) helps for starting to build a game world using Evennia.
 - The [Developer Central](Developer-Central) describes how Evennia works and is used by coders.
 - The [Tutorials & Examples](Tutorials) contains help pages on a step-by-step or tutorial format.
-- The [API](api:evennia) documentation is created from the latest source code.
+- The [API](api:evennia-api) documentation is created from the latest source code.
 - The [TOC](toc) lists all regular documentation pages.
 
 
