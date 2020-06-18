@@ -1,4 +1,4 @@
-evennia.contrib.security.auditing package
+evennia.contrib.security.auditing 
 =========================================
 
 .. automodule:: evennia.contrib.security.auditing
@@ -9,27 +9,9 @@ evennia.contrib.security.auditing package
 Submodules
 ----------
 
-evennia.contrib.security.auditing.outputs module
-------------------------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: evennia.contrib.security.auditing.outputs
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.contrib.security.auditing.server module
------------------------------------------------
-
-.. automodule:: evennia.contrib.security.auditing.server
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.contrib.security.auditing.tests module
-----------------------------------------------
-
-.. automodule:: evennia.contrib.security.auditing.tests
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
+   evennia.contrib.security.auditing.outputs
+   evennia.contrib.security.auditing.server
+   evennia.contrib.security.auditing.tests

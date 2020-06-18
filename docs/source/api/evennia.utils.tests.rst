@@ -1,4 +1,4 @@
-evennia.utils.tests package
+evennia.utils.tests 
 ===========================
 
 .. automodule:: evennia.utils.tests
@@ -10,97 +10,24 @@ Subpackages
 -----------
 
 .. toctree::
+   :maxdepth: 4
 
    evennia.utils.tests.data
 
 Submodules
 ----------
 
-evennia.utils.tests.test\_ansi module
--------------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: evennia.utils.tests.test_ansi
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.utils.tests.test\_batchprocessors module
-------------------------------------------------
-
-.. automodule:: evennia.utils.tests.test_batchprocessors
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.utils.tests.test\_create\_functions module
---------------------------------------------------
-
-.. automodule:: evennia.utils.tests.test_create_functions
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.utils.tests.test\_eveditor module
------------------------------------------
-
-.. automodule:: evennia.utils.tests.test_eveditor
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.utils.tests.test\_evform module
----------------------------------------
-
-.. automodule:: evennia.utils.tests.test_evform
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.utils.tests.test\_evmenu module
----------------------------------------
-
-.. automodule:: evennia.utils.tests.test_evmenu
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.utils.tests.test\_gametime module
------------------------------------------
-
-.. automodule:: evennia.utils.tests.test_gametime
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.utils.tests.test\_tagparsing module
--------------------------------------------
-
-.. automodule:: evennia.utils.tests.test_tagparsing
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.utils.tests.test\_text2html module
-------------------------------------------
-
-.. automodule:: evennia.utils.tests.test_text2html
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.utils.tests.test\_utils module
---------------------------------------
-
-.. automodule:: evennia.utils.tests.test_utils
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.utils.tests.test\_validatorfuncs module
------------------------------------------------
-
-.. automodule:: evennia.utils.tests.test_validatorfuncs
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
+   evennia.utils.tests.test_ansi
+   evennia.utils.tests.test_batchprocessors
+   evennia.utils.tests.test_create_functions
+   evennia.utils.tests.test_eveditor
+   evennia.utils.tests.test_evform
+   evennia.utils.tests.test_evmenu
+   evennia.utils.tests.test_gametime
+   evennia.utils.tests.test_tagparsing
+   evennia.utils.tests.test_text2html
+   evennia.utils.tests.test_utils
+   evennia.utils.tests.test_validatorfuncs

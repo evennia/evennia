@@ -1,4 +1,4 @@
-evennia.web.utils package
+evennia.web.utils 
 =========================
 
 .. automodule:: evennia.web.utils
@@ -9,35 +9,10 @@ evennia.web.utils package
 Submodules
 ----------
 
-evennia.web.utils.backends module
----------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: evennia.web.utils.backends
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.web.utils.general\_context module
------------------------------------------
-
-.. automodule:: evennia.web.utils.general_context
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.web.utils.middleware module
------------------------------------
-
-.. automodule:: evennia.web.utils.middleware
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.web.utils.tests module
-------------------------------
-
-.. automodule:: evennia.web.utils.tests
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
+   evennia.web.utils.backends
+   evennia.web.utils.general_context
+   evennia.web.utils.middleware
+   evennia.web.utils.tests

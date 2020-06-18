@@ -1,4 +1,4 @@
-evennia.commands.default package
+evennia.commands.default 
 ================================
 
 .. automodule:: evennia.commands.default
@@ -9,131 +9,22 @@ evennia.commands.default package
 Submodules
 ----------
 
-evennia.commands.default.account module
----------------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: evennia.commands.default.account
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.commands.default.admin module
--------------------------------------
-
-.. automodule:: evennia.commands.default.admin
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.commands.default.batchprocess module
---------------------------------------------
-
-.. automodule:: evennia.commands.default.batchprocess
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.commands.default.building module
-----------------------------------------
-
-.. automodule:: evennia.commands.default.building
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.commands.default.cmdset\_account module
------------------------------------------------
-
-.. automodule:: evennia.commands.default.cmdset_account
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.commands.default.cmdset\_character module
--------------------------------------------------
-
-.. automodule:: evennia.commands.default.cmdset_character
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.commands.default.cmdset\_session module
------------------------------------------------
-
-.. automodule:: evennia.commands.default.cmdset_session
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.commands.default.cmdset\_unloggedin module
---------------------------------------------------
-
-.. automodule:: evennia.commands.default.cmdset_unloggedin
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.commands.default.comms module
--------------------------------------
-
-.. automodule:: evennia.commands.default.comms
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.commands.default.general module
----------------------------------------
-
-.. automodule:: evennia.commands.default.general
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.commands.default.help module
-------------------------------------
-
-.. automodule:: evennia.commands.default.help
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.commands.default.muxcommand module
-------------------------------------------
-
-.. automodule:: evennia.commands.default.muxcommand
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.commands.default.syscommands module
--------------------------------------------
-
-.. automodule:: evennia.commands.default.syscommands
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.commands.default.system module
---------------------------------------
-
-.. automodule:: evennia.commands.default.system
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.commands.default.tests module
--------------------------------------
-
-.. automodule:: evennia.commands.default.tests
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.commands.default.unloggedin module
-------------------------------------------
-
-.. automodule:: evennia.commands.default.unloggedin
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
+   evennia.commands.default.account
+   evennia.commands.default.admin
+   evennia.commands.default.batchprocess
+   evennia.commands.default.building
+   evennia.commands.default.cmdset_account
+   evennia.commands.default.cmdset_character
+   evennia.commands.default.cmdset_session
+   evennia.commands.default.cmdset_unloggedin
+   evennia.commands.default.comms
+   evennia.commands.default.general
+   evennia.commands.default.help
+   evennia.commands.default.muxcommand
+   evennia.commands.default.syscommands
+   evennia.commands.default.system
+   evennia.commands.default.tests
+   evennia.commands.default.unloggedin

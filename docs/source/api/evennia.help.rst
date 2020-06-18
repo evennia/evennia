@@ -1,4 +1,4 @@
-evennia.help package
+evennia.help 
 ====================
 
 .. automodule:: evennia.help
@@ -6,37 +6,12 @@ evennia.help package
    :undoc-members:
    :show-inheritance:
 
-Subpackages
------------
-
-.. toctree::
-
-   evennia.help.migrations
-
 Submodules
 ----------
 
-evennia.help.admin module
--------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: evennia.help.admin
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.help.manager module
----------------------------
-
-.. automodule:: evennia.help.manager
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.help.models module
---------------------------
-
-.. automodule:: evennia.help.models
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
+   evennia.help.admin
+   evennia.help.manager
+   evennia.help.models

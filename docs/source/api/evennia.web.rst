@@ -1,4 +1,4 @@
-evennia.web package
+evennia.web 
 ===================
 
 .. automodule:: evennia.web
@@ -10,6 +10,7 @@ Subpackages
 -----------
 
 .. toctree::
+   :maxdepth: 4
 
    evennia.web.api
    evennia.web.utils
@@ -19,11 +20,7 @@ Subpackages
 Submodules
 ----------
 
-evennia.web.urls module
------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: evennia.web.urls
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
+   evennia.web.urls
