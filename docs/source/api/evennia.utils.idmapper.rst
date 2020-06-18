@@ -1,4 +1,4 @@
-evennia.utils.idmapper package
+evennia.utils.idmapper 
 ==============================
 
 .. automodule:: evennia.utils.idmapper
@@ -9,27 +9,9 @@ evennia.utils.idmapper package
 Submodules
 ----------
 
-evennia.utils.idmapper.manager module
--------------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: evennia.utils.idmapper.manager
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.utils.idmapper.models module
-------------------------------------
-
-.. automodule:: evennia.utils.idmapper.models
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.utils.idmapper.tests module
------------------------------------
-
-.. automodule:: evennia.utils.idmapper.tests
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
+   evennia.utils.idmapper.manager
+   evennia.utils.idmapper.models
+   evennia.utils.idmapper.tests

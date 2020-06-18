@@ -1,4 +1,4 @@
-evennia.utils.tests.data package
+evennia.utils.tests.data 
 ================================
 
 .. automodule:: evennia.utils.tests.data
@@ -9,19 +9,8 @@ evennia.utils.tests.data package
 Submodules
 ----------
 
-evennia.utils.tests.data.evform\_example module
------------------------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: evennia.utils.tests.data.evform_example
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.utils.tests.data.prototypes\_example module
----------------------------------------------------
-
-.. automodule:: evennia.utils.tests.data.prototypes_example
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
+   evennia.utils.tests.data.evform_example
+   evennia.utils.tests.data.prototypes_example

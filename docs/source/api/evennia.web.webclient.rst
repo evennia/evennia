@@ -1,4 +1,4 @@
-evennia.web.webclient package
+evennia.web.webclient 
 =============================
 
 .. automodule:: evennia.web.webclient
@@ -9,19 +9,8 @@ evennia.web.webclient package
 Submodules
 ----------
 
-evennia.web.webclient.urls module
----------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: evennia.web.webclient.urls
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.web.webclient.views module
-----------------------------------
-
-.. automodule:: evennia.web.webclient.views
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
+   evennia.web.webclient.urls
+   evennia.web.webclient.views

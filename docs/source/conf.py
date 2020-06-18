@@ -61,23 +61,7 @@ smv_tag_whitelist = r"^$"
 
 # -- Options for HTML output -------------------------------------------------
 
-# html_theme = "alabaster"
-# import stanford_theme
-# html_theme = "stanford_theme"
-# html_theme_path = [stanford_theme.get_html_theme_path()]
-# html_theme = "sunpy"
-# import sunpy_sphinx_theme
-# html_theme_path = sunpy_sphinx_theme.get_html_theme_path()
-# html_theme = 'topos-theme'
-# html_theme = 'sphinxdoc'
-# html_theme = 'classic'
-# html_theme = 'scrolls'
-# html_theme = 'agogo'
-# html_theme = "traditional"
 html_theme = "nature"
-## html_theme = 'pyramid'
-# html_theme = 'bizstyle'
-# html_theme = 'epub'
 
 # Custom extras for sidebar
 html_sidebars = {
@@ -206,19 +190,31 @@ else:
 
 autodoc_default_options = {
     "members": True,
-    "undoc-members": True,
+    "undoc-members": False,
     "show-inheritance": True,
     "special-members": "__init__",
     "enable_eval_rst": True,
 }
 
+autodoc_member_order = "bysource"
+autodoc_typehints = "description"
 
 def autodoc_skip_member(app, what, name, obj, skip, options):
+    """Which members the autodoc should ignore."""
     if _no_autodoc:
         return True
-    if name.startswith("__") and name != "__init__":
+    if name.startswith("_") and name != "__init__":
         return True
     return False
+
+
+# clean ANSI colors
+from evennia.utils import ansi
+
+def autodoc_clean_docstring(app, what, name, obj, options, lines):
+    """Clean docstring of ansi. Must modify lines list in-place"""
+    for il, line in enumerate(lines):
+        lines[il] = ansi.strip_raw_ansi(line)
 
 
 # Napoleon Google-style docstring parser for autodocs
@@ -228,13 +224,13 @@ napoleon_numpy_docstring = False
 napoleon_include_init_with_doc = False
 napoleon_include_private_with_doc = False
 napoleon_include_special_with_doc = False
-napoleon_use_admonition_for_examples = False
+napoleon_use_admonition_for_examples = True
 napoleon_use_admonition_for_notes = False
 napoleon_use_admonition_for_references = False
 napoleon_use_ivar = False
 napoleon_use_param = True
 napoleon_use_keyword = True
-napoleon_use_rtype = True
+napoleon_use_rtype = False
 
 
 # -- Main config setup ------------------------------------------
@@ -243,6 +239,7 @@ napoleon_use_rtype = True
 
 def setup(app):
     app.connect("autodoc-skip-member", autodoc_skip_member)
+    app.connect("autodoc-process-docstring", autodoc_clean_docstring)
     app.add_transform(AutoStructify)
 
     # build toctree file

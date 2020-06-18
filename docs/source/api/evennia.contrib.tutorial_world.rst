@@ -1,4 +1,4 @@
-evennia.contrib.tutorial\_world package
+evennia.contrib.tutorial\_world 
 =======================================
 
 .. automodule:: evennia.contrib.tutorial_world
@@ -9,27 +9,9 @@ evennia.contrib.tutorial\_world package
 Submodules
 ----------
 
-evennia.contrib.tutorial\_world.mob module
-------------------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: evennia.contrib.tutorial_world.mob
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.contrib.tutorial\_world.objects module
-----------------------------------------------
-
-.. automodule:: evennia.contrib.tutorial_world.objects
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.contrib.tutorial\_world.rooms module
---------------------------------------------
-
-.. automodule:: evennia.contrib.tutorial_world.rooms
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
+   evennia.contrib.tutorial_world.mob
+   evennia.contrib.tutorial_world.objects
+   evennia.contrib.tutorial_world.rooms

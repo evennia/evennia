@@ -1,4 +1,4 @@
-evennia.contrib.awsstorage package
+evennia.contrib.awsstorage 
 ==================================
 
 .. automodule:: evennia.contrib.awsstorage
@@ -9,19 +9,8 @@ evennia.contrib.awsstorage package
 Submodules
 ----------
 
-evennia.contrib.awsstorage.aws\_s3\_cdn module
-----------------------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: evennia.contrib.awsstorage.aws_s3_cdn
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.contrib.awsstorage.tests module
----------------------------------------
-
-.. automodule:: evennia.contrib.awsstorage.tests
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
+   evennia.contrib.awsstorage.aws_s3_cdn
+   evennia.contrib.awsstorage.tests
