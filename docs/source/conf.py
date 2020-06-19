@@ -76,6 +76,7 @@ html_sidebars = {
 }
 html_favicon = "_static/images/favicon.ico"
 html_logo = "_static/images/evennia_logo.png"
+html_short_title = f"Evennia {release}"
 
 # HTML syntax highlighting style
 pygments_style = "sphinx"
@@ -133,7 +134,7 @@ def url_resolver(url):
 
 
 # auto-create TOCs if a list of links is under these headers
-auto_toc_sections = ["Contents", "Toc", "Index"]
+auto_toc_sections = ["Contents", "Toc", "Index", "API", "Overview"]
 
 recommonmark_config = {
     "enable_auto_toc_tree": True,

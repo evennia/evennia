@@ -2,28 +2,28 @@
 
 - [evennia.accounts](api:evennia.accounts) - the out-of-character entity representing players
 - [evennia.commands](api:evennia.commands) - all inputs. Also includes default commands
-- [evennia.comms](api:evennia.comms) - in-game channels and messaging 
+- [evennia.comms](api:evennia.comms) - in-game channels and messaging
 - [evennia.contrib](api:evennia.contrib) - game-specific tools and code contributed by the community
-- [evennia.help](api:evennia.help) - in-game help system 
+- [evennia.help](api:evennia.help) - in-game help system
 - [evennia.locks](api:evennia.locks) - limiting access to various systems and resources
 - [evennia.objects](api:evennia.objects) - all in-game entities, like Rooms, Characters, Exits etc
-- [evennia.prototypes](api:evennia.prototypes) - customize entities using dicts 
+- [evennia.prototypes](api:evennia.prototypes) - customize entities using dicts
 - [evennia.scripts](api:evennia.scripts) - all out-of-character game objects
 - [evennia.server](api:evennia.server) - core Server and Portal programs, also network protocols
-- [evennia.typeclasses](api:evennia.typeclasses) - core database-python bridge 
-- [evennia.utils](api:evennia.utils) - lots of useful coding tools and utilities  
+- [evennia.typeclasses](api:evennia.typeclasses) - core database-python bridge
+- [evennia.utils](api:evennia.utils) - lots of useful coding tools and utilities
 - [evennia.web](api:evennia.web) - webclient, website and other web resources
 
 
 
-## Shortcuts 
+## Shortcuts
 
-Evennia's 'flat API' has shortcuts to common tools, available by only importing `evennia`. 
+Evennia's 'flat API' has shortcuts to common tools, available by only importing `evennia`.
 
 
-### Main config 
+### Main config
 
-- [evennia.settings_default](github:settings_default.py) - all settings (modify/override in `mygame/server/settings.py`)
+- [evennia.settings_default](github:evennia/settings_default.py) - all settings (modify/override in `mygame/server/settings.py`)
 
 ### Search functions
 
@@ -94,5 +94,5 @@ Evennia's 'flat API' has shortcuts to common tools, available by only importing 
 
 ### Contributions
 
-- [evennia.contrib](https://github.com/evennia/evennia/blob/master/evennia/contrib/) - 
+- [evennia.contrib](https://github.com/evennia/evennia/blob/master/evennia/contrib/) -
 game-specific contributions and plugins ([docs](https://github.com/evennia/evennia/blob/master/evennia/contrib/README.md))
