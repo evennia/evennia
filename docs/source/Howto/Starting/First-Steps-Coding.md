@@ -10,7 +10,7 @@ Started](Getting-Started) instructions. You should have initialized a new game f
 `evennia --init foldername` command.  We will in the following assume this folder is called
 "mygame".
 
-It might be a good idea to eye through the brief [Coding Introduction](Howto/StartingTutorial/Coding-Introduction) too
+It might be a good idea to eye through the brief [Coding Introduction](Coding-Introduction) too
 (especially the recommendations in the section about the evennia "flat" API and about using `evennia
 shell` will help you here and in the future).
 
@@ -57,13 +57,13 @@ up with a new command to view those attributes.
             return self.db.strength, self.db.agility, self.db.magic
     ```
 
-1. [Reload](Setup/Start-Stop-Reload) the server (you will still be connected to the game after doing
+1. [Reload](../../Setup/Start-Stop-Reload) the server (you will still be connected to the game after doing
 this). Note that if you examine *yourself* you will *not* see any new Attributes appear yet. Read
 the next section to understand why.
 
 #### Updating Yourself
 
-It's important to note that the new [Attributes](Component/Attributes) we added above will only be stored on
+It's important to note that the new [Attributes](../../Component/Attributes) we added above will only be stored on
 *newly* created characters. The reason for this is simple: The `at_object_creation` method, where we
 added those Attributes, is per definition only called when the object is *first created*, then never
 again. This is usually a good thing since those Attributes may change over time - calling that hook
@@ -112,8 +112,8 @@ what the `@update` command does under the hood). From in-game you can do the sam
 MyClass.objects.all()]
 ```
 
-See the [Object Typeclass tutorial](Howto/StartingTutorial/Adding-Object-Typeclass-Tutorial) for more help and the
-[Typeclasses](Component/Typeclasses) and [Attributes](Component/Attributes) page for detailed documentation about
+See the [Object Typeclass tutorial](Adding-Object-Typeclass-Tutorial) for more help and the
+[Typeclasses](../../Component/Typeclasses) and [Attributes](../../Component/Attributes) page for detailed documentation about
 Typeclasses and Attributes.
 
 #### Troubleshooting: Updating Yourself
@@ -159,7 +159,7 @@ tracebacks and you'll be able to resolve the vast majority of common errors easi
 ### Add a New Default Command
 
 The `@py` command used above is only available to privileged users. We want any player to be able to
-see their stats.  Let's add a new [command](Component/Commands) to list the abilities we added in the previous
+see their stats.  Let's add a new [command](../../Component/Commands) to list the abilities we added in the previous
 section.
 
 1. Open `mygame/commands/command.py`. You could in principle put your command anywhere but this
@@ -201,7 +201,7 @@ the bottom of this file:
         self.add(CmdAbilities())
     ```
 
-1. [Reload](Setup/Start-Stop-Reload) the server (noone will be disconnected by doing this).
+1. [Reload](../../Setup/Start-Stop-Reload) the server (noone will be disconnected by doing this).
 
 You (and anyone else) should now be able to use `abilities` (or its alias `abi`) as part of your
 normal commands in-game:
@@ -211,8 +211,8 @@ abilities
 STR: 5, AGI: 4, MAG: 2
 ```
 
-See the [Adding a Command tutorial](Howto/StartingTutorial/Adding-Command-Tutorial) for more examples and the
-[Commands](Component/Commands) section for detailed documentation about the Command system.
+See the [Adding a Command tutorial](Adding-Command-Tutorial) for more examples and the
+[Commands](../../Component/Commands) section for detailed documentation about the Command system.
 
 ### Make a New Type of Object
 
@@ -263,7 +263,7 @@ functionality. Here is an example of how the file could look:
 
 1. Check your code for bugs. Tracebacks will appear on your command line or log. If you have a grave
 Syntax Error in your code, the source file itself will fail to load which can cause issues with the
-entire cmdset. If so, fix your bug and [reload the server from the command line](Setup/Start-Stop-Reload)
+entire cmdset. If so, fix your bug and [reload the server from the command line](../../Setup/Start-Stop-Reload)
 (noone will be disconnected by doing this).
 1. Use `@create/drop stone:wiseobject.WiseObject` to create a talkative stone. If the `@create`
 command spits out a warning or cannot find the typeclass (it will tell you which paths it searched),
