@@ -1,5 +1,6 @@
 # Toc
 
+- [Coding/Coding Overview](Coding/Coding-Overview)
 - [Coding/Continuous Integration](Coding/Continuous-Integration)
 - [Coding/Debugging](Coding/Debugging)
 - [Coding/Directory Overview](Coding/Directory-Overview)
@@ -104,7 +105,7 @@
 - [Howto/Starting/Parsing command arguments, theory and best practices](Howto/Starting/Parsing-command-arguments,-theory-and-best-practices)
 - [Howto/Starting/Python basic introduction](Howto/Starting/Python-basic-introduction)
 - [Howto/Starting/Python basic tutorial part two](Howto/Starting/Python-basic-tutorial-part-two)
-- [Howto/Starting/Starting Overview](Howto/Starting/Starting-Overview)
+- [Howto/Starting/Starting Introduction](Howto/Starting/Starting-Introduction)
 - [Howto/Starting/Turn based Combat System](Howto/Starting/Turn-based-Combat-System)
 - [Howto/Starting/Tutorial Searching For Objects](Howto/Starting/Tutorial-Searching-For-Objects)
 - [Howto/Starting/Tutorial for basic MUSH like game](Howto/Starting/Tutorial-for-basic-MUSH-like-game)
