@@ -20,13 +20,15 @@ This is the manual of [Evennia](http://www.evennia.com), the open source Python
 There is [a lengthier Evennia introduction](Evennia-Introduction) you may want
 to read. It's also good to know [how to get help](How-To-Get-And-Give-Help).
 
+- [Starting Tutorial](Howto/Starting/Starting-Introduction)
+
 - The [Getting Started](Setup/Getting-Started) page helps installing and starting Evennia for the first
 time.
 - The [Admin Docs](Administrative-Docs) covers running and maintaining an Evennia server.
 - The [Builder Docs](Builder-Docs) helps for starting to build a game world using Evennia.
 - The [Developer Central](Developer-Central) describes how Evennia works and is used by coders.
 - The [Tutorials & Examples](Tutorials) contains help pages on a step-by-step or tutorial format.
-- The [API](api:evennia-api) documentation is created from the latest source code.
+- The [API](Evennia-API) documentation is created from the latest source code.
 - The [TOC](toc) lists all regular documentation pages.
 
 
