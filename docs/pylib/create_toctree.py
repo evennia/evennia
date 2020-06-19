@@ -6,40 +6,69 @@ directive somewhere.
 """
 
 import re
+from collections import defaultdict
 from sphinx.errors import DocumentError
 from pathlib import Path
-from os.path import abspath, dirname, join as pathjoin, sep
+from os.path import abspath, dirname, join as pathjoin, sep, relpath
 
 _IGNORE_FILES = []
-_SOURCE_DIR = pathjoin(dirname(dirname(abspath(__file__))), "source")
+_SOURCEDIR_NAME = "source"
+_SOURCE_DIR = pathjoin(dirname(dirname(abspath(__file__))), _SOURCEDIR_NAME)
 _TOC_FILE = pathjoin(_SOURCE_DIR, "toc.md")
 
+_CURRFILE = None
 
 def create_toctree():
     """
     Create source/toc.md file
-    """
 
-    docref_map = {}
+    """
+    global _CURRFILE
+
+    def _get_rel_source_ref(path):
+        """Get the path relative the source/ dir"""
+        pathparts = path.split("/")
+        # we allow a max of 4 levels of nesting in the source dir
+        ind = pathparts[-4:].index(_SOURCEDIR_NAME)
+        # get the part after source/
+        pathparts = pathparts[-4 + 1 + ind:]
+        url = "/".join(pathparts)
+        # get the reference, without .md
+        url = url.rsplit(".", 1)[0]
+        return url
+
+    toc_map = {}
+    docref_map = defaultdict(dict)
 
     for path in Path(_SOURCE_DIR).rglob("*.md"):
         # find the source/ part of the path and strip it out
-        # support nesting of 3 within source/ dir
-        fname = path.name
-        if fname in _IGNORE_FILES:
+
+        if path.name in _IGNORE_FILES:
             # this is the name including .md
             continue
-        ind = path.parts[-4:].index("source")
-        pathparts = path.parts[-4 + 1 + ind:]
-        url = "/".join(pathparts)
-        url = url.rsplit(".", 1)[0]
-        fname = fname.rsplit(".", 1)[0]
-        if fname in docref_map:
+
+        sourcepath = path.as_posix()
+        # get name and url relative to source/
+        fname = path.name.rsplit(".", 1)[0]
+        src_url = _get_rel_source_ref(sourcepath)
+
+        # check for duplicate files
+        if fname in toc_map:
+            duplicate_src_url = toc_map[fname]
             raise DocumentError(
-                f" Tried to add '{url}.md' when '{docref_map[fname]}.md' already exists.\n"
+                f" Tried to add {src_url}.md, but a file {duplicate_src_url}.md already exists.\n"
                 " Evennia's auto-link-corrector does not accept doc-files with the same \n"
                 " name, even in different folders. Rename one.\n")
-        docref_map[fname] = url
+        toc_map[fname] = src_url
+
+        # find relative links to all other files
+        for targetpath in Path(_SOURCE_DIR).rglob("*.md"):
+
+            targetname = targetpath.name.rsplit(".", 1)[0]
+            targetpath = targetpath.as_posix()
+            url = relpath(targetpath, dirname(sourcepath))
+            docref_map[sourcepath][targetname] = url.rsplit(".", 1)[0]
+
 
     # normal reference-links [txt](urls)
     ref_regex = re.compile(r"\[(?P<txt>[\w -\[\]]+?)\]\((?P<url>.+?)\)", re.I + re.S + re.U)
@@ -57,8 +86,8 @@ def create_toctree():
             fname = part[0] if part else fname
             fname = fname.rsplit(".", 1)[0]
             fname, *anchor = fname.rsplit("#", 1)
-            if fname in docref_map:
-                urlout = docref_map[fname] + ('#' + anchor[0] if anchor else '')
+            if _CURRFILE in docref_map and fname in docref_map[_CURRFILE]:
+                urlout = docref_map[_CURRFILE][fname] + ('#' + anchor[0] if anchor else '')
                 if urlout != url:
                     print(f"  Remapped link [{txt}]({url}) -> [{txt}]({urlout})")
             else:
@@ -76,8 +105,8 @@ def create_toctree():
             fname = part[0] if part else fname
             fname = fname.rsplit(".", 1)[0]
             fname, *anchor = fname.rsplit("#", 1)
-            if fname in docref_map:
-                urlout = docref_map[fname] + ('#' + anchor[0] if anchor else '')
+            if _CURRFILE in docref_map and fname in docref_map[_CURRFILE]:
+                urlout = docref_map[_CURRFILE][fname] + ('#' + anchor[0] if anchor else '')
                 if urlout != url:
                     print(f"  Remapped link [{txt}]: {url} -> [{txt}]: {urlout}")
             else:
@@ -86,7 +115,11 @@ def create_toctree():
 
     # replace / correct links in all files
     count = 0
-    for path in Path(_SOURCE_DIR).rglob("*.md"):
+    for path in sorted(Path(_SOURCE_DIR).rglob("*.md"), key=lambda p: p.name):
+
+        # from pudb import debugger;debugger.Debugger().set_trace()
+        _CURRFILE = path.as_posix()
+
         with open(path, 'r') as fil:
             intxt = fil.read()
             outtxt = ref_regex.sub(_sub, intxt)
@@ -95,7 +128,7 @@ def create_toctree():
             with open(path, 'w') as fil:
                 fil.write(outtxt)
             count += 1
-            print(f"Auto-relinked links in {path.name}")
+            print(f" ----- Auto-relinked links in {path.name} ------")
 
     if count > 0:
         print(f"Auto-corrected links in {count} documents.")
@@ -104,7 +137,7 @@ def create_toctree():
     with open(_TOC_FILE, "w") as fil:
         fil.write("# Toc\n")
 
-        for ref in sorted(docref_map.values()):
+        for ref in sorted(toc_map.values()):
 
             if ref == "toc":
                 continue

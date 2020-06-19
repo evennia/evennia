@@ -13,9 +13,9 @@ When you create a new Evennia game (with for example `evennia --init mygame`) Ev
 automatically create empty child classes `Object`, `Character`, `Room` and `Exit` respectively. They
 are found `mygame/typeclasses/objects.py`, `mygame/typeclasses/rooms.py` etc. 
 
-> Technically these are all [Typeclassed](Component/Typeclasses), which can be ignored for now. In
+> Technically these are all [Typeclassed](../../Component/Typeclasses), which can be ignored for now. In
 > `mygame/typeclasses` are also base typeclasses for out-of-character things, notably
-> [Channels](Component/Communications), [Accounts](Component/Accounts) and [Scripts](Component/Scripts). We don't cover those in
+> [Channels](../../Component/Communications), [Accounts](../../Component/Accounts) and [Scripts](../../Component/Scripts). We don't cover those in
 > this tutorial.
 
 For your own game you will most likely want to expand on these very simple beginnings. It's normal
@@ -62,13 +62,13 @@ up.
 you will find the traceback. The most common error is that you have some sort of syntax error in
 your class. 
 
-Note that the [Locks](Component/Locks) and [Attribute](Component/Attributes) which are set in the typeclass could just
+Note that the [Locks](../../Component/Locks) and [Attribute](../../Component/Attributes) which are set in the typeclass could just
 as well have been set using commands in-game, so this is a *very* simple example.
 
 ## Storing data on initialization
 
 The `at_object_creation` is only called once, when the object is first created. This makes it ideal
-for database-bound things like [Attributes](Component/Attributes). But sometimes you want to create temporary
+for database-bound things like [Attributes](../../Component/Attributes). But sometimes you want to create temporary
 properties (things that are not to be stored in the database but still always exist every time the
 object is created). Such properties can be initialized in the `at_init` method on the object.
 `at_init` is called every time the object is loaded into memory. 
@@ -86,7 +86,7 @@ def at_init(self):
     self.ndb.mylist = []
 ```
 
-> Note: As mentioned in the [Typeclasses](Component/Typeclasses) documentation, `at_init` replaces the use of
+> Note: As mentioned in the [Typeclasses](../../Component/Typeclasses) documentation, `at_init` replaces the use of
 > the standard `__init__` method of typeclasses due to how the latter may be called in situations
 > other than you'd expect. So use `at_init` where you would normally use `__init__`. 
 
