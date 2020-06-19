@@ -20,7 +20,7 @@ world to be 'logically' impossible with rooms looping to themselves or exits lea
 side of the map. Exits can also be named anything, from "jumping out the window" to "into the fifth
 dimension". This tutorial assumes you can only move in the cardinal directions (N, E, S and W).
 2. Rooms must be connected and linked together for the map to be generated correctly. Vanilla
-Evennia comes with a admin command [@tunnel](Component/Default-Command-Help#tunnel-cmdtunnel) that allows a
+Evennia comes with a admin command [@tunnel](../Component/Default-Command-Help#tunnel-cmdtunnel) that allows a
 user to create rooms in the cardinal directions, but additional work is needed to assure that rooms
 are connected. For example, if you `@tunnel east` and then immediately do `@tunnel west` you'll find
 that you have created two completely stand-alone rooms. So care is needed if you want to create a
@@ -361,7 +361,7 @@ looping rooms that will show on your in-game map.
 
 The above example will display the map above the room description. You could also use an
 [EvTable](github:evennia.utils.evtable) to place description and map next to each other. Some other
-things you can do is to have a [Command](Component/Commands) that displays with a larger radius, maybe with a
+things you can do is to have a [Command](../Component/Commands) that displays with a larger radius, maybe with a
 legend and other features.
 
 Below is the whole `map.py` for your reference. You need to update your `Room` typeclass (see above)

@@ -67,7 +67,7 @@ entries together for people to more easily find them. See the `help` command in-
 default categories. If you don't specify the category, "General" is assumed.
 
 If you don't want your command to be picked up by the auto-help system at all (like if you want to
-write its docs manually using the info in the next section or you use a [cmdset](Component/Command-Sets) that
+write its docs manually using the info in the next section or you use a [cmdset](Command-Sets) that
 has its own help functionality) you can explicitly set `auto_help` class property to `False` in your
 command definition.
 
@@ -89,7 +89,7 @@ looking for help. The topic can contain spaces and also partial matches will be 
 - The *help category*. Examples are *Administration*, *Building*, *Comms* or *General*. This is an
 overall grouping of similar help topics, used by the engine to give a better overview.
 - The *text* - the help text itself, of any length.
-- locks - a [lock definition](Component/Locks). This can be used to limit access to this help entry, maybe
+- locks - a [lock definition](Locks). This can be used to limit access to this help entry, maybe
 because it's staff-only or otherwise meant to be restricted. Help commands check for `access_type`s
 `view` and `edit`. An example of a lock string would be `view:perm(Builders)`.
 

@@ -178,6 +178,6 @@ be searched from the same place for discussion topics you are interested in.
 2. Read the [Game Planning](Howto/Game-Planning) wiki page. It gives some ideas for your work flow and the
 state of mind you should aim for - including cutting down the scope of your game for its first
 release.
-3. Do the [Tutorial for basic MUSH-like game](Howto/StartingTutorial/Tutorial-for-basic-MUSH-like-game) carefully from
+3. Do the [Tutorial for basic MUSH-like game](Howto/Starting/Tutorial-for-basic-MUSH-like-game) carefully from
 beginning to end and try to understand what does what. Even if you are not interested in a MUSH for
 your own game, you will end up with a small (very small) game that you can build or learn from.

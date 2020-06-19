@@ -1,9 +1,9 @@
 # Command System
 
-- [Commands](Component/Commands) 
-- [Command Sets](Component/Command-Sets)
-- [Command Auto-help](Component/Help-System#command-auto-help-system)
+- [Commands](../Component/Commands) 
+- [Command Sets](../Component/Command-Sets)
+- [Command Auto-help](../Component/Help-System#command-auto-help-system)
 
 See also:
-- [Default Command Help](Component/Default-Command-Help)
-- [Adding Command Tutorial](Howto/StartingTutorial/Adding-Command-Tutorial)
+- [Default Command Help](../Component/Default-Command-Help)
+- [Adding Command Tutorial](../Howto/Starting/Adding-Command-Tutorial)

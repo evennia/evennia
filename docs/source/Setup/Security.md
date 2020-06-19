@@ -131,7 +131,7 @@ Now the only ports open will be your administrative ssh port (whichever you chos
 4000-4001.
 
 ### Use an external webserver
-Though not officially supported, there are some benefits to [deploying a webserver](Setup/Apache-Config)
+Though not officially supported, there are some benefits to [deploying a webserver](Apache-Config)
 to handle/proxy traffic to your Evennia instance.
 
 For example, Evennia's game engine and webservice are tightly integrated. If you bring your game

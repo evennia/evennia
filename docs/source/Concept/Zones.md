@@ -23,7 +23,7 @@ Many MUD codebases hardcode zones as part of the engine and database.  Evennia d
 distinction due to the fact that rooms themselves are meant to be customized to any level anyway.
 Below is a suggestion for how to implement zones in Evennia.
 
-All objects in Evennia can hold any number of [Tags](Component/Tags). Tags are short labels that you attach to
+All objects in Evennia can hold any number of [Tags](../Component/Tags). Tags are short labels that you attach to
 objects. They make it very easy to retrieve groups of objects. An object can have any number of
 different tags. So let's attach the relevant tag to our forest:
 
@@ -47,7 +47,7 @@ Henceforth you can then easily retrieve only objects with a given tag:
 
 The tagging or aliasing systems above don't instill any sort of functional difference between a
 magical forest room and a normal one - they are just arbitrary ways to mark objects for quick
-retrieval later. Any functional differences must be expressed using [Typeclasses](Component/Typeclasses).
+retrieval later. Any functional differences must be expressed using [Typeclasses](../Component/Typeclasses).
 
 Of course, an alternative way to implement zones themselves is to have all rooms/objects in a zone
 inherit from a given typeclass parent - and then limit your searches to objects inheriting from that

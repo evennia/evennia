@@ -324,7 +324,7 @@ developer mailing list or IRC chat to see beforehand if your feature is deemed s
 as a core feature in the engine. When it comes to bug-fixes, other developers may also have good
 input on how to go about resolving the issue.
 
-To contribute you need to have [forked Evennia](Coding/Version-Control#forking-evennia) first. As described
+To contribute you need to have [forked Evennia](Version-Control#forking-evennia) first. As described
 above you should do your modification in a separate local branch (not in the master branch). This
 branch is what you then present to us (as a *Pull request*, PR, see below). We can then merge your
 change into the upstream master and you then do `git pull` to update master usual. Now that the

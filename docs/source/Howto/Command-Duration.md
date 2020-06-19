@@ -2,7 +2,7 @@
 
 
 Before reading this tutorial, if you haven't done so already, you might want to
-read [the documentation on commands](Component/Commands) to get a basic understanding of
+read [the documentation on commands](../Component/Commands) to get a basic understanding of
 how commands work in Evennia.
 
 In some types of games a command should not start and finish immediately.
@@ -40,7 +40,7 @@ class CmdTest(Command):
 > Important: The `yield` functionality will *only* work in the `func` method of
 > Commands. It only works because Evennia has especially
 > catered for it in Commands. If you want the same functionality elsewhere you
-> must use the [interactive decorator](Concept/Async-Process#The-@interactive-decorator).
+> must use the [interactive decorator](../Concept/Async-Process#The-@interactive-decorator).
 
 The important line is the `yield 10`.  It tells Evennia to "pause" the command
 and to wait for 10 seconds to execute the rest.  If you add this command and

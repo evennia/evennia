@@ -38,7 +38,7 @@ to use. So the *Player* usually operates by making use of the tools prepared for
 
 For a *Player*, collaborating on a game need not be too different between MUSH and Evennia. The
 building and description of the game world can still happen mostly in-game using build commands,
-using text tags and [inline functions](Concept/TextTags#inline-functions) to prettify and customize the
+using text tags and [inline functions](../Concept/TextTags#inline-functions) to prettify and customize the
 experience. Evennia offers external ways to build a world but those are optional. There is also
 nothing *in principle* stopping a Developer from offering a softcode-like language to Players if
 that is deemed necessary.
@@ -204,7 +204,7 @@ developer changing the underlying Python code.
 ## Next steps
 
 If you are a *Developer* and are interested in making a more MUSH-like Evennia game, a good start is
-to look into the Evennia [Tutorial for a first MUSH-like game](Howto/StartingTutorial/Tutorial-for-basic-MUSH-like-game).
+to look into the Evennia [Tutorial for a first MUSH-like game](Starting/Tutorial-for-basic-MUSH-like-game).
 That steps through building a simple little game from scratch and helps to acquaint you with the
 various corners of Evennia. There is also the [Tutorial for running roleplaying sessions](Evennia-
 for-roleplaying-sessions) that can be of interest.
