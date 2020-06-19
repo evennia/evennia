@@ -25,10 +25,10 @@ This is the manual of [Evennia](http://www.evennia.com), the open source Python
 
 - [Server Setup, Maintenance and Life](Setup/Setup-Overview) - how to run, maintain and release 
 - [Tutorials and Howto's](Howto/Howto-Overview) - projects and hints for reaching particular effects and goals
-- [Core components](Components) - the core building blocks of Evennia
-- [Concepts](Concepts) - larger-scale concepts and features 
-- [Coding](Coding) - coding and development hints and resources 
-- [Contributions](Contrib) - game-specific tools and code added by the community
+- [Core components](Component/Component-Overview) - the core building blocks of Evennia
+- [Concepts](Concept/Concept-Overview) - larger-scale concepts and features 
+- [Coding](Coding/Coding-Overview) - coding and development hints and resources 
+- [Contributions](Contrib/Contrib-Overview) - game-specific tools and code added by the community
 - [API](Evennia-API) - the full API-reference, generated from source
 - [Table of Contents](toc) - an alphabetical listing of all regular documentation pages
 
