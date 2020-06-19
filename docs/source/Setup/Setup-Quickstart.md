@@ -7,16 +7,15 @@ in complete isolation if you want, without needing any access to the internet.
 ## Installation
 
 Evennia requires Python3.7+. As with most Python packages, using a
-[virtualenv](../Glossary#Virtualenv) is recommended in order to keep your
+[virtualenv](../Glossary#virtualenv) is recommended in order to keep your
 installation independent from the system libraries. It's _not_ recommended 
 to install Evennia as superuser. 
 
     pip install evennia
 
-If things worked, the `evennia` command should now be available. Use `evennia -h` for 
-usage help (or read on).
+Make sure the `evennia` command works. Use `evennia -h` for usage help (or read on).
 
-If you are having trouble, want to install in some other way (like with Docker) or want to help develop
+If you are having trouble, want to install in some other way (like with Docker) or want to contribute to
 Evennia itself, check out the [Extended Installation instructions](Extended-Installation). 
 It also has a [troubleshooting section](Extended-Installation#Troubleshooting) for different operating
 systems.
@@ -50,7 +49,7 @@ Fill in your user-name and password. This will be the "god user" or "superuser" 
 If all went well, the server is now up and running. Point a legacy MUD/telnet client to `localhost:4000` or
 a web browser at [http://localhost:4001](http://localhost:4001) to play your new (if empty) game!
 
-> If `localhost` doesn't work on your computer, use `127.0.0.1`, which it's the same thing.
+> If `localhost` doesn't work on your computer, use `127.0.0.1`, which is the same thing.
 
 
 ## See server logs 
@@ -88,4 +87,4 @@ Stop the server (will need to use `start` to activate it again):
 
 ## The Next step
 
-Why not head into the [Starting Tutorial] to learn how to start making your new game. 
+Why not head into the [Starting Tutorial](../Howto/Starting/Starting-Overview) to learn how to start making your new game!

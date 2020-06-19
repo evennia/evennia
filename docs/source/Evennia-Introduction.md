@@ -175,7 +175,7 @@ chat](http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9
 on IRC. This allows you to chat directly with other developers new and old as well as with the devs
 of Evennia itself. This chat is logged (you can find links on http://www.evennia.com) and can also
 be searched from the same place for discussion topics you are interested in.
-2. Read the [Game Planning](Howto/Game-Planning) wiki page. It gives some ideas for your work flow and the
+2. Read the [Game Planning](Howto/Starting/Game-Planning) wiki page. It gives some ideas for your work flow and the
 state of mind you should aim for - including cutting down the scope of your game for its first
 release.
 3. Do the [Tutorial for basic MUSH-like game](Howto/Starting/Tutorial-for-basic-MUSH-like-game) carefully from
