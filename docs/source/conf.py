@@ -123,15 +123,13 @@ def url_resolver(url):
         return _github_issue_choose
 
     elif url.startswith(githubstart):
-        urlpath = url[len(githubstart) :]
+        urlpath = url[len(githubstart):]
         if not (urlpath.startswith("develop/") or urlpath.startswith("master")):
             urlpath = "master/" + urlpath
         return _github_code_root + urlpath
     elif url.startswith(apistart):
-        return "api/" + url[len(apistart) :] + ".html"
+        return "api/" + url[len(apistart):] + ".html"
     return url
-    # else:
-    #     return _github_doc_root + url
 
 
 # auto-create TOCs if a list of links is under these headers
@@ -150,6 +148,8 @@ recommonmark_config = {
 # automatic creation of API documentation. This requires a valid Evennia setup
 
 _no_autodoc = os.environ.get("NOAUTODOC")
+
+ansi_clean = None
 
 if not _no_autodoc:
     # we must set up Evennia and its paths for autodocs to work
@@ -182,6 +182,8 @@ if not _no_autodoc:
 
         evennia._init()
 
+    from evennia.utils.ansi import strip_raw_ansi as ansi_clean
+
 
 if _no_autodoc:
     exclude_patterns = ["api/*"]
@@ -199,6 +201,7 @@ autodoc_default_options = {
 autodoc_member_order = "bysource"
 autodoc_typehints = "description"
 
+
 def autodoc_skip_member(app, what, name, obj, skip, options):
     """Which members the autodoc should ignore."""
     if _no_autodoc:
@@ -208,13 +211,11 @@ def autodoc_skip_member(app, what, name, obj, skip, options):
     return False
 
 
-# clean ANSI colors
-from evennia.utils import ansi
-
 def autodoc_clean_docstring(app, what, name, obj, options, lines):
     """Clean docstring of ansi. Must modify lines list in-place"""
-    for il, line in enumerate(lines):
-        lines[il] = ansi.strip_raw_ansi(line)
+    if ansi_clean:
+        for il, line in enumerate(lines):
+            lines[il] = ansi_clean(line)
 
 
 # Napoleon Google-style docstring parser for autodocs
