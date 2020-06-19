@@ -1,7 +1,8 @@
 # HAProxy Config (Optional)
 
 ### Evennia, HTTPS and Secure Websockets can play nicely together, quickly.
-May I suggest giving HAProxy 1.5+ a chance...
+
+This sets up HAProxy 1.5+ in front of Evennia to provide security.
 
 Installing HAProxy is usually as simple as:
 ```

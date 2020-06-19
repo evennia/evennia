@@ -17,12 +17,13 @@ This is the manual of [Evennia](http://www.evennia.com), the open source Python
 `MU*` creation system. 
 
 - [Evennia Introduction](Evennia-Introduction)
+- [Install & Setup Quickstart](Setup/Setup-Quickstart)
 - [Begin the starting tutorial](Howto/Starting/Starting-Introduction)
 - [How to get help](How-To-Get-And-Give-Help)
 
 ## Main sections 
 
-- [Setting up and running](Setup/Setup-Overview) - How to get, start and maintain the server
+- [Setting up and running](Setup/Setup-Overview) - More on how to get, start and maintain the server
 - [Tutorials and Howto's](Howto) - Explains how to reach particular goals
 - [Core components](Components) - The building blocks of Evennia
 - [Concepts](Concepts) - Larger-scale concepts and features 
