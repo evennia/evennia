@@ -131,6 +131,7 @@
 - [Setup/RSS](Setup/RSS)
 - [Setup/Running Evennia in Docker](Setup/Running-Evennia-in-Docker)
 - [Setup/Security](Setup/Security)
+- [Setup/Setup Overview](Setup/Setup-Overview)
 - [Setup/Start Stop Reload](Setup/Start-Stop-Reload)
 - [index](index)
 
