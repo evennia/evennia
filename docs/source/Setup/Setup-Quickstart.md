@@ -24,18 +24,18 @@ systems.
 ## Initialize a new game
 
 Use `cd` to enter a folder where you want to do your game development. Here (and in 
-the rest of this documentation we call this folder `mygame`, but you should of course 
-name your game whatever you like):
+the rest of the Evennia documentation) we call this folder `mygame`, but you should of course 
+name your game whatever you like:
 
     evennia --init mygame
 
 This will create a new folder `mygame` (or whatever you chose) in your current location. This
-contains 
+contains empty templates and all the default settings needed to start the server.
 
 
 ## Start the new game
 
-`cd` into your game folder (`mygame` above). Next run 
+`cd` into your game folder (`mygame` in our case). Next, run 
 
     evennia migrate
 
@@ -44,7 +44,7 @@ ever want to start from a fresh database, just delete this file and re-run `even
 
     evennia start 
 
-Fill in your user-name and password. This will be the "god user" or "superuser" in-game. The email is optional.
+Set your user-name and password when prompted. This will be the "god user" or "superuser" in-game. The email is optional.
 
 If all went well, the server is now up and running. Point a legacy MUD/telnet client to `localhost:4000` or
 a web browser at [http://localhost:4001](http://localhost:4001) to play your new (if empty) game!
@@ -54,7 +54,7 @@ a web browser at [http://localhost:4001](http://localhost:4001) to play your new
 
 ## See server logs 
 
-This will echo the server logs to the terminal as they come in
+This will echol the server logs to the terminal as they come in:
 
     evennia --log
 
@@ -63,24 +63,27 @@ or
     evennia -l 
 
 
-You can also attach `--log` to other `evennia` commands to start the log right away, such as 
+You can also start logging immediately when running `evennia` commands, such as
 
 
     evennia start -l 
 
 
+To exit the log view, enter `Ctrl-C` (`Cmd-C` for Mac). This will not affect the server.
+
+
 ## Restarting and stopping 
 
 
-This will restart the server without disconnecting any connected players:
+You can restart the server without disconnecting any connected players:
 
     evennia restart 
 
-Do a full stop and restart (will disconnect everyone):
+To do a full stop and restart (will disconnect everyone):
 
     evennia reboot 
 
-Stop the server (will need to use `start` to activate it again):
+Full stop of the server (will need to use `start` to activate it again):
 
     evennia stop
 

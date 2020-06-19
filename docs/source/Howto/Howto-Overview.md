@@ -14,7 +14,7 @@ in mind for your own game, this will give you a good start.
 
 ### Part 1: What we have 
 
-- [Introduction & Overview](Starting/Starting-Overview)
+- [Introduction & Overview](Starting/Starting-Introduction)
 - [Building stuff](Starting/Building-Quickstart)
 - [Python basics](Starting/Python-basic-introduction)
 - [Python classes](Starting/Python-basic-tutorial-part-two)
