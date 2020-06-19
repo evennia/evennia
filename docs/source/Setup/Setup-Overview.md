@@ -1,50 +1,35 @@
-# Setup and maintenance
+# Server Setup 
 
-The Evennia server is installed, run and maintained from the terminal (console/CMD on Windows). Starting the 
-server doesn't make anything visible online. Once you download everything you can in fact develop your game
-in complete isolation if you want, without needing any access to the internet. 
+This documentation covers how to setup and maintain the server, from first install to opening your game to the public.
 
-## Installation
+## Installation & running 
 
-Evennia requires Python3.7+. As with most Python packages, using a
-[virtualenv](../Glossary#Virtualenv) is recommended in order to keep your
-installation independent from the system libraries. 
+- [Installation & Setup quick-start](Setup-Quickstart) - one page to quickly get you going
+- [Extended Install instructions](Extended-Installation) - if you have trouble or want to contribute to Evennia itself
+- [Running through Docker](Running-Evennia-in-Docker) - alternative install method, useful for quick deployment on remote servers
+- [Installing Evennia on Android](Installing-on-Android) - for those craving a mobile life
+- [Controlling the server](Start-Stop-Reload) - an extended view on how to start/stop/update the server
 
-    pip install evennia
+## Installing custom game dirs
 
-If things worked, the `evennia` command should now be available.
+- [Installing Arxcode](Arxcode-installing-help) - a custom gamedir based on the popular Evennia game [Arx](https://play.arxgame.org/)
 
-If you are having trouble or want to help develop Evennia itself, check out the
-[Extended Installation instructions](Setup/Extended-Installation). It also has
-a [troubleshooting section](Setup/Extended-Installation#Troubleshooting) for
-different operating systems.
+## Configuring
 
-## Initialize a new game
-
-Use `cd` to enter a folder where you want to do your game development. Here (and in 
-the rest of this documentation we call this folder `mygame`, but you should of course 
-name your game whatever you like):
-
-    evennia --init mygame
-
-This will create a new folder `mygame` (or whatever you chose) in your current location. This
-contains 
+- [The settings file](Settings-File) - how and where to change the main settings of the server
+- [Change database engine](Choosing-An-SQL-Server) - if you want to use something other than SQLite3
+- [Evennia game index](Evennia-Game-Index) - register your upcoming game with the index to start the hype going
 
 
-## Start your new game
+- [Chat on IRC](IRC) - how to link your game's channels to an external [IRC](https://en.wikipedia.org/wiki/Internet_Relay_Chat) channel
+- [Chat on Grapevine](Grapevine) - how to link your game's channels the [Grapevine](https://grapevine.haus/) mud network/chat
+- [Messages to RSS](RSS) - have your game notify people through RSS
+- [Messages to Twitter](How-to-connect-Evennia-to-Twitter) - have Evennia send messages to [Twitter](https://twitter.com/) (requires some coding)
 
-`cd` into your game folder (`mygame` above). Next run 
+## Going public 
 
-    evennia migrate
-
-This will create the default database (Sqlite3). The database file ends up as `mygame/server/evennia.db3`. If you
-ever want to start from a fresh database, just delete this file and re-run `evennia migrate` again.
-
-    evennia start 
-
-Fill in your user-name and password. This will be the "god user" or "superuser" in-game. The email is optional.
-
-If all went well, the server is now up and running. Point a legacy MUD/telnet client to `localhost:4000` or
-a web browser at [http://localhost:4001](http://localhost:4001) to play your new (if empty) game!
-
-> If `localhost` doesn't work on your computer, use `127.0.0.1`, which it's the same thing.
+- [Notes about security](Security) - some things to think about to stay safe(r)
+    - [Using HAProxy](HAProxy-Config) - putting a proxy in front of the game server for security
+    - [Using Apache as a webserver](Apache-Config) - use Apache instead of Evennia's webserver (limited support)
+- [Taking your server online](Online-Setup) - decide on where to host and configure your game for production
+- [Client support grid](Client-Support-Grid) - clients known to work (or not) with Evennia
