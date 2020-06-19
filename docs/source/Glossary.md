@@ -99,7 +99,7 @@ There is usually no need to know the details of Django's database handling in or
 it will handle most of the complexity for you under the hood using what we call
 [typeclasses](Glossary#typeclass). But should you need the power of Django you can always get it.
 Most commonly people want to use "raw" Django when doing more advanced/custom database queries than
-offered by Evennia's [default search functions](Howto/StartingTutorial/Tutorial-Searching-For-Objects). One will then need
+offered by Evennia's [default search functions](Howto/Starting/Tutorial-Searching-For-Objects). One will then need
 to read about Django's _querysets_. Querysets are Python method calls on a special form that lets
 you build complex queries. They get converted into optimized SQL queries under the hood, suitable
 for your current database. [Here is our tutorial/explanation of Django queries](Tutorial-Searching-

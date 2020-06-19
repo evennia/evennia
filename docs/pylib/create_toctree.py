@@ -128,7 +128,7 @@ def create_toctree():
             with open(path, 'w') as fil:
                 fil.write(outtxt)
             count += 1
-            print(f" ----- Auto-relinked links in {path.name} ------")
+            print(f" -- Auto-relinked links in {path.name}")
 
     if count > 0:
         print(f"Auto-corrected links in {count} documents.")

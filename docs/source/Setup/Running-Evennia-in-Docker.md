@@ -34,7 +34,7 @@ evennia|docker /usr/src/game $
 This is a normal shell prompt. We are in the `/usr/src/game` location inside the docker container.
 If you had anything in the folder you started from, you should see it here (with `ls`) since we
 mounted the current directory to `usr/src/game` (with `-v` above). You have the `evennia` command
-available and can now proceed to create a new game as per the [Getting Started](Setup/Getting-Started)
+available and can now proceed to create a new game as per the [Getting Started](Getting-Started)
 instructions (you can skip the virtualenv and install 'globally' in the container though).
 
 You can run Evennia from inside this container if you want to, it's like you are root in a little

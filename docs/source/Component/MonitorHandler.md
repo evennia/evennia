@@ -23,10 +23,10 @@ MONITOR_HANDLER.add(obj, fieldname, callback,
 
 ```
 
- - `obj` ([Typeclassed](Component/Typeclasses) entity) - the object to monitor. Since this must be
-typeclassed, it means you can't monitor changes on [Sessions](Component/Sessions) with the monitorhandler, for
+ - `obj` ([Typeclassed](Typeclasses) entity) - the object to monitor. Since this must be
+typeclassed, it means you can't monitor changes on [Sessions](Sessions) with the monitorhandler, for
 example.
- - `fieldname` (str) - the name of a field or [Attribute](Component/Attributes) on `obj`. If you want to
+ - `fieldname` (str) - the name of a field or [Attribute](Attributes) on `obj`. If you want to
 monitor a database field you must specify its full name, including the starting `db_` (like
 `db_key`, `db_location` etc). Any names not starting with `db_` are instead assumed to be the names
 of Attributes. This difference matters, since the MonitorHandler will automatically know to watch

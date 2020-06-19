@@ -2,7 +2,7 @@
 
 
 Fortunately, it's extremely easy to keep your Evennia server up-to-date. If you haven't already, see
-the [Getting Started guide](Setup/Getting-Started) and get everything running.
+the [Getting Started guide](../Setup/Getting-Started) and get everything running.
 
 ### Updating with the latest Evennia code changes
 
@@ -72,13 +72,13 @@ When the database schema changes, you just go to your game folder and run
      evennia migrate
 
 > Hint: If the `evennia` command is not found, you most likely need to activate your
-[virtualenv](Glossary#virtualenv).
+[virtualenv](../Glossary#virtualenv).
 
 ## Resetting your database
 
 Should you ever want to start over completely from scratch, there is no need to re-download Evennia
 or anything like that. You just need to clear your database. Once you are done, you just rebuild it
-from scratch as described in [step 2](Setup/Getting-Started#step-2-setting-up-your-game) of the [Getting
+from scratch as described in [step 2](../Setup/Getting-Started#step-2-setting-up-your-game) of the [Getting
 Started guide](Getting-Started).
 
 First stop a running server with

@@ -10,16 +10,16 @@ Guest accounts are turned off by default. To activate, add this to your `game/se
     GUEST_ENABLED = True
 
 Henceforth users can use `connect guest` (in the default command set) to login with a guest account.
-You may need to change your [Connection Screen](Component/Connection-Screen) to inform them of this
+You may need to change your [Connection Screen](../Component/Connection-Screen) to inform them of this
 possibility. Guest accounts work differently from normal accounts - they are automatically *deleted*
 whenever the user logs off or the server resets (but not during a reload). They are literally re-
 usable throw-away accounts.
 
 You can add a few more variables to your `settings.py` file to customize your guests:
 
-- `BASE_GUEST_TYPECLASS` - the python-path to the default [typeclass](Component/Typeclasses) for guests.
+- `BASE_GUEST_TYPECLASS` - the python-path to the default [typeclass](../Component/Typeclasses) for guests.
 Defaults to `"typeclasses.accounts.Guest"`.
-- `PERMISSION_GUEST_DEFAULT` - [permission level](Component/Locks) for guest accounts. Defaults to `"Guests"`,
+- `PERMISSION_GUEST_DEFAULT` - [permission level](../Component/Locks) for guest accounts. Defaults to `"Guests"`,
 which is the lowest permission level in the hierarchy.
 - `GUEST_START_LOCATION` - the `#dbref` to the starting location newly logged-in guests should
 appear at. Defaults to `"#2` (Limbo).

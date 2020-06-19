@@ -35,8 +35,8 @@ just list in-game commands in a text file. The code-processor on the other hand 
 powerful but also more complex - it lets you use Evennia's API to code your world in full-fledged
 Python code.
 
-- The [Batch Command Processor](Component/Batch-Command-Processor)
-- The [Batch Code Processor](Component/Batch-Code-Processor)
+- The [Batch Command Processor](Batch-Command-Processor)
+- The [Batch Code Processor](Batch-Code-Processor)
 
 If you plan to use international characters in your batchfiles you are wise to read about *file
 encodings* below.
@@ -73,7 +73,7 @@ need to add the editor's encoding to Evennia's `ENCODINGS` list. If you are unsu
 file with lots of non-ASCII letters in the editor of your choice, then import to make sure it works
 as it should.
 
-More help with encodings can be found in the entry [Text Encodings](Concept/Text-Encodings) and also in the
+More help with encodings can be found in the entry [Text Encodings](../Concept/Text-Encodings) and also in the
 Wikipedia article [here](http://en.wikipedia.org/wiki/Text_encodings).
 
 **A footnote for the batch-code processor**: Just because *Evennia* can parse your file and your
