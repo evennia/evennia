@@ -1,4 +1,4 @@
-# Server Setup 
+# Server Setup and Life
 
 This documentation covers how to setup and maintain the server, from first install to opening your game to the public.
 

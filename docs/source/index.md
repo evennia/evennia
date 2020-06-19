@@ -16,20 +16,20 @@
 This is the manual of [Evennia](http://www.evennia.com), the open source Python
 `MU*` creation system. 
 
-- [Evennia Introduction](Evennia-Introduction)
+- [Evennia Introduction](Evennia-Overview)
 - [Install & Setup Quickstart](Setup/Setup-Quickstart)
 - [Begin the starting tutorial](Howto/Starting/Starting-Introduction)
 - [How to get help](How-To-Get-And-Give-Help)
 
 ## Main sections 
 
-- [Setting up and running](Setup/Setup-Overview) - More on how to get, start and maintain the server
-- [Tutorials and Howto's](Howto) - Explains how to reach particular goals
-- [Core components](Components) - The building blocks of Evennia
-- [Concepts](Concepts) - Larger-scale concepts and features 
-- [Contributions](Contrib) - More game-specific tools and code added by the community
-- [API](Evennia-API) - the full API-documentation, generated from source
-- [TOC](toc) - An alphabetical listing of all regular documentation pages
+- [Server Setup, Maintenance and Life](Setup/Setup-Overview) - how to run, maintain and release 
+- [Tutorials and Howto's](Howto/Howto-Overview) - projects and hints for reaching particular effects and goals
+- [Core components](Components) - the core building blocks of Evennia
+- [Concepts](Concepts) - larger-scale concepts and features 
+- [Coding](Coding) - coding and development hints and resources 
+- [Contributions](Contrib) - game-specific tools and code added by the community
+- [API](Evennia-API) - the full API-reference, generated from source
+- [Table of Contents](toc) - an alphabetical listing of all regular documentation pages
 
-Want to help improve the docs? See the page on
-[Contributing to the docs](Contributing-Docs)!
+Want to help improve the docs? See the page on [Contributing to the docs](Contributing-Docs)!
