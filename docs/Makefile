@@ -20,7 +20,8 @@ EVGAMEDIR ?= $(realpath ../../gamedir)
 cblue = $(shell echo "\033[1m\033[34m")
 cnorm = $(shell echo "\033[0m")
 
-QUICKFILES=$(SOURCEDIR)/*.md
+# set specific files to only run for quick run (even if unset, will still not build new api docs)
+QUICKFILES=
 
 
 # Put it first so that "make" without argument is like "make help".
@@ -95,7 +96,7 @@ install:
 
 clean:
 	@rm -Rf $(BUILDDIR)
-	@git clean -f -d docs/
+	# @git clean -f -d docs/
 	@echo "Cleaned old build dir and leftover files."
 
 # not fully working at this time
