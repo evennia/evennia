@@ -1,60 +1,64 @@
 # Tutorials and Howto's
 
 The documents in this section aims to teach how to use Evennia in a tutorial or
-a step-by-step way. They often give hints on about solving a problem or implementing 
-a particular feature or concept. They will often refer to the 
-[components](Components/Components-Overview) or [concepts](Concepts/Concepts-Overview) 
+a step-by-step way. They often give hints on about solving a problem or implementing
+a particular feature or concept. They will often refer to the
+[components](Components/Components-Overview) or [concepts](Concepts/Concepts-Overview)
 docs for those that want to dive deeper.
 
-## The Starting Tutorial 
+## The Starting Tutorial
 
 Recommended starting point! This will take you from absolute beginner to making
-a small, but full, game with Evennia. Even if you have a very different game style 
-in mind for your own game, this will give you a good start. 
+a small, but full, game with Evennia. Even if you have a very different game style
+in mind for your own game, this will give you a good start.
 
-### Part 1: What we have 
+### Part 1: What we have
 
-- [Introduction & Overview](Starting/Starting-Introduction)
-- [Building stuff](Starting/Building-Quickstart)
-- [Python basics](Starting/Python-basic-introduction)
-- [Python classes](Starting/Python-basic-tutorial-part-two)
-- [Running Python in- and outside the game](Starting/Execute-Python-Code)
-- [Understanding errors](Understanding-Errors)
-- [Searching for things](Starting/Tutorial-Searching-For-Objects)
-- [A walkthrough of the API](Walkthrough-of-API)
+1. [Introduction & Overview](Starting/Starting-Part1)
+1. [Building stuff](Starting/Building-Quickstart)
+1. [Python basics](Starting/Python-basic-introduction)
+1. [Python classes](Starting/Python-basic-tutorial-part-two)
+1. [Running Python in- and outside the game](Starting/Execute-Python-Code)
+1. [Understanding errors](Understanding-Errors)
+1. [Searching for things](Starting/Tutorial-Searching-For-Objects)
+1. [A walkthrough of the API](Walkthrough-of-API)
 
-### Part 2: What we want 
+### Part 2: What we want
 
-- [On planning a game](Starting/Game-Planning)
-- [Multisession modes](Multi-session-modes)
-- [Layout of our tutorial game](Game-Tutorial-Planning)
-- [Making use of contribs](Using-Contribs)
+1. [Introduction & Overview](Starting/Starting-Part2)
+1. [On planning a game](Starting/Game-Planning)
+1. [Multisession modes](Multi-session-modes)
+1. [Layout of our tutorial game](Game-Tutorial-Planning)
+1. [Making use of contribs](Using-Contribs)
 
-### Part3: How we get there
+### Part 3: How we get there
 
-- [Where to put code](Starting/First-Steps-Coding)
-- [Adding a first command](Starting/Adding-Command-Tutorial)
-- [Parsing strings](Starting/Parsing-command-arguments,-theory-and-best-practices)
-- [Making a custom Character](Starting/Adding-Object-Typeclass-Tutorial)
-- [The rules of the game](Starting/Implementing-a-game-rule-system)
-- [Character generation](Character-Generkation)
-- [Resolving skills and challenges](Skills-and-Challenges)
-- [NPCs and mobiles](NPCs-and-Mobiles)
-- [On grids and coordinates](Starting/Coordinates)
-- [Quests and Zones](Quests-and-Zones)
-- [A Combat system](Combat-System)
+1. [Introduction & Overview](Starting/Starting-Part3)
+1. [Where to put code](Starting/First-Steps-Coding)
+1. [Adding a first command](Starting/Adding-Command-Tutorial)
+1. [Parsing strings](Starting/Parsing-command-arguments,-theory-and-best-practices)
+1. [Making a custom Character](Starting/Adding-Object-Typeclass-Tutorial)
+1. [The rules of the game](Starting/Implementing-a-game-rule-system)
+1. [Character generation](Character-Generkation)
+1. [Resolving skills and challenges](Skills-and-Challenges)
+1. [NPCs and mobiles](NPCs-and-Mobiles)
+1. [On grids and coordinates](Starting/Coordinates)
+1. [Quests and Zones](Quests-and-Zones)
+1. [A Combat system](Combat-System)
 
-### Part4: Using what we created 
+### Part 4: Using what we created
 
-- [Building the tech demo](Building-the-tech-demo)
-- [Creating a game world](Creating-a-game-world)
+1. [Introduction & Overview](Starting/Starting-Part4)
+1. [Building the tech demo](Building-the-tech-demo)
+1. [Creating a game world](Creating-a-game-world)
 
-### Part6: Showing the world
+### Part 5: Showing the world
 
-- [Add a web page](Starting/Add-a-simple-new-web-page)
-- [More on adding web features](Starting/Web-Tutorial)
-- [Taking your game online](Taking-your-game-online)
-- [Next steps](Where-to-Go-from-here)
+1. [Introduction & Overview](Starting/Starting-Part5)
+1. [Add a web page](Starting/Add-a-simple-new-web-page)
+1. [More on adding web features](Starting/Web-Tutorial)
+1. [Taking your game online](Taking-your-game-online)
+1. [Next steps](Where-to-Go-from-here)
 
 
 ## FAQs
