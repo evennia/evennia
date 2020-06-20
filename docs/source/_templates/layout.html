@@ -1,9 +1,9 @@
 {%- extends "!layout.html" %}
 
-{% if next %}
-<a href="{{ next.link|e }}">{{ next.title }}</a>
-{% endif %}
 
-{% if prev %}
-<a href="{{ prev.link|e }}">{{ prev.title }}</a>
-{% endif %}
+{% block footer %}
+
+  {{ super() }}
+  The value of next is {{ next }}.
+
+{% endblock %}
