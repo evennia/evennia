@@ -7,7 +7,7 @@ to you, but some things may still be useful.
 
 ## Find your way 
 
-- [Directory-Overview](Directory-Overview)
+- [Directory-Overview](../Howto/Starting/Directory-Overview)
 - [Quirks of Evennia](Quirks)
 
 ## Setting up a workflow
