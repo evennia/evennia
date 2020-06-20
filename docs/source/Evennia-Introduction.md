@@ -47,7 +47,7 @@ a [screenshot](Screenshot).
 
 Once you installed Evennia yourself it comes with its own tutorial - this shows off some of the
 possibilities _and_ gives you a small single-player quest to play. The tutorial takes only one
-single in-game command to install as explained [here](Contrib/Tutorial-World-Introduction).
+single in-game command to install as explained [here](Howto/Starting/Tutorial-World-Introduction).
 
 ## Brief summary of features
 

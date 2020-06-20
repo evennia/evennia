@@ -438,7 +438,7 @@ logged in, stand in the `Limbo` room and run
 
     @batchcommand tutorial_world.build
 
-to build [Evennia's tutorial world](../Contrib/Tutorial-World-Introduction) - it's a small solo quest to
+to build [Evennia's tutorial world](../Howto/Starting/Tutorial-World-Introduction) - it's a small solo quest to
 explore. Only run the instructed `@batchcommand` once. You'll get a lot of text scrolling by as the
 tutorial is built. Once done, the `tutorial` exit will have appeared out of Limbo - just write
 `tutorial` to enter it.

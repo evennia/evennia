@@ -217,8 +217,8 @@ div.admonition p.admonition-title + p {
     display: inline;
 }
 
-div.highlight{
-    background-color: white;
+div.highlight {
+    background-color: #f1f1ef;
 }
 
 div.note {

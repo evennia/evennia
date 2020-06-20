@@ -15,7 +15,7 @@ longer-form documentation associated with particular contribs.
 
 ## The tutorial-world
 
-- [The tutorial world introduction](Tutorial-World-Introduction)
+- [The tutorial world introduction](../Howto/Starting/Tutorial-World-Introduction)
 
 ## Menu-builder
 
