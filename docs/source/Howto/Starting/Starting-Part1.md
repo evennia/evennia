@@ -44,6 +44,9 @@ from in-game, but you _will_ need to use the command-line to get anywhere. Here 
 
 - [Django-girls' Intro to the Command line for different OS:es](https://tutorial.djangogirls.org/en/intro_to_command_line/)
 
+> Note that we only use forward-slashes `/` to show file system paths in this documentation. Windows users need
+> to convert this to back-slashes `\` in their heads.
+
 ### A MUD client
 
 You might already have a MUD-client you prefer. Check out the [grid of supported clients](../../Setup/Client-Support-Grid) for aid. 

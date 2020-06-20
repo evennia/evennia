@@ -171,7 +171,7 @@ There are lots of things in there. There are some docs but most of those have to
 distribution of Evennia and does not concern us right now. The `evennia` subfolder is what we are
 looking for. *This* is what you are accessing when you do `from evennia import ...`. It's set up by
 Evennia as a good place to find modules when the server starts. The exact layout of the Evennia
-library [is covered by our directory overview](../../Coding/Directory-Overview#evennia-library-layout). You can
+library [is covered by our directory overview](Directory-Overview#evennia-library-layout). You can
 also explore it [online on github](https://github.com/evennia/evennia/tree/master/evennia).
 
 The structure of the library directly reflects how you import from it.
