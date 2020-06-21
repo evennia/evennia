@@ -122,7 +122,6 @@ def url_resolver(url):
 
     if url.lower().strip() in choose_issue:
         return _github_issue_choose
-
     elif url.startswith(githubstart):
         urlpath = url[len(githubstart):]
         if not (urlpath.startswith("develop/") or urlpath.startswith("master")):
