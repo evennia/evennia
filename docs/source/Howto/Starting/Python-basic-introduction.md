@@ -1,6 +1,6 @@
 # Starting to code Evennia
 
-[prev lesson](Tutorial-World-Introduction) | [next lesson](Directory-Overview)
+[prev lesson](Tutorial-World-Introduction) | [next lesson](Gamedir-Overview)
 
 Time to dip our toe into some coding! Evennia is written and extended in [Python](http://python.org), which
 is a mature and professional programming language that is very fast to work with.
@@ -276,11 +276,11 @@ There is our "Hello World"! Using `;` is the way to put multiple Python-statemen
 
 ```warning:: MUD clients and semi-colon
 
-    A common issue is that some MUD clients use the semi-colon `;` for their own purposes, 
-    namely to separate client-inputs. If so, you'll get a `NameError` above, stating that 
+    A common issue is that some MUD clients use the semi-colon `;` to split client-inputs
+    into separate sends. If so, you'll get a `NameError` above, stating that 
     `world` is not defined. Check so you understand why this is! Most clients allow you to 
     remap to use some other separator than `;`. You can use the Evennia web client if this 
-    is problem remains.
+    problem remains.
 ```
 
 So what happened there? First we imported `world.test` as usual. But this time we continued and
@@ -304,4 +304,4 @@ This gives you some initial feeling for how to run Python and import Python modu
 tried to put a module in `module/world/`. Now let's look at the rest of the stuff you've got 
 inside that `mygame/` folder ...
 
-[prev lesson](Tutorial-World-Introduction) | [next lesson](Directory-Overview)
+[prev lesson](Tutorial-World-Introduction) | [next lesson](Gamedir-Overview)

@@ -15,6 +15,8 @@ _IGNORE_FILES = []
 _SOURCEDIR_NAME = "source"
 _SOURCE_DIR = pathjoin(dirname(dirname(abspath(__file__))), _SOURCEDIR_NAME)
 _TOC_FILE = pathjoin(_SOURCE_DIR, "toc.md")
+_NO_REMAP_STARTSWITH = ["http://", "https://", "github:", "api:",
+                        "feature-request", "report-bug", "issue", "bug-report"]
 
 _CURRFILE = None
 
@@ -79,6 +81,9 @@ def create_toctree():
         grpdict = match.groupdict()
         txt, url = grpdict['txt'], grpdict['url']
 
+        if any(url.startswith(noremap) for noremap in _NO_REMAP_STARTSWITH):
+            return f"[{txt}]({url})"
+
         if "http" in url and "://" in url:
             urlout = url
         else:
@@ -97,6 +102,9 @@ def create_toctree():
     def _sub_doc(match):
         grpdict = match.groupdict()
         txt, url = grpdict['txt'], grpdict['url']
+
+        if any(url.startswith(noremap) for noremap in _NO_REMAP_STARTSWITH):
+            return f"[{txt}]({url})"
 
         if "http" in url and "://" in url:
             urlout = url
