@@ -83,6 +83,15 @@ This created a new 'box' (of the default object type) in your inventory. Use the
 
     name box = very large box;box;very;crate
 
+```warning:: MUD clients and semi-colon
+
+    Some traditional MUD clients use the semi-colon `;` to separate client inputs. If so, 
+    the above line will give an error. You need to change your client to use another command-separator
+    or to put it in 'verbatim' mode. If you still have trouble, use the Evennia web client instead.
+
+```
+
+
 We now renamed the box to _very large box_ (and this is what we will see when looking at it), but we
 will also recognize it by any of the other names we give - like _crate_ or simply _box_ as before.
 We could have given these aliases directly after the name in the `create` command, this is true for
@@ -297,13 +306,11 @@ the history of your game world:
 
     sethelp/add History = At the dawn of time ...
 
-Next we will take a little detour to look at the _Tutorial World_. This is a little solo adventure
-that comes with Evennia, a showcase for some of the things that are possible. 
-
+You will now find your new `History` entry in the `help` list and read your help-text with `help History`.
 
 ## Adding a World
 
-After this brief introduction to building you may be ready to see a more fleshed-out example.
-Evennia comes with a tutorial world for you to explore. We will try that out in the next section.
+After this brief introduction to building and using in-game commands you may be ready to see a more fleshed-out 
+example. Evennia comes with a tutorial world for you to explore. We will try that out in the next section.
 
 [prev lesson](Starting-Part1) | [next lesson](Tutorial-World-Introduction)

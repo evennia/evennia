@@ -392,7 +392,9 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
                     if noecho:
                         prompt = "..." if console.push(line) else main_prompt
                     else:
-                        prompt = line if console.push(line) else f"{line}\n{main_prompt}"
+                        if line:
+                            self.caller.msg(f">>> {line}")
+                        prompt = line if console.push(line) else main_prompt
                 except SystemExit:
                     break
             self.msg("|gClosing the Python console.|n")

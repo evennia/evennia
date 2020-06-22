@@ -105,14 +105,14 @@ beyond our manpower. However, if your code were to *not* be accepted for merger 
 will instead add a link to your online repository so people can still find and use your work if they
 want.
 
-[ohloh]: http://www.ohloh.net/p/evennia
-[patron]: https://www.patreon.com/griatch
-[donate]: https://www.paypal.com/en/cgi-bin/webscr?cmd=_flow&SESSION=TWy_epDPSWqNr4UJCOtVWxl-
+[ohloh](http://www.ohloh.net/p/evennia)
+[patron](https://www.patreon.com/griatch)
+[donate](https://www.paypal.com/en/cgi-bin/webscr?cmd=_flow&SESSION=TWy_epDPSWqNr4UJCOtVWxl-)
 pO1X1jbKiv_-
 UBBFWIuVDEZxC0M_2pM6ywO&dispatch=5885d80a13c0db1f8e263663d3faee8d66f31424b43e9a70645c907a6cbd8fb4
-[forking]: https://github.com/evennia/evennia/wiki/Version-Control#wiki-forking-from-evennia
-[pullrequest]: https://github.com/evennia/evennia/pulls
-[issues]: https://github.com/evennia/evennia/issues
-[patch]: https://secure.wikimedia.org/wikipedia/en/wiki/Patch_%28computing%29 
-[codestyle]: https://github.com/evennia/evennia/blob/master/CODING_STYLE.md
-[tutorials]: https://github.com/evennia/evennia/wiki/Tutorials
+[forking](https://github.com/evennia/evennia/wiki/Version-Control#wiki-forking-from-evennia)
+[pullrequest](https://github.com/evennia/evennia/pulls)
+[issues](https://github.com/evennia/evennia/issues)
+[patch](https://secure.wikimedia.org/wikipedia/en/wiki/Patch_%28computing%29 )
+[codestyle](https://github.com/evennia/evennia/blob/master/CODING_STYLE.md)
+[tutorials](https://github.com/evennia/evennia/wiki/Tutorials)

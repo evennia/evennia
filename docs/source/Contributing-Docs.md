@@ -298,7 +298,7 @@ This is a [clickable link][mylink]. This is [another link][1].
 ...
 
 
-[mylink]: http://...
+[mylink](http://...)
 [1]: My-Document
 
 ```
@@ -662,19 +662,19 @@ to understand our friendly Google-style docstrings used in classes and functions
 
 
 
-[sphinx]: https://www.sphinx-doc.org/en/master/
-[recommonmark]: https://recommonmark.readthedocs.io/en/latest/index.html
-[commonmark]: https://spec.commonmark.org/current/
-[commonmark-help]: https://commonmark.org/help/
-[sphinx-autodoc]: http://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc
-[sphinx-napoleon]: http://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html
+[sphinx](https://www.sphinx-doc.org/en/master/)
+[recommonmark](https://recommonmark.readthedocs.io/en/latest/index.html)
+[commonmark](https://spec.commonmark.org/current/)
+[commonmark-help](https://commonmark.org/help/)
+[sphinx-autodoc](http://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc)
+[sphinx-napoleon](http://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html)
 [getting-started]: Setup/Getting-Started
 [contributing]: Contributing
-[ReST]: https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html
-[ReST-tables]: https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html#tables
-[ReST-directives]: https://www.sphinx-doc.org/en/master/usage/restruturedtext/directives.html
-[Windows-WSL]: https://docs.microsoft.com/en-us/windows/wsl/install-win10
+[ReST](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html)
+[ReST-tables](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html#tables)
+[ReST-directives](https://www.sphinx-doc.org/en/master/usage/restruturedtext/directives.html)
+[Windows-WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
 [linkdemo]: #Links
-[retext]: https://github.com/retext-project/retext
-[grip]: https://github.com/joeyespo/grip
-[pycharm]: https://www.jetbrains.com/pycharm/
+[retext](https://github.com/retext-project/retext)
+[grip](https://github.com/joeyespo/grip)
+[pycharm](https://www.jetbrains.com/pycharm/)

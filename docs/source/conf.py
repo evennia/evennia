@@ -116,19 +116,23 @@ _github_issue_choose = "https://github.com/evennia/evennia/issues/new/choose"
 
 
 def url_resolver(url):
+    """
+    Convert urls by catching special markers.
+    """
     githubstart = "github:"
     apistart = "api:"
-    choose_issue = ("feature-request", "report-bug", "issue", "bug-report")
+    choose_issue = "github:issue"
 
-    if url.lower().strip() in choose_issue:
+    if url.endswith(choose_issue):
         return _github_issue_choose
-    elif url.startswith(githubstart):
-        urlpath = url[len(githubstart):]
+    elif githubstart in url:
+        urlpath = url[url.index(githubstart) + len(githubstart):]
         if not (urlpath.startswith("develop/") or urlpath.startswith("master")):
             urlpath = "master/" + urlpath
         return _github_code_root + urlpath
-    elif url.startswith(apistart):
-        return "api/" + url[len(apistart):] + ".html"
+    elif apistart in url:
+        urlpath = url[url.index(apistart) + len(apistart):]
+        return "api/" + urlpath + ".html"
     return url
 
 
