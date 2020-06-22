@@ -406,16 +406,16 @@ servers with this option as they don't have a lot of support.
 *Please help us expand this list.*
 
 [1]: http:silvren.com
-[2]: https://www.digitalocean.com/pricing
-[3]: https://aws.amazon.com/pricing/
-[4]: http://www.genesismuds.com/
-[5]: https://www.host1plus.com/
-[6]: https://www.scaleway.com/
-[7]: https://lowendbox.com/
-[8]: https://www.lowendtalk.com
-[9]: https://amazonlightsail.com
-[10]: https://prgmr.com/
-[11]: https://www.linode.com/
+[2](https://www.digitalocean.com/pricing)
+[3](https://aws.amazon.com/pricing/)
+[4](http://www.genesismuds.com/)
+[5](https://www.host1plus.com/)
+[6](https://www.scaleway.com/)
+[7](https://lowendbox.com/)
+[8](https://www.lowendtalk.com)
+[9](https://amazonlightsail.com)
+[10](https://prgmr.com/)
+[11](https://www.linode.com/)
 
 ## Cloud9
 
