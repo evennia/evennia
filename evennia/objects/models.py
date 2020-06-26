@@ -24,7 +24,7 @@ from evennia.utils import logger
 from evennia.utils.utils import make_iter, dbref, lazy_property
 
 
-class ContentsHandler(object):
+class ContentsHandler:
     """
     Handles and caches the contents of an object to avoid excessive
     lookups (this is done very often due to cmdhandler needing to look
@@ -79,8 +79,9 @@ class ContentsHandler(object):
             try:
                 return [self._idcache[pk] for pk in pks]
             except KeyError:
-                # this means an actual failure of caching. Return real database match.
-                logger.log_err("contents cache failed for %s." % self.obj.key)
+                # this means the central instance_cache was totally flushed.
+                # Re-fetching from database  will rebuild the necessary parts of the cache
+                # for next fetch.
                 return list(ObjectDB.objects.filter(db_location=self.obj))
 
     def add(self, obj):
