@@ -50,35 +50,6 @@ _UTF8_ERROR = """
  Error reported was: '%s'
 """
 
-_PROCPOOL_BATCHCMD_SOURCE = """
-from evennia.commands.default.batchprocess import batch_cmd_exec, step_pointer, BatchSafeCmdSet
-caller.ndb.batch_stack = commands
-caller.ndb.batch_stackptr = 0
-caller.ndb.batch_batchmode = "batch_commands"
-caller.cmdset.add(BatchSafeCmdSet)
-for inum in range(len(commands)):
-    print "command:", inum
-    caller.cmdset.add(BatchSafeCmdSet)
-    if not batch_cmd_exec(caller):
-        break
-    step_pointer(caller, 1)
-print "leaving run ..."
-"""
-_PROCPOOL_BATCHCODE_SOURCE = """
-from evennia.commands.default.batchprocess import batch_code_exec, step_pointer, BatchSafeCmdSet
-caller.ndb.batch_stack = codes
-caller.ndb.batch_stackptr = 0
-caller.ndb.batch_batchmode = "batch_code"
-caller.cmdset.add(BatchSafeCmdSet)
-for inum in range(len(codes)):
-    print "code:", inum
-    caller.cmdset.add(BatchSafeCmdSet)
-    if not batch_code_exec(caller):
-        break
-    step_pointer(caller, 1)
-print "leaving run ..."
-"""
-
 
 # -------------------------------------------------------------
 # Helper functions
@@ -300,42 +271,17 @@ class CmdBatchCommands(_COMMAND_DEFAULT_CLASS):
                 "for %s (this might take some time) ..." % python_path
             )
 
-            procpool = False
-            if "PythonProcPool" in utils.server_services():
-                if utils.uses_database("sqlite3"):
-                    caller.msg("Batchprocessor disabled ProcPool under SQLite3.")
-                else:
-                    procpool = True
-
-            if procpool:
-                # run in parallel process
-                def callback(r):
-                    caller.msg("  |GBatchfile '%s' applied." % python_path)
-                    purge_processor(caller)
-
-                def errback(e):
-                    caller.msg("  |RError from processor: '%s'" % e)
-                    purge_processor(caller)
-
-                utils.run_async(
-                    _PROCPOOL_BATCHCMD_SOURCE,
-                    commands=commands,
-                    caller=caller,
-                    at_return=callback,
-                    at_err=errback,
-                )
-            else:
-                # run in-process (might block)
-                for _ in range(len(commands)):
-                    # loop through the batch file
-                    if not batch_cmd_exec(caller):
-                        return
-                    step_pointer(caller, 1)
-                # clean out the safety cmdset and clean out all other
-                # temporary attrs.
-                string = "  Batchfile '%s' applied." % python_path
-                caller.msg("|G%s" % string)
-                purge_processor(caller)
+            # run in-process (might block)
+            for _ in range(len(commands)):
+                # loop through the batch file
+                if not batch_cmd_exec(caller):
+                    return
+                step_pointer(caller, 1)
+            # clean out the safety cmdset and clean out all other
+            # temporary attrs.
+            string = "  Batchfile '%s' applied." % python_path
+            caller.msg("|G%s" % string)
+            purge_processor(caller)
 
 
 class CmdBatchCode(_COMMAND_DEFAULT_CLASS):
@@ -420,41 +366,16 @@ class CmdBatchCode(_COMMAND_DEFAULT_CLASS):
         else:
             caller.msg("Running Batch-code processor - Automatic mode for %s ..." % python_path)
 
-            procpool = False
-            if "PythonProcPool" in utils.server_services():
-                if utils.uses_database("sqlite3"):
-                    caller.msg("Batchprocessor disabled ProcPool under SQLite3.")
-                else:
-                    procpool = True
-            if procpool:
-                # run in parallel process
-                def callback(r):
-                    caller.msg("  |GBatchfile '%s' applied." % python_path)
-                    purge_processor(caller)
-
-                def errback(e):
-                    caller.msg("  |RError from processor: '%s'" % e)
-                    purge_processor(caller)
-
-                utils.run_async(
-                    _PROCPOOL_BATCHCODE_SOURCE,
-                    codes=codes,
-                    caller=caller,
-                    at_return=callback,
-                    at_err=errback,
-                )
-            else:
-                # un in-process (will block)
-                for _ in range(len(codes)):
-                    # loop through the batch file
-                    if not batch_code_exec(caller):
-                        return
-                    step_pointer(caller, 1)
-                # clean out the safety cmdset and clean out all other
-                # temporary attrs.
-                string = "  Batchfile '%s' applied." % python_path
-                caller.msg("|G%s" % string)
-                purge_processor(caller)
+            for _ in range(len(codes)):
+                # loop through the batch file
+                if not batch_code_exec(caller):
+                    return
+                step_pointer(caller, 1)
+            # clean out the safety cmdset and clean out all other
+            # temporary attrs.
+            string = "  Batchfile '%s' applied." % python_path
+            caller.msg("|G%s" % string)
+            purge_processor(caller)
 
 
 # -------------------------------------------------------------
