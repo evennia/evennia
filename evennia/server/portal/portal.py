@@ -163,6 +163,7 @@ class Portal(object):
         self.server_info_dict = {}
 
         self.start_time = time.time()
+
         self.maintenance_task = LoopingCall(_portal_maintenance)
         self.maintenance_task.start(60, now=True)  # call every minute
 

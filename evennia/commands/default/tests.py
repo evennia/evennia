@@ -17,7 +17,7 @@ import datetime
 from anything import Anything
 
 from django.conf import settings
-from mock import Mock, mock
+from unittest.mock import patch, Mock, MagicMock
 
 from evennia import DefaultRoom, DefaultExit, ObjectDB
 from evennia.commands.default.cmdset_character import CharacterCmdSet
@@ -56,6 +56,7 @@ _RE = re.compile(r"^\+|-+\+|\+-+|--+|\|(?:\s|$)", re.MULTILINE)
 # ------------------------------------------------------------
 
 
+@patch("evennia.server.portal.portal.LoopingCall", new=MagicMock())
 class CommandTest(EvenniaTest):
     """
     Tests a command
@@ -505,7 +506,7 @@ class TestBuilding(CommandTest):
         self.call(building.CmdSetAttribute(), "Obj2/test2", "Attribute Obj2/test2 = value2")
         self.call(building.CmdSetAttribute(), "Obj2/NotFound", "Obj2 has no attribute 'notfound'.")
 
-        with mock.patch("evennia.commands.default.building.EvEditor") as mock_ed:
+        with patch("evennia.commands.default.building.EvEditor") as mock_ed:
             self.call(building.CmdSetAttribute(), "/edit Obj2/test3")
             mock_ed.assert_called_with(self.char1, Anything, Anything, key="Obj2/test3")
 
@@ -789,7 +790,7 @@ class TestBuilding(CommandTest):
         )
         self.call(building.CmdDesc(), "", "Usage: ")
 
-        with mock.patch("evennia.commands.default.building.EvEditor") as mock_ed:
+        with patch("evennia.commands.default.building.EvEditor") as mock_ed:
             self.call(building.CmdDesc(), "/edit")
             mock_ed.assert_called_with(
                 self.char1,
@@ -1004,9 +1005,9 @@ class TestBuilding(CommandTest):
                 }
             )
         ]
-        with mock.patch(
+        with patch(
             "evennia.commands.default.building.protlib.search_prototype",
-            new=mock.MagicMock(return_value=test_prototype),
+            new=MagicMock(return_value=test_prototype),
         ) as mprot:
             self.call(
                 building.CmdTypeclass(),
@@ -1072,7 +1073,7 @@ class TestBuilding(CommandTest):
         self.call(building.CmdFind(), "/exact Obj", "One Match")
 
         # Test multitype filtering
-        with mock.patch(
+        with patch(
             "evennia.commands.default.building.CHAR_TYPECLASS",
             "evennia.objects.objects.DefaultCharacter",
         ):
@@ -1540,11 +1541,11 @@ class TestSystemCommands(CommandTest):
 
         self.call(multimatch, "look", "")
 
-    @mock.patch("evennia.commands.default.syscommands.ChannelDB")
+    @patch("evennia.commands.default.syscommands.ChannelDB")
     def test_channelcommand(self, mock_channeldb):
-        channel = mock.MagicMock()
-        channel.msg = mock.MagicMock()
-        mock_channeldb.objects.get_channel = mock.MagicMock(return_value=channel)
+        channel = MagicMock()
+        channel.msg = MagicMock()
+        mock_channeldb.objects.get_channel = MagicMock(return_value=channel)
 
         self.call(syscommands.SystemSendToChannel(), "public:Hello")
         channel.msg.assert_called()

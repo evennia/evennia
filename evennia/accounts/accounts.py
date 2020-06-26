@@ -649,6 +649,51 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         logger.log_sec(f"Password successfully changed for {self}.")
         self.at_password_change()
 
+    def create_character(self, *args, **kwargs):
+        """
+        Create a character linked to this account.
+
+        Args:
+            key (str, optional): If not given, use the same name as the account.
+            typeclass (str, optional): Typeclass to use for this character. If
+                not given, use settings.BASE_CHARACTER_TYPECLASS.
+            permissions (list, optional): If not given, use the account's permissions.
+            ip (str, optiona): The client IP creating this character. Will fall back to the
+                one stored for the account if not given.
+            kwargs (any): Other kwargs will be used in the create_call.
+        Returns:
+            Object: A new character of the `character_typeclass` type. None on an error.
+            list or None: A list of errors, or None.
+
+        """
+        # parse inputs
+        character_key = kwargs.pop("key", self.key)
+        character_ip = kwargs.pop("ip", self.db.creator_ip)
+        character_permissions = kwargs.pop("permissions", self.permissions)
+
+        # Load the appropriate Character class
+        character_typeclass = kwargs.pop("typeclass", None)
+        character_typeclass = character_typeclass if character_typeclass else settings.BASE_CHARACTER_TYPECLASS
+        Character = class_from_module(character_typeclass)
+
+        # Create the character
+        character, errs = Character.create(
+            character_key,
+            self,
+            ip=character_ip,
+            typeclass=character_typeclass,
+            permissions=character_permissions,
+            **kwargs
+        )
+        if character:
+            # Update playable character list
+            if character not in self.characters:
+                self.db._playable_characters.append(character)
+
+            # We need to set this to have @ic auto-connect to this character
+            self.db._last_puppet = character
+        return character, errs
+
     @classmethod
     def create(cls, *args, **kwargs):
         """
@@ -755,31 +800,11 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 logger.log_err(string)
 
             if account and settings.MULTISESSION_MODE < 2:
-                # Load the appropriate Character class
-                character_typeclass = kwargs.get(
-                    "character_typeclass", settings.BASE_CHARACTER_TYPECLASS
-                )
-                character_home = kwargs.get("home")
-                Character = class_from_module(character_typeclass)
+                # Auto-create a character to go with this account
 
-                # Create the character
-                character, errs = Character.create(
-                    account.key,
-                    account,
-                    ip=ip,
-                    typeclass=character_typeclass,
-                    permissions=permissions,
-                    home=character_home,
-                )
-                errors.extend(errs)
-
-                if character:
-                    # Update playable character list
-                    if character not in account.characters:
-                        account.db._playable_characters.append(character)
-
-                    # We need to set this to have @ic auto-connect to this character
-                    account.db._last_puppet = character
+                character, errs = account.create_character(typeclass=kwargs.get("character_typeclass"))
+                if errs:
+                    errors.extend(errs)
 
         except Exception:
             # We are in the middle between logged in and -not, so we have
@@ -1540,7 +1565,7 @@ class DefaultGuest(DefaultAccount):
         try:
             # Find an available guest name.
             for name in settings.GUEST_LIST:
-                if not AccountDB.objects.filter(username__iexact=name).count():
+                if not AccountDB.objects.filter(username__iexact=name).exists():
                     username = name
                     break
             if not username:
@@ -1566,6 +1591,15 @@ class DefaultGuest(DefaultAccount):
                     ip=ip,
                 )
                 errors.extend(errs)
+
+                if not account.characters:
+                    # this can happen for multisession_mode > 1. For guests we
+                    # always auto-create a character, regardless of multi-session-mode.
+                    character, errs = account.create_character()
+
+                if errs:
+                    errors.extend(errs)
+
                 return account, errors
 
         except Exception as e:
