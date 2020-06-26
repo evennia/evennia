@@ -105,9 +105,20 @@ class TypeclassBase(SharedMemoryModelBase):
         attrs["path"] = "%s.%s" % (attrs["__module__"], name)
 
         # typeclass proxy setup
-        if "Meta" not in attrs:
+        app_label = None
+        # first check explicit __applabel__ on the typeclass
+        if "__applabel__" not in attrs:
+            # find the app-label in one of the bases, usually the dbmodel
+            for base in bases:
+                try:
+                    attrs["__applabel__"] = base.__applabel__
+                except AttributeError:
+                    pass
+                else:
+                    break
 
-            class Meta(object):
+        if "Meta" not in attrs:
+            class Meta:
                 proxy = True
                 app_label = attrs.get("__applabel__", "typeclasses")
 

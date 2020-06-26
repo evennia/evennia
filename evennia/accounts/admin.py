@@ -88,6 +88,7 @@ class AccountForm(forms.ModelForm):
     class Meta(object):
         model = AccountDB
         fields = "__all__"
+        app_label = "accounts"
 
     db_key = forms.RegexField(
         label="Username",
