@@ -29,6 +29,8 @@ from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.apps import apps
+from django.core.validators import validate_email as django_validate_email
+from django.core.exceptions import ValidationError as DjangoValidationError
 from evennia.utils import logger
 
 _MULTIMATCH_TEMPLATE = settings.SEARCH_MULTIMATCH_TEMPLATE
@@ -906,69 +908,25 @@ def to_str(text, session=None):
 
 def validate_email_address(emailaddress):
     """
-    Checks if an email address is syntactically correct.
+    Checks if an email address is syntactically correct. Makes use
+    of the django email-validator for consistency.
 
     Args:
         emailaddress (str): Email address to validate.
 
     Returns:
-        is_valid (bool): If this is a valid email or not.
-
-    Notes.
-        (This snippet was adapted from
-        http://commandline.org.uk/python/email-syntax-check.)
+        bool: If this is a valid email or not.
 
     """
-
-    emailaddress = r"%s" % emailaddress
-
-    domains = (
-        "aero",
-        "asia",
-        "biz",
-        "cat",
-        "com",
-        "coop",
-        "edu",
-        "gov",
-        "info",
-        "int",
-        "jobs",
-        "mil",
-        "mobi",
-        "museum",
-        "name",
-        "net",
-        "org",
-        "pro",
-        "tel",
-        "travel",
-    )
-
-    # Email address must be more than 7 characters in total.
-    if len(emailaddress) < 7:
-        return False  # Address too short.
-
-    # Split up email address into parts.
     try:
-        localpart, domainname = emailaddress.rsplit("@", 1)
-        host, toplevel = domainname.rsplit(".", 1)
-    except ValueError:
-        return False  # Address does not have enough parts.
-
-    # Check for Country code or Generic Domain.
-    if len(toplevel) != 2 and toplevel not in domains:
-        return False  # Not a domain name.
-
-    for i in "-_.%+.":
-        localpart = localpart.replace(i, "")
-    for i in "-_.":
-        host = host.replace(i, "")
-
-    if localpart.isalnum() and host.isalnum():
-        return True  # Email address is fine.
+        django_validate_email(str(emailaddress))
+    except DjangoValidationError:
+        return False
+    except Exception:
+        logger.log_trace()
+        return False
     else:
-        return False  # Email address has funny characters.
+        return True
 
 
 def inherits_from(obj, parent):
