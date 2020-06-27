@@ -472,13 +472,13 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
                         tempmergers[prio] = cmdset
 
                 # sort cmdsets after reverse priority (highest prio are merged in last)
-                cmdsets = yield sorted(list(tempmergers.values()), key=lambda x: x.priority)
+                sorted_cmdsets = yield sorted(list(tempmergers.values()), key=lambda x: x.priority)
 
                 # Merge all command sets into one, beginning with the lowest-prio one
-                cmdset = cmdsets[0]
-                for merging_cmdset in cmdsets[1:]:
+                cmdset = sorted_cmdsets[0]
+                for merging_cmdset in sorted_cmdsets[1:]:
                     cmdset = yield cmdset + merging_cmdset
-                # store the full sets for diagnosis
+                # store the original, ungrouped set for diagnosis
                 cmdset.merged_from = cmdsets
                 # cache
                 _CMDSET_MERGE_CACHE[mergehash] = cmdset

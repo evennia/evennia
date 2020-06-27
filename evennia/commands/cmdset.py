@@ -443,12 +443,12 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         # print "__add__ for %s (prio %i)  called with %s (prio %i)." % (self.key, self.priority, cmdset_a.key, cmdset_a.priority)
 
         # return the system commands to the cmdset
-        cmdset_c.add(sys_commands)
+        cmdset_c.add(sys_commands, allow_duplicates=True)
         return cmdset_c
 
-    def add(self, cmd):
+    def add(self, cmd, allow_duplicates=False):
         """
-        Add a new command or commands to this CmdSetcommand, a list of
+        Add a new command or commands to this CmdSet, a list of
         commands or a cmdset to this cmdset. Note that this is *not*
         a merge operation (that is handled by the + operator).
 
@@ -456,6 +456,9 @@ class CmdSet(object, metaclass=_CmdSetMeta):
             cmd (Command, list, Cmdset): This allows for adding one or
                 more commands to this Cmdset in one go. If another Cmdset
                 is given, all its commands will be added.
+            allow_duplicates (bool, optional): If set, will not try to remove
+                duplicate cmds in the set. This is needed during the merge process
+                to avoid wiping commands coming from cmdsets with duplicate=True.
 
         Notes:
             If cmd already exists in set, it will replace the old one
@@ -498,8 +501,10 @@ class CmdSet(object, metaclass=_CmdSetMeta):
                 commands[ic] = cmd  # replace
             except ValueError:
                 commands.append(cmd)
-            # extra run to make sure to avoid doublets
-            self.commands = list(set(commands))
+            self.commands = commands
+            if not allow_duplicates:
+                # extra run to make sure to avoid doublets
+                self.commands = list(set(self.commands))
             # add system_command to separate list as well,
             # for quick look-up
             if cmd.key.startswith("__"):
