@@ -73,7 +73,7 @@ class ScriptDBManager(TypedObjectManager):
         Get all scripts in the database.
 
         Args:
-            key (str, optional): Restrict result to only those
+            key (str or int, optional): Restrict result to only those
                 with matching key or dbref.
 
         Returns:
@@ -83,12 +83,9 @@ class ScriptDBManager(TypedObjectManager):
         if key:
             script = []
             dbref = self.dbref(key)
-            if dbref or dbref == 0:
-                # return either [] or a valid list (never [None])
-                script = [res for res in [self.dbref_search(dbref)] if res]
-            if not script:
-                script = self.filter(db_key=key)
-            return script
+            if dbref:
+                return self.filter(id=dbref)
+            return self.filter(db_key__iexact=key.strip())
         return self.all()
 
     def delete_script(self, dbref):
@@ -231,7 +228,7 @@ class ScriptDBManager(TypedObjectManager):
         ostring = ostring.strip()
 
         dbref = self.dbref(ostring)
-        if dbref or dbref == 0:
+        if dbref:
             # this is a dbref, try to find the script directly
             dbref_match = self.dbref_search(dbref)
             if dbref_match and not (
