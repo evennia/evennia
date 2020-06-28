@@ -9,6 +9,7 @@ be of use when designing your own game.
 import os
 import gc
 import sys
+import copy 
 import types
 import math
 import re
@@ -342,14 +343,16 @@ def columnize(string, columns=2, spacing=4, align="l", width=None):
     return "\n".join(rows)
 
 
-def list_to_string(inlist, endsep="and", addquote=False):
+def iter_to_string(initer, endsep="and", addquote=False):
     """
-    This pretty-formats a list as string output, adding an optional
+    This pretty-formats an iterable list as string output, adding an optional
     alternative separator to the second to last entry.  If `addquote`
     is `True`, the outgoing strings will be surrounded by quotes.
 
     Args:
-        inlist (list): The list to print.
+        initer (any): Usually an iterable to print. Each element must be possible to
+            present with a string. Note that if this is a generator, it will be
+            consumed by this operation.
         endsep (str, optional): If set, the last item separator will
             be replaced with this value.
         addquote (bool, optional): This will surround all outgoing
@@ -374,16 +377,20 @@ def list_to_string(inlist, endsep="and", addquote=False):
         endsep = ","
     else:
         endsep = " " + endsep
-    if not inlist:
+    if not initer:
         return ""
+    initer = tuple(str(val) for val in make_iter(initer))
     if addquote:
-        if len(inlist) == 1:
-            return '"%s"' % inlist[0]
-        return ", ".join('"%s"' % v for v in inlist[:-1]) + "%s %s" % (endsep, '"%s"' % inlist[-1])
+        if len(initer) == 1:
+            return '"%s"' % initer[0]
+        return ", ".join('"%s"' % v for v in initer[:-1]) + "%s %s" % (endsep, '"%s"' % initer[-1])
     else:
-        if len(inlist) == 1:
-            return str(inlist[0])
-        return ", ".join(str(v) for v in inlist[:-1]) + "%s %s" % (endsep, inlist[-1])
+        if len(initer) == 1:
+            return str(initer[0])
+        return ", ".join(str(v) for v in initer[:-1]) + "%s %s" % (endsep, initer[-1])
+
+# legacy alias
+list_to_string = iter_to_string
 
 
 def wildcard_to_regexp(instring):
