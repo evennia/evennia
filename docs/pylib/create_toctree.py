@@ -31,9 +31,9 @@ def create_toctree():
         """Get the path relative the source/ dir"""
         pathparts = path.split("/")
         # we allow a max of 4 levels of nesting in the source dir
-        ind = pathparts[-4:].index(_SOURCEDIR_NAME)
+        ind = pathparts[-5:].index(_SOURCEDIR_NAME)
         # get the part after source/
-        pathparts = pathparts[-4 + 1 + ind:]
+        pathparts = pathparts[-5 + 1 + ind:]
         url = "/".join(pathparts)
         # get the reference, without .md
         url = url.rsplit(".", 1)[0]

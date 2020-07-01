@@ -1,6 +1,6 @@
 # Evennia Starting Tutorial
 
-  [Next lesson](Building-Quickstart)
+  [Next lesson](Part1/Building-Quickstart)
   
 This is a multi-part Tutorial that will gradually take you from first installation to making your 
 own first little game in Evennia. Let's get started! 
@@ -22,9 +22,9 @@ own first little game in Evennia. Let's get started!
 ## Lessons of Part 1 - "What we have"
 
 1. Introduction & Overview (you are here)
-1. [Building stuff](Building-Quickstart)
-1. [The Tutorial World](Tutorial-World-Introduction)
-1. [Python basics](Python-basic-introduction)
+1. [Building stuff](Part1/Building-Quickstart)
+1. [The Tutorial World](Part1/Tutorial-World-Introduction)
+1. [Python basics](Part1/Python-basic-introduction)
 1. [Python classes](Python-basic-tutorial-part-two)
 1. [Running Python in- and outside the game](Execute-Python-Code)
 1. [Understanding errors](Understanding-Errors)
@@ -102,4 +102,4 @@ first enter that gamedir and run
 
   You should now be good to go!  
   
-  [Next lesson](Building-Quickstart)
+  [Next lesson](Part1/Building-Quickstart)
