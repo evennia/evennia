@@ -18,7 +18,7 @@ in mind for your own game, this will give you a good start.
 1. [Building stuff](Starting/Part1/Building-Quickstart)
 1. [Python basics](Starting/Part1/Python-basic-introduction)
 1. [Python classes](Starting/Python-basic-tutorial-part-two)
-1. [Running Python in- and outside the game](Starting/Execute-Python-Code)
+1. [Running Python in- and outside the game](../Coding/Execute-Python-Code)
 1. [Understanding errors](Understanding-Errors)
 1. [Searching for things](Starting/Tutorial-Searching-For-Objects)
 1. [A walkthrough of the API](Walkthrough-of-API)
