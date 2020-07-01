@@ -56,7 +56,7 @@ and how you point to it correctly.
 
 ## commands/
 
-The `commands/` folder holds Python modules related to creating and extending the [Commands](../../Component/Commands)
+The `commands/` folder holds Python modules related to creating and extending the [Commands](../../../Component/Commands)
 of Evennia. These manifest in game like the server understanding input like `look` or `dig`. 
 
 ```sidebar:: Classes
@@ -148,28 +148,28 @@ knows where they are and will read them to configure itself at startup.
 
 ### typeclasses/
 
-The [Typeclasses](../../Component/Typeclasses) of Evennia are Evennia-specific Python classes whose instances save themselves
+The [Typeclasses](../../../Component/Typeclasses) of Evennia are Evennia-specific Python classes whose instances save themselves
 to the database. This allows a Character to remain in the same place and your updated strength stat to still
 be the same after a server reboot. 
 
 - [accounts.py](github:evennia/game_template/typeclasses/accounts.py) (Python-path: `typeclasses.accounts`) - An 
-    [Account](../../Component/Accounts) represents the player connecting to the game. It holds information like email,
+    [Account](../../../Component/Accounts) represents the player connecting to the game. It holds information like email,
     password and other out-of-character details.
 - [channels.py](github:evennia/game_template/typeclasses/channels.py) (Python-path: `typeclasses.channels`) - 
     [Channels](Channels) are used to manage in-game communication between players. 
 - [objects.py](github:evennia/game_template/typeclasses/objects.py) (Python-path: `typeclasses.objects`) - 
-   [Objects](../../Component/Objects) represent all things having a location within the game world.
+   [Objects](../../../Component/Objects) represent all things having a location within the game world.
 - [characters.py](github:evennia/game_template/typeclasses/characters.py) (Python-path: `typeclasses.characters`) - 
-    The [Character](../../Component/Objects#Characers) is a subclass of Objects, controlled by Accounts - they are the player's
+    The [Character](../../../Component/Objects#Characers) is a subclass of Objects, controlled by Accounts - they are the player's
     avatars in the game world.
 - [rooms.py](github:evennia/game_template/typeclasses/rooms.py) (Python-path: `typeclasses.rooms`) - A 
-    [Room](../../Component/Objects#Room) is also a subclass of Object; describing discrete locations. While the traditional
+    [Room](../../../Component/Objects#Room) is also a subclass of Object; describing discrete locations. While the traditional
     term is 'room', such a location can be anything and on any scale that fits your game, from a forest glade, 
     an entire planet or an actual dungeon room.
 - [exits.py](github:evennia/game_template/typeclasses/exits.py) (Python-path: `typeclasses.exits`) - 
-    [Exits](../../Component/Objects#Exit) is another subclass of Object. Exits link one Room to another. 
+    [Exits](../../../Component/Objects#Exit) is another subclass of Object. Exits link one Room to another. 
 - [scripts.py](github:evennia/game_template/typeclasses/scripts.py) (Python-path: `typeclasses.scripts`) - 
-    [Scripts](../../Component/Scripts) are 'out-of-character' objects. They have no location in-game and can serve as basis for 
+    [Scripts](../../../Component/Scripts) are 'out-of-character' objects. They have no location in-game and can serve as basis for 
     anything that needs database persistence, such as combat, weather, or economic systems. They also
     have the ability to execute code repeatedly, on a timer. 
     

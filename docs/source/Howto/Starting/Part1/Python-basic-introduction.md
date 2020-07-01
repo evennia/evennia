@@ -7,7 +7,7 @@ is a mature and professional programming language that is very fast to work with
 
 That said, even though Python is widely considered easy to learn, we can only cover the most immediately
 important aspects of Python in this series of starting tutorials. Hopefully we can get you started
-but then you'll need to continue learning from there. See our [link section](../../Links) for finding
+but then you'll need to continue learning from there. See our [link section](../../../Links) for finding
 more reference material and dedicated Python tutorials.
 
 > While this will be quite basic if you are an experienced developer, you may want to at least
@@ -614,8 +614,7 @@ If `ipython` is installed, `evennia shell` will use it automatically.
     evennia shell
     ...
     IPython 7.4.0 -- An enhanced Interactive Python. Type '?' for help
-    In [1]:
-
+    In [1]: 
 You now have Tab-completion:
 
     > import evennia

@@ -10,7 +10,7 @@ Here are some pointers to get you going.
 
 Evennia is developed using Python. Even if you are more of a designer than a coder, it is wise to
 learn how to read and understand basic Python code. If you are new to Python, or need a refresher,
-take a look at our two-part [Python introduction](Python-basic-introduction).
+take a look at our two-part [Python introduction](Part1/Python-basic-introduction).
 
 ### Explore Evennia interactively
 
