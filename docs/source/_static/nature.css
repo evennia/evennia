@@ -255,6 +255,11 @@ li > p:first-child {
     margin-bottom: 0px;
 }
 
+li > p {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}   
+
 .admonition.important {
   background-color: #fbf7c3;
   border: 1px solid #c8c59b;
@@ -360,6 +365,7 @@ dl.class > dd > p {
 dl.method > dd > p {
   font-style: italic;
 }
+
 
 code.descname {
   font-size: 0.9em;
