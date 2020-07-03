@@ -10,7 +10,7 @@ Here are some pointers to get you going.
 
 Evennia is developed using Python. Even if you are more of a designer than a coder, it is wise to
 learn how to read and understand basic Python code. If you are new to Python, or need a refresher,
-take a look at our two-part [Python introduction](Part1/Python-basic-introduction).
+take a look at our two-part [Python introduction](../Howto/Starting/Part1/Python-basic-introduction).
 
 ### Explore Evennia interactively
 
@@ -31,7 +31,7 @@ This will open an Evennia-aware python shell (using ipython). From within this s
     evennia.<TAB>
 
 That is, enter `evennia.` and press the `<TAB>` key. This will show you all the resources made
-available at the top level of Evennia's  "flat API". See the [flat API](../../Evennia-API) page for more
+available at the top level of Evennia's  "flat API". See the [flat API](../Evennia-API) page for more
 info on how to explore it efficiently.
 
 You can complement your exploration by peeking at the sections of the much more detailed [Developer
@@ -52,7 +52,7 @@ using such a checker can be a good start to weed out the simple problems.
 
 ### Plan before you code
 
-Before you start coding away at your dream game, take a look at our [Game Planning](Game-Planning)
+Before you start coding away at your dream game, take a look at our [Game Planning](../Howto/Starting/Game-Planning)
 page. It might hopefully help you avoid some common pitfalls and time sinks.
 
 ### Code in your game folder, not in the evennia/ repository
@@ -64,7 +64,7 @@ it out into your game folder and edit it there.
 
 If you find that Evennia doesn't support some functionality you need, make a [Feature
 Request](feature-request) about it. Same goes for [bugs][bug]. If you add features or fix bugs
-yourself, please consider [Contributing](../../Contributing) your changes upstream!
+yourself, please consider [Contributing](../Contributing) your changes upstream!
 
 ### Learn to read tracebacks
 

@@ -1,11 +1,11 @@
-# Python Classes and Evennia Typeclasses
+# Python Classes and objects
 
-[prev lesson](Gamedir-Overview) | [next lesson](Adding-Commands)
+[prev lesson](Gamedir-Overview) | [next lesson](Learning-Typeclasses)
 
 We have now learned how to run some simple Python code from inside (and outside) your game server.
 We have also taken a look at what our game dir looks and what is where. Now we'll start to use it.
 
-## Importing 
+## Importing things
 
 No one writes something as big as an online game in one single huge file. Instead one breaks up the 
 code into separate files (modules). Each module is dedicated to different purposes. Not only does 
@@ -153,7 +153,9 @@ Next we have a `class` named `Object`, which _inherits_ from `DefaultObject`. Th
 actually do anything on its own, its only code (except the docstring) is `pass` which means,
 well, to pass and don't do anything. 
 
-To understand what we are looking at, we need to explain what a 'class', an 'object' and an 'instance' is.
+We will get back to this module in the [next lesson](Learning-Typeclasses). First we need to do a 
+little detour to understand what a 'class', an 'object' or 'instance' is. These are fundamental 
+things to understand before you can use Evennia efficiently. 
 ```sidebar:: OOP
 
     Classes, objects, instances and inheritance are fundamental to Python. This and some 
@@ -185,6 +187,12 @@ at least one argument (almost always written as `self` although you could in pri
 another name), which is a reference back to itself. So when we print `self.key` we are referring
 back to the `key` on the class.
 
+```sidebar:: Terms 
+
+    - A `class` is a code template describing a 'type' of something
+    - An `object` is an `instance` of a `class`. Like using a mold to cast tin soldiers, one class can be `instantiated` into any number of object-instances. 
+
+```
 A class is just a template. Before it can be used, we must create an _instance_ of the class. If
 `Mobile` is a class, then an instance is Fluffy, the individual red dragon. You instantiate 
 by _calling_ the class, much like you would a function: 
@@ -395,152 +403,14 @@ about the trembling world we added in the `Dragon` class.
 Inheritance is very powerful because it allows you to organize and re-use code while only adding the special things
 you want to change. Evennia uses this concept a lot. 
 
+## Summary
 
-## Our first persistent object
+We have created our first dragons from classes. We have learned a little about how you _instantiate_ a class 
+into an _object_. We have seen some examples of _inheritance_ and we tested to _override_ a method in the parent
+with one in the child class. We also used `super()` to good effect.
 
-Now we should know enough to understand what is happening in `mygame/typeclasses/objects.py`.
-Open it again: 
-
-```python
-"""
-module docstring
-"""
-from evennia import DefaultObject
-
-class Object(DefaultObject):
-    """
-    class docstring
-    """
-    pass
-```
-
-So we have a class `Object` that _inherits_ from `DefaultObject`, which we have imported from Evennia. 
-The class itself doesn't do anything (it just `pass`es) but that doesn't mean it's useless. As we've seen,
-it inherits all the functionality of its parent. It's in fact an _exact replica_ of `DefaultObject` right now. 
-If we knew what kind of methods and resources were available on `DefaultObject` we could add our own and 
-change the way it works!
-
-> Hint: We will get back to this, but to learn what resources an Evennia parent like `DefaultObject` offers, 
-> easiest is to peek at its [API documentation](api:evennia.objects.objects#DefaultObject). The docstring for
-> the `Object` class can also help.
-
-One thing that Evennia offers and which you don't get with vanilla Python classes is _persistence_. As you've 
-found, Fluffy, Cuddly and Smaug are gone once we reload the server. Let's see if we can fix this. 
-
-Go back to `mygame/typeclasses/mobile.py`. Change it as follows: 
-
-```python
-
-from typeclasses.objects import Object
-
-class Mobile(Object):
-    """
-    This is a base class for Mobiles.
-    """
-    def move_around(self):
-        print(f"{self.key} is moving!")
+But so far our dragons are gone as soon as we `restart` the server or `quit()` the Python interpreter. In the 
+next lesson we'll get up close and personal with Smaug. 
 
 
-class Dragon(Mobile):
-    """
-    This is a dragon-specific mobile.
-    """
-
-    def move_around(self):
-        super().move_around()
-        print("The world trembles.")
-
-    def firebreath(self):
-        """ 
-        Let our dragon breathe fire.
-        """
-        print(f"{self.key} breathes fire!")
-
-```
-
-Don't forget to save. We removed `Monster.__init__` and made `Mobile` inherit from Evennia's `Object` (which in turn 
-inherits from Evennia's `DefaultObject`, as we saw). By extension, this means that `Dragon` also inherits 
-from `DefaultObject`, just from further away!
-
-### Creating by calling the class (less common way)
-
-First reload the server as usual. We will need to create the dragon a little differently this time: 
-
-```sidebar:: Keyword arguments
-
-    Keyword arguments (like `db_key="Smaug"`) is a way to 
-    name the input arguments to a function or method. They make 
-    things easier to read but also allows for conveniently setting 
-    defaults for values not given explicitly.
-
-```
-    > py
-    > from typeclasses.mymobile import Dragon
-    > smaug = Dragon(db_key="Smaug", db_location=here)
-    > smaug.save()
-    > smaug.move_around()
-    Smaug is moving!
-    The world trembles.
-
-Smaug works the same as before, but we created him differently: first we used 
-`Dragon(db_key="Smaug", db_location=here)` to create the object, and then we used `smaug.save()` afterwards. 
-
-    > quit()
-    Python Console is closing.
-    > look 
-    
-You should now see that Smaug _is in the room with you_. Woah! 
-
-    > reload 
-    > look 
-    
-_He's still there_... What we just did is to create a new entry in the database for Smaug. We gave the object 
-its name (key) and set its location to our current location (remember that `here` is just something available 
-in the `py` command, you can't use it elsewhere). 
-
-To make use of Smaug in code we must first find him in the database. For an object in the current 
-location we can easily do this in `py` by using `me.search()`: 
-
-    > py smaug = me.search("Smaug") ; smaug.firebreath()
-    Smaug breathes fire!  
-
-### Creating using create_object
-
-Creating Smaug like we did above is nice because it's similar to how we created non-database
-bound Python instances before. But you need to use `db_key` instead of `key` and you also have to 
-remember to call `.save()` afterwards. Evennia has a helper function that is more common to use, 
-called `create_object`:
-
-    > py fluffy = evennia.create_object('typeclases.mymobile.Mobile', key="Fluffy", location=here)
-    > look 
-    
-Boom, Fluffy should now be in the room with you, a little less scary than Smaug. You specify the 
-python-path to the code you want and then set the key and location. Evennia sets things up and saves for you. 
-
-If you want to find Fluffy from anywhere, you can use Evennia's `search_object` helper: 
-
-    > fluffy = evennia.search_object("Fluffy")[0] ; fluffy.move_around()
-    Fluffy is moving! 
-
-> The `[0]` is because `search_object` always returns a _list_ of zero, one or more found objects. The `[0]`
-means that we want the first element of this list (counting in Python always starts from 0). If there were 
-multiple Fluffies we could get the second one with `[1]`.
-
-### Creating using create-command
-
-Finally, you can also create a new Dragon using the familiar builder-commands we explored a few lessons ago:
-
-    > create/drop Cuddly:typeclasses.mymobile.Mobile
-
-Cuddly is now in the room. After learning about how objects are created you'll realize that all this command really
-does is to parse your input, figure out that `/drop` means to "give the object the same location as the caller",
-and then do a call akin to
-
-    evennia.create_object("typeclasses.mymobile.Mobile", key="Cuddly", location=here)
-
-That's pretty much all there is to the mighty `create` command. 
-
-... And speaking of Commands, we should try to add one of our own next. 
-
-
-[prev lesson](Gamedir-Overview) | [next lesson](Adding-Commands)
+[prev lesson](Gamedir-Overview) | [next lesson](Learning-Typeclasses)

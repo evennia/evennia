@@ -6,7 +6,7 @@ A simple mirror object to experiment with.
 """
 
 from evennia import DefaultObject
-from evennia.utils import make_iter
+from evennia.utils import make_iter, is_iter
 from evennia import logger
 
 
@@ -51,6 +51,7 @@ class TutorialMirror(DefaultObject):
         """
         if not text:
             text = "<silence>"
+        text = text[0] if is_iter(text) else text
         if from_obj:
             for obj in make_iter(from_obj):
                 obj.msg(f"{self.key} echoes back to you:\n\"{text}\".")

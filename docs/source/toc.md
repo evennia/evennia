@@ -1,5 +1,6 @@
 # Toc
 
+- [Coding/Coding Introduction](Coding/Coding-Introduction)
 - [Coding/Coding Overview](Coding/Coding-Overview)
 - [Coding/Continuous Integration](Coding/Continuous-Integration)
 - [Coding/Debugging](Coding/Debugging)
@@ -93,8 +94,6 @@
 - [Howto/NPC shop Tutorial](Howto/NPC-shop-Tutorial)
 - [Howto/Starting/API Overview](Howto/Starting/API-Overview)
 - [Howto/Starting/Add a simple new web page](Howto/Starting/Add-a-simple-new-web-page)
-- [Howto/Starting/Adding Object Typeclass Tutorial](Howto/Starting/Adding-Object-Typeclass-Tutorial)
-- [Howto/Starting/Coding Introduction](Howto/Starting/Coding-Introduction)
 - [Howto/Starting/Coordinates](Howto/Starting/Coordinates)
 - [Howto/Starting/First Steps Coding](Howto/Starting/First-Steps-Coding)
 - [Howto/Starting/Game Planning](Howto/Starting/Game-Planning)
@@ -103,6 +102,8 @@
 - [Howto/Starting/Part1/Adding Commands](Howto/Starting/Part1/Adding-Commands)
 - [Howto/Starting/Part1/Building Quickstart](Howto/Starting/Part1/Building-Quickstart)
 - [Howto/Starting/Part1/Gamedir Overview](Howto/Starting/Part1/Gamedir-Overview)
+- [Howto/Starting/Part1/Learning Typeclasses](Howto/Starting/Part1/Learning-Typeclasses)
+- [Howto/Starting/Part1/More on Commands](Howto/Starting/Part1/More-on-Commands)
 - [Howto/Starting/Part1/Python basic introduction](Howto/Starting/Part1/Python-basic-introduction)
 - [Howto/Starting/Part1/Python classes and objects](Howto/Starting/Part1/Python-classes-and-objects)
 - [Howto/Starting/Part1/Tutorial World Introduction](Howto/Starting/Part1/Tutorial-World-Introduction)

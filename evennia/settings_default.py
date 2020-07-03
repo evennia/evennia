@@ -299,7 +299,7 @@ COMMAND_PARSER = "evennia.commands.cmdparser.cmdparser"
 # parser expects this. It should also involve a number starting from 1.
 # When changing this you must also update SEARCH_MULTIMATCH_TEMPLATE
 # to properly describe the syntax.
-SEARCH_MULTIMATCH_REGEX = r"(?P<number>[0-9]+)-(?P<name>.*)"
+SEARCH_MULTIMATCH_REGEX = r"(?P<name>.*)-(?P<number>[0-9]+)"
 # To display multimatch errors in various listings we must display
 # the syntax in a way that matches what SEARCH_MULTIMATCH_REGEX understand.
 # The template will be populated with data and expects the following markup:
@@ -307,7 +307,7 @@ SEARCH_MULTIMATCH_REGEX = r"(?P<number>[0-9]+)-(?P<name>.*)"
 # name (key) of the multimatched entity; {aliases} - eventual
 # aliases for the entity; {info} - extra info like #dbrefs for staff. Don't
 # forget a line break if you want one match per line.
-SEARCH_MULTIMATCH_TEMPLATE = " {number}-{name}{aliases}{info}\n"
+SEARCH_MULTIMATCH_TEMPLATE = " {name}-{number}{aliases}{info}\n"
 # The handler that outputs errors when using any API-level search
 # (not manager methods). This function should correctly report errors
 # both for command- and object-searches. This allows full control

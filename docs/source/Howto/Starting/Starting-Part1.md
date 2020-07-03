@@ -26,10 +26,11 @@ own first little game in Evennia. Let's get started!
 1. [The Tutorial World](Part1/Tutorial-World-Introduction)
 1. [Python basics](Part1/Python-basic-introduction)
 1. [Game dir overview](Part1/Gamedir-Overview)
-1. [Python classes](Python-basic-tutorial-part-two)
-1. [Running Python in- and outside the game](../../Coding/Execute-Python-Code)
-1. [Understanding errors](Understanding-Errors)
-1. [Searching for things](Tutorial-Searching-For-Objects)
+1. [Python classes and objects](Part1/Python-classes-and-objects)
+1. [Persistent objects](Part1/Learning-Typeclasses)
+1. [Making our first own commands](Part1/Adding-Commands)
+1. [Parsing and replacing default Commands](Part1/More-on-Commands)
+1. [Searching and creating things](Tutorial-Searching-For-Objects)
 1. [A walkthrough of the API](Walkthrough-of-API)
 
 In this first part we'll focus on what we get out of the box in Evennia - we'll get used to the tools,
