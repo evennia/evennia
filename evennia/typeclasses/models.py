@@ -109,17 +109,28 @@ class TypeclassBase(SharedMemoryModelBase):
             if not hasattr(bases, "__iter__"):
                 bases = [bases]
             for base in bases:
-                if base._meta.proxy or base._meta.abstract:
-                    for kls in base._meta.parents:
-                        return _get_dbmodel(kls)
-                return base
+                try:
+                    if base._meta.proxy or base._meta.abstract:
+                        for kls in base._meta.parents:
+                            return _get_dbmodel(kls)
+                except AttributeError:
+                    # this happens if trying to parse a non-typeclass mixin parent,
+                    # without a _meta
+                    continue
+                else:
+                    return base
+                return None
 
         dbmodel = _get_dbmodel(bases)
+
+        if not dbmodel:
+            raise TypeError(f"{name} does not appear to inherit from a database model.")
+
 
         # typeclass proxy setup
         # first check explicit __applabel__ on the typeclass, then figure
         # it out from the dbmodel
-        if dbmodel and "__applabel__" not in attrs:
+        if "__applabel__" not in attrs:
             # find the app-label in one of the bases, usually the dbmodel
             attrs["__applabel__"] = dbmodel._meta.app_label
 
