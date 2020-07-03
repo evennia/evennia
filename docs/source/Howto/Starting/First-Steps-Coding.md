@@ -10,7 +10,7 @@ Started](Getting-Started) instructions. You should have initialized a new game f
 `evennia --init foldername` command.  We will in the following assume this folder is called
 "mygame".
 
-It might be a good idea to eye through the brief [Coding Introduction](Coding-Introduction) too
+It might be a good idea to eye through the brief [Coding Introduction](../../Coding/Coding-Introduction) too
 (especially the recommendations in the section about the evennia "flat" API and about using `evennia
 shell` will help you here and in the future).
 
