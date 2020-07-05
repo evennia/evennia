@@ -1,5 +1,69 @@
-# Tutorial Searching For Objects
+# Overview of the Evennia API
 
+In the last few lessons we have explored the gamedir, learned about typeclasses and commands. In the process
+we have used several resources from the Evennia library. Some examples:
+
+- `evennia.DefaultObject`, `evennia.DefaultCharacter` and (inherited) methods on these classes like `.msg` 
+    and `at_object_create` but also `.cmdset.add` for adding new cmdsets.
+- `evennia.search_object` for finding lists of objects anywhere.
+- `evennia.create_object` for creating objects in code instead of using the in-game `create` command.
+- `evennia.Command` with methods like `func` and `parse` to implement new commands
+- `evennia.CmdSet`  for storing commands
+- `evennia.default_cmds` holding references to all default Command classes like `look`, `dig` and so on.
+
+Evennia has a lot of resources to help you make your game. We have just given a selection of them for you to try
+out so far (and we'll show off many more in the lessons to come). Now we'll teach you how find them 
+for yourself.
+
+## Exploring the API
+
+The Evennia _API_ 
+([Application Programming Interface](https://en.wikipedia.org/wiki/Application_programming_interface)) is what 
+you use to access things inside the `evennia` package. You can examine this in many ways:
+
+- The easiest is to browse the [API auto-docs](api:evennia) coming with this very documentation. This is built 
+  automatically from the latest sources. The auto-docs give you each class, function and method along with the
+  docstring and everything you need to use that resource. If you want to go deeper you can also click the `[src]`
+  link next to e.g. a class to see its full python code. The documentation is also searchable. 
+- You can browse [the evennia repository on github](https://github.com/evennia/evennia). This is exactly
+  what you can download from us. The github repo is also searchable. 
+- You can also clone the evennia repo to your own computer and read the sources locally. This is necessary 
+  if you want to help with Evennia's development itself. See the 
+  [extended install instructions](../../../Setup/Extended-Installation) if you want to do this. The short of is to install `git` and run 
+  
+        git clone https://github.com/evennia/evennia.git
+        
+  In the terminal/console you can search for anything using `git` (make sure you are inside the repo):
+  
+        git grep "class DefaultObject"
+        
+  will quickly tell you where the DefaultObject class is defined.
+
+### Side note for those reading the code directly (optional)
+
+If you read the code on `github` or cloned the repo yourself, you will find this being the outermost folder 
+structure: 
+
+    evennia/ 
+        bin/ 
+        CHANGELOG.md
+        ...
+        ...
+        docs/
+        evennia/ 
+
+That internal folder `evennia/evennia/` is the actual library, the thing covered by the API auto-docs and 
+what you get when you do `import evennia`. The outermost level is part of the Evennia package distribution and 
+installation. It's not something we'll bother with for this tutorial.
+
+> The `evennia/docs/` folder contains, well, this documentation. See [contributing to the docs](../../../Contributing-Docs) if you
+want to learn more about how this works.
+
+## Overview of the library
+
+
+
+# Tutorial Searching For Objects
 
 You will often want to operate on a specific object in the database. For example when a player
 attacks a named target you'll need to find that target so it can be attacked. Or when a rain storm
@@ -9,8 +73,8 @@ explains Evennia's tools for searching.
 ## Things to search for
 
 The first thing to consider is the base type of the thing you are searching for. Evennia organizes
-its database into a few main tables: [Objects](../../Component/Objects), [Accounts](../../Component/Accounts), [Scripts](../../Component/Scripts),
-[Channels](../../Component/Communications#channels), [Messages](Communication#Msg) and [Help Entries](../../Component/Help-System).
+its database into a few main tables: [Objects](../../../Component/Objects), [Accounts](../../../Component/Accounts), [Scripts](../../../Component/Scripts),
+[Channels](../../../Component/Communications#channels), [Messages](Communication#Msg) and [Help Entries](../../../Component/Help-System).
 Most of the time you'll likely spend your time searching for Objects and the occasional Accounts.
 
 So to find an entity, what can be searched for? 
@@ -22,20 +86,20 @@ the database field for `.key` is instead named `username` (this is a Django requ
 don't specify search-type, you'll usually search based on key. *Aliases* are extra names given to
 Objects using something like `@alias` or `obj.aliases.add('name')`. The main search functions (see
 below) will automatically search for aliases whenever you search by-key.
- - [Tags](../../Component/Tags) are the main way to group and identify objects in Evennia. Tags can most often be
+ - [Tags](../../../Component/Tags) are the main way to group and identify objects in Evennia. Tags can most often be
 used (sometimes together with keys) to uniquely identify an object. For example, even though you
 have two locations with the same name, you can separate them by their tagging (this is how Evennia
 implements 'zones' seen in other systems). Tags can also have categories, to further organize your
 data for quick lookups.
- - An object's [Attributes](../../Component/Attributes) can also used to find an object. This can be very useful but
+ - An object's [Attributes](../../../Component/Attributes) can also used to find an object. This can be very useful but
 since Attributes can store almost any data they are far less optimized to search for than Tags or
 keys.
-- The object's [Typeclass](../../Component/Typeclasses) indicate the sub-type of entity. A Character, Flower or
+- The object's [Typeclass](../../../Component/Typeclasses) indicate the sub-type of entity. A Character, Flower or
 Sword are all types of Objects. A Bot is a kind of Account. The database field is called
 `typeclass_path` and holds the full Python-path to the class. You can usually specify the
 `typeclass` as an argument to Evennia's search functions as well as use the class directly to limit
 queries.
-- The `location` is only relevant for [Objects](../../Component/Objects) but is a very common way to weed down the
+- The `location` is only relevant for [Objects](../../../Component/Objects) but is a very common way to weed down the
 number of candidates before starting to search. The reason is that most in-game commands tend to
 operate on things nearby (in the same room) so the choices can be limited from the start.
 - The database id or the '#dbref' is unique (and never re-used) within each database table. So while
@@ -50,7 +114,7 @@ around and searching by Tags and/or keys will usually get you what you need.
 
 ## Getting objects inside another
 
-All in-game [Objects](../../Component/Objects) have a `.contents` property that returns all objects 'inside' them
+All in-game [Objects](../../../Component/Objects) have a `.contents` property that returns all objects 'inside' them
 (that is, all objects which has its `.location` property set to that object. This is a simple way to
 get everything in a room and is also faster since this lookup is cached and won't hit the database.
 
@@ -64,7 +128,7 @@ location except `obj`.
 
 ## Searching using `Object.search`
 
-Say you have a [command](../../Component/Commands), and you want it to do something to a target. You might be
+Say you have a [command](../../../Component/Commands), and you want it to do something to a target. You might be
 wondering how you retrieve that target in code, and that's where Evennia's search utilities come in.
 In the most common case, you'll often use the `search` method of the `Object` or `Account`
 typeclasses. In a command, the `.caller` property will refer back to the object using the command
@@ -133,7 +197,7 @@ class CmdListHangouts(default_cmds.MuxCommand):
                         ", ".join(str(ob) for ob in hangouts)))
 ```
 
-This uses the `search_tag` function to find all objects previously tagged with [Tags](../../Component/Tags)
+This uses the `search_tag` function to find all objects previously tagged with [Tags](../../../Component/Tags)
 "hangout" and with category "location tags".
 
 Other important search methods in `utils.search` are
@@ -303,7 +367,7 @@ nice enough to alias the `db_key` field so you can normally just do `char.key` t
 name, the database field is actually called `db_key` and the real name must be used for the purpose
 of building a query.
 
-> Don't confuse database fields with [Attributes](../../Component/Attributes) you set via `obj.db.attr = 'foo'` or
+> Don't confuse database fields with [Attributes](../../../Component/Attributes) you set via `obj.db.attr = 'foo'` or
 `obj.attributes.add()`. Attributes are custom database entities *linked* to an object. They are not
 separate fields *on* that object like `db_key` or `db_location` are. You can get attached Attributes
 manually through the `db_attributes` many-to-many field in the same way as `db_tags` above.

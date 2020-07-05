@@ -165,14 +165,14 @@ things to understand before you can use Evennia efficiently.
 ### Classes and instances
 
 A 'class' can be seen as a 'template' for a 'type' of object. The class describes the basic functionality
-of everyone of that class. For example, we could have a class `Mobile` which has resources for moving itself
+of everyone of that class. For example, we could have a class `Monster` which has resources for moving itself
 from room to room.
 
-Open a new file `mygame/typeclasses/mymobile.py`. Add the following simple class:
+Open a new file `mygame/typeclasses/monsters.py`. Add the following simple class:
 
 ```python
 
-class Mobile:
+class Monster:
 
     key = "Monster"
 
@@ -181,7 +181,7 @@ class Mobile:
 
 ```
 
-Above we have defined a `Mobile` class with one variable `key` (that is, the name) and one 
+Above we have defined a `Monster` class with one variable `key` (that is, the name) and one 
 _method_ on it. A method is like a function except it sits "on" the class. It also always has 
 at least one argument (almost always written as `self` although you could in principle use 
 another name), which is a reference back to itself. So when we print `self.key` we are referring
@@ -194,20 +194,20 @@ back to the `key` on the class.
 
 ```
 A class is just a template. Before it can be used, we must create an _instance_ of the class. If
-`Mobile` is a class, then an instance is Fluffy, the individual red dragon. You instantiate 
+`Monster` is a class, then an instance is Fluffy, the individual red dragon. You instantiate 
 by _calling_ the class, much like you would a function: 
 
-    fluffy = Mobile()
+    fluffy = Monster()
    
 Let's try it in-game (we use multi-line mode, it's easier)
 
     > py 
-    > from typeclasses.mymobile import Mobile
-    > fluffy = Mobile()
+    > from typeclasses.monsters import Monster
+    > fluffy = Monster()
     > fluffy.move_around()
     Monster is moving!
 
-We created an _instance_ of `Mobile`, which we stored in the variable `fluffy`. We then 
+We created an _instance_ of `Monster`, which we stored in the variable `fluffy`. We then 
 called the `move_around` method on fluffy to get the printout. 
 
 > Note how we _didn't_ call the method as `fluffy.move_around(self)`. While the `self` has to be 
@@ -216,7 +216,7 @@ called the `move_around` method on fluffy to get the printout.
 
 Let's create the sibling of Fluffy, Cuddly:
 
-    > cuddly = Mobile()
+    > cuddly = Monster()
     > cuddly.move_around()
     Monster is moving!  
 
@@ -228,7 +228,7 @@ Let's make the class a little more flexible:
 
 ```python
 
-class Mobile:
+class Monster:
  
     def __init__(self, key):
         self.key = key 
@@ -239,7 +239,7 @@ class Mobile:
 ```
 
 The `__init__` is a special method that Python recognizes. If given, this handles extra arguments
-when you instantiate a new Mobile. We have it add an argument `key` that we store on `self`. 
+when you instantiate a new Monster. We have it add an argument `key` that we store on `self`. 
 
 Now, for Evennia to see this code change, we need to reload the server. You can either do it this
 way:
@@ -262,8 +262,8 @@ Or you can use a separate terminal and restart from outside the game:
 Either way you'll need to go into `py` again:
 
     > py 
-    > from typeclasses.mymobile import Mobile
-    fluffy = Mobile("Fluffy")
+    > from typeclasses.monsters import Monster
+    fluffy = Monster("Fluffy")
     fluffy.move_around()
     Fluffy is moving! 
 
@@ -276,7 +276,7 @@ So far all we've seen a class do is to behave our first `hello_world` function b
 could just have made a function:
 
 ```python
-     def mobile_move_around(key):
+     def monster_move_around(key):
         print(f"{key} is moving!")      
 ```
 
@@ -306,13 +306,13 @@ objects in turn:
 Classes can _inherit_ from each other. A "child" class will inherit everything from its "parent" class. But if 
 the child adds something with the same name as its parent, it will _override_ whatever it got from its parent. 
 
-Let's expand `mygame/typeclasses/mymobile.py` with another class:
+Let's expand `mygame/typeclasses/monsters.py` with another class:
 
 ```python
 
-class Mobile:
+class Monster:
     """
-    This is a base class for Mobiles.
+    This is a base class for Monster.
     """
  
     def __init__(self, key):
@@ -322,9 +322,9 @@ class Mobile:
         print(f"{self.key} is moving!")
 
 
-class Dragon(Mobile):
+class Dragon(Monster):
     """
-    This is a dragon-specific mobile.
+    This is a dragon-specific monster.
     """
 
     def move_around(self):
@@ -341,7 +341,7 @@ class Dragon(Mobile):
 We added some docstrings for clarity. It's always a good idea to add doc strings; you can do so also for methods,
 as exemplified for the new `firebreath` method.
 
-We created the new class `Dragon` but we also specified that `Mobile` is the _parent_ of `Dragon` but adding 
+We created the new class `Dragon` but we also specified that `Monster` is the _parent_ of `Dragon` but adding 
 the parent in parenthesis. `class Classname(Parent)` is the way to do this. 
 
 ```sidebar:: Multi-inheritance
@@ -355,7 +355,7 @@ the parent in parenthesis. `class Classname(Parent)` is the way to do this.
 Let's try out our new class. First `reload` the server and the do
 
     > py 
-    > from typeclasses.mobile import Dragon 
+    > from typeclasses.monsters import Dragon 
     > smaug = Dragon("Smaug")
     > smaug.move_around()
     Smaug flies through the air high above!
@@ -391,7 +391,7 @@ case, we will call `Monster.move_around` first, before doing our own thing.
 Now `reload` the server and then: 
 
     > py 
-    > from typeclasses.mobile import Dragon 
+    > from typeclasses.monsters import Dragon 
     > smaug = Dragon("Smaug")
     > smaug.move_around()
     Smaug is moving!
