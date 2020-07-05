@@ -1,6 +1,6 @@
 # More about Commands
 
-[prev lesson](Adding-Commands) | [next lesson](Learning-Typeclasses)
+[prev lesson](Adding-Commands) | [next lesson](Evennia-API-Overview)
 
 In this lesson we learn some basics about parsing the input of Commands. We will 
 also learn how to add, modify and extend Evennia's default commands. 
@@ -497,6 +497,8 @@ In this lesson we got into some more advanced string formatting - many of those 
 the future! We also made a functional sword. Finally we got into how to add to, extend and replace a default 
 command on ourselves.
 
-Let's explore 'ourselves' and other 'things' in the game next.
+In the last few lessons we have made use of resources from Evennia. Now that we have had some experience of how 
+classes and inheritance work, we can start exploring this in earnest.
 
-[prev lesson](Adding-Commands) | [next lesson](Learning-Typeclasses)
+
+[prev lesson](Adding-Commands) | [next lesson](Evennia-API-Overview)

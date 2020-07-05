@@ -9,8 +9,15 @@ A Command is something that handles the input from a user and causes a result to
 An example is `look`, which examines your current location and tells how it looks like and
 what is in it. 
 
+```sidebar:: Commands are not typeclassed
+
+    If you just came from the previous lesson, you might want to know that Commands and 
+    CommandSets are not `typeclassed`. That is, instances of them are not saved to the 
+    database. They are "just" normal Python classes.
+```
+
 In Evennia, a Command is a Python _class_. If you are unsure about what a class is, review the 
-previous lesson. A Command inherits from `evennia.Command` or from one of the alternative command-
+previous lessons! A Command inherits from `evennia.Command` or from one of the alternative command-
 classes, such as `MuxCommand` which is what most default commands use. 
 
 All Commands are in turn grouped in another class called a _Command Set_. Think of a Command Set
@@ -18,8 +25,8 @@ as a bag holding many different commands. One CmdSet could for example hold all 
 combat, another for building etc. By default, Evennia groups all character-commands into one 
 big cmdset. 
 
-Command-Sets are then associated with objects. Doing so makes the commands in that cmdset available 
-to the object. So, to summarize: 
+Command-Sets are then associated with objects, for example with your Character. Doing so makes the 
+commands in that cmdset available to the object. So, to summarize: 
 
 - Commands are classes
 - A group of Commands is stored in a CmdSet
@@ -380,7 +387,7 @@ You won't see the second string. Only Smaug sees that (and is not amused).
 
 ## Summary
 
-In this lesson we learned how to create our own Command, add it to a CmdSet and then ourselves. 
+In this lesson we learned how to create our own Command, add it to a CmdSet and then to ourselves. 
 We also upset a dragon. 
 
 In the next lesson we'll learn how to hit Smaug with different weapons. We'll also 
