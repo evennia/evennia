@@ -122,6 +122,7 @@ def url_resolver(url):
     githubstart = "github:"
     apistart = "api:"
     choose_issue = "github:issue"
+    sourcestart = "src:"
     
     if url.endswith(choose_issue):
         return _github_issue_choose
@@ -137,6 +138,19 @@ def url_resolver(url):
         path = "../".join("" for _ in range(depth))
         urlpath = path + "api/" + url[ind + len(apistart):] + ".html"
         return urlpath
+    elif sourcestart in url:
+        ind = url.index(sourcestart)
+        depth = url[:ind].count("/") + 1
+        path = "../".join("" for _ in range(depth))
+
+        modpath, *inmodule = url[ind + len(sourcestart):].rsplit("#", 1)
+        modpath = "/".join(modpath.split("."))
+        inmodule = "#" + inmodule[0] if inmodule else ""
+        modpath = modpath + ".html" + inmodule
+
+        urlpath = path + "_modules/" + modpath
+        return urlpath
+
     return url
 
 

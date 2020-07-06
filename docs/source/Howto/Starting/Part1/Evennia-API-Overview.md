@@ -12,34 +12,36 @@ we have used several resources from the Evennia library. Some examples:
 - `evennia.default_cmds` holding references to all default Command classes like `look`, `dig` and so on.
 
 Evennia has a lot of resources to help you make your game. We have just given a selection of them for you to try
-out so far (and we'll show off many more in the lessons to come). Now we'll teach you how find them 
+out so far (and we'll show off many more in the lessons to come). Now we'll teach you how to find them 
 for yourself.
 
 ## Exploring the API
 
 The Evennia _API_ 
 ([Application Programming Interface](https://en.wikipedia.org/wiki/Application_programming_interface)) is what 
-you use to access things inside the `evennia` package. You can examine this in many ways:
+you use to access things inside the `evennia` package.
 
-- The easiest is to browse the [API auto-docs](../../../Evennia-API) [api](api:evennia) coming with this very documentation. This is built 
-  automatically from the latest sources. The auto-docs give you each class, function and method along with the
-  docstring and everything you need to use that resource. If you want to go deeper you can also click the `[src]`
-  link next to e.g. a class to see its full python code. The documentation is also searchable. 
-- You can browse [the evennia repository on github](https://github.com/evennia/evennia). This is exactly
-  what you can download from us. The github repo is also searchable. 
-- You can also clone the evennia repo to your own computer and read the sources locally. This is necessary 
-  if you want to help with Evennia's development itself. See the 
+Open the [API frontpage](../../../Evennia-API). This page sums up the main components of Evennia with a short
+description of each. Try clicking through to a few entries - once you get deep enough you'll see full descriptions
+of each component along with their documentation. You can also click `[source]` to see the full Python source 
+for each thing. 
+
+### Browsing the code
+
+You can browse [the evennia repository on github](https://github.com/evennia/evennia). This is exactly
+what you can download from us. The github repo is also searchable. 
+ 
+You can also clone the evennia repo to your own computer and read the sources locally. This is necessary 
+if you want to help with Evennia's development itself. See the 
   [extended install instructions](../../../Setup/Extended-Installation) if you want to do this. The short of is to install `git` and run 
   
         git clone https://github.com/evennia/evennia.git
         
   In the terminal/console you can search for anything using `git` (make sure you are inside the repo):
   
-        git grep "class DefaultObject"
+        git grep -n "class DefaultObject"
         
-  will quickly tell you where the DefaultObject class is defined.
-
-### Side note for those reading the code directly (optional)
+  will quickly tell you which file the DefaultObject class is defined and on which line.
 
 If you read the code on `github` or cloned the repo yourself, you will find this being the outermost folder 
 structure: 
@@ -59,7 +61,69 @@ installation. It's not something we'll bother with for this tutorial.
 > The `evennia/docs/` folder contains, well, this documentation. See [contributing to the docs](../../../Contributing-Docs) if you
 want to learn more about how this works.
 
-## Overview of the library
+## Overview of the `evennia` root package
+
+```
+    evennia/ 
+       __init__.py
+       settings_default.py
+       accounts/
+       commands/ 
+       comms/
+       game_template/
+       help/ 
+       locale/ 
+       locks/
+       objects/
+       prototypes/
+       scripts/
+       server/
+       typeclasses/
+       utils/
+       web/
+```
+
+```sidebar:: __init__.py
+
+    The `__init__.py` file is a special Python filename used to represent a Python 'package'.
+    When you import `evennia` on its own, you import this file. When you do `evennia.foo` Python will
+    first look for a property `.foo` in `__init__.py` and then for a module or folder in the same 
+    location. 
+
+```
+While all the actual Evennia code is found in the various folders, the `__init__.py` contains "shortcuts"
+to useful things you will often need. This allows you to do things like `from evennia import DefaultObject`
+even though the `DefaultObject` is not actually defined there. Let's see how that works:
+
+[Look at Line 189](evennia/__init__.py#L189) of `evennia/__init__.py` and you'll find this line:
+
+```python
+    # ...
+    from .objects.objects import DefaultObject    
+    # ...
+```
+
+```sidebar:: Relative and absolute imports
+
+    The first full-stop in `from .objects.objects ...` means that 
+    we are importing from the current location. This is called a `relative import`.
+    By comparison, `from evennia.objects.objects` is an `absolute import`. In this particular
+    case, the two would give the same result. 
+```
+
+Since `DefaultObject` is imported into `__init__.py`, it means we can do 
+`from evennia import DefaultObject` even though the code for it is not actually here. 
+
+So if we want to find the code for `DefaultObject` we need to look in 
+`evennia/objects/objects.py`. Here's how to look it up in these docs: 
+
+1. Open the [API frontpage](../../../Evennia-API) 
+2. Locate the link to [evennia.objects](api:evennia.objects) and click on it.
+3. Click through to [evennia.objects.objects](api:evennia.objects.objects).
+4. You are now in the python module. Scroll down (or search in your web browser) to find the `DefaultObject` class.
+5. You can now read what this does and what methods are on it. If you want to see the full source, click the
+   \[[source](src:evennia.objects.objects#DefaultObject)\] link.
+
 
 
 

@@ -19,6 +19,7 @@
 ## Shortcuts
 
 Evennia's 'flat API' has shortcuts to common tools, available by only importing `evennia`.
+The flat API is defined in `__init__.py` [viewable here](github:evennia/__init__.py)
 
 
 ### Main config
