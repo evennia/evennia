@@ -117,12 +117,12 @@ _github_issue_choose = "https://github.com/evennia/evennia/issues/new/choose"
 
 def url_resolver(url):
     """
-    Convert urls by catching special markers.
+    Convert urls by catching special markers. 
     """
     githubstart = "github:"
     apistart = "api:"
     choose_issue = "github:issue"
-
+    
     if url.endswith(choose_issue):
         return _github_issue_choose
     elif githubstart in url:
@@ -131,8 +131,12 @@ def url_resolver(url):
             urlpath = "master/" + urlpath
         return _github_code_root + urlpath
     elif apistart in url:
-        urlpath = url[url.index(apistart) + len(apistart):]
-        return "api/" + urlpath + ".html"
+        # locate the api/ folder in the doc structure
+        ind = url.index(apistart)
+        depth = url[:ind].count("/") + 1
+        path = "../".join("" for _ in range(depth))
+        urlpath = path + "api/" + url[ind + len(apistart):] + ".html"
+        return urlpath
     return url
 
 

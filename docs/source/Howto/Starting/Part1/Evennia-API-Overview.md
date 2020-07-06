@@ -21,7 +21,7 @@ The Evennia _API_
 ([Application Programming Interface](https://en.wikipedia.org/wiki/Application_programming_interface)) is what 
 you use to access things inside the `evennia` package. You can examine this in many ways:
 
-- The easiest is to browse the [API auto-docs](api:evennia) coming with this very documentation. This is built 
+- The easiest is to browse the [API auto-docs](../../../Evennia-API) [api](api:evennia) coming with this very documentation. This is built 
   automatically from the latest sources. The auto-docs give you each class, function and method along with the
   docstring and everything you need to use that resource. If you want to go deeper you can also click the `[src]`
   link next to e.g. a class to see its full python code. The documentation is also searchable. 
@@ -60,6 +60,9 @@ installation. It's not something we'll bother with for this tutorial.
 want to learn more about how this works.
 
 ## Overview of the library
+
+
+
 
 
 
