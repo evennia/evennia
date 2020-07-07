@@ -27,11 +27,12 @@ own first little game in Evennia. Let's get started!
 1. [Python basics](Part1/Python-basic-introduction)
 1. [Game dir overview](Part1/Gamedir-Overview)
 1. [Python classes and objects](Part1/Python-classes-and-objects)
-1. [Persistent objects](Part1/Learning-Typeclasses)
+1. [Accessing the Evennia library](Part1/Evennia-Library-Overview)
+1. [Typeclasses - Persistent objects](Part1/Learning-Typeclasses)
 1. [Making our first own commands](Part1/Adding-Commands)
 1. [Parsing and replacing default Commands](Part1/More-on-Commands)
-1. [Searching and creating things](Tutorial-Searching-For-Objects)
-1. [A walkthrough of the API](Walkthrough-of-API)
+1. [Creating things](Part1/Creating-Things)
+1. [Searching for things](Part1/Searching-Things)
 
 In this first part we'll focus on what we get out of the box in Evennia - we'll get used to the tools,
 where things are and how we find things we are looking for. We will also dive into some of things you'll 

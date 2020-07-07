@@ -52,7 +52,7 @@ using such a checker can be a good start to weed out the simple problems.
 
 ### Plan before you code
 
-Before you start coding away at your dream game, take a look at our [Game Planning](../Howto/Starting/Game-Planning)
+Before you start coding away at your dream game, take a look at our [Game Planning](../Howto/Starting/Part2/Game-Planning)
 page. It might hopefully help you avoid some common pitfalls and time sinks.
 
 ### Code in your game folder, not in the evennia/ repository

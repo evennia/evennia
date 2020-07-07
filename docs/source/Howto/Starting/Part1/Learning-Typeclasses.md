@@ -1,9 +1,11 @@
 # Persistent objects and typeclasses
 
-[prev lesson](Python-classes-and-objects) | [next lesson](Adding-Commands)
+[prev lesson](Evennia-Library-Overview) | [next lesson](Creating-Things)
 
-In the last lesson we created the dragons Fluffy, Cuddly and Smaug and made the fly and breathe fire. We 
-learned a bit about _classes_ in the process. But so far our dragons are short-lived - whenever we `restart`
+Now that we have learned a little about how to find things in the Evennia library, let's use it. 
+
+In the [Python classes and objects](Python-classes-and-objects) lesson we created the dragons Fluffy, Cuddly 
+and Smaug and made them fly and breathe fire. So far our dragons are short-lived - whenever we `restart`
 the server or `quit()` out of python mode they are gone. 
 
 This is what you should have in `mygame/typeclasses/monsters.py` so far: 
@@ -620,4 +622,4 @@ Typeclasses are a fundamental part of Evennia and we will see a lot of more uses
 this tutorial. But that's enough of them for now. It's time to take some action. Let's learn about _Commands_. 
 
 
-[prev lesson](Python-classes-and-objects) | [next lesson](Adding-Commands)
+[prev lesson](Evennia-Library-Overview) | [next lesson](Creating-Things)

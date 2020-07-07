@@ -26,7 +26,7 @@ in mind for your own game, this will give you a good start.
 ### Part 2: What we want
 
 1. [Introduction & Overview](Starting/Starting-Part2)
-1. [On planning a game](Starting/Game-Planning)
+1. [On planning a game](Starting/Part2/Game-Planning)
 1. [Multisession modes](Multi-session-modes)
 1. [Layout of our tutorial game](Game-Tutorial-Planning)
 1. [Making use of contribs](Using-Contribs)
