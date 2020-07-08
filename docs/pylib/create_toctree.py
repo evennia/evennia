@@ -18,6 +18,14 @@ _TOC_FILE = pathjoin(_SOURCE_DIR, "toc.md")
 _NO_REMAP_STARTSWITH = ["http://", "https://", "github:", "api:",
                         "feature-request", "report-bug", "issue", "bug-report"]
 
+TXT_REMAPS = {
+    "Developer Central": "Evennia Component overview"
+}
+URL_REMAPS = {
+    "Developer-Central": "Component/Component-Overview",
+}
+
+
 _CURRFILE = None
 
 def create_toctree():
@@ -81,6 +89,9 @@ def create_toctree():
         grpdict = match.groupdict()
         txt, url = grpdict['txt'], grpdict['url']
 
+        txt = TXT_REMAPS.get(txt, txt)
+        url = URL_REMAPS.get(url, url)
+
         if any(url.startswith(noremap) for noremap in _NO_REMAP_STARTSWITH):
             return f"[{txt}]({url})"
 
@@ -102,6 +113,9 @@ def create_toctree():
     def _sub_doc(match):
         grpdict = match.groupdict()
         txt, url = grpdict['txt'], grpdict['url']
+
+        txt = TXT_REMAPS.get(txt, txt)
+        url = URL_REMAPS.get(url, url)
 
         if any(url.startswith(noremap) for noremap in _NO_REMAP_STARTSWITH):
             return f"[{txt}]({url})"
