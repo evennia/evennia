@@ -651,4 +651,4 @@ specific player (or npc) and automatically compare their relevant attributes to 
 
 To continue from here, you can take a look at the [Tutorial World](Part1/Tutorial-World-Introduction). For
 more specific ideas, see the [other tutorials and hints](Tutorials) as well
-as the [Developer Central](Developer-Central).
+as the [Evennia Component overview](../../Component/Component-Overview).
