@@ -42,8 +42,7 @@ new and better command system of your own design.
 ## Can I test it somewhere?
 
 Evennia's demo server can be found at [demo.evennia.com](http://demo.evennia.com). If you prefer to
-connect to the demo via your own telnet client you can do so at `silvren.com`, port `4280`. Here is
-a [screenshot](Screenshot).
+connect to the demo via your own telnet client you can do so at `silvren.com`, port `4280`.
 
 Once you installed Evennia yourself it comes with its own tutorial - this shows off some of the
 possibilities _and_ gives you a small single-player quest to play. The tutorial takes only one

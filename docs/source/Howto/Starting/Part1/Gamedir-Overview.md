@@ -159,7 +159,7 @@ be the same after a server reboot.
     [Account](../../../Component/Accounts) represents the player connecting to the game. It holds information like email,
     password and other out-of-character details.
 - [channels.py](github:evennia/game_template/typeclasses/channels.py) (Python-path: `typeclasses.channels`) - 
-    [Channels](Channels) are used to manage in-game communication between players. 
+    [Channels](../../../Component/Channels) are used to manage in-game communication between players. 
 - [objects.py](github:evennia/game_template/typeclasses/objects.py) (Python-path: `typeclasses.objects`) - 
    [Objects](../../../Component/Objects) represent all things having a location within the game world.
 - [characters.py](github:evennia/game_template/typeclasses/characters.py) (Python-path: `typeclasses.characters`) - 
