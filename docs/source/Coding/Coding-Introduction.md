@@ -1,16 +1,20 @@
 # Coding Introduction
 
-
 Evennia allows for a lot of freedom when designing your game - but to code efficiently you still
 need to adopt some best practices as well as find a good place to start to learn.
 
 Here are some pointers to get you going.
 
+### Start with the tutorial
+
+It's highly recommended that you jump in on the [Starting Tutorial](Howto/Starting/Starting-Part1). Even if 
+you only the beginning or some part of it, it covers much of the things needed to get started.
+
 ### Python
 
 Evennia is developed using Python. Even if you are more of a designer than a coder, it is wise to
 learn how to read and understand basic Python code. If you are new to Python, or need a refresher,
-take a look at our two-part [Python introduction](../Howto/Starting/Part1/Python-basic-introduction).
+take a look at our [Python introduction](../Howto/Starting/Part1/Python-basic-introduction).
 
 ### Explore Evennia interactively
 

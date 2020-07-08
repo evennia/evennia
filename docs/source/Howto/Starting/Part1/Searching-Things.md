@@ -258,7 +258,7 @@ There is a property `.destination` which is only used by exits:
 Knowing how to find things is important and the tools from this section will serve you well. For most of your needs
 these tools will be all you need ...
 
-... but not always. In the next lesson we will dive further into more complex searching when we start looking at 
+... but not always. In the next lesson we will dive further into more complex searching when we look at 
 Django queries and querysets in earnest.
 
 [prev lesson](Creating-Things) | [next lesson](Django-queries)

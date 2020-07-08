@@ -1,4 +1,4 @@
-# Evennia Starting Tutorial
+# Evennia Starting Tutorial (Part 1)
 
   [Next lesson](Part1/Building-Quickstart)
   
@@ -33,6 +33,7 @@ own first little game in Evennia. Let's get started!
 1. [Parsing and replacing default Commands](Part1/More-on-Commands)
 1. [Creating things](Part1/Creating-Things)
 1. [Searching for things](Part1/Searching-Things)
+1. [Advanced searching with Django queries](Part1/Django-queries)
 
 In this first part we'll focus on what we get out of the box in Evennia - we'll get used to the tools,
 where things are and how we find things we are looking for. We will also dive into some of things you'll 
