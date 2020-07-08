@@ -336,7 +336,7 @@ the
 
 - `issue`, `bug-report`, `feature-request` - links to the same github issue select page.
 
-        If you find a problem, make a [bug report](issue)!
+        If you find a problem, make a [bug report](github:issue)!
 
     This will generate a link to https://github.com/evennia/evennia/issues/new/choose.
 

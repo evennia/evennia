@@ -37,6 +37,16 @@ URL_REMAPS = {
     "Howto/Starting/Adding-Command-Tutorial": "Adding-Commands",
     "Starting/Adding-Command-Tutorial": "Adding-Commands",
     "Adding-Command-Tutorial": "Adding-Commands",
+    "CmdSet": "Command-Sets",
+    "Spawner": "Spawner-and-Prototypes",
+    "issue": "github:issue",
+    "issues": "github:issue",
+    "bug": "github:issue",
+    "bug-report": "github:issue",
+    "Components/Components-Overview": "Component-Overview",
+    "Components-Overview": "Component-Overview",
+    "Concepts/Concepts-Overview": "Concept-Overview",
+    "Concepts-Overview": "Concept-Overview",
 }
 
 
@@ -95,9 +105,9 @@ def create_toctree():
 
 
     # normal reference-links [txt](urls)
-    ref_regex = re.compile(r"\[(?P<txt>[\w -\[\]]+?)\]\((?P<url>.+?)\)", re.I + re.S + re.U)
+    ref_regex = re.compile(r"\[(?P<txt>[\w -\[\]]+?)\]\((?P<url>.+?)\)", re.I + re.S + re.U + re.M)
     # in document references
-    ref_doc_regex = re.compile(r"\[(?P<txt>[\w -]+?)\]:\s+?(?P<url>.+?)(?=$|\n)", re.I + re.S + re.U)
+    ref_doc_regex = re.compile(r"\[(?P<txt>[\w -]+?)\]:\s+?(?P<url>.+?)(?=$|\n)", re.I + re.S + re.U + re.M)
 
     def _sub(match):
         # inline reference links

@@ -56,7 +56,6 @@ text editors and IDEs with refactoring, syntax highlighting and all other conven
 collaborative development of an Evennia game is done in the same way most professional collaborative
 development is done in the world, meaning all the best tools can be used.
 
-
 ## `@parent` vs `@typeclass` and `@spawn`
 
 Inheritance works differently in Python than in softcode. Evennia has no concept of a "master
@@ -88,8 +87,8 @@ another which is again somewhat remniscent at least of the *effect* of  `@parent
 based inheritance of MUSH.
 
 There are other differences for sure, but that should give some feel for things. Enough with the
-theory. Let's get down to more practical  matters next. To install, see the [Getting Started
-instructions](Getting-Started).
+theory. Let's get down to more practical  matters next. To install, see the 
+[Getting Started instructions](../Setup/Setup-Quickstart).
 
 ## A first step making things more familiar
 
@@ -211,10 +210,10 @@ for-roleplaying-sessions) that can be of interest.
 
 An important aspect of making things more familiar for *Players* is adding new and tweaking existing
 commands. How this is done is covered by the [Tutorial on adding new commands](Adding-Command-
-Tutorial). You may also find it useful to shop through the `evennia/contrib/` folder. The [Tutorial
-world](Tutorial-World-Introduction) is a small single-player quest you can try (it’s not very MUSH-
-like but it does show many Evennia concepts in action). Beyond that there are [many more
-tutorials](Tutorials) to try out. If you feel you want a more visual overview you can also look at
+Tutorial). You may also find it useful to shop through the `evennia/contrib/` folder. The 
+[Tutorial world](Starting/Part1/Tutorial-World-Introduction) is a small single-player quest you can try (it’s not very MUSH-
+like but it does show many Evennia concepts in action). Beyond that there are [many more tutorials](Howto-Overview) 
+to try out. If you feel you want a more visual overview you can also look at
 [Evennia in pictures](https://evennia.blogspot.se/2016/05/evennia-in-pictures.html).
 
 … And of course, if you need further help you can always drop into the [Evennia

@@ -54,12 +54,12 @@ The flat API is defined in `__init__.py` [viewable here](github:evennia/__init__
 - [evennia.DefaultRoom](api:evennia.objects.objects#evennia.objects.objects.DefaultRoom) - base class for rooms ([docs](Component/Objects#Room))
 - [evennia.DefaultExit](api:evennia.objects.objects#evennia.objects.objects.DefaultExit) - base class for exits ([docs](Component/Objects#Exit))
 - [evennia.DefaultScript](api:evennia.scripts.scripts#evennia.scripts.scripts.DefaultScript) - base class for OOC-objects ([docs](Component/Scripts))
-- [evennia.DefaultChannel](api:evennia.comms.comms#evennia.comms.comms.DefaultChannel) - base class for in-game channels ([docs](Channels))
+- [evennia.DefaultChannel](api:evennia.comms.comms#evennia.comms.comms.DefaultChannel) - base class for in-game channels ([docs](Component/Channels))
 
 ### Commands
 
 - [evennia.Command](api:evennia.commands.command#evennia.commands.command.Command) - base [Command](Component/Commands) class. See also `evennia.default_cmds.MuxCommand`
-- [evennia.CmdSet](api:evennia.commands.cmdset#evennia.commands.cmdset.CmdSet) - base [Cmdset](CmdSet) class
+- [evennia.CmdSet](api:evennia.commands.cmdset#evennia.commands.cmdset.CmdSet) - base [Cmdset](Component/Command-Sets) class
 - [evennia.default_cmds](api:Default-Command-Help) - access all default command classes as properties
 
 - [evennia.syscmdkeys](api:Commands#System-Commands) - access system command keys as properties
@@ -70,7 +70,7 @@ The flat API is defined in `__init__.py` [viewable here](github:evennia/__init__
 - [evennia.gametime](api:evennia.utils.gametime) - server run- and game time ([docs](Component/Coding-Utils#gametime))
 - [evennia.logger](api:evennia.utils.logger) - logging tools
 - [evennia.ansi](api:evennia.utils.ansi) - ansi coloring tools
-- [evennia.spawn](api:evennia.prototypes.spawner#evennia.prototypes.spawner.Spawn) - spawn/prototype system ([docs](Spawner))
+- [evennia.spawn](api:evennia.prototypes.spawner#evennia.prototypes.spawner.Spawn) - spawn/prototype system ([docs](Component/Spawner-and-Prototypes))
 - [evennia.lockfuncs](api:evennia.locks.lockfuncs) - default lock functions for access control ([docs](Component/Locks))
 - [evennia.EvMenu](api:evennia.utils.evmenu#evennia.utils.evmenu.EvMenu) - menu system ([docs](Component/EvMenu))
 - [evennia.EvTable](api:evennia.utils.evtable#evennia.utils.evtable.EvTable) - text table creater

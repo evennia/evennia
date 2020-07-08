@@ -6,10 +6,10 @@
 If you cannot find what you are looking for in the 
 [online documentation](index), here's what to do:
  
-- If you think the documentation is not clear enough, create a [documentation ticket](issue).
+- If you think the documentation is not clear enough, create a [documentation ticket](github:issue).
 - If you have trouble with a missing feature or a problem you think is a bug, look through the 
   the list of known [issue][issues] if you can't find your issue in the list, make a 
-  new one [here](bug-report).
+  new one [here](github:issue).
 - If you need help, want to start a discussion or get some input on something you are working on,
 make a post to the [discussions group][group] This is technically a 'mailing list', but you don't
 need to use e-mail; you can post and read all messages just as easily from your browser via the
@@ -28,7 +28,7 @@ Evennia is open-source and non-commercial. It relies on the time donated by its 
 
 - Spread the word! If you like Evennia, consider writing a blog post about it.
 - Take part in the Evennia community! Join the [chat][chat] or [forum][group]. 
-- Report problems you find or features you'd like to our [issue tracker](issues). 
+- Report problems you find or features you'd like to our [issue tracker](github:issue). 
 
 ```important::
     Just the simple act of letting developers know you are out there using their program helps a lot.

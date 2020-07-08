@@ -26,12 +26,12 @@ defaults for our particular use-case. Below we will flesh out these components f
 
 ## Starting out
 
-We will assume you start from scratch. You need Evennia installed, as per the [Getting
-Started](Getting-Started) instructions. Initialize a new game directory with `evennia init
+We will assume you start from scratch. You need Evennia installed, as per the [Setup Quickstart](../Setup/Setup-Quickstart) 
+instructions. Initialize a new game directory with `evennia init
 <gamedirname>`. In this tutorial we assume your game dir is simply named `mygame`. You can use the
 default database and keep all other settings to default for now. Familiarize yourself with the
-`mygame` folder before continuing. You might want to browse the [First Steps Coding](First-Steps-
-Coding) tutorial, just to see roughly where things are modified.
+`mygame` folder before continuing. You might want to browse the 
+[First Steps Coding](Starting/Starting-Part1) tutorial, just to see roughly where things are modified.
 
 ## The Game Master role
 
@@ -266,8 +266,8 @@ more automated ways. Exactly what is the best/easiest way depends on the sheet o
 We will here show two examples using the *EvTable* and *EvForm* utilities.Later we will create
 Commands to edit and display the output from those utilities.
 
-> Note that due to the limitations of the wiki, no color is used in any of the examples. See [the
-text tag documentation](TextTags) for how to add color to the tables and forms.
+> Note that due to the limitations of the wiki, no color is used in any of the examples. See 
+> [the text tag documentation](../Concept/TextTags) for how to add color to the tables and forms.
 
 #### Making a sheet with EvTable
 
@@ -686,8 +686,8 @@ implemented.
 ## Rooms
 
 Evennia comes with rooms out of the box, so no extra work needed. A GM will automatically have all
-needed building commands available. A fuller go-through is found in the [Building
-tutorial](Building-Quickstart). Here are some useful highlights:
+needed building commands available. A fuller go-through is found in the [Building tutorial](Starting/Part1/Building-Quickstart).
+Here are some useful highlights:
 
 * `@dig roomname;alias = exit_there;alias, exit_back;alias` - this is the basic command for digging
 a new room. You can specify any exit-names and just enter the name of that exit to go there.
