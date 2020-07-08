@@ -2,8 +2,8 @@
 
 Bootstrap provides many utilities and components you can use when customizing Evennia's web
 presence. We'll go over a few examples here that you might find useful.
-> Please take a look at either [the basic web tutorial](../Howto/Starting/Add-a-simple-new-web-page) or [the web
-character view tutorial](Web-Character-View-Tutorial)
+> Please take a look at either [the basic web tutorial](../Howto/Starting/Add-a-simple-new-web-page) or 
+>[the web character view tutorial](../Howto/Web-Character-View-Tutorial)
 > to get a feel for how to add pages to Evennia's website to test these examples.
 
 ## General Styling
@@ -11,15 +11,13 @@ Bootstrap provides base styles for your site. These can be customized through CS
 styles are intended to provide a consistent, clean look for sites.
 
 ### Color
-Most elements can be styled with default colors. [Take a look at the
-documentation](https://getbootstrap.com/docs/4.0/utilities/colors/) to learn more about these colors
+Most elements can be styled with default colors. [Take a look at the documentation](https://getbootstrap.com/docs/4.0/utilities/colors/) to learn more about these colors
 - suffice to say, adding a class of text-* or bg-*, for instance, text-primary, sets the text color
 or background color.
 
 ### Borders
 Simply adding a class of 'border' to an element adds a border to the element. For more in-depth
-info, please [read the documentation on
-borders.](https://getbootstrap.com/docs/4.0/utilities/borders/).
+info, please [read the documentation on borders.](https://getbootstrap.com/docs/4.0/utilities/borders/).
 ```
 <span class="border border-dark"></span>
 ```

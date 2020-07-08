@@ -54,7 +54,7 @@ Here is how you add your own database table/models:
 
 1. In Django lingo, we will create a new "application" - a subsystem under the main Evennia program.
 For this example we'll call it "myapp". Run the following (you need to have a working Evennia
-running before you do this, so make sure you have run the steps in [Getting Started](Getting-
+running before you do this, so make sure you have run the steps in [Setup Quickstart](Getting-
 Started) first):
 
         cd mygame/world

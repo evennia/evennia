@@ -668,7 +668,7 @@ to understand our friendly Google-style docstrings used in classes and functions
 [commonmark-help](https://commonmark.org/help/)
 [sphinx-autodoc](http://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc)
 [sphinx-napoleon](http://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html)
-[getting-started]: Setup/Getting-Started
+[getting-started]: Setup/Setup-Quickstart
 [contributing]: Contributing
 [ReST](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html)
 [ReST-tables](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html#tables)

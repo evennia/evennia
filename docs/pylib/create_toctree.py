@@ -19,10 +19,24 @@ _NO_REMAP_STARTSWITH = ["http://", "https://", "github:", "api:",
                         "feature-request", "report-bug", "issue", "bug-report"]
 
 TXT_REMAPS = {
-    "Developer Central": "Evennia Component overview"
+    "Developer Central": "Evennia Component overview",
+    "Getting Started": "Setup Quickstart",
 }
 URL_REMAPS = {
     "Developer-Central": "Component/Component-Overview",
+    "Tutorials": "Howto/Howto-Overview",
+    "../Howto/Starting/Directory-Overview": "Gamedir-Overview",
+    "Howto/Starting/Directory-Overview": "Gamedir-Overview",
+    "Starting/Directory-Overview": "Gamedir-Overview",
+    "Directory-Overview": "Gamedir-Overview",
+    "../Setup/Getting-Started": "Setup-Quickstart",
+    "Setup/Getting-Started": "Setup-Quickstart",
+    "Getting-Started": "Setup-Quickstart",
+    "First-Steps-Coding": "Starting-Part1",
+    "../Howto/Starting/Adding-Command-Tutorial": "Adding-Commands",
+    "Howto/Starting/Adding-Command-Tutorial": "Adding-Commands",
+    "Starting/Adding-Command-Tutorial": "Adding-Commands",
+    "Adding-Command-Tutorial": "Adding-Commands",
 }
 
 
@@ -86,7 +100,7 @@ def create_toctree():
     ref_doc_regex = re.compile(r"\[(?P<txt>[\w -]+?)\]:\s+?(?P<url>.+?)(?=$|\n)", re.I + re.S + re.U)
 
     def _sub(match):
-        # inline reference links 
+        # inline reference links
         grpdict = match.groupdict()
         txt, url = grpdict['txt'], grpdict['url']
 
@@ -112,7 +126,7 @@ def create_toctree():
         return f"[{txt}]({urlout})"
 
     def _sub_doc(match):
-        # reference links set at the bottom of the page 
+        # reference links set at the bottom of the page
         grpdict = match.groupdict()
         txt, url = grpdict['txt'], grpdict['url']
 

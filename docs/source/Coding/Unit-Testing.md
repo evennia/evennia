@@ -330,9 +330,11 @@ to see how it looks when it fails.
 
 ### Testing commands
 
-This section will test the proper execution of the 'abilities' command, as described in the [First
-Steps Coding](First-Steps-Coding) page.  Follow this tutorial to create the 'abilities' command, we
-will need it to test it.
+```warning:: This is not correct anymore.
+```
+
+This section will test the proper execution of the 'abilities' command, as described in the DELETED
+tutorial to create the 'abilities' command, we will need it to test it.
 
 Testing commands in Evennia is a bit more complex than the simple testing example we have seen.
 Luckily, Evennia supplies a special test class to do just that ... we just need to inherit from it

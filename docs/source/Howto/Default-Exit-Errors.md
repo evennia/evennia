@@ -24,7 +24,7 @@ error message just told us that we couldn't go there.
 
 ## Adding default error commands
 
-To solve this you need to be aware of how to [write and add new commands](Starting/Adding-Command-Tutorial).
+To solve this you need to be aware of how to [write and add new commands](Starting/Part1/Adding-Commands).
 What you need to do is to create new commands for all directions you want to support in your game.
 In this example all we'll do is echo an error message, but you could certainly consider more
 advanced uses. You add these commands to the default command set. Here is an example of such a set

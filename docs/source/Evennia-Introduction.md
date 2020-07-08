@@ -104,7 +104,7 @@ For more extensive feature information, see the [Evennia Component overview](Com
 
 ## What you need to know to work with Evennia
 
-Assuming you have Evennia working (see the [quick start instructions](Setup/Getting-Started)) and have
+Assuming you have Evennia working (see the [quick start instructions](Setup/Setup-Quickstart)) and have
 gotten as far as to start the server and connect to it with the client of your choice, here's what
 you need to know depending on your skills and needs.
 
@@ -161,7 +161,7 @@ presence (a website and a mud web client) to play around with ...
 ### Where to from here?
 
 From here you can continue browsing the [online documentation]([online documentation](index)) to
-find more info about Evennia. Or you can jump into the [Tutorials](Tutorials) and get your hands
+find more info about Evennia. Or you can jump into the [Tutorials](Howto/Howto-Overview) and get your hands
 dirty with code right away. You can also read the developer's [dev
 blog](https://evennia.blogspot.com/) for many tidbits and snippets about Evennia's development and
 structure.

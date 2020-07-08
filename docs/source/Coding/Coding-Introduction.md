@@ -38,8 +38,8 @@ That is, enter `evennia.` and press the `<TAB>` key. This will show you all the 
 available at the top level of Evennia's  "flat API". See the [flat API](../Evennia-API) page for more
 info on how to explore it efficiently.
 
-You can complement your exploration by peeking at the sections of the much more detailed [Developer
-Central](Developer-Central). The [Tutorials](Tutorials) section also contains a growing collection
+You can complement your exploration by peeking at the sections of the much more detailed 
+[Evennia Component overview](../Component/Component-Overview). The [Tutorials](../Howto/Howto-Overview) section also contains a growing collection
 of system- or implementation-specific help.
 
 ### Use a python syntax checker
@@ -67,7 +67,7 @@ from us, really). You import useful functionality from here and if you see code 
 it out into your game folder and edit it there.
 
 If you find that Evennia doesn't support some functionality you need, make a [Feature
-Request](feature-request) about it. Same goes for [bugs][bug]. If you add features or fix bugs
+Request](github:issue) about it. Same goes for [bugs][bug]. If you add features or fix bugs
 yourself, please consider [Contributing](../Contributing) your changes upstream!
 
 ### Learn to read tracebacks

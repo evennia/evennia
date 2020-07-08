@@ -40,7 +40,7 @@ in mind for your own game, this will give you a good start.
 
 1. [Introduction & Overview](Starting/Starting-Part3)
 1. [Where to put code](Starting/First-Steps-Coding)
-1. [Adding a first command](Starting/Adding-Command-Tutorial)
+1. [Adding a first command](Starting/Part1/Adding-Commands)
 1. [Parsing strings](Starting/Parsing-command-arguments,-theory-and-best-practices)
 1. [Making a custom Character](Starting/Adding-Object-Typeclass-Tutorial)
 1. [The rules of the game](Starting/Implementing-a-game-rule-system)

@@ -110,7 +110,7 @@ Try to avoid doing so.
 distributions (notably Ubuntu 16.04 LTS). Zope is a dependency of Twisted. The error manifests in
 the server not starting with an error that `zope.interface` is not found even though `pip list`
 shows it's installed. The reason is a missing empty `__init__.py` file at the root of the zope
-package. If the virtualenv is named "evenv" as suggested in the [Getting Started](../Setup/Getting-Started)
+package. If the virtualenv is named "evenv" as suggested in the [Setup Quickstart](../Setup/Setup-Quickstart)
 instructions, use the following command to fix it:
 
     ```shell
