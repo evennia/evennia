@@ -90,4 +90,4 @@ Full stop of the server (will need to use `start` to activate it again):
 
 ## The Next step
 
-Why not head into the [Starting Tutorial](../Howto/Starting/Starting-Overview) to learn how to start making your new game!
+Why not head into the [Starting Tutorial](../Howto/Starting/Starting-Part1) to learn how to start making your new game!

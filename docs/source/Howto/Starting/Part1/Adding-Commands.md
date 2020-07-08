@@ -1,6 +1,6 @@
 # Our own commands
 
-[prev lesson](Searching-Things) | [next lesson]()
+[prev lesson](Searching-Things) | [next lesson](More-on-Commands)
 
 In this lesson we'll learn how to create our own Evennia _Commands_. If you are new to Python you'll 
 also learn some more basics about how to manipulate strings and get information out of Evennia. 
@@ -393,4 +393,4 @@ We also upset a dragon.
 In the next lesson we'll learn how to hit Smaug with different weapons. We'll also 
 get into how we replace and extend Evennia's default Commands.
 
-[prev lesson](Searching-Things) | [next lesson]()
+[prev lesson](Searching-Things) | [next lesson](More-on-Commands)

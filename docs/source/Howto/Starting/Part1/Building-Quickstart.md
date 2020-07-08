@@ -3,7 +3,7 @@
 [prev lesson](../Starting-Part1) | [next lesson](Tutorial-World-Introduction)
 
 In this lesson we will test out what we can do in-game out-of-the-box. Evennia ships with 
-[~90 default commands](Default-Command-Help), and while you can override those as you please, 
+[around 90 default commands](../../../Component/Default-Command-Help), and while you can override those as you please, 
 they can be quite useful.
 
 Connect and log into your new game and you will end up in the "Limbo" location. This 
@@ -152,7 +152,7 @@ the raw description of your current room (including color codes), so that you ca
 set its description to something else.
 
 You create new Commands (or modify existing ones) in Python outside the game. We will get to that 
-later, in the [Commands tutorial](../Adding-Command-Tutorial).
+later, in the [Commands tutorial](Adding-Commands).
 
 ## Get a Personality
 

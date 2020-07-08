@@ -6,8 +6,8 @@ cracking!  But where to start? Here are some ideas for a workflow. Note that the
 page are just that - suggestions. Also, they are primarily aimed at a lone hobby designer or a small
 team developing a game in their free time. There is an article in the Imaginary Realities e-zine
 which was written by the Evennia lead dev. It focuses more on you finding out your motivations for
-making a game - you can [read the article here](http://journal.imaginary-
-realities.com/volume-07/issue-03/where-do-i-begin/index.html).
+making a game - you can 
+[read the article here](http://journal.imaginary-realities.com/volume-07/issue-03/where-do-i-begin/index.html).
 
 
 Below are some minimal steps for getting the first version of a new game world going with players.
@@ -132,11 +132,11 @@ Talker-type game you *will* have to bite the bullet and code your game (or find 
 do it for you).
 
 Even if you won't code anything yourself, as a designer you need to at least understand the basic
-paradigms of Evennia, such as [Objects](../../../Component/Objects), [Commands](../../../Component/Commands) and [Scripts](../../../Component/Scripts) and
-how they hang together. We recommend you go through the [Tutorial World](Tutorial-World-
-Introduction) in detail (as well as glancing at its code) to get at least a feel for what is
-involved behind the scenes. You could also look through the tutorial for [building a game from
-scratch](Tutorial-for-basic-MUSH-like-game).
+paradigms of Evennia, such as [Objects](../../../Component/Objects), 
+[Commands](../../../Component/Commands) and [Scripts](../../../Component/Scripts) and
+how they hang together. We recommend you go through the [Tutorial World](../Part1/Tutorial-World-Introduction) in detail (as well as glancing at its code) to get at least a feel for what is
+involved behind the scenes. You could also look through the tutorial for 
+[building a game from scratch](../Tutorial-for-basic-MUSH-like-game).
 
 During Coding you look back at the things you wanted during the **Planning** phase and try to
 implement them. Don't be shy to update your plans if you find things easier/harder than you thought.

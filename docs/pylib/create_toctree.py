@@ -105,9 +105,9 @@ def create_toctree():
 
 
     # normal reference-links [txt](urls)
-    ref_regex = re.compile(r"\[(?P<txt>[\w -\[\]]+?)\]\((?P<url>.+?)\)", re.I + re.S + re.U + re.M)
+    ref_regex = re.compile(r"\[(?P<txt>[\w -\[\]\`]+?)\]\((?P<url>.+?)\)", re.I + re.S + re.U + re.M)
     # in document references
-    ref_doc_regex = re.compile(r"\[(?P<txt>[\w -]+?)\]:\s+?(?P<url>.+?)(?=$|\n)", re.I + re.S + re.U + re.M)
+    ref_doc_regex = re.compile(r"\[(?P<txt>[\w -\`]+?)\]:\s+?(?P<url>.+?)(?=$|\n)", re.I + re.S + re.U + re.M)
 
     def _sub(match):
         # inline reference links

@@ -652,7 +652,7 @@ about... what is this `"book"`?
 
 To get an object from a string, we perform an Evennia search.  Evennia provides a `search` method on
 all typeclassed objects (you will most likely use the one on characters or accounts).  This method
-supports a very wide array of arguments and has [its own tutorial](Tutorial-Searching-For-Objects).
+supports a very wide array of arguments and has [its own tutorial](Part1/Searching-Things).
 Some examples of useful cases follow:
 
 ### Local searches

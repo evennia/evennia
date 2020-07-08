@@ -445,9 +445,9 @@ tutorial is built. Once done, the `tutorial` exit will have appeared out of Limb
 
 Once you get back to `Limbo` from the tutorial (if you get stuck in the tutorial quest you can do
 `@tel #2` to jump to Limbo), a good idea is to learn how to [start, stop and reload](Start-Stop-
-Reload) the Evennia server. You may also want to familiarize yourself with some [commonly used terms
-in our Glossary](Glossary). After that, why not experiment with [creating some new items and build
-some new rooms](Building-Quickstart) out from Limbo.
+Reload) the Evennia server. You may also want to familiarize yourself with some 
+[commonly used terms in our Glossary](../Glossary). After that, why not experiment with 
+[creating some new items and build some new rooms](../Howto/Starting/Part1/Building-Quickstart) out from Limbo.
 
 From here on, you could move on to do one of our [introductory tutorials](../Howto/Howto-Overview) or simply dive
 headlong into Evennia's comprehensive [manual](https://github.com/evennia/evennia/wiki). While

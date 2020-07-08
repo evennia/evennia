@@ -52,26 +52,26 @@ the _actual_ library, the thing covered by the API auto-docs and what you get wh
 This the the structure of the Evennia library:
 
  - evennia
-   - [`__init__.py`](Evennia-API#shortcuts) - The "flat API" of Evennia resides here. 
-   - [`settings_default.py`](Server-Conf#Settings-file) - Root settings of Evennia. Copy settings
+   - [`__init__.py`](../../../Evennia-API#shortcuts) - The "flat API" of Evennia resides here. 
+   - [`settings_default.py`](../../../Component/Server-Conf#Settings-file) - Root settings of Evennia. Copy settings
 from here to `mygame/server/settings.py` file.
-   - [`commands/`](Commands) - The command parser and handler.
+   - [`commands/`](../../../Component/Commands) - The command parser and handler.
      - `default/` - The [default commands](../../../Component/Default-Command-Help) and cmdsets. 
-   - [`comms/`](Communications) - Systems for communicating in-game. 
+   - [`comms/`](../../../Component/Communications) - Systems for communicating in-game. 
    - `contrib/` - Optional plugins too game-specific for core Evennia.
    - `game_template/` - Copied to become the "game directory" when using `evennia --init`. 
-   - [`help/`](Help-System) - Handles the storage and  creation of help entries.
+   - [`help/`](../../../Component/Help-System) - Handles the storage and  creation of help entries.
    - `locale/` - Language files ([i18n](../../../Concept/Internationalization)).
-   - [`locks/`](Locks) - Lock system for restricting access to in-game entities.
-   - [`objects/`](Objects) - In-game entities (all types of items and Characters).
-   - [`prototypes/`](Spawner-and-Prototypes) - Object Prototype/spawning system and OLC menu
-   - [`accounts/`](Accounts) - Out-of-game Session-controlled entities (accounts, bots etc)
-   - [`scripts/`](Scripts) - Out-of-game entities equivalence to Objects, also with timer support. 
-   - [`server/`](Portal-And-Server) - Core server code and Session handling. 
+   - [`locks/`](../../../Component/Locks) - Lock system for restricting access to in-game entities.
+   - [`objects/`](../../../Component/Objects) - In-game entities (all types of items and Characters).
+   - [`prototypes/`](../../../Component/Spawner-and-Prototypes) - Object Prototype/spawning system and OLC menu
+   - [`accounts/`](../../../Component/Accounts) - Out-of-game Session-controlled entities (accounts, bots etc)
+   - [`scripts/`](../../../Component/Scripts) - Out-of-game entities equivalence to Objects, also with timer support. 
+   - [`server/`](../../../Component/Portal-And-Server) - Core server code and Session handling. 
      - `portal/` - Portal proxy and connection protocols.
-   - [`typeclasses/`](Typeclasses) - Abstract classes for the typeclass storage and database system.
-   - [`utils/`](Coding-Utils) - Various miscellaneous useful coding resources.
-   - [`web/`](Web-Features) - Web resources and webserver. Partly copied into game directory on initialization.
+   - [`typeclasses/`](../../../Component/Typeclasses) - Abstract classes for the typeclass storage and database system.
+   - [`utils/`](../../../Component/Coding-Utils) - Various miscellaneous useful coding resources.
+   - [`web/`](../../../Concept/Web-Features) - Web resources and webserver. Partly copied into game directory on initialization.
 
 ```sidebar:: __init__.py
 
