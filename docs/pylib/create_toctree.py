@@ -86,6 +86,7 @@ def create_toctree():
     ref_doc_regex = re.compile(r"\[(?P<txt>[\w -]+?)\]:\s+?(?P<url>.+?)(?=$|\n)", re.I + re.S + re.U)
 
     def _sub(match):
+        # inline reference links 
         grpdict = match.groupdict()
         txt, url = grpdict['txt'], grpdict['url']
 
@@ -111,6 +112,7 @@ def create_toctree():
         return f"[{txt}]({urlout})"
 
     def _sub_doc(match):
+        # reference links set at the bottom of the page 
         grpdict = match.groupdict()
         txt, url = grpdict['txt'], grpdict['url']
 

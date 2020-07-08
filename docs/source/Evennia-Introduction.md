@@ -100,7 +100,7 @@ generation and more
 - RSS feeds can be echoed to in-game channels (things like Twitter can easily be added)
 - Several different databases supported (SQLite3, MySQL, PostgreSQL, ...)
 
-For more extensive feature information, see the [Developer Central](Developer-Central).
+For more extensive feature information, see the [Evennia Component overview](Component/Component-Overview).
 
 ## What you need to know to work with Evennia
 

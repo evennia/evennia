@@ -15,18 +15,18 @@ in mind for your own game, this will give you a good start.
 ### Part 1: What we have
 
 1. [Introduction & Overview](Starting/Starting-Part1)
-1. [Building stuff](Part1/Building-Quickstart)
-1. [The Tutorial World](Part1/Tutorial-World-Introduction)
-1. [Python basics](Part1/Python-basic-introduction)
-1. [Game dir overview](Part1/Gamedir-Overview)
-1. [Python classes and objects](Part1/Python-classes-and-objects)
-1. [Accessing the Evennia library](Part1/Evennia-Library-Overview)
-1. [Typeclasses - Persistent objects](Part1/Learning-Typeclasses)
-1. [Making our first own commands](Part1/Adding-Commands)
-1. [Parsing and replacing default Commands](Part1/More-on-Commands)
-1. [Creating things](Part1/Creating-Things)
-1. [Searching for things](Part1/Searching-Things)
-1. [Advanced searching with Django queries](Part1/Django-queries)
+1. [Building stuff](Starting/Part1/Building-Quickstart)
+1. [The Tutorial World](Starting/Part1/Tutorial-World-Introduction)
+1. [Python basics](Starting/Part1/Python-basic-introduction)
+1. [Game dir overview](Starting/Part1/Gamedir-Overview)
+1. [Python classes and objects](Starting/Part1/Python-classes-and-objects)
+1. [Accessing the Evennia library](Starting/Part1/Evennia-Library-Overview)
+1. [Typeclasses - Persistent objects](Starting/Part1/Learning-Typeclasses)
+1. [Making our first own commands](Starting/Part1/Adding-Commands)
+1. [Parsing and replacing default Commands](Starting/Part1/More-on-Commands)
+1. [Creating things](Starting/Part1/Creating-Things)
+1. [Searching for things](Starting/Part1/Searching-Things)
+1. [Advanced searching with Django queries](Starting/Part1/Django-queries)
 
 ### Part 2: What we want
 
