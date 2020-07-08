@@ -100,6 +100,7 @@
 - [Howto/Starting/Part1/Adding Commands](Howto/Starting/Part1/Adding-Commands)
 - [Howto/Starting/Part1/Building Quickstart](Howto/Starting/Part1/Building-Quickstart)
 - [Howto/Starting/Part1/Creating Things](Howto/Starting/Part1/Creating-Things)
+- [Howto/Starting/Part1/Django queries](Howto/Starting/Part1/Django-queries)
 - [Howto/Starting/Part1/Evennia Library Overview](Howto/Starting/Part1/Evennia-Library-Overview)
 - [Howto/Starting/Part1/Gamedir Overview](Howto/Starting/Part1/Gamedir-Overview)
 - [Howto/Starting/Part1/Learning Typeclasses](Howto/Starting/Part1/Learning-Typeclasses)
