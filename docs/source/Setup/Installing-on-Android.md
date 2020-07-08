@@ -87,8 +87,8 @@ You can go to the dir where Evennia is installed with `cd $VIRTUAL_ENV/src/evenn
 
 ### Final steps
 
-At this point, Evennia is installed on your phone! You can now continue with the original [Getting
-Started](Getting-Started) instruction, we repeat them here for clarity.
+At this point, Evennia is installed on your phone! You can now continue with the original 
+[Setup Quickstart](Setup-Quickstart) instruction, we repeat them here for clarity.
 
 To start a new game:
 

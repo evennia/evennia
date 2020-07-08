@@ -32,29 +32,29 @@ in mind for your own game, this will give you a good start.
 
 1. [Introduction & Overview](Starting/Starting-Part2)
 1. [On planning a game](Starting/Part2/Game-Planning)
-1. [Multisession modes](Unimplemented.md)
-1. [Layout of our tutorial game](#)
+1. [Multisession modes](../Unimplemented)
+1. [Layout of our tutorial game](../Unimplemented)
 1. [Making use of contribs](Starting/Starting-Part3)
 1. [Making a custom Character](Starting/Implementing-a-game-rule-system)
-1. [Character generation](#)
-1. [Resolving skills and challenges](#)
+1. [Character generation](../Unimplemented)
+1. [Resolving skills and challenges](../Unimplemented)
 1. [NPCs and mobiles](Starting/Coordinates)
-1. [Quests and Zones](#)
-1. [A Combat system](Combat-System)
+1. [Quests and Zones](../Unimplemented)
+1. [A Combat system](../Unimplemented)
 
 ### Part 4: Using what we created
 
 1. [Introduction & Overview](Starting/Starting-Part4)
-1. [Building the tech demo](#)
-1. [Creating a game world](#)
+1. [Building the tech demo](../Unimplemented)
+1. [Creating a game world](../Unimplemented)
 
 ### Part 5: Showing the world
 
 1. [Introduction & Overview](Starting/Starting-Part5)
 1. [Add a web page](Starting/Add-a-simple-new-web-page)
 1. [More on adding web features](Starting/Web-Tutorial)
-1. [Taking your game online](#)
-1. [Next steps](#)
+1. [Taking your game online](../Unimplemented)
+1. [Next steps](../Unimplemented)
 
 
 ## FAQs

@@ -22,9 +22,8 @@ better match with the vanilla Evennia install.
 
 Firstly, set aside a folder/directory on your drive for everything to follow. 
 
-You need to start by installing [Evennia](http://www.evennia.com) by following most of the [Getting
-Started
-Instructions](Getting-Started) for your OS. The difference is that you need to `git clone
+You need to start by installing [Evennia](http://www.evennia.com) by following most of the 
+[Getting Started Instructions](../Setup/Setup-Quickstart) for your OS. The difference is that you need to `git clone
 https://github.com/TehomCD/evennia.git` instead of Evennia's repo because Arx uses TehomCD's older
 Evennia 0.8 [fork](https://github.com/TehomCD/evennia), notably still using Python2. This detail is
 important if referring to newer Evennia documentation.
@@ -63,8 +62,8 @@ Cd to the root of your directory and clone the released source code from github:
 A new folder `myarx` should appear next to the ones you already had. You could rename this to
 something else if you want. 
 
-Cd into `myarx`. If you wonder about the structure of the game dir, you can [read more about it
-here](Directory-Overview).
+Cd into `myarx`. If you wonder about the structure of the game dir, you can 
+[read more about it here](../Howto/Starting/Part1/Gamedir-Overview).
 
 ### Clean up settings
 

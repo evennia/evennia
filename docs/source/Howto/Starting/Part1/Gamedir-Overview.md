@@ -203,7 +203,7 @@ people change and re-structure this in various ways to better fit their ideas.
 - [batch_cmds.ev](github:evennia/game_template/world/batch_cmds.ev) - This is an `.ev` file, which is essentially
     just a list of Evennia commands to execute in sequence. This one is empty and ready to expand on. The 
     [Tutorial World](Tutorial-World-Introduction) was built with such a batch-file.
-- [prototypes.py](github:evennia/game_template/world/prototypes.py) - A [prototype](Prototype-and-Spawner) is a way
+- [prototypes.py](github:evennia/game_template/world/prototypes.py) - A [prototype](../../../Component/Spawner-and-Prototypes) is a way
     to easily vary objects without changing their base typeclass. For example, one could use prototypes to 
     tell that Two goblins, while both of the class 'Goblin' (so they follow the same code logic), should have different 
     equipment, stats and looks.

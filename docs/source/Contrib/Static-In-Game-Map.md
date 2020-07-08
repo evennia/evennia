@@ -291,8 +291,7 @@ def return_minimap(x, y, radius = 2):
     map = ""
     
     #For each row we need, add the characters we need.
-    for valuey in world_map[y-radius:y+radius+1]:
-        for valuex in valuey[x-radius:x+radius+1]:
+    for valuey in world_map[y-radius:y+radius+1]:         for valuex in valuey[x-radius:x+radius+1]:
             map += valuex
         map += "\n"
     

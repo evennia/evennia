@@ -44,6 +44,33 @@ as ù character. Also seems to run the `version` command on connection, which wi
 `MULTISESSION_MODES` above 1.
 [KildClient][22]       | 2.11.1 | No known issues.
 
+## Workarounds for client issues:
+
+### Issue: Telnet NOP displays as spurious character.
+
+Known clients:
+
+* [BlowTorch][16] (Andr)
+* [Mukluk][17] (Andr)
+
+Workaround:
+
+* Set the command in game to `@option NOPKEEPALIVE=off` for the session, or use the `/save`
+parameter to disable it for that Evennian account permanently.
+* Client-side: Set a gag-type trigger on the NOP character to make it invisible to the client.
+
+
+### Issue: Won't send blank line on Enter key press.
+
+Known clients: 
+
+* [Potato][8]
+
+Workaround: 
+
+* Press Control Enter, then Enter key again to send blank line.
+
+
 [1](https://github.com/evennia/evennia/wiki/Web%20features#web-client)
 [2](https://github.com/evennia/evennia/issues?utf8=%E2%9C%93&q=client+status%3Dopen+])
 [3](http://tintin.sourceforge.net/)
@@ -66,29 +93,3 @@ as ù character. Also seems to run the `version` command on connection, which wi
 [20](http://jamochamud.org/)
 [21](http://duckclient.com/)
 [22](https://www.kildclient.org/)
-
-## Workarounds for client issues:
-
-### Issue: Telnet NOP displays as spurious character.
-
-Known clients:
-
-* [BlowTorch][16](Andr)
-* [Mukluk][17](Andr)
-
-Workaround:
-
-* Set the command in game to `@option NOPKEEPALIVE=off` for the session, or use the `/save`
-parameter to disable it for that Evennian account permanently.
-* Client-side: Set a gag-type trigger on the NOP character to make it invisible to the client.
-
-
-### Issue: Won't send blank line on Enter key press.
-
-Known clients: 
-
-* [Potato][8]
-
-Workaround: 
-
-* Press Control Enter, then Enter key again to send blank line.

@@ -68,6 +68,7 @@
 - [Concept/Web Features](Concept/Web-Features)
 - [Concept/Zones](Concept/Zones)
 - [Contrib/A voice operated elevator using events](Contrib/A-voice-operated-elevator-using-events)
+- [Contrib/Arxcode installing help](Contrib/Arxcode-installing-help)
 - [Contrib/Building menus](Contrib/Building-menus)
 - [Contrib/Contrib Overview](Contrib/Contrib-Overview)
 - [Contrib/Dialogues in events](Contrib/Dialogues-in-events)
@@ -132,7 +133,6 @@
 - [Licensing](Licensing)
 - [Links](Links)
 - [Setup/Apache Config](Setup/Apache-Config)
-- [Setup/Arxcode installing help](Setup/Arxcode-installing-help)
 - [Setup/Choosing An SQL Server](Setup/Choosing-An-SQL-Server)
 - [Setup/Client Support Grid](Setup/Client-Support-Grid)
 - [Setup/Evennia Game Index](Setup/Evennia-Game-Index)
@@ -150,6 +150,7 @@
 - [Setup/Setup Overview](Setup/Setup-Overview)
 - [Setup/Setup Quickstart](Setup/Setup-Quickstart)
 - [Setup/Start Stop Reload](Setup/Start-Stop-Reload)
+- [Unimplemented](Unimplemented)
 - [index](index)
 
 ```toctree::

@@ -178,8 +178,8 @@ SSH_INTERFACES = ['0.0.0.0']
 AMP_PORT = 4006
 ```
 
-The `AMP_PORT` is required to work, since this is the internal port linking Evennia's [Server and
-Portal](Portal-And-Server) components together. The other ports are encrypted ports that may be
+The `AMP_PORT` is required to work, since this is the internal port linking Evennia's 
+[Server and Portal](../Component/Portal-And-Server) components together. The other ports are encrypted ports that may be
 useful for custom protocols but are otherwise not used.
 
 ### Lockdown mode
@@ -250,7 +250,7 @@ to use DNS verification.
 
 ## Relevant SSL Proxy Setup Information
 - [Apache webserver configuration](Apache-Config) (optional)
-- [HAProxy Config](HAProxy-Config-(Optional))
+- [HAProxy Config](HAProxy-Config)
 
 ## Hosting locally or remotely?
 

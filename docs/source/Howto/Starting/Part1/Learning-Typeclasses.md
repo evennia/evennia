@@ -570,8 +570,7 @@ go around and re-run the method on everyone manually. For the Python beginner, d
 try out Python _loops_. We try them out in multi-line Python mode: 
 
     > py
-    > for a in [1, 2, "foo"]:
-    >     print(a)
+    > for a in [1, 2, "foo"]:     >     print(a)
     1
     2
     foo
