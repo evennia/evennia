@@ -57,8 +57,8 @@ you will know there are a multitude of other characters around to use. When crea
 Evennia you have access to the [UTF-8 character encoding](https://en.wikipedia.org/wiki/UTF-8) which
 put at your disposal [thousands of letters, number and geometric shapes](http://mcdlr.com/utf-8/#1).
 
-For this exercise, we've copy-and-pasted from the pallet of special characters used over at [Dwarf
-Fortress](http://dwarffortresswiki.org/index.php/Character_table) to create what is hopefully a
+For this exercise, we've copy-and-pasted from the pallet of special characters used over at 
+[Dwarf Fortress](http://dwarffortresswiki.org/index.php/Character_table) to create what is hopefully a
 pleasing and easy to understood landscape:
 
 ```
@@ -83,8 +83,8 @@ planning at this stage can solve many problems before they happen.
 In this section we will try to create an actual "map" object that an account can pick up and look
 at.
 
-Evennia offers a range of [default commands](../Component/Default-Command-Help) for [creating objects and rooms
-in-game](Building-Quickstart). While readily accessible, these commands are made to do very
+Evennia offers a range of [default commands](../Component/Default-Command-Help) for 
+[creating objects and rooms in-game](../Howto/Starting/Part1/Building-Quickstart). While readily accessible, these commands are made to do very
 specific, restricted things and will thus not offer as much flexibility to experiment (for an
 advanced exception see [in-line functions](../Concept/TextTags#new-inlinefuncs)). Additionally, entering long
 descriptions and properties over and over in the game client can become tedious; especially when
@@ -413,5 +413,5 @@ easily new game defining features can be added to Evennia.
 
 You can easily build from this tutorial by expanding the map and creating more rooms to explore. Why
 not add more features to your game by trying other tutorials: [Add weather to your world](Weather-
-Tutorial), [fill your world with NPC's](../Howto/Tutorial-Aggressive-NPCs) or [implement a combat
-system](Turn-based-Combat-System).
+Tutorial), [fill your world with NPC's](../Howto/Tutorial-Aggressive-NPCs) or 
+[implement a combat system](../Howto/Starting/Turn-based-Combat-System).

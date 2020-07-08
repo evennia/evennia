@@ -15,8 +15,8 @@ can find the default commands in `evennia/commands/default`. You should not edit
 they will be updated by the Evennia team as new features are added. Rather you should look to them
 for inspiration and inherit your own designs from them.
 
-There are two components to having a command running - the *Command* class and the [Command
-Set](Command-Sets) (command sets were split into a separate wiki page for ease of reading).
+There are two components to having a command running - the *Command* class and the 
+[Command Set](Command-Sets) (command sets were split into a separate wiki page for ease of reading).
 
 1. A *Command* is a python class containing all the functioning code for what a command does - for
 example, a *get* command would contain code for picking up objects.
@@ -28,8 +28,9 @@ object in various ways. Consider a "Tree" object with a cmdset defining the comm
 *chop down*. Or a "Clock" with a cmdset containing the single command *check time*.
 
 This page goes into full detail about how to use Commands. To fully use them you must also read the
-page detailing [Command Sets](Command-Sets).  There is also a step-by-step [Adding Command
-Tutorial](Adding-Command-Tutorial) that will get you started quickly without the extra explanations.
+page detailing [Command Sets](Command-Sets).  There is also a step-by-step 
+[Adding Command Tutorial](../Howto/Starting/Part1/Adding-Commands) that will get you started quickly without the 
+extra explanations.
 
 ## Defining Commands
 
@@ -181,8 +182,8 @@ or replace the storage.
 - `arg_regex` (optional raw string): Used to force the parser to limit itself and tell it when the
 command-name ends and arguments begin (such as requiring this to be a space or a /switch). This is
 done with a regular expression. [See the arg_regex section](Commands#on-arg_regex) for the details.
-- `auto_help` (optional boolean). Defaults to `True`. This allows for turning off the [auto-help
-system](Help-System#command-auto-help-system) on a per-command basis. This could be useful if you
+- `auto_help` (optional boolean). Defaults to `True`. This allows for turning off the 
+[auto-help system](Help-System#command-auto-help-system) on a per-command basis. This could be useful if you
 either want to write your help entries manually or hide the existence of a command from `help`'s
 generated list.
 - `is_exit` (bool) - this marks the command as being used for an in-game exit. This is, by default,

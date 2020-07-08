@@ -2,7 +2,7 @@
 
 
 This tutorial will elaborate on the many ways one can parse command arguments.  The first step after
-[adding a command](Adding-Command-Tutorial) usually is to parse its arguments.  There are lots of
+[adding a command](Part1/Adding-Commands) usually is to parse its arguments.  There are lots of
 ways to do it, but some are indeed better than others and this tutorial will try to present them.
 
 If you're a Python beginner, this tutorial might help you a lot.  If you're already familiar with

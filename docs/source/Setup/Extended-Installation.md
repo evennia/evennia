@@ -449,7 +449,7 @@ Reload) the Evennia server. You may also want to familiarize yourself with some 
 in our Glossary](Glossary). After that, why not experiment with [creating some new items and build
 some new rooms](Building-Quickstart) out from Limbo.
 
-From here on, you could move on to do one of our [introductory tutorials](Tutorials) or simply dive
+From here on, you could move on to do one of our [introductory tutorials](../Howto/Howto-Overview) or simply dive
 headlong into Evennia's comprehensive [manual](https://github.com/evennia/evennia/wiki). While
 Evennia has no major game systems out of the box, we do supply a range of optional *contribs* that
 you can use or borrow from. They range from dice rolling and alternative color schemes to barter and

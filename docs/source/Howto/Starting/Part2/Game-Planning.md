@@ -126,7 +126,7 @@ tend to jump directly to this part without doing the **Planning** first. Neither
 *will* lead to you having to redo all your hard work at least once, probably more.
 
 Evennia's [Evennia Component overview](../../../Component/Component-Overview) tries to help you with this bit of development. We
-also have a slew of [Tutorials](Tutorials) with worked examples. Evennia tries hard to make this
+also have a slew of [Tutorials](../../Howto-Overview) with worked examples. Evennia tries hard to make this
 part easier for you, but there is no way around the fact that if you want anything but a very basic
 Talker-type game you *will* have to bite the bullet and code your game (or find a coder willing to
 do it for you).

@@ -6,4 +6,4 @@
 
 See also:
 - [Default Command Help](../Component/Default-Command-Help)
-- [Adding Command Tutorial](../Howto/Starting/Adding-Command-Tutorial)
+- [Adding Command Tutorial](../Howto/Starting/Part1/Adding-Commands)

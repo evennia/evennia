@@ -26,7 +26,7 @@ on. The tutorial world included with Evennia showcases a dark room that replaces
 commands with its own versions because the Character cannot see.
 
 If you want a quick start into defining your first commands and using them with command sets, you
-can head over to the [Adding Command Tutorial](../Howto/Starting/Adding-Command-Tutorial) which steps through things
+can head over to the [Adding Command Tutorial](../Howto/Starting/Part1/Adding-Commands) which steps through things
 without the explanations.
 
 ## Defining Command Sets
@@ -112,7 +112,7 @@ back even if all other cmdsets fail or are removed. It is always persistent and 
 by `cmdset.delete()`. To remove a default cmdset you must explicitly call `cmdset.remove_default()`.
 
 Command sets are often added to an object in its `at_object_creation` method. For more examples of
-adding commands, read the [Step by step tutorial](../Howto/Starting/Adding-Command-Tutorial). Generally you can
+adding commands, read the [Step by step tutorial](../Howto/Starting/Part1/Adding-Commands). Generally you can
 customize which command sets are added to your objects by using `self.cmdset.add()` or
 `self.cmdset.add_default()`.
 

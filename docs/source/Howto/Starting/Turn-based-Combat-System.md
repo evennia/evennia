@@ -506,7 +506,7 @@ class CmdAttack(Command):
 ```
 
 The `attack` command will not go into the combat cmdset but rather into the default cmdset. See e.g.
-the [Adding Command Tutorial](Adding-Command-Tutorial) if you are unsure about how to do this.
+the [Adding Command Tutorial](Part1/Adding-Commands) if you are unsure about how to do this.
 
 ## Expanding the example
 
