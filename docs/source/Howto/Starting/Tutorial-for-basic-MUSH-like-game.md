@@ -7,7 +7,7 @@ focused on free form storytelling. Even if you are not interested in MUSH:es, th
 first game-type to try since it's not so code heavy. You will be able to use the same principles for
 building other types of games.
 
-The tutorial starts from scratch. If you did the [First Steps Coding](Starting-Part1) tutorial
+The tutorial starts from scratch. If you did the [First Steps Coding](./Starting-Part1) tutorial
 already you should have some ideas about how to do some of the steps already.
 
 The following are the (very simplistic and cut-down) features we will implement (this was taken from

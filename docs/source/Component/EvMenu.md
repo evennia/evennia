@@ -33,7 +33,7 @@ said functions, like `{"nodename": <function>, ...}`
 ## Launching the menu
 
 Initializing the menu is done using a call to the `evennia.utils.evmenu.EvMenu` class. This is the
-most common way to do so - from inside a [Command](Commands):
+most common way to do so - from inside a [Command](./Commands):
 
 ```python
 # in, for example gamedir/commands/command.py
@@ -70,7 +70,7 @@ EvMenu(caller, menu_data,
 ```
 
  - `caller` (Object or Account): is a reference to the object using the menu. This object will get a
-   new [CmdSet](Command-Sets) assigned to it, for handling the menu.
+   new [CmdSet](./Command-Sets) assigned to it, for handling the menu.
  - `menu_data` (str, module or dict): is a module or python path to a module where the global-level
    functions will each be considered to be a menu node. Their names in the module will be the names
    by which they are referred to in the module. Importantly, function names starting with an
@@ -107,7 +107,7 @@ after
  - `startnode_input` (str or (str, dict) tuple): Pass an input text or a input text + kwargs to the
    start node as if it was entered on a fictional previous node. This can be very useful in order to
    start a menu differently depending on the Command's arguments in which it was initialized.
- - `session` (Session): Useful when calling the menu from an [Account](Accounts) in
+ - `session` (Session): Useful when calling the menu from an [Account](./Accounts) in
    `MULTISESSION_MODDE` higher than 2, to make sure only the right Session sees the menu output.
  - `debug` (bool): If set, the `menudebug` command will be made available in the menu. Use it to
    list the current state of the menu and use `menudebug <variable>` to inspect a specific state
@@ -428,16 +428,16 @@ See `evennia/utils/evmenu.py` for the details of their default implementations.
 
 ## Examples:
 
-- **[Simple branching menu](EvMenu#example-simple-branching-menu)** - choose from options
-- **[Dynamic goto](EvMenu#example-dynamic-goto)** - jumping to different nodes based on response
-- **[Set caller properties](EvMenu#example-set-caller-properties)** - a menu that changes things
-- **[Getting arbitrary input](EvMenu#example-get-arbitrary-input)** - entering text
-- **[Storing data between nodes](EvMenu#example-storing-data-between-nodes)** - keeping states and
+- **[Simple branching menu](./EvMenu#example-simple-branching-menu)** - choose from options
+- **[Dynamic goto](./EvMenu#example-dynamic-goto)** - jumping to different nodes based on response
+- **[Set caller properties](./EvMenu#example-set-caller-properties)** - a menu that changes things
+- **[Getting arbitrary input](./EvMenu#example-get-arbitrary-input)** - entering text
+- **[Storing data between nodes](./EvMenu#example-storing-data-between-nodes)** - keeping states and
 information while in the menu
-- **[Repeating the same node](EvMenu#example-repeating-the-same-node)** - validating within the node
+- **[Repeating the same node](./EvMenu#example-repeating-the-same-node)** - validating within the node
 before moving to the next
-- **[Full Menu](EvMenu#example-full-menu):** a complete example
-- **[Yes/No prompt](EvMenu#example-yesno-prompt)** - entering text with limited possible responses
+- **[Full Menu](./EvMenu#example-full-menu):** a complete example
+- **[Yes/No prompt](./EvMenu#example-yesno-prompt)** - entering text with limited possible responses
 (this is *not* using EvMenu but the conceptually similar yet technically unrelated `get_input`
 helper function accessed as `evennia.utils.evmenu.get_input`).
 
@@ -507,7 +507,7 @@ def enter_guild:
 
 This simple callable goto will analyse what happens depending on who the `caller` is.  The
 `enter_guild` node will give you a choice of what to say to the guard. If you try to enter, you will
-end up in different nodes depending on (in this example) if you have the right [Tag](Tags) set on
+end up in different nodes depending on (in this example) if you have the right [Tag](./Tags) set on
 yourself or not. Note that since we don't include any 'key's in the option dictionary, you will just
 get to pick between numbers.
 
@@ -993,8 +993,8 @@ auto-created by the `list_node` decorator.
 
 ## Assorted notes
 
-The EvMenu is implemented using [Commands](Commands). When you start a new EvMenu, the user of the
-menu will be assigned a [CmdSet](Command-Sets) with the commands they need to navigate the menu.
+The EvMenu is implemented using [Commands](./Commands). When you start a new EvMenu, the user of the
+menu will be assigned a [CmdSet](./Command-Sets) with the commands they need to navigate the menu.
 This means that if you were to, from inside the menu, assign a new command set to the caller, *you
 may override the Menu Cmdset and kill the menu*. If you want to assign cmdsets to the caller as part
 of the menu, you should store the cmdset on `caller.ndb._menutree` and wait to actually assign it

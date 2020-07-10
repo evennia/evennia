@@ -5,7 +5,7 @@
 
 This tutorial describes the creation of an in-game map display based on a pre-drawn map. It also
 details how to use the [Batch code processor](../Component/Batch-Code-Processor) for advanced building. There is
-also the [Dynamic in-game map tutorial](Dynamic-In-Game-Map) that works in the opposite direction,
+also the [Dynamic in-game map tutorial](./Dynamic-In-Game-Map) that works in the opposite direction,
 by generating a map from an existing grid of rooms.
 
 Evennia does not require its rooms to be positioned in a "logical" way. Your exits could be named

@@ -3,8 +3,7 @@
 
 ### How to *get* Help
 
-If you cannot find what you are looking for in the 
-[online documentation](index), here's what to do:
+If you cannot find what you are looking for in the documentation, here's what to do:
  
 - If you think the documentation is not clear enough, create a [documentation ticket](github:issue).
 - If you have trouble with a missing feature or a problem you think is a bug, look through the 
@@ -31,20 +30,20 @@ Evennia is open-source and non-commercial. It relies on the time donated by its 
 - Report problems you find or features you'd like to our [issue tracker](github:issue). 
 
 ```important::
-    Just the simple act of letting developers know you are out there using their program helps a lot.
+    Just the simple act of us know you are out there using Evennia helps a lot!
 ```
 
 If you'd like to help develop Evennia more hands-on, here are some ways to get going:
 
-- Look through this [online documentation](index) and see if you can help improve or expand the 
-documentation (even small things like fixing typos!). [See here](Contributing-Docs) on how you 
+- Look through this [online documentation](./index#Evennia-documentation) and see if you can help improve or expand the 
+documentation (even small things like fixing typos!). [See here](./Contributing-Docs) on how you 
 contribute to the docs. 
 - Send a message to our [discussion group][group] and/or our [IRC chat][chat] asking about what
 needs doing, along with what your interests and skills are.
 - Take a look at our [issue tracker][issues] and see if there's something you feel like taking on.
 [here are bugs][issues-master] that need fixes. At any given time there may also be some
 [bounties][issues-bounties] open.
-- Check out the [Contributing](Contributing) page on how to practically contribute with code using
+- Check out the [Contributing](./Contributing) page on how to practically contribute with code using
 github.
 
 ... And finally, if you want to help motivate and support development you can also drop some coins

@@ -173,9 +173,3 @@ economic system.
  - [Python tips and tricks](http://www.siafoo.net/article/52)
  - [Jetbrains Python academy](https://hyperskill.org/onboarding?track=python) - free online
 programming curriculum for different skill levels
-
-### Credits
-
- - Wiki [Home](index) Icons made by [Freepik](http://www.freepik.com"-title="Freepik">Freepik) from
-[flaticon.com](http://www.flaticon.com), licensed under [Creative Commons BY
-3.0](http://creativecommons.org/licenses/by/3.0).

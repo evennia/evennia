@@ -2,7 +2,7 @@
 
 
 *Scripts* are the out-of-character siblings to the in-character
-[Objects](Objects). Scripts are so flexible that the "Script" is a bit limiting
+[Objects](./Objects). Scripts are so flexible that the "Script" is a bit limiting
 - we had to pick something to name them after all. Other possible names
 (depending on what you'd use them for) would be `OOBObjects`,
 `StorageContainers` or `TimerObjects`. 
@@ -14,7 +14,7 @@ Scripts can be used for many different things in Evennia:
 - They can work as timers and tickers - anything that may change with Time. But
   they can also have no time dependence at all. Note though that if all you want
   is just to have an object method called repeatedly, you should consider using
-  the [TickerHandler](TickerHandler) which is more limited but is specialized on
+  the [TickerHandler](./TickerHandler) which is more limited but is specialized on
   just this task. 
 - They can describe State changes. A Script is an excellent platform for
 hosting a persistent, but unique system handler. For example, a Script could be
@@ -22,11 +22,11 @@ used as the base to track the state of a turn-based combat system. Since
 Scripts can also operate on a timer they can also update themselves regularly
 to perform various actions. 
 - They can act as data stores for storing game data persistently in the database 
-(thanks to its ability to have [Attributes](Attributes)). 
+(thanks to its ability to have [Attributes](./Attributes)). 
 - They can be used as OOC stores for sharing data between groups of objects, for 
 example for tracking the turns in a turn-based combat system or barter exchange.
 
-Scripts are [Typeclassed](Typeclasses) entities and are manipulated in a similar 
+Scripts are [Typeclassed](./Typeclasses) entities and are manipulated in a similar 
 way to how it works for other such Evennia entities: 
 
 ```python
@@ -41,7 +41,7 @@ list_of_myscript = evennia.search_script("myscript")
 ## Defining new Scripts
 
 A Script is defined as a class and is created in the same way as other
-[typeclassed](Typeclasses) entities. The class has several properties 
+[typeclassed](./Typeclasses) entities. The class has several properties 
 to control the timer-component of the scripts. These are all _optional_ -
 leaving them out will just create a Script with no timer components (useful to act as
 a database store or to hold a persistent game system, for example).
@@ -104,7 +104,7 @@ If we put this script on a room, it will randomly report some weather
 to everyone in the room every 5 minutes.
 
 To activate it, just add it to the script handler (`scripts`) on an
-[Room](Objects). That object becomes `self.obj` in the example above.  Here we
+[Room](./Objects). That object becomes `self.obj` in the example above.  Here we
 put it on a room called `myroom`:
 
 ```
@@ -144,7 +144,7 @@ command in-game.
 ## Properties and functions defined on Scripts
 
 A Script has all the properties of a typeclassed object, such as `db` and `ndb`(see
-[Typeclasses](Typeclasses)). Setting `key` is useful in order to manage scripts (delete them by name
+[Typeclasses](./Typeclasses)). Setting `key` is useful in order to manage scripts (delete them by name
 etc). These are usually set up in the Script's typeclass, but can also be assigned on the fly as
 keyword arguments to `evennia.create_script`.
 
@@ -164,7 +164,7 @@ after the reload is complete).
 
 There is one special property:
 
-- `obj` - the [Object](Objects) this script is attached to (if any).  You should not need to set
+- `obj` - the [Object](./Objects) this script is attached to (if any).  You should not need to set
 this manually. If you add the script to the Object with `myobj.scripts.add(myscriptpath)` or give
 `myobj` as an argument to the `utils.create.create_script` function, the `obj` property will be set
 to `myobj` for you.

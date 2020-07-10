@@ -67,10 +67,10 @@ other things that must run in your game but which has no database persistence.
 a greeting screen to show when an Account first connects. If more than one string variable is
 present in the module a random one will be picked.
 - `inlinefuncs.py` - this is where you can define custom [Inline functions](../Concept/TextTags#inlinefuncs).
-- `inputfuncs.py` - this is where you define custom [Input functions](Inputfuncs) to handle data
+- `inputfuncs.py` - this is where you define custom [Input functions](./Inputfuncs) to handle data
 from the client.
 - `lockfuncs.py` - this is one of many possible modules to hold your own "safe" *lock functions* to
-make available to Evennia's [Locks](Locks).
+make available to Evennia's [Locks](./Locks).
 - `mssp.py` - this holds meta information about your game. It is used by MUD search engines (which
 you often have to register with) in order to display what kind of game you are running along with
     statistics such as number of online accounts and online status.

@@ -16,10 +16,10 @@
 This is the manual of [Evennia](http://www.evennia.com), the open source Python
 `MU*` creation system.
 
-- [Evennia Introduction](Evennia-Introduction)
+- [Evennia Introduction](./Evennia-Introduction)
 - [Install & Setup Quickstart](Setup/Setup-Quickstart)
 - [Begin the starting tutorial](Howto/Starting/Starting-Part1)
-- [How to get (and give) help](How-To-Get-And-Give-Help)
+- [How to get (and give) help](./How-To-Get-And-Give-Help)
 
 ## Main sections
 
@@ -29,7 +29,7 @@ This is the manual of [Evennia](http://www.evennia.com), the open source Python
 - [Concepts](Concept/Concept-Overview) - larger-scale concepts and features
 - [Coding](Coding/Coding-Overview) - coding and development hints and resources
 - [Contributions](Contrib/Contrib-Overview) - game-specific tools and code added by the community
-- [API](Evennia-API) - the full API-reference, generated from source
-- [Table of Contents](toc) - an alphabetical listing of all regular documentation pages
+- [API](./Evennia-API) - the full API-reference, generated from source
+- [Table of Contents](./toc) - an alphabetical listing of all regular documentation pages
 
-Want to help improve the docs? See the page on [Contributing to the docs](Contributing-Docs)!
+Want to help improve the docs? See the page on [Contributing to the docs](./Contributing-Docs)!

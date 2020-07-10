@@ -1,6 +1,6 @@
 # The Tutorial World 
 
-[prev lesson](Building-Quickstart) | [next lesson](Python-basic-introduction)
+[prev lesson](./Building-Quickstart) | [next lesson](./Python-basic-introduction)
 
 The *Tutorial World* is a small and functioning MUD-style game world shipped with Evennia.  
 It's a small showcase of what is possible. It can also be useful for those who have an easier
@@ -115,5 +115,5 @@ should  hopefully have given you a little taste of some of the possibilities of 
 move on with how to access this power through code.
 
 
-[prev lesson](Building-Quickstart) | [next lesson](Python-basic-introduction)
+[prev lesson](./Building-Quickstart) | [next lesson](./Python-basic-introduction)
 

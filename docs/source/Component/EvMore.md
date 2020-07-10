@@ -16,7 +16,7 @@ from evennia.utils import evmore
 
 evmore.msg(receiver, long_text)
 ```
-Where receiver is an [Object](Objects) or a [Account](Accounts). If the text is longer than the
+Where receiver is an [Object](./Objects) or a [Account](./Accounts). If the text is longer than the
 client's screen height (as determined by the NAWS handshake or by `settings.CLIENT_DEFAULT_HEIGHT`)
 the pager will show up, something like this:
 

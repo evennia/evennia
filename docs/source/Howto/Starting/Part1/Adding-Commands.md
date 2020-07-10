@@ -1,6 +1,6 @@
 # Our own commands
 
-[prev lesson](Searching-Things) | [next lesson](More-on-Commands)
+[prev lesson](./Searching-Things) | [next lesson](./More-on-Commands)
 
 In this lesson we'll learn how to create our own Evennia _Commands_. If you are new to Python you'll 
 also learn some more basics about how to manipulate strings and get information out of Evennia. 
@@ -183,7 +183,7 @@ class CmdEcho(Command):
 First we added a docstring. This is always a good thing to do in general, but for a Command class, it will also 
 automatically become the in-game help entry! Next we add the `func` method. It has one active line where it 
 makes use of some of those variables we found the Command offers to us. If you did the 
-[basic Python tutorial](Python-basic-introduction), you will recognize `.msg` - this will send a message
+[basic Python tutorial](./Python-basic-introduction), you will recognize `.msg` - this will send a message
 to the object it is attached to us - in this case `self.caller`, that is, us. We grab `self.args` and includes
 that in the message. 
 
@@ -393,4 +393,4 @@ We also upset a dragon.
 In the next lesson we'll learn how to hit Smaug with different weapons. We'll also 
 get into how we replace and extend Evennia's default Commands.
 
-[prev lesson](Searching-Things) | [next lesson](More-on-Commands)
+[prev lesson](./Searching-Things) | [next lesson](./More-on-Commands)

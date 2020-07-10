@@ -27,7 +27,7 @@ You <->
             InputFunc  
 ```
 
-(See the [Message Path](Messagepath) for the bigger picture of how data flows through Evennia). The
+(See the [Message Path](./Messagepath) for the bigger picture of how data flows through Evennia). The
 parts that needs to be customized to make your own custom protocol is the `Protocol + PortalSession`
 (which translates between data coming in/out over the wire to/from Evennia internal representation)
 as well as the `InputFunc` (which handles incoming data).

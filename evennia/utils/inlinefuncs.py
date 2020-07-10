@@ -524,8 +524,8 @@ def initialize_nick_templates(in_template, out_template):
         replacement using the standard .format method.
 
     Raises:
-        NickTemplateInvalid: If the in/out template does not have a matching
-        number of $args.
+        evennia.utils.inlinefuncs.NickTemplateInvalid: If the in/out template
+        does not have a matching number of $args.
 
     """
     # create the regex for in_template

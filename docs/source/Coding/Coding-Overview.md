@@ -8,21 +8,21 @@ to you, but some things may still be useful.
 ## Find your way 
 
 - [Directory-Overview](../Howto/Starting/Part1/Gamedir-Overview)
-- [Quirks of Evennia](Quirks)
+- [Quirks of Evennia](./Quirks)
 
 ## Setting up a workflow
 
-- [Setting up PyCharm](Setting-up-PyCharm)
-- [Using Version-Control](Version-Control)
-- [Updating Evennia sources](Updating-Your-Game)
+- [Setting up PyCharm](./Setting-up-PyCharm)
+- [Using Version-Control](./Version-Control)
+- [Updating Evennia sources](./Updating-Your-Game)
 
 ## Coding away
 
-- [Ways to Debug](Debugging)
-- [Adding unit-tests](Unit-Testing)
+- [Ways to Debug](./Debugging)
+- [Adding unit-tests](./Unit-Testing)
 
 ## Advanced concepts 
 
-- [Continuous Integration](Continuous-Integration)
-  - [Using Travis](Using-Travis)
-- [Profiling](Profiling)
+- [Continuous Integration](./Continuous-Integration)
+  - [Using Travis](./Using-Travis)
+- [Profiling](./Profiling)

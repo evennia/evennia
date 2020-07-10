@@ -42,7 +42,7 @@ Evennia defines a few default inputfuncs to handle the common cases. These are d
 
 This is the most common of inputcommands, and the only one supported by every traditional mud. The
 argument is usually what the user sent from their command line. Since all text input from the user
-like this is considered a [Command](Commands), this inputfunc will do things like nick-replacement
+like this is considered a [Command](./Commands), this inputfunc will do things like nick-replacement
 and then pass on the input to the central Commandhandler.
 
 ### echo
@@ -134,7 +134,7 @@ to expand. By default the following values can be retrieved:
 accepted names if given an unfamiliar callback name.
 
 This will tell evennia to repeatedly call a named function at a given interval. Behind the scenes
-this will set up a [Ticker](TickerHandler). Only previously acceptable functions are possible to
+this will set up a [Ticker](./TickerHandler). Only previously acceptable functions are possible to
 repeat-call in this way, you'll need to overload this inputfunc to add the ones you want to offer.
 By default only two example functions are allowed, "test1" and "test2", which will just echo a text
 back at the given interval. Stop the repeat by sending `"stop": True` (note that you must include
@@ -155,7 +155,7 @@ This is a convenience wrapper for sending "stop" to the `repeat` inputfunc.
 
 This sets up on-object monitoring of Attributes or database fields. Whenever the field or Attribute
 changes in any way, the outputcommand will be sent. This is using the
-[MonitorHandler](MonitorHandler) behind the scenes. Pass the "stop" key to stop monitoring. Note
+[MonitorHandler](./MonitorHandler) behind the scenes. Pass the "stop" key to stop monitoring. Note
 that you must supply the name also when stopping to let the system know which monitor should be
 cancelled.
 

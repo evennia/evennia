@@ -212,7 +212,7 @@ An important aspect of making things more familiar for *Players* is adding new a
 commands. How this is done is covered by the [Tutorial on adding new commands](Adding-Command-
 Tutorial). You may also find it useful to shop through the `evennia/contrib/` folder. The 
 [Tutorial world](Starting/Part1/Tutorial-World-Introduction) is a small single-player quest you can try (it’s not very MUSH-
-like but it does show many Evennia concepts in action). Beyond that there are [many more tutorials](Howto-Overview) 
+like but it does show many Evennia concepts in action). Beyond that there are [many more tutorials](./Howto-Overview) 
 to try out. If you feel you want a more visual overview you can also look at
 [Evennia in pictures](https://evennia.blogspot.se/2016/05/evennia-in-pictures.html).
 

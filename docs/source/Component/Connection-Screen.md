@@ -29,8 +29,8 @@ available.
 
 ### Commands available at the Connection Screen
 
-You can also customize the [Commands](Commands) available to use while the connection screen is
+You can also customize the [Commands](./Commands) available to use while the connection screen is
 shown (`connect`, `create` etc). These commands are a bit special since when the screen is running
 the account is not yet logged in. A command is made available at the login screen by adding them to
-`UnloggedinCmdSet` in `mygame/commands/default_cmdset.py`.  See [Commands](Commands) and the
+`UnloggedinCmdSet` in `mygame/commands/default_cmdset.py`.  See [Commands](./Commands) and the
 tutorial section on how to add new commands to a default command set.

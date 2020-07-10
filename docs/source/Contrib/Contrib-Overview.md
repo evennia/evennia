@@ -5,13 +5,13 @@ longer-form documentation associated with particular contribs.
 
 ## In-Game-Python
 
-- [A voice-operated elevator using events](A-voice-operated-elevator-using-events)
-- [Dialogues using events](Dialogues-in-events)
+- [A voice-operated elevator using events](./A-voice-operated-elevator-using-events)
+- [Dialogues using events](./Dialogues-in-events)
 
 ## Maps
 
-- [Dynamic in-game map](Dynamic-In-Game-Map)
-- [Static in-game map](Static-In-Game-Map)
+- [Dynamic in-game map](./Dynamic-In-Game-Map)
+- [Static in-game map](./Static-In-Game-Map)
 
 ## The tutorial-world
 
@@ -19,4 +19,4 @@ longer-form documentation associated with particular contribs.
 
 ## Menu-builder
 
-- [Building Menus](Building-menus)
+- [Building Menus](./Building-menus)

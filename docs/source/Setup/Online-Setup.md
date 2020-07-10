@@ -202,7 +202,7 @@ To register, stand in your game dir, run
 
     evennia connections 
 
-and follow the instructions. See the [Game index page](Evennia-Game-Index) for more details.
+and follow the instructions. See the [Game index page](./Evennia-Game-Index) for more details.
 
 ## SSL
 
@@ -249,8 +249,8 @@ also be based on your hosting choice. In a controlled/cPanel environment, you wi
 to use DNS verification.
 
 ## Relevant SSL Proxy Setup Information
-- [Apache webserver configuration](Apache-Config) (optional)
-- [HAProxy Config](HAProxy-Config)
+- [Apache webserver configuration](./Apache-Config) (optional)
+- [HAProxy Config](./HAProxy-Config)
 
 ## Hosting locally or remotely?
 
@@ -283,7 +283,7 @@ main internet connection terminated as a consequence.
 
 #### Setting up your own machine as a server
 
-[The first section](Online-Setup#connecting-from-the-outside) of this page describes how to do this
+[The first section](./Online-Setup#connecting-from-the-outside) of this page describes how to do this
 and allow users to connect to the IP address of your machine/router.
 
 A complication with using a specific IP address like this is that your home IP might not remain the
@@ -344,7 +344,7 @@ game stays online. Many services guarantee a certain level of up-time and also d
 for you. Make sure to check, some offer lower rates in exchange for you yourself being fully
 responsible for your data/backups.
 - Usually offers a fixed domain name, so no need to mess with IP addresses.
-- May have the ability to easily deploy [docker](Running-Evennia-in-Docker) versions of evennia
+- May have the ability to easily deploy [docker](./Running-Evennia-in-Docker) versions of evennia
 and/or your game.
 
 **Disadvantages**
@@ -362,7 +362,7 @@ Docker) to deploy your game to the remote server; it will likely ease installati
 Docker images may be a little confusing if you are completely new to them though.
 
 If not using docker, and assuming you know how to connect to your account over ssh/PuTTy, you should
-be able to follow the [Setup Quickstart](Setup-Quickstart) instructions normally. You only need Python
+be able to follow the [Setup Quickstart](./Setup-Quickstart) instructions normally. You only need Python
 and GIT pre-installed; these should both be available on any servers (if not you should be able to
 easily ask for them to be installed). On a VPS or Cloud service you can install them yourself as
 needed.

@@ -16,8 +16,8 @@ to install Evennia as superuser.
 Make sure the `evennia` command works. Use `evennia -h` for usage help (or read on).
 
 If you are having trouble, want to install in some other way (like with Docker) or want to contribute to
-Evennia itself, check out the [Extended Installation instructions](Extended-Installation). 
-It also has a [troubleshooting section](Extended-Installation#Troubleshooting) for different operating
+Evennia itself, check out the [Extended Installation instructions](./Extended-Installation). 
+It also has a [troubleshooting section](./Extended-Installation#Troubleshooting) for different operating
 systems.
 
 
