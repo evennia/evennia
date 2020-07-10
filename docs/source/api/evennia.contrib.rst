@@ -36,7 +36,6 @@ Modules
    evennia.contrib.slow_exit
    evennia.contrib.talking_npc
    evennia.contrib.test_traits
-   evennia.contrib.tests
    evennia.contrib.traits
    evennia.contrib.tree_select
    evennia.contrib.unixcommand

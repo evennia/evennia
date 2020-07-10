@@ -1,21 +1,23 @@
 """
-This module brings Django Signals into Evennia. These are events that
-can be subscribed to by importing a given Signal and using the
-following code.
+This module brings Django Signals into Evennia. These are events that can be
+subscribed to by importing a given Signal and using the following code.
 
+```python
 THIS_SIGNAL.connect(callback, sender_object)
+```
 
-When other code calls THIS_SIGNAL.send(sender, **kwargs), the callback
-will be triggered.
+When other code calls `THIS_SIGNAL.send(sender, **kwargs)`, the callback will
+be triggered.
 
-Callbacks must be in the following format:
+Callbacks must be on the following format:
 
+```python
 def my_callback(sender, **kwargs):
-    ...
+    # ...
+```
 
-This is used on top of hooks to make certain features easier to
-add to contribs without necessitating a full takeover of hooks
-that may be in high demand.
+This is used on top of hooks to make certain features easier to add to contribs
+without necessitating a full takeover of hooks that may be in high demand.
 
 """
 from django.dispatch import Signal

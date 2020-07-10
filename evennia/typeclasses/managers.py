@@ -34,14 +34,12 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         self, key=None, category=None, value=None, strvalue=None, obj=None, attrtype=None, **kwargs
     ):
         """
-        Return Attribute objects by key, by category, by value, by
-        strvalue, by object (it is stored on) or with a combination of
-        those criteria.
+        Return Attribute objects by key, by category, by value, by strvalue, by
+        object (it is stored on) or with a combination of those criteria.
 
-        Attrs:
+        Args:
             key (str, optional): The attribute's key to search for
-            category (str, optional): The category of the attribute(s)
-                to search for.
+            category (str, optional): The category of the attribute(s) to search for.
             value (str, optional): The attribute value to search for.
                 Note that this is not a very efficient operation since it
                 will query for a pickled entity. Mutually exclusive to
@@ -55,10 +53,10 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
             attrype (str, optional): An attribute-type to search for.
                 By default this is either `None` (normal Attributes) or
                 `"nick"`.
-            kwargs (any): Currently unused. Reserved for future use.
+            **kwargs (any): Currently unused. Reserved for future use.
 
         Returns:
-            attributes (list): The matching Attributes.
+            list: The matching Attributes.
 
         """
         dbmodel = self.model.__dbclass__.__name__.lower()
@@ -84,7 +82,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         """
         Get a nick, in parallel to `get_attribute`.
 
-        Attrs:
+        Args:
             key (str, optional): The nicks's key to search for
             category (str, optional): The category of the nicks(s) to search for.
             value (str, optional): The attribute value to search for. Note that this
@@ -170,13 +168,13 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         Return Tag objects by key, by category, by object (it is
         stored on) or with a combination of those criteria.
 
-        Attrs:
+        Args:
             key (str, optional): The Tag's key to search for
             category (str, optional): The Tag of the attribute(s)
                 to search for.
             obj (Object, optional): On which object the Tag to
                 search for is.
-            tagtype (str, optional): One of None (normal tags),
+            tagtype (str, optional): One of `None` (normal tags),
                 "alias" or "permission"
             global_search (bool, optional): Include all possible tags,
                 not just tags on this object

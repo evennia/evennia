@@ -16,4 +16,3 @@ Modules
    evennia.objects.manager
    evennia.objects.models
    evennia.objects.objects
-   evennia.objects.tests

@@ -578,36 +578,38 @@ class IAttributeBackend:
 
     def do_batch_finish(self, attr_objs):
         """
-        Called only by batch_add. Used for handling database operations and/or caching complications.
+        Called only by batch_add. Used for handling database operations and/or
+        caching complications.
 
         Args:
             attr_objs (list of IAttribute): The Attributes created/updated thus far.
+
         """
         raise NotImplementedError()
 
     def batch_add(self, *args, **kwargs):
         """
-        Batch-version of `add()`. This is more efficient than
-        repeat-calling add when having many Attributes to add.
+        Batch-version of `.add()`. This is more efficient than repeat-calling
+        `.add` when having many Attributes to add.
 
         Args:
-            indata (list): List of tuples of varying length representing the
+             *args (tuple): Tuples of varying length representing the
                 Attribute to add to this object. Supported tuples are
-                    - `(key, value)`
-                    - `(key, value, category)`
-                    - `(key, value, category, lockstring)`
-                    - `(key, value, category, lockstring, default_access)`
+
+                - (key, value)
+                - (key, value, category)
+                - (key, value, category, lockstring)
+                - (key, value, category, lockstring, default_access)
 
         Raises:
             RuntimeError: If trying to pass a non-iterable as argument.
 
         Notes:
-            The indata tuple order matters, so if you want a lockstring
-            but no category, set the category to `None`. This method
-            does not have the ability to check editing permissions like
-            normal .add does, and is mainly used internally. It does not
-            use the normal self.add but apply the Attributes directly
-            to the database.
+            The indata tuple order matters, so if you want a lockstring but no
+            category, set the category to `None`. This method does not have the
+            ability to check editing permissions and is mainly used internally.
+            It does not use the normal `self.add` but applies the Attributes
+            directly to the database.
 
         """
         new_attrobjs = []
@@ -1092,12 +1094,13 @@ class AttributeHandler:
         repeat-calling add when having many Attributes to add.
 
         Args:
-            indata (list): List of tuples of varying length representing the
+            *args (tuple): Tuples of varying length representing the
                 Attribute to add to this object. Supported tuples are
-                    - `(key, value)`
-                    - `(key, value, category)`
-                    - `(key, value, category, lockstring)`
-                    - `(key, value, category, lockstring, default_access)`
+
+                - (key, value)
+                - (key, value, category)
+                - (key, value, category, lockstring)
+                - (key, value, category, lockstring, default_access)
 
         Keyword args:
             strattr (bool): If `True`, value must be a string. This
@@ -1306,12 +1309,12 @@ def initialize_nick_templates(in_template, out_template):
 
     Returns:
         regex  (regex): Regex to match against strings
-        template (str): Template with markers {arg1}, {arg2}, etc for
-            replacement using the standard .format method.
+        template (str): Template with markers ``{arg1}, {arg2}``, etc for
+        replacement using the standard .format method.
 
     Raises:
         NickTemplateInvalid: If the in/out template does not have a matching
-            number of $args.
+            number of `$args`.
 
     """
 

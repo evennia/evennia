@@ -17,4 +17,3 @@ Modules
    evennia.accounts.bots
    evennia.accounts.manager
    evennia.accounts.models
-   evennia.accounts.tests

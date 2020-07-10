@@ -255,11 +255,28 @@ def autodoc_post_process_docstring(app, what, name, obj, options, lines):
             return "::\n\n    {}".format(
                 "\n    ".join(lne for lne in code.split("\n")))
 
+        underline_map = {
+            1: "-",
+            2: "=",
+            3: '^',
+            4: '"',
+        }
+
+        def _sub_header(match):
+            # add underline to convert a markdown #header to ReST
+            groupdict = match.groupdict()
+            hashes, title = groupdict["hashes"], groupdict["title"]
+            title = title.strip()
+            lvl = min(max(1, len(hashes)), 4)
+            return f"{title}\n" + (underline_map[lvl] * len(title))
+
         doc = "\n".join(lines)
         doc = re.sub(r"```python\s*\n+(.*?)```", _sub_codeblock, doc,
                      flags=re.MULTILINE + re.DOTALL)
         doc = re.sub(r"```", "", doc, flags=re.MULTILINE)
         doc = re.sub(r"`{1}", "**", doc, flags=re.MULTILINE)
+        doc = re.sub(r"^(?P<hashes>#{1,2})\s*?(?P<title>.*?)$", _sub_header, doc, flags=re.MULTILINE)
+
         newlines = doc.split("\n")
         # we must modify lines in-place
         lines[:] = newlines[:]

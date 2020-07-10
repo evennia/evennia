@@ -5,9 +5,12 @@ Use the codes defined in ANSIPARSER in your text
 to apply colour to text according to the ANSI standard.
 
 Examples:
- This is |rRed text|n and this is normal again.
 
-Mostly you should not need to call parse_ansi() explicitly;
+```python
+"This is |rRed text|n and this is normal again."
+```
+
+Mostly you should not need to call `parse_ansi()` explicitly;
 it is run by Evennia just before returning data to/from the
 user.  Depreciated example forms are available by extending
 the ansi mapping.
@@ -982,13 +985,11 @@ class ANSIString(str, metaclass=ANSIMeta):
             sep (str): The separator to split the string on.
             reverse (boolean): Whether to split the string on the last
                 occurrence of the separator rather than the first.
+
         Returns:
-            result (tuple):
-               prefix (ANSIString): The part of the string before the
-                   separator
-               sep (ANSIString): The separator itself
-               postfix (ANSIString): The part of the string after the
-                   separator.
+            ANSIString: The part of the string before the separator
+            ANSIString: The separator itself
+            ANSIString: The part of the string after the separator.
 
         """
         if hasattr(sep, "_clean_string"):
@@ -1288,18 +1289,21 @@ class ANSIString(str, metaclass=ANSIMeta):
         one.
 
         NOTE: This should always be used for joining strings when ANSIStrings
-            are involved. Otherwise color information will be discarded by
-            python, due to details in the C implementation of strings.
+        are involved. Otherwise color information will be discarded by python,
+        due to details in the C implementation of strings.
 
         Args:
             iterable (list of strings): A list of strings to join together
+
         Returns:
-            result (ANSIString): A single string with all of the iterable's
-                contents concatenated, with this string between each. For
-                example:
-                    ANSIString(', ').join(['up', 'right', 'left', 'down'])
-                ...Would return:
-                    ANSIString('up, right, left, down')
+            ANSIString: A single string with all of the iterable's
+                contents concatenated, with this string between each.
+
+        Examples:
+            ::
+
+                >>> ANSIString(', ').join(['up', 'right', 'left', 'down'])
+                ANSIString('up, right, left, down')
 
         """
         result = ANSIString("")

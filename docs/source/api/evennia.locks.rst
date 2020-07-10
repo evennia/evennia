@@ -14,4 +14,3 @@ Modules
 
    evennia.locks.lockfuncs
    evennia.locks.lockhandler
-   evennia.locks.tests
