@@ -69,7 +69,7 @@ be extracted from the `**kwargs` dict in the signal handler.
   used way for users to themselves create accounts during login. It passes and extra kwarg `ip` with
   the client IP of the connecting account.
 - `SIGNAL_ACCOUNT_POST_LOGIN` - this will always fire when the account has authenticated.  Sends
-  extra kwarg `session` with the new [Session](Sessions) object involved.
+  extra kwarg `session` with the new [Session](./Sessions) object involved.
 - `SIGNAL_ACCCOUNT_POST_FIRST_LOGIN` - this fires just before `SIGNAL_ACCOUNT_POST_LOGIN` but only
 if
   this is the *first* connection done (that is, if there are no previous sessions connected). Also

@@ -7,20 +7,20 @@ exists before answering - maybe you can clarify that answer rather than to make 
 
 ## Table of Contents
 
-- [Removing default commands](Coding-FAQ#removing-default-commands)
-- [Preventing character from moving based on a condition](Coding-FAQ#preventing-character-from-
+- [Removing default commands](./Coding-FAQ#removing-default-commands)
+- [Preventing character from moving based on a condition](./Coding-FAQ#preventing-character-from-
 moving-based-on-a-condition)
-- [Reference initiating object in an EvMenu command](Coding-FAQ#reference-initiating-object-in-an-
+- [Reference initiating object in an EvMenu command](./Coding-FAQ#reference-initiating-object-in-an-
 evmenu-command)
-- [Adding color to default Evennia Channels](Coding-FAQ#adding-color-to-default-evennia-channels)
-- [Selectively turn off commands in a room](Coding-FAQ#selectively-turn-off-commands-in-a-room)
-- [Select Command based on a condition](Coding-FAQ#select-command-based-on-a-condition)
-- [Automatically updating code when reloading](Coding-FAQ#automatically-updating-code-when-
+- [Adding color to default Evennia Channels](./Coding-FAQ#adding-color-to-default-evennia-channels)
+- [Selectively turn off commands in a room](./Coding-FAQ#selectively-turn-off-commands-in-a-room)
+- [Select Command based on a condition](./Coding-FAQ#select-command-based-on-a-condition)
+- [Automatically updating code when reloading](./Coding-FAQ#automatically-updating-code-when-
 reloading)
-- [Changing all exit messages](Coding-FAQ#changing-all-exit-messages)
-- [Add parsing with the "to" delimiter](Coding-FAQ#add-parsing-with-the-to-delimiter)
-- [Store last used session IP address](Coding-FAQ#store-last-used-session-ip-address)
-- [Use wide characters with EvTable](Coding-FAQ#non-latin-characters-in-evtable)
+- [Changing all exit messages](./Coding-FAQ#changing-all-exit-messages)
+- [Add parsing with the "to" delimiter](./Coding-FAQ#add-parsing-with-the-to-delimiter)
+- [Store last used session IP address](./Coding-FAQ#store-last-used-session-ip-address)
+- [Use wide characters with EvTable](./Coding-FAQ#non-latin-characters-in-evtable)
 
 ## Removing default commands
 **Q:** How does one *remove* (not replace) e.g. the default `get` [Command](../Component/Commands) from the

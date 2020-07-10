@@ -283,7 +283,8 @@ def parse_language(speaker, emote):
             the markers and a tuple (langname, saytext), where
             langname can be None.
     Raises:
-        LanguageError: If an invalid language was specified.
+        evennia.contrib.rpsystem.LanguageError: If an invalid language was
+        specified.
 
     Notes:
         Note that no errors are raised if the wrong language identifier

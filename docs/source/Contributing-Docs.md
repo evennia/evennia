@@ -669,7 +669,7 @@ to understand our friendly Google-style docstrings used in classes and functions
 [sphinx-autodoc](http://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc)
 [sphinx-napoleon](http://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html)
 [getting-started]: Setup/Setup-Quickstart
-[contributing]: Contributing
+[contributing]: ./Contributing
 [ReST](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html)
 [ReST-tables](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html#tables)
 [ReST-directives](https://www.sphinx-doc.org/en/master/usage/restruturedtext/directives.html)

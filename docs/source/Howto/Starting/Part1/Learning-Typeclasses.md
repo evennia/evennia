@@ -1,10 +1,10 @@
 # Persistent objects and typeclasses
 
-[prev lesson](Evennia-Library-Overview) | [next lesson](Creating-Things)
+[prev lesson](./Evennia-Library-Overview) | [next lesson](./Creating-Things)
 
 Now that we have learned a little about how to find things in the Evennia library, let's use it. 
 
-In the [Python classes and objects](Python-classes-and-objects) lesson we created the dragons Fluffy, Cuddly 
+In the [Python classes and objects](./Python-classes-and-objects) lesson we created the dragons Fluffy, Cuddly 
 and Smaug and made them fly and breathe fire. So far our dragons are short-lived - whenever we `restart`
 the server or `quit()` out of python mode they are gone. 
 
@@ -253,7 +253,7 @@ You are specifying exactly which typeclass you want to use to build the Giantess
      desc = You see nothing special. 
     ------------------------------------------------------------------------------- 
 
-We used the `examine` command briefly in the [lesson about building in-game](Building-Quickstart). Now these lines
+We used the `examine` command briefly in the [lesson about building in-game](./Building-Quickstart). Now these lines
 may be more useful to us:
 - **Name/key** - The name of this thing. The value `(#14)` is probably different for you. This is the 
     unique 'primary key' or _dbref_ for this entity in the database.
@@ -359,7 +359,7 @@ You got a lot longer output this time. You have a lot more going on than a simpl
 - **Session id(s)**: This identifies the _Session_ (that is, the individual connection to a player's game client).
 - **Account** shows, well the `Account` object associated with this Character and Session.
 - **Stored/Merged Cmdsets** and **Commands available** is related to which _Commands_ are stored on you. We will
-    get to them in the [next lesson](Adding-Commands). For now it's enough to know these consitute all the 
+    get to them in the [next lesson](./Adding-Commands). For now it's enough to know these consitute all the 
     commands available to you at a given moment. 
 - **Non-Persistent attributes** are Attributes that are only stored temporarily and will go away on next reload.
 
@@ -621,4 +621,4 @@ Typeclasses are a fundamental part of Evennia and we will see a lot of more uses
 this tutorial. But that's enough of them for now. It's time to take some action. Let's learn about _Commands_. 
 
 
-[prev lesson](Evennia-Library-Overview) | [next lesson](Creating-Things)
+[prev lesson](./Evennia-Library-Overview) | [next lesson](./Creating-Things)

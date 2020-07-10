@@ -1,6 +1,6 @@
 # Starting to code Evennia
 
-[prev lesson](Tutorial-World-Introduction) | [next lesson](Gamedir-Overview)
+[prev lesson](./Tutorial-World-Introduction) | [next lesson](./Gamedir-Overview)
 
 Time to dip our toe into some coding! Evennia is written and extended in [Python](http://python.org), which
 is a mature and professional programming language that is very fast to work with.
@@ -71,6 +71,9 @@ While combining different strings is useful, even more powerful is the ability t
 of the string in-place. There are several ways to do this in Python and we'll show two of them here. The first
 is to use the `.format` _method_ of the string:
 
+    > py print("This is a {} idea!".format("good"))
+    This is a good idea!
+
 ```sidebar:: Functions and Methods
 
     Function:
@@ -84,8 +87,6 @@ A method can be thought of as a resource "on" another object. The method knows o
 sits and can thus affect it in various ways. You access it with the period `.`. In this case, the
 string has a resource `format(...)` that modifies it. More specifically, it replaced the `{}` marker
 inside the string with the value passed to the format. You can do so many times:
-
-
 
     > py print("This is a {} idea!".format("bad"))
     This is a bad idea!
@@ -649,4 +650,4 @@ practice you will be writing most your code in Python modules.
 To that end we also created a first new Python module in the `mygame/` game dir, then imported and used it.
 Now let's look at the rest of the stuff you've got going on inside that `mygame/` folder ...
 
-[prev lesson](Tutorial-World-Introduction) | [next lesson](Gamedir-Overview)
+[prev lesson](./Tutorial-World-Introduction) | [next lesson](./Gamedir-Overview)

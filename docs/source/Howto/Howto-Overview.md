@@ -59,44 +59,44 @@ in mind for your own game, this will give you a good start.
 
 ## FAQs
 
-- [Coding FAQ](Coding-FAQ)
+- [Coding FAQ](./Coding-FAQ)
 
 ## Howto's
 
-- [Giving Exits a default error](Default-Exit-Errors)
-- [Customize Channel output](Customize-channels)
-- [Add a command prompt](Command-Prompt)
-- [Don't allow spamming commands](Command-Cooldown)
-- [Commands that take time](Command-Duration)
-- [Configuring color](Manually-Configuring-Color)
-- [Tweet game stats](Tutorial-Tweeting-Game-Stats)
+- [Giving Exits a default error](./Default-Exit-Errors)
+- [Customize Channel output](./Customize-channels)
+- [Add a command prompt](./Command-Prompt)
+- [Don't allow spamming commands](./Command-Cooldown)
+- [Commands that take time](./Command-Duration)
+- [Configuring color](./Manually-Configuring-Color)
+- [Tweet game stats](./Tutorial-Tweeting-Game-Stats)
 
 ## Mobs and NPCs
 
-- [NPCs that listen to you](Tutorial-NPCs-listening)
-- [Mobs that attack you](Tutorial-Aggressive-NPCs)
-- [Shopkeepers](NPC-shop-Tutorial)
+- [NPCs that listen to you](./Tutorial-NPCs-listening)
+- [Mobs that attack you](./Tutorial-Aggressive-NPCs)
+- [Shopkeepers](./NPC-shop-Tutorial)
 
 ## Vehicles
 
-- [Building a mech](Building-a-mech-tutorial)
-- [Building a train](Tutorial-Vehicles)
+- [Building a mech](./Building-a-mech-tutorial)
+- [Building a train](./Tutorial-Vehicles)
 
 ## Systems
 
-- [Understanding In-game time](Gametime-Tutorial)
-- [Understanding the Help system](Help-System-Tutorial)
-- [Adding mass to objects](Mass-and-weight-for-objects)
-- [Add weather](Weather-Tutorial)
+- [Understanding In-game time](./Gametime-Tutorial)
+- [Understanding the Help system](./Help-System-Tutorial)
+- [Adding mass to objects](./Mass-and-weight-for-objects)
+- [Add weather](./Weather-Tutorial)
 
 ## Web-related tutorials
 
-- [Add a wiki](Add-a-wiki-on-your-website)
-- [A web-based character generation](Web-Character-Generation)
-- [View Character on website](Web-Character-View-Tutorial)
+- [Add a wiki](./Add-a-wiki-on-your-website)
+- [A web-based character generation](./Web-Character-Generation)
+- [View Character on website](./Web-Character-View-Tutorial)
 
 ## Deep-dives
-- [Understanding color-tags](Understanding-Color-Tags)
-- [Play paper&pen RPGs online with Evennia](Evennia-for-roleplaying-sessions)
-- [Evennia for Diku Users](Evennia-for-Diku-Users)
-- [Evennia for MUSH-Users](Evennia-for-MUSH-Users)
+- [Understanding color-tags](./Understanding-Color-Tags)
+- [Play paper&pen RPGs online with Evennia](./Evennia-for-roleplaying-sessions)
+- [Evennia for Diku Users](./Evennia-for-Diku-Users)
+- [Evennia for MUSH-Users](./Evennia-for-MUSH-Users)

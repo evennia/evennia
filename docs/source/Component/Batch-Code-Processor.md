@@ -1,7 +1,7 @@
 # Batch Code Processor
 
 
-For an introduction and motivation to using batch processors, see [here](Batch-Processors). This
+For an introduction and motivation to using batch processors, see [here](./Batch-Processors). This
 page describes the Batch-*code* processor. The Batch-*command* one is covered [here](Batch-Command-
 Processor).
 
@@ -192,7 +192,7 @@ connect that room with a room you built in the current block. There are two ways
 
 - Perform a database search for the name of the room you created (since you cannot know in advance
 which dbref it got assigned). The problem is that a name may not be unique (you may have a lot of "A
-dark forest" rooms). There is an easy way to handle this though - use [Tags](Tags) or *Aliases*. You
+dark forest" rooms). There is an easy way to handle this though - use [Tags](./Tags) or *Aliases*. You
 can assign any number of tags and/or aliases to any object. Make sure that one of those tags or
 aliases is unique to the room (like "room56") and you will henceforth be able to always uniquely
 search and find it later.

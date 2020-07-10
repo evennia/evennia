@@ -230,7 +230,7 @@ class ServerSession(Session):
         Update the protocol_flags and sync them with Portal.
 
         Keyword args:
-            key, value - A key:value pair to set in the
+            protocol_flag (any): A key and value to set in the
                 protocol_flags dictionary.
 
         Notes:

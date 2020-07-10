@@ -12,7 +12,7 @@ This will help you download, install and start Evennia for the first time.
 - [Linux Install](Getting-Started#linux-install)
 - [Mac Install](Getting-Started#mac-install)
 - [Windows Install](Getting-Started#windows-install)
-- [Running in Docker](Running-Evennia-in-Docker)
+- [Running in Docker](./Running-Evennia-in-Docker)
 - [Where to Go Next](Getting-Started#where-to-go-next)
 - [Troubleshooting](Getting-Started#troubleshooting)
 - [Glossary of terms](../Glossary)
@@ -37,7 +37,7 @@ Evennia should now be running and you can connect to it by pointing a web browse
 `http://localhost:4001` or a MUD telnet client to `localhost:4000` (use `127.0.0.1` if your OS does
 not recognize `localhost`).
 
-We also release [Docker images](Running-Evennia-in-Docker)
+We also release [Docker images](./Running-Evennia-in-Docker)
 based on `master` and `develop` branches.
 
 ## Requirements
@@ -161,7 +161,7 @@ Your final folder structure should look like this:
 ```
 
 You can [configure Evennia](../Component/Server-Conf#settings-file) extensively, for example
-to use a [different database](Choosing-An-SQL-Server). For now we'll just stick
+to use a [different database](./Choosing-An-SQL-Server). For now we'll just stick
 to the defaults though.
 
 ```
@@ -273,7 +273,7 @@ Your final folder structure should look like this:
 ```
 
 You can [configure Evennia](../Component/Server-Conf#settings-file) extensively, for example
-to use a [different database](Choosing-An-SQL-Server). We'll go with the
+to use a [different database](./Choosing-An-SQL-Server). We'll go with the
 defaults here.
 
 ```
@@ -414,7 +414,7 @@ path\to\muddev
 ```
 
 You can [configure Evennia](../Component/Server-Conf#settings-file) extensively, for example
-to use a [different database](Choosing-An-SQL-Server). We'll go with the
+to use a [different database](./Choosing-An-SQL-Server). We'll go with the
 defaults here.
 
 ```

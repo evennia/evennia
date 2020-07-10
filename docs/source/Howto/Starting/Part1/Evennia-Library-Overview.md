@@ -1,6 +1,6 @@
 # Overview of the Evennia library
 
-[prev lesson](Python-classes-and-objects) | [next lesson](Learning-Typeclasses)
+[prev lesson](./Python-classes-and-objects) | [next lesson](./Learning-Typeclasses)
 
 ```sidebar:: API
 
@@ -125,5 +125,5 @@ to look it up in the docs:
 5. You can now read what this does and what methods are on it. If you want to see the full source, click the
    \[[source](src:evennia.objects.objects#DefaultObject)\] link.
    
-[prev lesson](Python-classes-and-objects) | [next lesson](Learning-Typeclasses)
+[prev lesson](./Python-classes-and-objects) | [next lesson](./Learning-Typeclasses)
 

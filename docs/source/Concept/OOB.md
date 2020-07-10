@@ -8,7 +8,7 @@ window pane.
 ## Briefly on input/outputcommands
 
 Inside Evennia, all server-client communication happens in the same way (so plain text is also an
-'OOB message' as far as Evennia is concerned). The message follows the [Message Path](Messagepath).
+'OOB message' as far as Evennia is concerned). The message follows the [Message Path](./Messagepath).
 You should read up on that if you are unfamiliar with it. As the message travels along the path it
 has a standardized internal form: a tuple with a string, a tuple and a dict:
 
@@ -26,7 +26,7 @@ a matching *Outputfunc*. This is responsible for converting the internal Evennia
 form suitable to send over the wire to the Client. Outputfuncs are hard-coded. Which is chosen and
 how it processes the outgoing data depends on the nature of the client it's connected to. The only
 time one would want to add new outputfuncs is as part of developing support for a new Evennia
-[Protocol](Custom-Protocols).
+[Protocol](./Custom-Protocols).
 
 ## Sending and receiving an OOB message
 

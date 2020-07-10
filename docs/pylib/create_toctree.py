@@ -101,6 +101,10 @@ def create_toctree():
             targetname = targetpath.name.rsplit(".", 1)[0]
             targetpath = targetpath.as_posix()
             url = relpath(targetpath, dirname(sourcepath))
+            if not "/" in url:
+                # need to be explicit or there will be link ref collisions between
+                # e.g. TickerHandler page and TickerHandle api node
+                url = "./" + url
             docref_map[sourcepath][targetname] = url.rsplit(".", 1)[0]
 
 

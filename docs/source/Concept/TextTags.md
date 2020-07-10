@@ -37,7 +37,7 @@ available in all but the most ancient mud clients. The ANSI colours are **r**ed,
 first letter except for black which is abbreviated with the letter **x**. In ANSI there are "bright"
 and "normal" (darker) versions of each color, adding up to a total of 16 colours to use for
 foreground text. There are also 8 "background" colours. These have no bright alternative in ANSI
-(but Evennia uses the [Xterm256](TextTags#xterm256-colours) extension behind the scenes to offer
+(but Evennia uses the [Xterm256](./TextTags#xterm256-colours) extension behind the scenes to offer
 them anyway).
 
 To colour your text you put special tags in it. Evennia will parse these and convert them to the
@@ -76,7 +76,7 @@ set bright/normal explicitly.  Technically, `|h|!G` is identical to `|g`.
 
 > Note: The ANSI standard does not actually support bright backgrounds like `|[r` - the standard
 only supports "normal" intensity backgrounds.  To get around this Evennia instead implements these
-as [Xterm256 colours](TextTags#xterm256-colours) behind the scenes. If the client does not support
+as [Xterm256 colours](./TextTags#xterm256-colours) behind the scenes. If the client does not support
 Xterm256 the ANSI colors will be used instead and there will be no visible difference between using
 upper- and lower-case background tags.
 

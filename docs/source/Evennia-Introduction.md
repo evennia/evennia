@@ -159,7 +159,7 @@ presence (a website and a mud web client) to play around with ...
 
 ### Where to from here?
 
-From here you can continue browsing the [online documentation]([online documentation](index)) to
+From here you can continue browsing the [online documentation]([online documentation](index:Evennia-documentation)) to
 find more info about Evennia. Or you can jump into the [Tutorials](Howto/Howto-Overview) and get your hands
 dirty with code right away. You can also read the developer's [dev
 blog](https://evennia.blogspot.com/) for many tidbits and snippets about Evennia's development and

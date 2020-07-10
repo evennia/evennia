@@ -1,6 +1,6 @@
 # More about Commands
 
-[prev lesson](Adding-Commands) | [next lesson](Creating-Things)
+[prev lesson](./Adding-Commands) | [next lesson](./Creating-Things)
 
 In this lesson we learn some basics about parsing the input of Commands. We will 
 also learn how to add, modify and extend Evennia's default commands. 
@@ -145,8 +145,8 @@ change (no code changed, only stuff in the database).
 ## Adding a Command to an object 
 
 The commands of a cmdset attached to an object with `obj.cmdset.add()` will by default be made available to that object
-but _also to those in the same location as that object_. If you did the [Building introduction](Building-Quickstart)
-you've seen an example of this with the "Red Button" object. The [Tutorial world](Tutorial-World-Introduction) 
+but _also to those in the same location as that object_. If you did the [Building introduction](./Building-Quickstart)
+you've seen an example of this with the "Red Button" object. The [Tutorial world](./Tutorial-World-Introduction) 
 also has many examples of objects with commands on them. 
 
 To show how this could work, let's put our 'hit' Command on our simple `sword` object from the previous section.
@@ -497,4 +497,4 @@ In this lesson we got into some more advanced string formatting - many of those 
 the future! We also made a functional sword. Finally we got into how to add to, extend and replace a default 
 command on ourselves.
 
-[prev lesson](Adding-Commands) | [next lesson](Creating-Things)
+[prev lesson](./Adding-Commands) | [next lesson](./Creating-Things)

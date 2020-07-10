@@ -80,7 +80,7 @@ Install the latest Evennia in a way that lets you edit the source
 
 This step will possibly take quite a while - we are downloading Evennia and are then installing it,
 building all of the requirements for Evennia to run. If you run into trouble on this step, please
-see [Troubleshooting](Installing-on-Android#troubleshooting).
+see [Troubleshooting](./Installing-on-Android#troubleshooting).
 
 You can go to the dir where Evennia is installed with `cd $VIRTUAL_ENV/src/evennia`. `git grep
 (something)` can be handy, as can `git diff`
@@ -88,7 +88,7 @@ You can go to the dir where Evennia is installed with `cd $VIRTUAL_ENV/src/evenn
 ### Final steps
 
 At this point, Evennia is installed on your phone! You can now continue with the original 
-[Setup Quickstart](Setup-Quickstart) instruction, we repeat them here for clarity.
+[Setup Quickstart](./Setup-Quickstart) instruction, we repeat them here for clarity.
 
 To start a new game:
 

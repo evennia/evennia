@@ -11,7 +11,7 @@ hard-coded to rely on the concept of the global 'tick'. Evennia has no such noti
 use tickers is very much up to the need of your game and which requirements you have. The "ticker
 recipe" is just one way of cranking the wheels.
 
-The most fine-grained way to manage the flow of time is of course to use [Scripts](Scripts). Many
+The most fine-grained way to manage the flow of time is of course to use [Scripts](./Scripts). Many
 types of operations (weather being the classic example) are however done on multiple objects in the
 same way at regular intervals, and for this, storing separate Scripts on each object is inefficient.
 The way to do this is to use a ticker with a "subscription model" - let objects sign up to be
@@ -98,7 +98,7 @@ The `callable` can be on any form as long as it accepts the arguments you give t
 
 > Note that everything you supply to the TickerHandler will need to be pickled at some point to be
 saved into the database. Most of the time the handler will correctly store things like database
-objects, but the same restrictions as for [Attributes](Attributes) apply to what the TickerHandler
+objects, but the same restrictions as for [Attributes](./Attributes) apply to what the TickerHandler
 may store.
 
 When testing, you can stop all tickers in the entire game with `tickerhandler.clear()`. You can also

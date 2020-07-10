@@ -5,8 +5,8 @@
 different game entities as Python classes, without having to modify the database schema for every
 new type.
 
-In Evennia the most important game entities, [Accounts](Accounts), [Objects](Objects),
-[Scripts](Scripts) and [Channels](Communications#Channels) are all Python classes inheriting, at
+In Evennia the most important game entities, [Accounts](./Accounts), [Objects](./Objects),
+[Scripts](./Scripts) and [Channels](./Communications#Channels) are all Python classes inheriting, at
 varying distance, from `evennia.typeclasses.models.TypedObject`.  In the documentation we refer to
 these objects as being "typeclassed" or even "being a typeclass".
 
@@ -55,7 +55,7 @@ important limitations. This is why we don't simply call them "classes" but "type
 
  1. A typeclass can save itself to the database. This means that some properties (actually not that
 many) on the class actually represents database fields and can only hold very specific data types.
-This is detailed [below](Typeclasses#about-typeclass-properties).
+This is detailed [below](./Typeclasses#about-typeclass-properties).
  1. Due to its connection to the database, the typeclass' name must be *unique* across the _entire_
 server namespace. That is, there must never be two same-named classes defined anywhere. So the below
 code would give an error (since `DefaultObject` is now globally found both in this module and in the
@@ -129,8 +129,8 @@ argument; this can both be the actual class or the python path to the typeclass 
 game directory. So if your `Furniture` typeclass sits in `mygame/typeclasses/furniture.py`, you
 could point to it as `typeclasses.furniture.Furniture`. Since Evennia will itself look in
 `mygame/typeclasses`, you can shorten this even further to just `furniture.Furniture`. The create-
-functions take a lot of extra keywords allowing you to set things like [Attributes](Attributes) and
-[Tags](Tags) all in one go. These keywords don't use the `db_*` prefix. This will also automatically
+functions take a lot of extra keywords allowing you to set things like [Attributes](./Attributes) and
+[Tags](./Tags) all in one go. These keywords don't use the `db_*` prefix. This will also automatically
 save the new instance to the database, so you don't need to call `save()` explicitly.
 
 ### About typeclass properties
@@ -178,22 +178,22 @@ returns the string form "#id".
 
 The typeclassed entity has several common handlers:
 
- - `tags` - the [TagHandler](Tags) that handles tagging. Use `tags.add()` , `tags.get()` etc.
- - `locks` - the [LockHandler](Locks) that manages access restrictions. Use `locks.add()`,
+ - `tags` - the [TagHandler](./Tags) that handles tagging. Use `tags.add()` , `tags.get()` etc.
+ - `locks` - the [LockHandler](./Locks) that manages access restrictions. Use `locks.add()`,
 `locks.get()` etc.
- - `attributes` - the [AttributeHandler](Attributes) that manages Attributes on the object. Use
+ - `attributes` - the [AttributeHandler](./Attributes) that manages Attributes on the object. Use
 `attributes.add()`
 etc.
  - `db` (DataBase) - a shortcut property to the AttributeHandler; allowing `obj.db.attrname = value`
- - `nattributes` - the [Non-persistent AttributeHandler](Attributes) for attributes not saved in the
+ - `nattributes` - the [Non-persistent AttributeHandler](./Attributes) for attributes not saved in the
 database.
  - `ndb` (NotDataBase) - a shortcut property to the Non-peristent AttributeHandler. Allows
 `obj.ndb.attrname = value`
 
 
 Each of the typeclassed entities then extend this list with their own properties. Go to the
-respective pages for [Objects](Objects), [Scripts](Scripts), [Accounts](Accounts) and
-[Channels](Communications) for more info. It's also recommended that you explore the available
+respective pages for [Objects](./Objects), [Scripts](./Scripts), [Accounts](./Accounts) and
+[Channels](./Communications) for more info. It's also recommended that you explore the available
 entities using [Evennia's flat API](../Evennia-API) to explore which properties and methods they have
 available.
 
@@ -207,7 +207,7 @@ are the `at_login` hook of Accounts and the `at_repeat` hook of Scripts.
 ### Querying for typeclasses
 
 Most of the time you search for objects in the database by using convenience methods like the
-`caller.search()` of [Commands](Commands) or the search functions like `evennia.search_objects`.
+`caller.search()` of [Commands](./Commands) or the search functions like `evennia.search_objects`.
 
 You can however also query for them directly using [Django's query
 language](https://docs.djangoproject.com/en/1.7/topics/db/queries/). This makes use of a _database
@@ -251,7 +251,7 @@ If you already have created instances of Typeclasses, you can modify the *Python
 due to how Python inheritance works your changes will automatically be applied to all children once
 you have reloaded the server.
 
-However, database-saved data, like `db_*` fields, [Attributes](Attributes), [Tags](Tags) etc, are
+However, database-saved data, like `db_*` fields, [Attributes](./Attributes), [Tags](./Tags) etc, are
 not themselves embedded into the class and will *not* be updated automatically. This you need to
 manage yourself, by searching for all relevant objects and updating or adding the data:
 
@@ -325,7 +325,7 @@ Technically, typeclasses are [Django proxy
 models](https://docs.djangoproject.com/en/1.7/topics/db/models/#proxy-models).  The only database
 models that are "real" in the typeclass system (that is, are represented by actual tables in the
 database) are `AccountDB`, `ObjectDB`, `ScriptDB` and `ChannelDB` (there are also
-[Attributes](Attributes) and [Tags](Tags) but they are not typeclasses themselves). All the
+[Attributes](./Attributes) and [Tags](./Tags) but they are not typeclasses themselves). All the
 subclasses of them are "proxies", extending them with Python code without actually modifying the
 database layout.
 

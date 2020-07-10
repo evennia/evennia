@@ -34,7 +34,7 @@ The client sends data to Evennia in two ways.
  the client may send commands based on a timer or some trigger.
 
 Exactly how the inputcommand looks when it travels from the client to Evennia
-depends on the [Protocol](Custom-Protocols) used:
+depends on the [Protocol](./Custom-Protocols) used:
  - Telnet: A string. If GMCP or MSDP OOB protocols are used, this string will
  be formatted in a special way, but it's still a raw string. If Telnet SSL is
  active, the string will be encrypted.
@@ -175,7 +175,7 @@ In the *ServerSessionhandler*, the keywords from the `msg` method are collated i
 This will intelligently convert different input to the same form. So `msg("Hello")` will end up as
 an outputcommand `("text", ("Hello",), {})`.
 
-This is also the point where [Inlinefuncs](TextTags#inline-functions) are parsed, depending on the
+This is also the point where [Inlinefuncs](./TextTags#inline-functions) are parsed, depending on the
 session to receive the data. Said data is pickled together with the Session id then sent over the
 AMP bridge.
 

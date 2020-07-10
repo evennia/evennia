@@ -2,10 +2,10 @@
 
 
 The *spawner* is a system for defining and creating individual objects from a base template called a
-*prototype*. It is only designed for use with in-game [Objects](Objects), not any other type of
+*prototype*. It is only designed for use with in-game [Objects](./Objects), not any other type of
 entity.
 
-The normal way to create a custom object in Evennia is to make a [Typeclass](Typeclasses). If you
+The normal way to create a custom object in Evennia is to make a [Typeclass](./Typeclasses). If you
 haven't read up on Typeclasses yet, think of them as normal Python classes that save to the database
 behind the scenes. Say you wanted to create a "Goblin" enemy. A common way to do this would be to
 first create a `Mobile` typeclass that holds everything common to mobiles in the game, like generic
@@ -105,12 +105,12 @@ instead.
 exist.
  - `destination` - a valid `#dbref`. Only used by exits.
  - `permissions` - list of permission strings, like `["Accounts", "may_use_red_door"]`
- - `locks` - a [lock-string](Locks) like `"edit:all();control:perm(Builder)"`
+ - `locks` - a [lock-string](./Locks) like `"edit:all();control:perm(Builder)"`
  - `aliases` - list of strings for use as aliases
- - `tags` - list [Tags](Tags). These are given as tuples `(tag, category, data)`.
- - `attrs` - list of [Attributes](Attributes). These are given as tuples `(attrname, value,
+ - `tags` - list [Tags](./Tags). These are given as tuples `(tag, category, data)`.
+ - `attrs` - list of [Attributes](./Attributes). These are given as tuples `(attrname, value,
 category, lockstring)`
- - Any other keywords are interpreted as non-category [Attributes](Attributes) and their values.
+ - Any other keywords are interpreted as non-category [Attributes](./Attributes) and their values.
 This is
    convenient for simple Attributes - use `attrs` for full control of Attributes.
 
@@ -119,7 +119,7 @@ Deprecated as of Evennia 0.8:
  - `ndb_<name>` - sets the value of a non-persistent attribute (`"ndb_"` is stripped from the name).
    This is simply not useful in a prototype and is deprecated.
  - `exec` - This accepts a code snippet or a list of code snippets to run. This should not be used -
-   use callables or [$protfuncs](Spawner-and-Prototypes#protfuncs) instead (see below).
+   use callables or [$protfuncs](./Spawner-and-Prototypes#protfuncs) instead (see below).
 
 ### Prototype values
 
@@ -233,7 +233,7 @@ A prototype can be defined and stored in two ways, either in the database or as 
 
 ### Database prototypes
 
-Stored as [Scripts](Scripts) in the database. These are sometimes referred to as *database-
+Stored as [Scripts](./Scripts) in the database. These are sometimes referred to as *database-
 prototypes* This is the only way for in-game builders to modify and add prototypes. They have the
 advantage of being easily modifiable and sharable between builders but you need to work with them
 using in-game tools.
