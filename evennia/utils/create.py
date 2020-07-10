@@ -1,25 +1,17 @@
 """
-This module gathers all the essential database-creation
-functions for the game engine's various object types.
+This module gathers all the essential database-creation functions for the game
+engine's various object types.
 
-Only objects created 'stand-alone' are in here, e.g. object Attributes
-are always created directly through their respective objects.
+Only objects created 'stand-alone' are in here. E.g. object Attributes are
+always created through their respective objects handlers.
 
-Each creation_* function also has an alias named for the entity being
-created, such as create_object() and object().  This is for
-consistency with the utils.search module and allows you to do the
-shorter "create.object()".
+Each `creation_*` function also has an alias named for the entity being created,
+such as create_object() and object(). This is for consistency with the
+utils.search module and allows you to do the shorter `create.object()`.
 
-The respective object managers hold more methods for manipulating and
-searching objects already existing in the database.
+The respective object managers hold more methods for manipulating and searching
+objects already existing in the database.
 
-Models covered:
- Objects
- Scripts
- Help
- Message
- Channel
- Accounts
 """
 from django.conf import settings
 from django.db import IntegrityError
@@ -81,21 +73,20 @@ def create_object(
     Keyword args:
         typeclass (class or str): Class or python path to a typeclass.
         key (str): Name of the new object. If not set, a name of
-            #dbref will be set.
+            `#dbref` will be set.
         home (Object or str): Obj or #dbref to use as the object's
             home location.
         permissions (list): A list of permission strings or tuples (permstring, category).
         locks (str): one or more lockstrings, separated by semicolons.
         aliases (list): A list of alternative keys or tuples (aliasstring, category).
         tags (list): List of tag keys or tuples (tagkey, category) or (tagkey, category, data).
-        destination (Object or str): Obj or #dbref to use as an Exit's
-            target.
+        destination (Object or str): Obj or #dbref to use as an Exit's target.
         report_to (Object): The object to return error messages to.
         nohome (bool): This allows the creation of objects without a
             default home location; only used when creating the default
             location itself or during unittests.
         attributes (list): Tuples on the form (key, value) or (key, value, category),
-           (key, value, lockstring) or (key, value, lockstring, default_access).
+            (key, value, lockstring) or (key, value, lockstring, default_access).
             to set as Attributes on the new object.
         nattributes (list): Non-persistent tuples on the form (key, value). Note that
             adding this rarely makes sense since this data will not survive a reload.

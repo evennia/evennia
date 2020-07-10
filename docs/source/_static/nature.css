@@ -364,6 +364,10 @@ div.code-block-caption {
 	font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
 }
 
+.sig-paren {
+  margin-left: 1px;
+}
+
 .property {
 	font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
 }

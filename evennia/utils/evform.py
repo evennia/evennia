@@ -91,28 +91,28 @@ Use as follows:
 
 This produces the following result:
 
-```
-.------------------------------------------------.
-|                                                |
-|  Name: Tom the        Player: Griatch          |
-|        Bouncer                                 |
-|                                                |
- >----------------------------------------------<
-|                                                |
-| Desc:  A sturdy       STR: 12     DEX: 10      |
-|        fellow         INT: 5      STA: 18      |
-|                       LUC: 10     MAG: 3       |
-|                                                |
- >----------------------------------------------<
-|          |                                     |
-| HP|MV|MP | Skill      |Value      |Exp         |
-| ~~+~~+~~ | ~~~~~~~~~~~+~~~~~~~~~~~+~~~~~~~~~~~ |
-| **|**|** | Shooting   |12         |550/1200    |
-|   |**|*  | Herbalism  |14         |990/1400    |
-|   |* |   | Smithing   |9          |205/900     |
-|          |                                     |
- ------------------------------------------------
-```
+::
+
+    .------------------------------------------------.
+    |                                                |
+    |  Name: Tom the        Player: Griatch          |
+    |        Bouncer                                 |
+    |                                                |
+     >----------------------------------------------<
+    |                                                |
+    | Desc:  A sturdy       STR: 12     DEX: 10      |
+    |        fellow         INT: 5      STA: 18      |
+    |                       LUC: 10     MAG: 3       |
+    |                                                |
+     >----------------------------------------------<
+    |          |                                     |
+    | HP|MV|MP | Skill      |Value      |Exp         |
+    | ~~+~~+~~ | ~~~~~~~~~~~+~~~~~~~~~~~+~~~~~~~~~~~ |
+    | **|**|** | Shooting   |12         |550/1200    |
+    |   |**|*  | Herbalism  |14         |990/1400    |
+    |   |* |   | Smithing   |9          |205/900     |
+    |          |                                     |
+     ------------------------------------------------
 
 The marked forms have been replaced with EvCells of text and with
 EvTables. The form can be updated by simply re-applying `form.map()`
@@ -126,6 +126,8 @@ template, so it will resize to fit (or crop text if the area is too
 small for it). If you try to fit a table into an area it cannot fit
 into (when including its borders and at least one line of text), the
 form will raise an error.
+
+----
 
 """
 
@@ -190,12 +192,12 @@ class EvForm(object):
 
         Keyword args:
             filename (str): Path to template file.
-            cells (dict): A dictionary mapping of {id:text}
-            tables (dict): A dictionary mapping of {id:EvTable}.
-            form (dict): A dictionary of {"FORMCHAR":char,
-                                          "TABLECHAR":char,
-                                          "FORM":templatestring}
-                    if this is given, filename is not read.
+            cells (dict): A dictionary mapping  `{id: text}`
+            tables (dict): A dictionary mapping  `{id: EvTable}`.
+            form (dict): A dictionary
+                `{"FORMCHAR":char, "TABLECHAR":char, "FORM":templatestring}`.
+                If this is given, filename is not read.
+
         Notes:
             Other kwargs are fed as options to the EvCells and EvTables
             (see `evtable.EvCell` and `evtable.EvTable` for more info).

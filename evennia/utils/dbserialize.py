@@ -591,7 +591,7 @@ def from_pickle(data, db_obj=None):
     object was removed (or changed in-place) in the database, None will be
     returned.
 
-    Args_
+    Args:
         data (any): Pickled data to unpickle.
         db_obj (Atribute, any): This is the model instance (normally
             an Attribute) that _Saver*-type iterables (_SaverList etc)

@@ -54,7 +54,7 @@ command entered by the user on the *previous* node (the command
 entered to get to this node). The node function code will only be
 executed once per node-visit and the system will accept nodes with
 both one or two arguments interchangeably. It also accepts nodes
-that takes **kwargs.
+that takes `**kwargs`.
 
 The menu tree itself is available on the caller as
 `caller.ndb._menutree`. This makes it a convenient place to store
@@ -65,38 +65,38 @@ The return values must be given in the above order, but each can be
 returned as None as well. If the options are returned as None, the
 menu is immediately exited and the default "look" command is called.
 
-    text (str, tuple or None): Text shown at this node. If a tuple, the
-        second element in the tuple is a help text to display at this
-        node when the user enters the menu help command there.
-    options (tuple, dict or None): If `None`, this exits the menu.
-        If a single dict, this is a single-option node. If a tuple,
-        it should be a tuple of option dictionaries. Option dicts have
-        the following keys:
-            - `key` (str or tuple, optional): What to enter to choose this option.
-                If a tuple, it must be a tuple of strings, where the first string is the
-                key which will be shown to the user and the others are aliases.
-                If unset, the options' number will be used. The special key `_default`
-                marks this option as the default fallback when no other option matches
-                the user input. There can only be one `_default` option per node. It
-                will not be displayed in the list.
-            - `desc` (str, optional): This describes what choosing the option will do.
-            - `goto` (str, tuple or callable): If string, should be the name of node to go to
-                when this option is selected. If a callable, it has the signature
-                `callable(caller[,raw_input][,**kwargs]). If a tuple, the first element
-                is the callable and the second is a dict with the **kwargs to pass to
-                the callable. Those kwargs will also be passed into the next node if possible.
-                Such a callable should return either a str or a (str, dict), where the
-                string is the name of the next node to go to and the dict is the new,
-                (possibly modified) kwarg to pass into the next node. If the callable returns
-                None or the empty string, the current node will be revisited.
-            - `exec` (str, callable or tuple, optional): This takes the same input as `goto` above
-                and runs before it. If given a node name, the node will be executed but will not
-                be considered the next node. If node/callback returns str or (str, dict), these will
-                replace the `goto` step (`goto` callbacks will not fire), with the string being the
-                next node name and the optional dict acting as the kwargs-input for the next node.
-                If an exec callable returns the empty string (only), the current node is re-run.
+- `text` (str, tuple or None): Text shown at this node. If a tuple, the
+   second element in the tuple is a help text to display at this
+   node when the user enters the menu help command there.
+- `options` (tuple, dict or None): If `None`, this exits the menu.
+  If a single dict, this is a single-option node. If a tuple,
+  it should be a tuple of option dictionaries. Option dicts have the following keys:
 
-If key is not given, the option will automatically be identified by
+  - `key` (str or tuple, optional): What to enter to choose this option.
+    If a tuple, it must be a tuple of strings, where the first string is the
+    key which will be shown to the user and the others are aliases.
+    If unset, the options' number will be used. The special key `_default`
+    marks this option as the default fallback when no other option matches
+    the user input. There can only be one `_default` option per node. It
+    will not be displayed in the list.
+  - `desc` (str, optional): This describes what choosing the option will do.
+  - `goto` (str, tuple or callable): If string, should be the name of node to go to
+    when this option is selected. If a callable, it has the signature
+    `callable(caller[,raw_input][,**kwargs])`. If a tuple, the first element
+    is the callable and the second is a dict with the `**kwargs` to pass to
+    the callable. Those kwargs will also be passed into the next node if possible.
+    Such a callable should return either a str or a (str, dict), where the
+    string is the name of the next node to go to and the dict is the new,
+    (possibly modified) kwarg to pass into the next node. If the callable returns
+    None or the empty string, the current node will be revisited.
+  - `exec` (str, callable or tuple, optional): This takes the same input as `goto` above
+    and runs before it. If given a node name, the node will be executed but will not
+    be considered the next node. If node/callback returns str or (str, dict), these will
+    replace the `goto` step (`goto` callbacks will not fire), with the string being the
+    next node name and the optional dict acting as the kwargs-input for the next node.
+    If an exec callable returns the empty string (only), the current node is re-run.
+
+If `key` is not given, the option will automatically be identified by
 its number 1..N.
 
 Example:
@@ -142,6 +142,8 @@ Example:
 When starting this menu with  `Menu(caller, "path.to.menu_module")`,
 the first node will look something like this:
 
+::
+
     This is a node text
     ______________________________________
 
@@ -158,9 +160,10 @@ The menu tree is exited either by using the in-menu quit command or by
 reaching a node without any options.
 
 
-For a menu demo, import CmdTestMenu from this module and add it to
-your default cmdset. Run it with this module, like `testmenu
-evennia.utils.evmenu`.
+For a menu demo, import `CmdTestMenu` from this module and add it to
+your default cmdset. Run it with this module, like `testmenu evennia.utils.evmenu`.
+
+----
 
 """
 
@@ -1155,7 +1158,7 @@ def list_node(option_generator, select=None, pagesize=10):
         select (callable or str, optional): Node to redirect a selection to. Its `**kwargs` will
             contain the `available_choices` list and `selection` will hold one of the elements in
             that list.  If a callable, it will be called as
-                select(caller, menuchoice, **kwargs) where menuchoice is the chosen option as a
+            `select(caller, menuchoice, **kwargs)` where menuchoice is the chosen option as a
             string and `available_choices` is a kwarg mapping the option keys to the choices
             offered by the option_generator. The callable whould return the name of the target node
             to goto after this selection (or None to repeat the list-node). Note that if this is not
@@ -1163,15 +1166,19 @@ def list_node(option_generator, select=None, pagesize=10):
         pagesize (int): How many options to show per page.
 
     Example:
-        @list_node(['foo', 'bar'], select)
+
+        ```python
+        list_node(['foo', 'bar'], select)
         def node_index(caller):
             text = "describing the list"
             return text, []
+        ```
 
     Notes:
-        All normal `goto` or `exec` callables returned from the decorated nodes will, if they accept
-        **kwargs, get a new kwarg 'available_choices' injected. These are the ordered list of named
-        options (descs) visible on the current node page.
+        All normal `goto` or `exec` callables returned from the decorated nodes
+        will, if they accept `**kwargs`, get a new kwarg 'available_choices'
+        injected. These are the ordered list of named options (descs) visible
+        on the current node page.
 
     """
 
@@ -1392,60 +1399,51 @@ class _Prompt(object):
 
 def get_input(caller, prompt, callback, session=None, *args, **kwargs):
     """
-    This is a helper function for easily request input from
-    the caller.
+    This is a helper function for easily request input from the caller.
 
     Args:
-        caller (Account or Object): The entity being asked
-            the question. This should usually be an object
-            controlled by a user.
-        prompt (str): This text will be shown to the user,
-            in order to let them know their input is needed.
+        caller (Account or Object): The entity being asked the question. This
+            should usually be an object controlled by a user.
+        prompt (str): This text will be shown to the user, in order to let them
+            know their input is needed.
         callback (callable): A function that will be called
-            when the user enters a reply. It must take three
-            arguments: the `caller`, the `prompt` text and the
-            `result` of the input given by the user. If the
-            callback doesn't return anything or return False,
-            the input prompt will be cleaned up and exited. If
-            returning True, the prompt will remain and continue to
-            accept input.
+            when the user enters a reply. It must take three arguments: the
+            `caller`, the `prompt` text and the `result` of the input given by
+            the user. If the callback doesn't return anything or return False,
+            the input prompt will be cleaned up and exited. If returning True,
+            the prompt will remain and continue to accept input.
         session (Session, optional): This allows to specify the
-            session to send the prompt to. It's usually only
-            needed if `caller` is an Account in multisession modes
-            greater than 2. The session is then updated by the
-            command and is available (for example in callbacks)
-            through `caller.ndb.getinput._session`.
-        *args, **kwargs (optional): Extra arguments will be
-            passed to the fall back function as a list 'args'
-            and all keyword arguments as a dictionary 'kwargs'.
-            To utilise *args and **kwargs, a value for the
-            session argument must be provided (None by default)
-            and the callback function must take *args and
-            **kwargs as arguments.
+            session to send the prompt to. It's usually only needed if `caller`
+            is an Account in multisession modes greater than 2. The session is
+            then updated by the command and is available (for example in
+            callbacks) through `caller.ndb.getinput._session`.
+        *args (any): Extra arguments to pass to `callback`.  To utilise `*args`
+            (and `**kwargs`), a value for the `session` argument must also be
+            provided.
+        **kwargs (any): Extra kwargs to pass to `callback`.
 
     Raises:
         RuntimeError: If the given callback is not callable.
 
     Notes:
-        The result value sent to the callback is raw and not
-        processed in any way. This means that you will get
-        the ending line return character from most types of
-        client inputs. So make sure to strip that before
-        doing a comparison.
+        The result value sent to the callback is raw and not processed in any
+        way. This means that you will get the ending line return character from
+        most types of client inputs. So make sure to strip that before doing a
+        comparison.
 
-        When the prompt is running, a temporary object
-        `caller.ndb._getinput` is stored; this will be removed
-        when the prompt finishes.
-        If you need the specific Session of the caller (which
-        may not be easy to get if caller is an account in higher
-        multisession modes), then it is available in the
-        callback through `caller.ndb._getinput._session`.
+        When the prompt is running, a temporary object `caller.ndb._getinput`
+        is stored; this will be removed when the prompt finishes.
 
-        Chaining get_input functions will result in the caller
-        stacking ever more instances of InputCmdSets. Whilst
-        they will all be cleared on concluding the get_input
-        chain, EvMenu should be considered for anything beyond
-        a single question.
+        If you need the specific Session of the caller (which may not be easy
+        to get if caller is an account in higher multisession modes), then it
+        is available in the callback through `caller.ndb._getinput._session`.
+        This is why the `session` is required as input.
+
+        It's not recommended to 'chain' `get_input` into a sequence of
+        questions. This will result in the caller stacking ever more instances
+        of InputCmdSets. While they will all be cleared on concluding the
+        get_input chain, EvMenu should be considered for anything beyond a
+        single question.
 
     """
     if not callable(callback):

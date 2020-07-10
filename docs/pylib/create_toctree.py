@@ -185,6 +185,8 @@ def create_toctree():
     with open(_TOC_FILE, "w") as fil:
         fil.write("# Toc\n")
 
+        fil.write("- [API root](api/evennia-api.rst)")
+
         for ref in sorted(toc_map.values()):
 
             if ref == "toc":
@@ -192,6 +194,7 @@ def create_toctree():
 
             linkname = ref.replace("-", " ")
             fil.write(f"\n- [{linkname}]({ref})")
+
 
         # we add a self-reference so the toc itself is also a part of a toctree
         fil.write("\n\n```toctree::\n  :hidden:\n\n  toc\n```")

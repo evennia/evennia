@@ -250,21 +250,30 @@ class BatchCommandProcessor(object):
 
     def parse_file(self, pythonpath):
         """
-        This parses the lines of a batchfile according to the following
-        rules:
-          1) # at the beginning of a line marks the end of the command before
+        This parses the lines of a batch-command-file.
+
+        Args:
+            pythonpath (str): The dot-python path to the file.
+
+        Returns:
+            list: A list of all parsed commands with arguments, as strings.
+
+        Notes:
+            Parsing follows the following rules:
+
+            1. A `#` at the beginning of a line marks the end of the command before
                it. It is also a comment and any number of # can exist on
                subsequent lines (but not inside comments).
-          2) #INSERT at the beginning of a line imports another
-             batch-cmd file file and pastes it into the batch file as if
-             it was written there.
-          3) Commands are placed alone at the beginning of a line and their
-             arguments are considered to be everything following (on any
-             number of lines) until the next comment line beginning with #.
-          4) Newlines are ignored in command definitions
-          5) A completely empty line in a command line definition is condered
-             a newline (so two empty lines is a paragraph).
-          6) Excess spaces and indents inside arguments are stripped.
+            2. #INSERT at the beginning of a line imports another
+               batch-cmd file file and pastes it into the batch file as if
+               it was written there.
+            3. Commands are placed alone at the beginning of a line and their
+               arguments are considered to be everything following (on any
+               number of lines) until the next comment line beginning with #.
+            4. Newlines are ignored in command definitions
+            5. A completely empty line in a command line definition is condered
+               a newline (so two empty lines is a paragraph).
+            6. Excess spaces and indents inside arguments are stripped.
 
         """
 
@@ -313,21 +322,23 @@ class BatchCodeProcessor(object):
 
     def parse_file(self, pythonpath):
         """
-        This parses the lines of a batchfile according to the following
-        rules:
+        This parses the lines of a batch-code file
 
         Args:
             pythonpath (str): The dot-python path to the file.
 
         Returns:
-            codeblocks (list): A list of all #CODE blocks, each with
-                prepended #HEADER data. If no #CODE blocks were found,
-                this will be a list of one element.
+            list: A list of all `#CODE` blocks, each with
+                prepended `#HEADER` block data. If no `#CODE`
+                blocks were found, this will be a list of one element
+                containing all code in the file (so a normal Python file).
 
         Notes:
+            Parsing is done according to the following rules:
+
             1. Code before a #CODE/HEADER block are considered part of
-                the first code/header block or is the ONLY block if no
-                #CODE/HEADER blocks are defined.
+               the first code/header block or is the ONLY block if no
+               `#CODE/HEADER` blocks are defined.
             2. Lines starting with #HEADER starts a header block (ends other blocks)
             3. Lines starting with #CODE begins a code block (ends other blocks)
             4. Lines starting with #INSERT are on form #INSERT filename. Code from
@@ -335,6 +346,7 @@ class BatchCodeProcessor(object):
                being inserted at the point of the #INSERT.
             5. Code after the last block is considered part of the last header/code
                block
+
 
         """
 

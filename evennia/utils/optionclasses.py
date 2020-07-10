@@ -109,9 +109,9 @@ class BaseOption(object):
 
     def save(self, **kwargs):
         """
-        Stores the current value using .handler.save_handler(self.key, value, **kwargs)
-        where kwargs are a combination of those passed into this function and the
-        ones specified by the OptionHandler.
+        Stores the current value using `.handler.save_handler(self.key, value, **kwargs)`
+        where `kwargs` are a combination of those passed into this function and
+        the ones specified by the `OptionHandler`.
 
         Keyword args:
             any (any): Not used by default. These are passed in from self.set

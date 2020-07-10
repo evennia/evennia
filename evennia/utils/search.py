@@ -36,7 +36,7 @@ __all__ = (
     "search_message",
     "search_channel",
     "search_help_entry",
-    "search_object_tag",
+    "search_tag",
     "search_script_tag",
     "search_account_tag",
     "search_channel_tag",
