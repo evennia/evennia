@@ -1,23 +1,21 @@
 """
 This module contains the core methods for the Batch-command- and
-Batch-code-processors respectively. In short, these are two different
-ways to build a game world using a normal text-editor without having
-to do so 'on the fly' in-game. They also serve as an automatic backup
-so you can quickly recreate a world also after a server reset. The
-functions in this module is meant to form the backbone of a system
-called and accessed through game commands.
+Batch-code-processors respectively. In short, these are two different ways to
+build a game world using a normal text-editor without having to do so 'on the
+fly' in-game. They also serve as an automatic backup so you can quickly
+recreate a world also after a server reset. The functions in this module is
+meant to form the backbone of a system called and accessed through game
+commands.
 
-The Batch-command processor is the simplest. It simply runs a list of
-in-game commands in sequence by reading them from a text file. The
-advantage of this is that the builder only need to remember the normal
-in-game commands. They are also executing with full permission checks
-etc, making it relatively safe for builders to use. The drawback is
-that in-game there is really a builder-character walking around
-building things, and it can be important to create rooms and objects
-in the right order, so the character can move between them. Also
-objects that affects players (such as mobs, dark rooms etc) will
-affect the building character too, requiring extra care to turn
-off/on.
+The Batch-command processor is the simplest. It simply runs a list of in-game
+commands in sequence by reading them from a text file. The advantage of this is
+that the builder only need to remember the normal in-game commands. They are
+also executing with full permission checks etc, making it relatively safe for
+builders to use. The drawback is that in-game there is really a
+builder-character walking around building things, and it can be important to
+create rooms and objects in the right order, so the character can move between
+them. Also objects that affects players (such as mobs, dark rooms etc) will
+affect the building character too, requiring extra care to turn off/on.
 
 The Batch-code processor is a more advanced system that accepts full
 Python code, executing in chunks. The advantage of this is much more
@@ -31,7 +29,7 @@ etc. You also need to know Python and Evennia's API. Hence it's
 recommended that the batch-code processor is limited only to
 superusers or highly trusted staff.
 
-Batch-command processor file syntax
+# Batch-command processor file syntax
 
 The batch-command processor accepts 'batchcommand files' e.g
 `batch.ev`, containing a sequence of valid Evennia commands in a
@@ -41,64 +39,64 @@ had been run at the game prompt.
 Each Evennia command must be delimited by a line comment to mark its
 end.
 
-```
-#INSERT path.batchcmdfile - this as the first entry on a line will
-      import and run a batch.ev file in this position, as if it was
-      written in this file.
-```
+::
+
+    look
+    # delimiting comment
+    create/drop box
+    # another required comment
+
+One can also inject another batchcmdfile:
+
+::
+
+    #INSERT path.batchcmdfile
 
 This way entire game worlds can be created and planned offline; it is
 especially useful in order to create long room descriptions where a
 real offline text editor is often much better than any online text
 editor or prompt.
 
-Example of batch.ev file:
-----------------------------
+## Example of batch.ev file:
 
-```
-# batch file
-# all lines starting with # are comments; they also indicate
-# that a command definition is over.
+::
 
-@create box
+    # batch file
+    # all lines starting with # are comments; they also indicate
+    # that a command definition is over.
 
-# this comment ends the @create command.
+    create box
 
-@set box/desc = A large box.
+    # this comment ends the @create command.
 
-Inside are some scattered piles of clothing.
+    set box/desc = A large box.
+
+    Inside are some scattered piles of clothing.
 
 
-It seems the bottom of the box is a bit loose.
+    It seems the bottom of the box is a bit loose.
 
-# Again, this comment indicates the @set command is over. Note how
-# the description could be freely added. Excess whitespace on a line
-# is ignored.  An empty line in the command definition is parsed as a \n
-# (so two empty lines becomes a new paragraph).
+    # Again, this comment indicates the @set command is over. Note how
+    # the description could be freely added. Excess whitespace on a line
+    # is ignored.  An empty line in the command definition is parsed as a \n
+    # (so two empty lines becomes a new paragraph).
 
-@teleport #221
+    teleport #221
 
-# (Assuming #221 is a warehouse or something.)
-# (remember, this comment ends the @teleport command! Don'f forget it)
+    # (Assuming #221 is a warehouse or something.)
+    # (remember, this comment ends the @teleport command! Don'f forget it)
 
-# Example of importing another file at this point.
-#IMPORT examples.batch
+    # Example of importing another file at this point.
+    #IMPORT examples.batch
 
-@drop box
+    drop box
 
-# Done, the box is in the warehouse! (this last comment is not necessary to
-# close the @drop command since it's the end of the file)
-```
-
--------------------------
+    # Done, the box is in the warehouse! (this last comment is not necessary to
+    # close the drop command since it's the end of the file)
 
 An example batch file is `contrib/examples/batch_example.ev`.
 
-
-==========================================================================
-
-
-Batch-code processor file syntax
+# Batch-code processor file syntax
 
 The Batch-code processor accepts full python modules (e.g. `batch.py`)
 that looks identical to normal Python files. The difference from
@@ -113,62 +111,61 @@ the code and re-run sections of it easily during development.
 
 Code blocks are marked by commented tokens alone on a line:
 
-#HEADER - This denotes code that should be pasted at the top of all
-         other code. Multiple HEADER statements - regardless of where
-         it exists in the file - is the same as one big block.
-         Observe that changes to variables made in one block is not
-         preserved between blocks!
-#CODE - This designates a code block that will be executed like a
-       stand-alone piece of code together with any HEADER(s)
-       defined. It is mainly used as a way to mark stop points for
-       the interactive mode of the batchprocessor. If no CODE block
-       is defined in the module, the entire module (including HEADERS)
-       is assumed to be a CODE block.
-#INSERT path.filename - This imports another batch_code.py file and
-      runs it in the given position. The inserted file will retain
-      its own HEADERs which will not be mixed with the headers of
-      this file.
+- `#HEADER` - This denotes code that should be pasted at the top of all
+  other code. Multiple HEADER statements - regardless of where
+  it exists in the file - is the same as one big block.
+  Observe that changes to variables made in one block is not
+  preserved between blocks!
+- `#CODE` - This designates a code block that will be executed like a
+  stand-alone piece of code together with any HEADER(s)
+  defined. It is mainly used as a way to mark stop points for
+  the interactive mode of the batchprocessor. If no CODE block
+  is defined in the module, the entire module (including HEADERS)
+  is assumed to be a CODE block.
+- `#INSERT path.filename` - This imports another batch_code.py file and
+  runs it in the given position. The inserted file will retain
+  its own HEADERs which will not be mixed with the headers of
+  this file.
 
 Importing works as normal. The following variables are automatically
 made available in the script namespace.
 
-- `caller` -  The object executing the batchscript
+- `caller` - The object executing the batchscript
 - `DEBUG` - This is a boolean marking if the batchprocessor is running
             in debug mode. It can be checked to e.g. delete created objects
             when running a CODE block multiple times during testing.
             (avoids creating a slew of same-named db objects)
 
+## Example batch.py file
 
-Example batch.py file
------------------------------------
+::
 
-```
-#HEADER
+    #HEADER
 
-from django.conf import settings
-from evennia.utils import create
-from types import basetypes
+    from django.conf import settings
+    from evennia.utils import create
+    from types import basetypes
 
-GOLD = 10
+    GOLD = 10
 
-#CODE
+    #CODE
 
-obj = create.create_object(basetypes.Object)
-obj2 = create.create_object(basetypes.Object)
-obj.location = caller.location
-obj.db.gold = GOLD
-caller.msg("The object was created!")
+    obj = create.create_object(basetypes.Object)
+    obj2 = create.create_object(basetypes.Object)
+    obj.location = caller.location
+    obj.db.gold = GOLD
+    caller.msg("The object was created!")
 
-if DEBUG:
-    obj.delete()
-    obj2.delete()
+    if DEBUG:
+        obj.delete()
+        obj2.delete()
 
-#INSERT another_batch_file
+    #INSERT another_batch_file
 
-#CODE
+    #CODE
 
-script = create.create_script()
-```
+    script = create.create_script()
+
 """
 import re
 import codecs

@@ -17,4 +17,3 @@ Modules
    evennia.comms.comms
    evennia.comms.managers
    evennia.comms.models
-   evennia.comms.tests

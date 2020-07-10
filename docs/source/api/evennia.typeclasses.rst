@@ -17,4 +17,3 @@ Modules
    evennia.typeclasses.managers
    evennia.typeclasses.models
    evennia.typeclasses.tags
-   evennia.typeclasses.tests

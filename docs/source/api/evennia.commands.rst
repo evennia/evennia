@@ -17,7 +17,6 @@ Modules
    evennia.commands.cmdset
    evennia.commands.cmdsethandler
    evennia.commands.command
-   evennia.commands.tests
 
 Packages/folders
 ----------------

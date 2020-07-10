@@ -16,4 +16,3 @@ Modules
    evennia.prototypes.protfuncs
    evennia.prototypes.prototypes
    evennia.prototypes.spawner
-   evennia.prototypes.tests

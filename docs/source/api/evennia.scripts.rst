@@ -19,5 +19,4 @@ Modules
    evennia.scripts.scripthandler
    evennia.scripts.scripts
    evennia.scripts.taskhandler
-   evennia.scripts.tests
    evennia.scripts.tickerhandler

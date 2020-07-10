@@ -4,12 +4,12 @@ sessions of users connecting to the server.
 
 There are two similar but separate stores of sessions:
 
-  - ServerSessionHandler - this stores generic game sessions
-         for the game. These sessions has no knowledge about
-         how they are connected to the world.
-  - PortalSessionHandler - this stores sessions created by
-         twisted protocols. These are dumb connectors that
-         handle network communication but holds no game info.
+- ServerSessionHandler - this stores generic game sessions
+     for the game. These sessions has no knowledge about
+     how they are connected to the world.
+- PortalSessionHandler - this stores sessions created by
+     twisted protocols. These are dumb connectors that
+     handle network communication but holds no game info.
 
 """
 import time
@@ -156,21 +156,20 @@ class SessionHandler(dict):
 
         Args:
             session (Session): The relevant session instance.
-            kwargs (dict) Each keyword represents a
-                send-instruction, with the keyword itself being the name
+            kwargs (dict) Each keyword represents a send-instruction, with the keyword itself being the name
                 of the instruction (like "text"). Suitable values for each
                 keyword are:
-                    - arg                ->  [[arg], {}]
-                    - [args]             ->  [[args], {}]
-                    - {kwargs}           ->  [[], {kwargs}]
-                    - [args, {kwargs}]   ->  [[arg], {kwargs}]
-                    - [[args], {kwargs}] ->  [[args], {kwargs}]
+                - arg                ->  [[arg], {}]
+                - [args]             ->  [[args], {}]
+                - {kwargs}           ->  [[], {kwargs}]
+                - [args, {kwargs}]   ->  [[arg], {kwargs}]
+                - [[args], {kwargs}] ->  [[args], {kwargs}]
 
         Returns:
             kwargs (dict): A cleaned dictionary of cmdname:[[args],{kwargs}] pairs,
-                where the keys, args and kwargs have all been converted to
-                send-safe entities (strings or numbers), and inlinefuncs have been
-                applied.
+            where the keys, args and kwargs have all been converted to
+            send-safe entities (strings or numbers), and inlinefuncs have been
+            applied.
 
         """
         options = kwargs.pop("options", None) or {}
@@ -809,9 +808,9 @@ class ServerSessionHandler(SessionHandler):
 
     def call_inputfuncs(self, session, **kwargs):
         """
-        Split incoming data into its inputfunc counterparts.
-        This should be called by the serversession.data_in
-        as sessionhandler.call_inputfunc(self, **kwargs).
+        Split incoming data into its inputfunc counterparts. This should be
+        called by the `serversession.data_in` as
+        `sessionhandler.call_inputfunc(self, **kwargs)`.
 
         We also intercept OOB communication here.
 
@@ -819,8 +818,8 @@ class ServerSessionHandler(SessionHandler):
             sessions (Session): Session.
 
         Keyword args:
-            kwargs (any): Incoming data from protocol on
-                the form `{"commandname": ((args), {kwargs}),...}`
+            any (tuple): Incoming data from protocol, each
+                on the form `commandname=((args), {kwargs})`.
 
         """
 
