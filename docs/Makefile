@@ -1,5 +1,8 @@
 # Makefile to control Evennia documentation building.
 # Most common commands are `make help`, `make quick` and `make local`.
+SOURCEDIR     = source
+BUILDDIR      = build
+AUTODOCDIR = $(SOURCEDIR)/api
 
 # You can set these variables from the command line, and also
 # from the environment for the first two.
@@ -7,12 +10,9 @@ SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
 SPHINXMULTIVERSION ?= sphinx-multiversion
 SPHINXAPIDOC ?= sphinx-apidoc
-SPHINXAPIDOCOPTS = --tocfile evennia-api  --module-first --force --separate
+SPHINXAPIDOCOPTS = --tocfile evennia-api  --module-first --force -d 6 --separate --templatedir=$(SOURCEDIR)/_templates/
 SPHINXAPIDOCENV = members,undoc-members,show-inheritance
-SPHINXAPIDOCEXCLUDE = ../*/migrations/* ../evennia/game_template/*
-SOURCEDIR     = source
-BUILDDIR      = build
-AUTODOCDIR = $(SOURCEDIR)/api
+SPHINXAPIDOCEXCLUDE = ../*/migrations/* ../evennia/game_template/* ../*/*/tests/*
 
 EVDIR ?= $(realpath ../evennia)
 EVGAMEDIR ?= $(realpath ../../gamedir)

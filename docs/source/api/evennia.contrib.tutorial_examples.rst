@@ -6,11 +6,11 @@ evennia.contrib.tutorial\_examples
    :undoc-members:
    :show-inheritance:
 
-Submodules
-----------
+Modules
+-------
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 6
 
    evennia.contrib.tutorial_examples.bodyfunctions
    evennia.contrib.tutorial_examples.cmdset_red_button

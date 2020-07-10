@@ -6,11 +6,11 @@ evennia.server.profiling
    :undoc-members:
    :show-inheritance:
 
-Submodules
-----------
+Modules
+-------
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 6
 
    evennia.server.profiling.dummyrunner
    evennia.server.profiling.dummyrunner_settings

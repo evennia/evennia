@@ -6,11 +6,11 @@ evennia.contrib.tutorial\_world
    :undoc-members:
    :show-inheritance:
 
-Submodules
-----------
+Modules
+-------
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 6
 
    evennia.contrib.tutorial_world.mob
    evennia.contrib.tutorial_world.objects

@@ -6,11 +6,11 @@ evennia.comms
    :undoc-members:
    :show-inheritance:
 
-Submodules
-----------
+Modules
+-------
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 6
 
    evennia.comms.admin
    evennia.comms.channelhandler

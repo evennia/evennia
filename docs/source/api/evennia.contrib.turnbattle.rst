@@ -6,11 +6,11 @@ evennia.contrib.turnbattle
    :undoc-members:
    :show-inheritance:
 
-Submodules
-----------
+Modules
+-------
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 6
 
    evennia.contrib.turnbattle.tb_basic
    evennia.contrib.turnbattle.tb_equip

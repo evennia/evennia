@@ -278,17 +278,18 @@ class SshProtocol(Manhole, _BASE_SESSION_CLASS):
             text (str): The first argument is always the text string to send. No other arguments
                 are considered.
         Keyword args:
-            options (dict): Send-option flags
-               - mxp: Enforce MXP link support.
-               - ansi: Enforce no ANSI colors.
-               - xterm256: Enforce xterm256 colors, regardless of TTYPE setting.
-               - nocolor: Strip all colors.
-               - raw: Pass string through without any ansi processing
-                    (i.e. include Evennia ansi markers but do not
-                    convert them into ansi tokens)
-               - echo: Turn on/off line echo on the client. Turn
-                    off line echo for client, for example for password.
-                    Note that it must be actively turned back on again!
+            options (dict): Send-option flags (booleans)
+
+                - mxp: enforce mxp link support.
+                - ansi: enforce no ansi colors.
+                - xterm256: enforce xterm256 colors, regardless of ttype setting.
+                - nocolor: strip all colors.
+                - raw: pass string through without any ansi processing
+                  (i.e. include evennia ansi markers but do not
+                  convert them into ansi tokens)
+                - echo: turn on/off line echo on the client. turn
+                  off line echo for client, for example for password.
+                  note that it must be actively turned back on again!
 
         """
         # print "telnet.send_text", args,kwargs  # DEBUG
