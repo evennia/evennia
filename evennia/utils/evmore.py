@@ -2,29 +2,35 @@
 """
 EvMore - pager mechanism
 
-This is a pager for displaying long texts and allows stepping up and
-down in the text (the name comes from the traditional 'more' unix
-command).
+This is a pager for displaying long texts and allows stepping up and down in
+the text (the name comes from the traditional 'more' unix command).
 
 To use, simply pass the text through the EvMore object:
 
-    from evennia.utils.evmore import EvMore
+```python
+from evennia.utils.evmore import EvMore
 
-    text = some_long_text_output()
-    EvMore(caller, text, always_page=False, session=None, justify_kwargs=None, **kwargs)
+text = some_long_text_output()
+EvMore(caller, text, always_page=False, session=None, justify_kwargs=None, **kwargs)
+```
 
-One can also use the convenience function msg from this module:
+One can also use the convenience function `msg` from this module to avoid
+having to set up the `EvMenu` object manually:
 
+```python
     from evennia.utils import evmore
 
     text = some_long_text_output()
     evmore.msg(caller, text, always_page=False, session=None, justify_kwargs=None, **kwargs)
+```
 
-Where always_page decides if the pager is used also if the text is not
-long enough to need to scroll, session is used to determine which session to relay to
-and justify_kwargs are kwargs to pass to utils.utils.justify in order to change the formatting
-of the text. The remaining **kwargs will be passed on to the
-caller.msg() construct every time the page is updated.
+The `always_page` argument  decides if the pager is used also if the text is not long
+enough to need to scroll, `session` is used to determine which session to relay
+to and `justify_kwargs` are kwargs to pass to utils.utils.justify in order to
+change the formatting of the text. The remaining `**kwargs` will be passed on to
+the `caller.msg()` construct every time the page is updated.
+
+----
 
 """
 from django.conf import settings
@@ -32,7 +38,7 @@ from django.db.models.query import QuerySet
 from evennia import Command, CmdSet
 from evennia.commands import cmdhandler
 from evennia.utils.ansi import ANSIString
-from evennia.utils.utils import make_iter, inherits_from, justify
+from evennia.utils.utils import make_iter, inherits_from, justify, dedent
 
 _CMD_NOMATCH = cmdhandler.CMD_NOMATCH
 _CMD_NOINPUT = cmdhandler.CMD_NOINPUT
@@ -146,20 +152,21 @@ class EvMore(object):
     ):
 
         """
-        Initialization of the text handler.
+        EvMore pager
 
         Args:
             caller (Object or Account): Entity reading the text.
             text (str, EvTable or iterator): The text or data to put under paging.
-                - If a string, paginage normally. If this text contains
-                   one or more `\f` format symbol, automatic pagination and justification
-                   are force-disabled and page-breaks will only happen after each `\f`.
+
+                - If a string, paginate normally. If this text contains one or more `\\\\f` format
+                  symbols, automatic pagination and justification are force-disabled and page-breaks
+                  will only happen after each `\\\\f`.
                 - If `EvTable`, the EvTable will be paginated with the same
-                   setting on each page if it is too long. The table
-                   decorations will be considered in the size of the page.
+                  setting on each page if it is too long. The table
+                  decorations will be considered in the size of the page.
                 - Otherwise `text` is converted to an iterator, where each step is
-                   expected to be a line in the final display. Each line
-                   will be run through `iter_callable`.
+                  expected to be a line in the final display. Each line
+                  will be run through `iter_callable`.
             always_page (bool, optional): If `False`, the
                 pager will only kick in if `text` is too big
                 to fit the screen.
@@ -187,6 +194,8 @@ class EvMore(object):
             kwargs (any, optional): These will be passed on to the `caller.msg` method.
 
         Examples:
+
+            ```python
             super_long_text = " ... "
             EvMore(caller, super_long_text)
 
@@ -199,6 +208,7 @@ class EvMore(object):
             EvMore(caller, multi_page_table, use_evtable=True,
                    evtable_args=("Header1", "Header2"),
                    evtable_kwargs={"align": "r", "border": "tablecols"})
+            ```
 
         """
         self._caller = caller
@@ -305,9 +315,13 @@ class EvMore(object):
 
     def init_f_str(self, text):
         """
-        The input contains \f markers. We use \f to indicate the user wants to
+        The input contains `\\f` markers. We use `\\f` to indicate the user wants to
         enforce their line breaks on their own. If so, we do no automatic
         line-breaking/justification at all.
+
+        Args:
+            text (str): The string to format with f-markers.
+
         """
         self._data = text.split("\f")
         self._npages = len(self._data)
@@ -443,39 +457,6 @@ def msg(
 ):
     """
     EvMore-supported version of msg, mimicking the normal msg method.
-
-    Args:
-        caller (Object or Account): Entity reading the text.
-        text (str, EvTable or iterator): The text or data to put under paging.
-            - If a string, paginage normally. If this text contains
-              one or more `\f` format symbol, automatic pagination is disabled
-              and page-breaks will only happen after each `\f`.
-            - If `EvTable`, the EvTable will be paginated with the same
-                setting on each page if it is too long. The table
-                decorations will be considered in the size of the page.
-            - Otherwise `text` is converted to an iterator, where each step is
-              is expected to be a line in the final display, and each line
-              will be run through repr().
-        always_page (bool, optional): If `False`, the
-            pager will only kick in if `text` is too big
-            to fit the screen.
-        session (Session, optional): If given, this session will be used
-            to determine the screen width and will receive all output.
-        justify (bool, optional): If set, justify long lines in output. Disable for
-            fixed-format output, like tables.
-        justify_kwargs (dict, bool or None, optional): If given, this should
-            be valid keyword arguments to the utils.justify() function. If False,
-            no justification will be done.
-        exit_on_lastpage (bool, optional): Immediately exit pager when reaching the last page.
-        use_evtable (bool, optional): If True, each page will be rendered as an
-            EvTable. For this to work, `text` must be an iterable, where each element
-            is the table (list of list) to render on that page.
-        evtable_args (tuple, optional): The args to use for EvTable on each page.
-        evtable_kwargs (dict, optional): The kwargs to use for EvTable on each
-            page (except `table`, which is supplied by EvMore per-page).
-        kwargs (any, optional): These will be passed on
-            to the `caller.msg` method.
-
     """
     EvMore(
         caller,
@@ -487,3 +468,6 @@ def msg(
         exit_on_lastpage=exit_on_lastpage,
         **kwargs,
     )
+
+
+msg.__doc__ += dedent(EvMore.__init__.__doc__)

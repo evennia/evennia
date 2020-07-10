@@ -1,7 +1,8 @@
 """
-This is an advanced ASCII table creator. It was inspired by
-[prettytable](https://code.google.com/p/prettytable/) but shares no
-code.
+This is an advanced ASCII table creator. It was inspired by Prettytable
+(https://code.google.com/p/prettytable/) but shares no code and is considerably
+more advanced, supporting auto-balancing of incomplete tables and ANSI colors among
+other things.
 
 Example usage:
 
@@ -17,19 +18,19 @@ Example usage:
 
 Result:
 
-```
-+----------------------+----------+---+--------------------------+
-|       Heading1       | Heading2 |   |                          |
-+~~~~~~~~~~~~~~~~~~~~~~+~~~~~~~~~~+~~~+~~~~~~~~~~~~~~~~~~~~~~~~~~+
-|           1          |     4    | 7 |     This is long data    |
-+----------------------+----------+---+--------------------------+
-|           2          |     5    | 8 | This is even longer data |
-+----------------------+----------+---+--------------------------+
-|           3          |     6    | 9 |                          |
-+----------------------+----------+---+--------------------------+
-| This is a single row |          |   |                          |
-+----------------------+----------+---+--------------------------+
-```
+::
+
+    +----------------------+----------+---+--------------------------+
+    |       Heading1       | Heading2 |   |                          |
+    +~~~~~~~~~~~~~~~~~~~~~~+~~~~~~~~~~+~~~+~~~~~~~~~~~~~~~~~~~~~~~~~~+
+    |           1          |     4    | 7 |     This is long data    |
+    +----------------------+----------+---+--------------------------+
+    |           2          |     5    | 8 | This is even longer data |
+    +----------------------+----------+---+--------------------------+
+    |           3          |     6    | 9 |                          |
+    +----------------------+----------+---+--------------------------+
+    | This is a single row |          |   |                          |
+    +----------------------+----------+---+--------------------------+
 
 As seen, the table will automatically expand with empty cells to make
 the table symmetric. Tables can be restricted to a given width:
@@ -42,25 +43,26 @@ the table symmetric. Tables can be restricted to a given width:
 
 This yields the following result:
 
-```
-+-----------+------------+-----------+-----------+
-| Heading1  | Heading2   |           |           |
-+~~~~~~~~~~~+~~~~~~~~~~~~+~~~~~~~~~~~+~~~~~~~~~~~+
-| 1         | 4          | 7         | This is   |
-|           |            |           | long data |
-+-----------+------------+-----------+-----------+
-|           |            |           | This is   |
-| 2         | 5          | 8         | even      |
-|           |            |           | longer    |
-|           |            |           | data      |
-+-----------+------------+-----------+-----------+
-| 3         | 6          | 9         |           |
-+-----------+------------+-----------+-----------+
-| This is a |            |           |           |
-|  single   |            |           |           |
-| row       |            |           |           |
-+-----------+------------+-----------+-----------+
-```
+::
+
+    +-----------+------------+-----------+-----------+
+    | Heading1  | Heading2   |           |           |
+    +~~~~~~~~~~~+~~~~~~~~~~~~+~~~~~~~~~~~+~~~~~~~~~~~+
+    | 1         | 4          | 7         | This is   |
+    |           |            |           | long data |
+    +-----------+------------+-----------+-----------+
+    |           |            |           | This is   |
+    | 2         | 5          | 8         | even      |
+    |           |            |           | longer    |
+    |           |            |           | data      |
+    +-----------+------------+-----------+-----------+
+    | 3         | 6          | 9         |           |
+    +-----------+------------+-----------+-----------+
+    | This is a |            |           |           |
+    |  single   |            |           |           |
+    | row       |            |           |           |
+    +-----------+------------+-----------+-----------+
+
 
 Table-columns can be individually formatted. Note that if an
 individual column is set with a specific width, table auto-balancing
@@ -75,22 +77,22 @@ table.reformat_column(3, width=30, align="r")
 print table
 ```
 
-```
-+-----------+-------+-----+-----------------------------+---------+
-| Heading1  | Headi |     |                             |         |
-|           | ng2   |     |                             |         |
-+~~~~~~~~~~~+~~~~~~~+~~~~~+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+~~~~~~~~~+
-| 1         | 4     | 7   |           This is long data | Test1   |
-+-----------+-------+-----+-----------------------------+---------+
-| 2         | 5     | 8   |    This is even longer data | Test3   |
-+-----------+-------+-----+-----------------------------+---------+
-| 3         | 6     | 9   |                             | Test4   |
-+-----------+-------+-----+-----------------------------+---------+
-| This is a |       |     |                             |         |
-|  single   |       |     |                             |         |
-| row       |       |     |                             |         |
-+-----------+-------+-----+-----------------------------+---------+
-```
+::
+
+    +-----------+-------+-----+-----------------------------+---------+
+    | Heading1  | Headi |     |                             |         |
+    |           | ng2   |     |                             |         |
+    +~~~~~~~~~~~+~~~~~~~+~~~~~+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+~~~~~~~~~+
+    | 1         | 4     | 7   |           This is long data | Test1   |
+    +-----------+-------+-----+-----------------------------+---------+
+    | 2         | 5     | 8   |    This is even longer data | Test3   |
+    +-----------+-------+-----+-----------------------------+---------+
+    | 3         | 6     | 9   |                             | Test4   |
+    +-----------+-------+-----+-----------------------------+---------+
+    | This is a |       |     |                             |         |
+    |  single   |       |     |                             |         |
+    | row       |       |     |                             |         |
+    +-----------+-------+-----+-----------------------------+---------+
 
 When adding new rows/columns their data can have its own alignments
 (left/center/right, top/center/bottom).
@@ -99,15 +101,16 @@ If the height is restricted, cells will be restricted from expanding
 vertically. This will lead to text contents being cropped. Each cell
 can only shrink to a minimum width and height of 1.
 
-`EvTable` is intended to be used with [ANSIString](evennia.utils.ansi#ansistring)
-for supporting ANSI-coloured string types.
+`EvTable` is intended to be used with `ANSIString` for supporting ANSI-coloured
+string types.
 
-When a cell is auto-wrapped across multiple lines, ANSI-reset
-sequences will be put at the end of each wrapped line. This means that
-the colour of a wrapped cell will not "bleed", but it also means that
-eventual colour outside the table will not transfer "across" a table,
-you need to re-set the color to have it appear on both sides of the
-table string.
+When a cell is auto-wrapped across multiple lines, ANSI-reset sequences will be
+put at the end of each wrapped line. This means that the colour of a wrapped
+cell will not "bleed", but it also means that eventual colour outside the table
+will not transfer "across" a table, you need to re-set the color to have it
+appear on both sides of the table string.
+
+----
 
 """
 

@@ -3,21 +3,21 @@ Inline functions (nested form).
 
 This parser accepts nested inlinefunctions on the form
 
-```
+```python
 $funcname(arg, arg, ...)
 ```
 
-embedded in any text where any arg can be another $funcname{} call.
+embedded in any text where any arg can be another ``$funcname()`` call.
 This functionality is turned off by default - to activate,
 `settings.INLINEFUNC_ENABLED` must be set to `True`.
 
-Each token starts with "$funcname(" where there must be no space
-between the $funcname and (. It ends with a matched ending parentesis.
-")".
+Each token starts with `$funcname(` where there must be no space
+between the `$funcname` and `"("`. The inlinefunc ends with a matched ending parentesis.
+`")"`.
 
 Inside the inlinefunc definition, one can use `\` to escape. This is
 mainly needed for escaping commas in flowing text (which would
-otherwise be interpreted as an argument separator), or to escape `}`
+otherwise be interpreted as an argument separator), or to escape `)`
 when not intended to close the function block. Enclosing text in
 matched `\"\"\"` (triple quotes) or `'''` (triple single-quotes) will
 also escape *everything* within without needing to escape individual
@@ -44,19 +44,22 @@ the string is sent to a non-puppetable object. The inlinefunc should
 never raise an exception.
 
 There are two reserved function names:
+
 - "nomatch": This is called if the user uses a functionname that is
-    not registered. The nomatch function will get the name of the
-    not-found function as its first argument followed by the normal
-    arguments to the given function. If not defined the default effect is
-    to print `<UNKNOWN>` to replace the unknown function.
+  not registered. The nomatch function will get the name of the
+  not-found function as its first argument followed by the normal
+  arguments to the given function. If not defined the default effect is
+  to print `<UNKNOWN>` to replace the unknown function.
 - "stackfull": This is called when the maximum nested function stack is reached.
   When this happens, the original parsed string is returned and the result of
   the `stackfull` inlinefunc is appended to the end. By default this is an
   error message.
 
-Error handling:
-   Syntax errors, notably not completely closing all inlinefunc
-   blocks, will lead to the entire string remaining unparsed.
+Syntax errors, notably failing to completely closing all inlinefunc
+blocks, will lead to the entire string remaining unparsed. Inlineparsing should
+never traceback.
+
+----
 
 """
 
@@ -518,11 +521,11 @@ def initialize_nick_templates(in_template, out_template):
     Returns:
         regex  (regex): Regex to match against strings
         template (str): Template with markers {arg1}, {arg2}, etc for
-            replacement using the standard .format method.
+        replacement using the standard .format method.
 
     Raises:
         NickTemplateInvalid: If the in/out template does not have a matching
-            number of $args.
+        number of $args.
 
     """
     # create the regex for in_template

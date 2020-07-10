@@ -1197,7 +1197,7 @@ def check_evennia_dependencies():
 
 def has_parent(basepath, obj):
     """
-    Checks if `basepath` is somewhere in `obj`s parent tree.
+    Checks if `basepath` is somewhere in obj's parent tree.
 
     Args:
         basepath (str): Python dotpath to compare against obj path.
