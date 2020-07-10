@@ -211,7 +211,7 @@ if not _no_autodoc:
 if _no_autodoc:
     exclude_patterns = ["api/*"]
 else:
-    exclude_patterns = ["api/*migrations.rst"]
+    exclude_patterns = ["api/*migrations.rst", "api/*tests.rst"]
 
 autodoc_default_options = {
     "members": True,

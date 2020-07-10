@@ -421,7 +421,7 @@ class EventCharacter(DefaultCharacter):
 
         Args:
             message (str): The suggested say/whisper text spoken by self.
-        Kwargs:
+        Keyword args:
             whisper (bool): If True, this is a whisper rather than
                 a say. This is sent by the whisper command by default.
                 Other verbal commands could use this hook in similar
@@ -477,7 +477,7 @@ class EventCharacter(DefaultCharacter):
                 (by default only used by whispers).
             msg_receiver(str, optional): Specific message for receiver only.
             mapping (dict, optional): Additional mapping in messages.
-        Kwargs:
+        Keyword args:
             whisper (bool): If this is a whisper rather than a say. Kwargs
                 can be used by other verbal commands in a similar way.
 

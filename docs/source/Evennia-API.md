@@ -1,5 +1,6 @@
 # API
 
+- [evennia](api:evennia) - root of API
 - [evennia.accounts](api:evennia.accounts) - the out-of-character entity representing players
 - [evennia.commands](api:evennia.commands) - all inputs. Also includes default commands
 - [evennia.comms](api:evennia.comms) - in-game channels and messaging

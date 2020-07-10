@@ -410,7 +410,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         """
         Checks if a given username or IP is banned.
 
-        Kwargs:
+        Keyword args:
             ip (str, optional): IP address.
             username (str, optional): Username.
 
@@ -481,7 +481,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             password (str): Password of account
             ip (str, optional): IP address of client
 
-        Kwargs:
+        Keyword args:
             session (Session, optional): Session requesting authentication
 
         Returns:
@@ -611,7 +611,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         Args:
             password (str): Password to validate
 
-        Kwargs:
+        Keyword args:
             account (DefaultAccount, optional): Account object to validate the
                 password for. Optional, but Django includes some validators to
                 do things like making sure users aren't setting passwords to the
@@ -658,7 +658,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         with default (or overridden) permissions and having joined them to the
         appropriate default channels.
 
-        Kwargs:
+        Keyword args:
             username (str): Username of Account owner
             password (str): Password of Account owner
             email (str, optional): Email address of Account owner
@@ -843,7 +843,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 default send behavior for the current
                 MULTISESSION_MODE.
             options (list): Protocol-specific options. Passed on to the protocol.
-        Kwargs:
+        Keyword args:
             any (dict): All other keywords are passed on to the protocol.
 
         """
@@ -891,7 +891,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             session (Session, optional): The session to be responsible
                 for the command-send
 
-        Kwargs:
+        Keyword args:
             kwargs (any): Other keyword arguments will be added to the
                 found command object instance as variables before it
                 executes. This is unused by default Evennia but may be
@@ -999,7 +999,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
           no_superuser_bypass (bool, optional): Turn off superuser
             lock bypassing. Be careful with this one.
 
-        Kwargs:
+        Keyword args:
           kwargs (any): Passed to the at_access hook along with the result.
 
         Returns:
@@ -1143,7 +1143,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 check.
             access_type (str): The type of access checked.
 
-        Kwargs:
+        Keyword args:
             kwargs (any): These are passed on from the access check
                 and can be used to relay custom instructions from the
                 check mechanism.
@@ -1345,7 +1345,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             text (str, optional): The message received.
             from_obj (any, optional): The object sending the message.
 
-        Kwargs:
+        Keyword args:
             This includes any keywords sent to the `msg` method.
 
         Returns:
@@ -1367,7 +1367,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             text (str, optional): Text to send.
             to_obj (any, optional): The object to send to.
 
-        Kwargs:
+        Keyword args:
             Keywords passed from msg()
 
         Notes:
@@ -1526,7 +1526,7 @@ class DefaultGuest(DefaultAccount):
         """
         Gets or creates a Guest account object.
 
-        Kwargs:
+        Keyword args:
             ip (str, optional): IP address of requestor; used for ban checking,
                 throttling and logging
 

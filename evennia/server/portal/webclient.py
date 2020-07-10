@@ -234,7 +234,7 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
         Args:
             text (str): Text to send.
 
-        Kwargs:
+        Keyword args:
             options (dict): Options-dict with the following keys understood:
                 - raw (bool): No parsing at all (leave ansi-to-html markers unparsed).
                 - nocolor (bool): Clean out all color.
@@ -287,7 +287,7 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
             cmdname (str): The first argument will always be the oob cmd name.
             *args (any): Remaining args will be arguments for `cmd`.
 
-        Kwargs:
+        Keyword args:
             options (dict): These are ignored for oob commands. Use command
                 arguments (which can hold dicts) to send instructions to the
                 client instead.
