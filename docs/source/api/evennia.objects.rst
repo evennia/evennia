@@ -6,11 +6,11 @@ evennia.objects
    :undoc-members:
    :show-inheritance:
 
-Submodules
-----------
+Modules
+-------
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 6
 
    evennia.objects.admin
    evennia.objects.manager

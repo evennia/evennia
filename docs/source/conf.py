@@ -211,7 +211,7 @@ if not _no_autodoc:
 if _no_autodoc:
     exclude_patterns = ["api/*"]
 else:
-    exclude_patterns = ["api/*migrations.rst", "api/*tests.rst"]
+    exclude_patterns = ["api/*migrations.rst"]
 
 autodoc_default_options = {
     "members": True,
@@ -219,6 +219,7 @@ autodoc_default_options = {
     "show-inheritance": True,
     "special-members": "__init__",
     "enable_eval_rst": True,
+    # "inherited_members": True
 }
 
 autodoc_member_order = "bysource"

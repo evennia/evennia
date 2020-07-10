@@ -1,10 +1,10 @@
 """
-This module implements the main Evennia server process, the core of
-the game engine.
+This module implements the main Evennia server process, the core of the game
+engine.
 
-This module should be started with the 'twistd' executable since it
-sets up all the networking features.  (this is done automatically
-by evennia/server/server_runner.py).
+This module should be started with the 'twistd' executable since it sets up all
+the networking features.  (this is done automatically by
+evennia/server/server_runner.py).
 
 """
 import time
@@ -401,16 +401,16 @@ class Evennia(object):
         Shuts down the server from inside it.
 
         mode - sets the server restart mode.
-               'reload' - server restarts, no "persistent" scripts
-                          are stopped, at_reload hooks called.
-               'reset' - server restarts, non-persistent scripts stopped,
-                         at_shutdown hooks called but sessions will not
-                         be disconnected.
-               'shutdown' - like reset, but server will not auto-restart.
+           - 'reload' - server restarts, no "persistent" scripts
+             are stopped, at_reload hooks called.
+           - 'reset' - server restarts, non-persistent scripts stopped,
+             at_shutdown hooks called but sessions will not
+             be disconnected.
+           - 'shutdown' - like reset, but server will not auto-restart.
         _reactor_stopping - this is set if server is stopped by a kill
-                            command OR this method was already called
-                             once - in both cases the reactor is
-                             dead/stopping already.
+           command OR this method was already called
+           once - in both cases the reactor is
+           dead/stopping already.
         """
         if _reactor_stopping and hasattr(self, "shutdown_complete"):
             # this means we have already passed through this method

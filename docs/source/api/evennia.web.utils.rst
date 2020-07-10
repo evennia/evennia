@@ -6,11 +6,11 @@ evennia.web.utils
    :undoc-members:
    :show-inheritance:
 
-Submodules
-----------
+Modules
+-------
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 6
 
    evennia.web.utils.backends
    evennia.web.utils.general_context

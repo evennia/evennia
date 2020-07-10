@@ -6,11 +6,11 @@ evennia.contrib.awsstorage
    :undoc-members:
    :show-inheritance:
 
-Submodules
-----------
+Modules
+-------
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 6
 
    evennia.contrib.awsstorage.aws_s3_cdn
    evennia.contrib.awsstorage.tests

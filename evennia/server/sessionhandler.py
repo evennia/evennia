@@ -746,6 +746,7 @@ class ServerSessionHandler(SessionHandler):
 
         Args
             csessid (str): The session hash.
+
         Returns:
             sessions (list): The sessions with matching .csessid, if any.
 
