@@ -258,7 +258,17 @@ li > p:first-child {
 li > p {
   margin-top: 0px;
   margin-bottom: 0px;
-}   
+}
+
+
+/* The indents of kwarg - lists in api docs */
+dl.field-list.simple > dd.field-odd > ul.simple > li > ul {
+  margin-left: 24px;
+}
+dd.field-odd > ul.simple > li > ul > li > dl.simple {
+  margin-bottom: -8px;
+}
+
 
 .admonition.important {
   background-color: #fbf7c3;
