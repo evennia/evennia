@@ -1099,7 +1099,7 @@ class AttributeHandler:
                     - `(key, value, category, lockstring)`
                     - `(key, value, category, lockstring, default_access)`
 
-        Kwargs:
+        Keyword args:
             strattr (bool): If `True`, value must be a string. This
                 will save the value without pickling which is less
                 flexible but faster to search (not often used except

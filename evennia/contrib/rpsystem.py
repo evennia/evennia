@@ -1420,7 +1420,7 @@ class ContribRPObject(DefaultObject):
             looker (TypedObject): The object or account that is looking
                 at/getting inforamtion for this object.
 
-        Kwargs:
+        Keyword args:
             pose (bool): Include the pose (if available) in the return.
 
         Returns:
@@ -1508,7 +1508,7 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
             looker (TypedObject): The object or account that is looking
                 at/getting inforamtion for this object.
 
-        Kwargs:
+        Keyword args:
             pose (bool): Include the pose (if available) in the return.
 
         Returns:
@@ -1557,7 +1557,7 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
 
         Args:
             message (str): The suggested say/whisper text spoken by self.
-        Kwargs:
+        Keyword args:
             whisper (bool): If True, this is a whisper rather than a say.
 
         """

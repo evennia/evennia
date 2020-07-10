@@ -354,18 +354,18 @@ def list_to_string(inlist, endsep="and", addquote=False):
             values with double quotes.
 
     Returns:
-        liststr (str): The list represented as a string.
+        str: The list represented as a string.
 
-    Example:
+    Examples:
 
-    ```python
-         # no endsep:
-            [1,2,3] -> '1, 2, 3'
-         # with endsep=='and':
-            [1,2,3] -> '1, 2 and 3'
-         # with addquote and endsep
-            [1,2,3] -> '"1", "2" and "3"'
-    ```
+        ```python
+        >>> list_to_string([1,2,3], endsep='')
+        '1, 2, 3'
+        >>> list_to_string([1,2,3], ensdep='and')
+        '1, 2 and 3'
+        >>> list_to_string([1,2,3], endsep='and', addquote=True)
+        '"1", "2" and "3"'
+        ```
 
     """
     if not endsep:
@@ -1656,18 +1656,17 @@ def format_table(table, extra_space=1):
         function can be useful when the number of columns and rows are
         unknown and must be calculated on the fly.
 
-    Example:
+    Examples: ::
 
-    ```python
-        ftable = format_table([[...], [...], ...])
+        ftable = format_table([[1,2,3], [4,5,6]])
+        string = ""
         for ir, row in enumarate(ftable):
             if ir == 0:
                 # make first row white
-                string += "\n|w" + ""join(row) + "|n"
+                string += "\\n|w" + "".join(row) + "|n"
             else:
-                string += "\n" + "".join(row)
-        print string
-    ```
+                string += "\\n" + "".join(row)
+        print(string)
 
     """
 
@@ -1705,13 +1704,13 @@ def percent(value, minval, maxval, formatting="{:3.1f}%"):
         str or float: The formatted value or the raw percentage as a float.
     Notes:
         We try to handle a weird interval gracefully.
+
         - If either maxval or minval is None (open interval), we (aribtrarily) assume 100%.
         - If minval > maxval, we return 0%.
-        - If minval == maxval == value we are looking at a single value match
-            and return 100%.
+        - If minval == maxval == value we are looking at a single value match and return 100%.
         - If minval == maxval != value we return 0%.
         - If value not in [minval..maxval], we set value to the  closest
-            boundary, so the result will be 0% or 100%, respectively.
+          boundary, so the result will be 0% or 100%, respectively.
 
     """
     result = None
@@ -2244,7 +2243,7 @@ def interactive(func):
             function has no arg or kwarg named 'caller'.
         ValueError: If passing non int/float to yield using for pausing.
 
-    Example:
+    Examples:
 
         ```python
         @interactive

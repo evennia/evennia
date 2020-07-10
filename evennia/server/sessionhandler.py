@@ -817,7 +817,7 @@ class ServerSessionHandler(SessionHandler):
         Args:
             sessions (Session): Session.
 
-        Kwargs:
+        Keyword args:
             kwargs (any): Incoming data from protocol on
                 the form `{"commandname": ((args), {kwargs}),...}`
 
