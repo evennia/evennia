@@ -76,6 +76,7 @@ class PortalSessionHandler(SessionHandler):
 
         Returns:
             sessid
+
         """
         self.latest_sessid += 1
         if self.latest_sessid in self:
@@ -247,7 +248,7 @@ class PortalSessionHandler(SessionHandler):
                 for the protocol used, eg
                 'evennia.server.portal.irc.IRCClientFactory'
             config (dict): Dictionary of configuration options, fed as
-                **kwarg to protocol class' __init__ method.
+                `**kwargs` to protocol class' __init__ method.
 
         Raises:
             RuntimeError: If The correct factory class is not found.

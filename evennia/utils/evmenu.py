@@ -415,9 +415,7 @@ class EvMenu(object):
                 by default in all nodes of the menu. This will print out the current state of
                 the menu. Deactivate for production use! When the debug flag is active, the
                 `persistent` flag is deactivated.
-
-        Kwargs:
-            any (any): All kwargs will become initialization variables on `caller.ndb._menutree`,
+            **kwargs: All kwargs will become initialization variables on `caller.ndb._menutree`,
                 to be available at run.
 
         Raises:
@@ -789,8 +787,7 @@ class EvMenu(object):
             raw_string (str): The raw default string entered on the
                 previous node (only used if the node accepts it as an
                 argument)
-        Kwargs:
-            any: Extra arguments to goto callables.
+            **kwargs: Extra arguments to goto callables.
 
         """
 

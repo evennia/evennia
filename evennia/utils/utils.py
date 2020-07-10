@@ -356,16 +356,16 @@ def list_to_string(inlist, endsep="and", addquote=False):
     Returns:
         liststr (str): The list represented as a string.
 
-    Examples:
+    Example:
 
-        ```python
+    ```python
          # no endsep:
             [1,2,3] -> '1, 2, 3'
          # with endsep=='and':
             [1,2,3] -> '1, 2 and 3'
          # with addquote and endsep
             [1,2,3] -> '"1", "2" and "3"'
-        ```
+    ```
 
     """
     if not endsep:
@@ -839,7 +839,7 @@ def to_bytes(text, session=None):
             the text with "?" in place of problematic characters.  If the specified encoding cannot
             be found, the protocol flag is reset to utf-8.  In any case, returns bytes.
 
-    Note:
+    Notes:
         If `text` is already bytes, return it as is.
 
     """
@@ -879,7 +879,7 @@ def to_str(text, session=None):
     Returns:
         decoded_text (str): The decoded text.
 
-    Note:
+    Notes:
         If `text` is already str, return it as is.
     """
     if isinstance(text, str):
@@ -977,18 +977,17 @@ def inherits_from(obj, parent):
     distance from parent.
 
     Args:
-        obj (any): Object to analyze. This may be either an instance
-            or a class.
-        parent (any): Can be either instance, class or python path to class.
+        obj (any): Object to analyze. This may be either an instance or
+            a class.
+        parent (any): Can be either an instance, a class or the python
+            path to the class.
 
     Returns:
         inherits_from (bool): If `parent` is a parent to `obj` or not.
 
     Notes:
-        What differs this function from e.g.  `isinstance()` is that `obj`
-        may be both an instance and a class, and parent may be an
-        instance, a class, or the python path to a class (counting from
-        the evennia root directory).
+        What differentiates this function from Python's `isinstance()` is the
+        flexibility in the types allowed for the object and parent being compared.
 
     """
 
@@ -1036,8 +1035,7 @@ def uses_database(name="sqlite3"):
     shortcut to having to use the full backend name.
 
     Args:
-        name (str): One of 'sqlite3', 'mysql', 'postgresql'
-        or 'oracle'.
+        name (str): One of 'sqlite3', 'mysql', 'postgresql' or 'oracle'.
 
     Returns:
         uses (bool): If the given database is used or not.
@@ -1061,20 +1059,19 @@ def delay(timedelay, callback, *args, **kwargs):
         timedelay (int or float): The delay in seconds
         callback (callable): Will be called as `callback(*args, **kwargs)`
             after `timedelay` seconds.
-        args (any, optional): Will be used as arguments to callback
-    Kwargs:
-        persistent (bool, optional): should make the delay persistent
-            over a reboot or reload
-        any (any): Will be used as keyword arguments to callback.
+        *args: Will be used as arguments to callback
+    Keyword args:
+        persistent (bool): Make the delay persistent over a reboot or reload.
+        any: Any other keywords will be use as keyword arguments to callback.
 
     Returns:
-        deferred (deferred): Will fire with callback after
-            `timedelay` seconds. Note that if `timedelay()` is used in the
-            commandhandler callback chain, the callback chain can be
-            defined directly in the command body and don't need to be
-            specified here.
+        deferred: Will fire with callback after `timedelay` seconds. Note that
+        if `timedelay()` is used in the
+        commandhandler callback chain, the callback chain can be
+        defined directly in the command body and don't need to be
+        specified here.
 
-    Note:
+    Notes:
         The task handler (`evennia.scripts.taskhandler.TASK_HANDLER`) will
         be called for persistent or non-persistent tasks.
         If persistent is set to True, the callback, its arguments
@@ -1102,20 +1099,19 @@ def run_async(to_execute, *args, **kwargs):
 
     Args:
         to_execute (callable): If this is a callable, it will be
-            executed with *args and non-reserved *kwargs as arguments.
+            executed with `*args` and non-reserved `**kwargs` as arguments.
             The callable will be executed using ProcPool, or in a thread
             if ProcPool is not available.
-
-    Kwargs:
+    Keyword args:
         at_return (callable): Should point to a callable with one
-            argument.  It will be called with the return value from
-            to_execute.
+          argument.  It will be called with the return value from
+          to_execute.
         at_return_kwargs (dict): This dictionary will be used as
-            keyword arguments to the at_return callback.
+          keyword arguments to the at_return callback.
         at_err (callable): This will be called with a Failure instance
-            if there is an error in to_execute.
+          if there is an error in to_execute.
         at_err_kwargs (dict): This dictionary will be used as keyword
-            arguments to the at_err errback.
+          arguments to the at_err errback.
 
     Notes:
         All other `*args` and `**kwargs` will be passed on to
@@ -1528,8 +1524,8 @@ def init_new_account(account):
 def string_similarity(string1, string2):
     """
     This implements a "cosine-similarity" algorithm as described for example in
-       *Proceedings of the 22nd International Conference on Computation
-       Linguistics* (Coling 2008), pages 593-600, Manchester, August 2008.
+    *Proceedings of the 22nd International Conference on Computation
+    Linguistics* (Coling 2008), pages 593-600, Manchester, August 2008.
     The measure-vectors used is simply a "bag of words" type histogram
     (but for letters).
 
@@ -1569,8 +1565,8 @@ def string_suggestions(string, vocabulary, cutoff=0.6, maxnum=3):
 
     Returns:
         suggestions (list): Suggestions from `vocabulary` with a
-            similarity-rating that higher than or equal to `cutoff`.
-            Could be empty if there are no matches.
+        similarity-rating that higher than or equal to `cutoff`.
+        Could be empty if there are no matches.
 
     """
     return [
@@ -1638,11 +1634,9 @@ def string_partial_matching(alternatives, inp, ret_index=True):
 
 def format_table(table, extra_space=1):
     """
-    Note: `evennia.utils.evtable` is more powerful than this, but this
-    function can be useful when the number of columns and rows are
-    unknown and must be calculated on the fly.
+    Format a 2D array of strings into a multi-column table.
 
-    Args.
+    Args:
         table (list): A list of lists to represent columns in the
             table: `[[val,val,val,...], [val,val,val,...], ...]`, where
             each val will be placed on a separate row in the
@@ -1652,16 +1646,19 @@ def format_table(table, extra_space=1):
             padding (in characters) should  be left between columns.
 
     Returns:
-        table (list): A list of lists representing the rows to print
-            out one by one.
+        list: A list of lists representing the rows to print out one by one.
 
     Notes:
         The function formats the columns to be as wide as the widest member
         of each column.
 
-    Examples:
+        `evennia.utils.evtable` is more powerful than this, but this
+        function can be useful when the number of columns and rows are
+        unknown and must be calculated on the fly.
 
-        ```python
+    Example:
+
+    ```python
         ftable = format_table([[...], [...], ...])
         for ir, row in enumarate(ftable):
             if ir == 0:
@@ -1671,7 +1668,9 @@ def format_table(table, extra_space=1):
                 string += "\n" + "".join(row)
         print string
     ```
+
     """
+
     if not table:
         return [[]]
 
@@ -1703,12 +1702,10 @@ def percent(value, minval, maxval, formatting="{:3.1f}%"):
             current value as a percentage. If None, the
             raw float will be returned instead.
     Returns:
-        str or float: The formatted value or the raw percentage
-            as a float.
+        str or float: The formatted value or the raw percentage as a float.
     Notes:
         We try to handle a weird interval gracefully.
-        - If either maxval or minval is None (open interval),
-            we (aribtrarily) assume 100%.
+        - If either maxval or minval is None (open interval), we (aribtrarily) assume 100%.
         - If minval > maxval, we return 0%.
         - If minval == maxval == value we are looking at a single value match
             and return 100%.
@@ -1759,7 +1756,9 @@ def percentile(iterable, percent, key=lambda x: x):
         percent (float): A value from 0.0 to 1.0.
         key (callable, optional). Function to compute value from each element of N.
 
-    @return - the percentile of the values
+    Returns:
+        float: The percentile of the values
+
     """
     if not iterable:
         return None
@@ -1792,9 +1791,9 @@ def format_grid(elements, width=78, sep=" ", verbatim_elements=None):
             decorations in the grid, such as horizontal bars.
 
     Returns:
-        gridstr (list): The grid as a list of ready-formatted rows. We return it
-            like this to make it easier to insert decorations between rows, such
-            as horizontal bars.
+        gridstr: The grid as a list of ready-formatted rows. We return it
+        like this to make it easier to insert decorations between rows, such
+        as horizontal bars.
     """
     if not verbatim_elements:
         verbatim_elements = []
@@ -1883,13 +1882,13 @@ def get_evennia_pids():
 
     Examples:
         This can be used to determine if we are in a subprocess by
-        something like:
 
         ```python
         self_pid = os.getpid()
         server_pid, portal_pid = get_evennia_pids()
         is_subprocess = self_pid not in (server_pid, portal_pid)
         ```
+
     """
     server_pidfile = os.path.join(settings.GAME_DIR, "server.pid")
     portal_pidfile = os.path.join(settings.GAME_DIR, "portal.pid")
@@ -2078,16 +2077,15 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
         query (str, optional): The search query used to produce `matches`.
         quiet (bool, optional): If `True`, no messages will be echoed to caller
             on errors.
-
-    Kwargs:
+    Keyword args:
         nofound_string (str): Replacement string to echo on a notfound error.
         multimatch_string (str): Replacement string to echo on a multimatch error.
 
     Returns:
         processed_result (Object or None): This is always a single result
-            or `None`. If `None`, any error reporting/handling should
-            already have happened. The returned object is of the type we are
-            checking multimatches for (e.g. Objects or Commands)
+        or `None`. If `None`, any error reporting/handling should
+        already have happened. The returned object is of the type we are
+        checking multimatches for (e.g. Objects or Commands)
 
     """
 
@@ -2138,12 +2136,12 @@ class LimitedSizeOrderedDict(OrderedDict):
         """
         Limited-size ordered dict.
 
-        Kwargs:
+        Keyword args:
             size_limit (int): Use this to limit the number of elements
-                alloweds to be in this list. By default the overshooting elements
-                will be removed in FIFO order.
+              alloweds to be in this list. By default the overshooting elements
+              will be removed in FIFO order.
             fifo (bool, optional): Defaults to `True`. Remove overshooting elements
-                in FIFO order. If `False`, remove in FILO order.
+              in FIFO order. If `False`, remove in FILO order.
 
         """
         super().__init__()
@@ -2210,10 +2208,10 @@ def get_all_typeclasses(parent=None):
             from this parent.
 
     Returns:
-        typeclasses (dict): On the form {"typeclass.path": typeclass, ...}
+        dict: On the form `{"typeclass.path": typeclass, ...}`
 
     Notes:
-        This will dynamicall retrieve all abstract django models inheriting at any distance
+        This will dynamically retrieve all abstract django models inheriting at any distance
         from the TypedObject base (aka a Typeclass) so it will work fine with any custom
         classes being added.
 
@@ -2236,26 +2234,34 @@ def get_all_typeclasses(parent=None):
 
 def interactive(func):
     """
-    Decorator to make a method pausable with yield(seconds)
-    and able to ask for user-input with response=yield(question).
-    For the question-asking to work, 'caller' must the name
-    of an argument or kwarg to the decorated function.
+    Decorator to make a method pausable with `yield(seconds)`
+    and able to ask for user-input with `response=yield(question)`.
+    For the question-asking to work, one of the args or kwargs to the
+    decorated function must be named 'caller'.
 
-    Note that this turns the method into a generator.
+    Raises:
+        ValueError: If asking an interactive question but the decorated
+            function has no arg or kwarg named 'caller'.
+        ValueError: If passing non int/float to yield using for pausing.
 
-    Example usage:
+    Example:
 
-    @interactive
-    def myfunc(caller):
-        caller.msg("This is a test")
-        # wait five seconds
-        yield(5)
-        # ask user (caller) a question
-        response = yield("Do you want to continue waiting?")
-        if response == "yes":
+        ```python
+        @interactive
+        def myfunc(caller):
+            caller.msg("This is a test")
+            # wait five seconds
             yield(5)
-        else:
-            # ...
+            # ask user (caller) a question
+            response = yield("Do you want to continue waiting?")
+            if response == "yes":
+                yield(5)
+            else:
+                # ...
+        ```
+
+    Notes:
+       This turns the decorated function or method into a generator.
 
     """
     from evennia.utils.evmenu import get_input

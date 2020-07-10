@@ -6,6 +6,7 @@
 
 import os
 import sys
+import re
 import sphinx_theme
 from recommonmark.transform import AutoStructify
 from sphinx.util.osutil import cd
@@ -117,13 +118,13 @@ _github_issue_choose = "https://github.com/evennia/evennia/issues/new/choose"
 
 def url_resolver(url):
     """
-    Convert urls by catching special markers. 
+    Convert urls by catching special markers.
     """
     githubstart = "github:"
     apistart = "api:"
     choose_issue = "github:issue"
     sourcestart = "src:"
-    
+
     if url.endswith(choose_issue):
         return _github_issue_choose
     elif githubstart in url:
@@ -233,11 +234,39 @@ def autodoc_skip_member(app, what, name, obj, skip, options):
     return False
 
 
-def autodoc_clean_docstring(app, what, name, obj, options, lines):
-    """Clean docstring of ansi. Must modify lines list in-place"""
-    if ansi_clean:
-        for il, line in enumerate(lines):
-            lines[il] = ansi_clean(line)
+def autodoc_post_process_docstring(app, what, name, obj, options, lines):
+    """
+    Post-process docstring in various ways. Must modify lines-list in-place.
+    """
+    try:
+
+        # clean out ANSI colors
+
+        if ansi_clean:
+            for il, line in enumerate(lines):
+                lines[il] = ansi_clean(line)
+
+        # post-parse docstrings to convert any remaining
+        # markdown -> reST since napoleon doesn't know Markdown
+
+        def _sub_codeblock(match):
+            code = match.group(1)
+            return "::\n\n    {}".format(
+                "\n    ".join(lne for lne in code.split("\n")))
+
+        doc = "\n".join(lines)
+        doc = re.sub(r"```python\s*\n+(.*?)```", _sub_codeblock, doc,
+                     flags=re.MULTILINE + re.DOTALL)
+        doc = re.sub(r"```", "", doc, flags=re.MULTILINE)
+        doc = re.sub(r"`{1}", "**", doc, flags=re.MULTILINE)
+        newlines = doc.split("\n")
+        # we must modify lines in-place
+        lines[:] = newlines[:]
+
+    except Exception as err:
+        # if we don't print here we won't see what the error actually is
+        print(f"Post-process docstring exception: {err}")
+        raise
 
 
 # Napoleon Google-style docstring parser for autodocs
@@ -247,7 +276,7 @@ napoleon_numpy_docstring = False
 napoleon_include_init_with_doc = False
 napoleon_include_private_with_doc = False
 napoleon_include_special_with_doc = False
-napoleon_use_admonition_for_examples = True
+napoleon_use_admonition_for_examples = False
 napoleon_use_admonition_for_notes = False
 napoleon_use_admonition_for_references = False
 napoleon_use_ivar = False
@@ -262,7 +291,7 @@ napoleon_use_rtype = False
 
 def setup(app):
     app.connect("autodoc-skip-member", autodoc_skip_member)
-    app.connect("autodoc-process-docstring", autodoc_clean_docstring)
+    app.connect("autodoc-process-docstring", autodoc_post_process_docstring)
     app.add_transform(AutoStructify)
 
     # build toctree file
