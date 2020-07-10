@@ -308,15 +308,6 @@ print our text. We can now redo this as many times as we want without having to 
     > py import world.test ; world.test.hello_world()
     Hello world!
 
-> **Extra Credit:** As an exercise, try to pass something else into `hello_world`. Try for example
->to pass the number `5` or the string `"foo"`. You'll get errors telling you that they don't have
->the attribute `msg`. They don't care about `me` itself not being a string or a number. If you are
->familiar with other programming languages (especially C/Java) you may be tempted to start *validating*
->`who` to make sure it's of the right type before you send it. This is usually not recommended in Python.
->Python philosophy is to [handle](https://docs.python.org/2/tutorial/errors.html) the error if it happens
->rather than to add a lot of code to prevent it from happening. See [duck typing](https://en.wikipedia.org/wiki/Duck_typing)
->and the concept of _Leap before you Look_.
-
 ### Sending text to others
 
 The `print` command is a standard Python structure. We can use that here in the `py` command since
@@ -384,7 +375,7 @@ A traceback is to be read from the _bottom up_:
 - (line 3) An error of type `NameError` is the problem ...
 - (line 3)  ... more specifically it is due to the variable `me` not being defined.
 - (line 2) This happened on the line `me.msg("Hello world!")` ...
-- (line 1)  ... which is on line `1` of the file `./world/test.py`.
+- (line 1)  ... which is on line `2` of the file `./world/test.py`.
 
 In our case the traceback is short. There may be many more lines above it, tracking just how
 different modules called each other until the program got to the faulty line. That can
@@ -419,6 +410,16 @@ Now it worked. We _passed_ `me` to our function. It will appear inside the funct
 now the function works and prints as expected. Note how the `hello_world` function doesn't care _what_ you
 pass into it as long as it has a `.msg()` method on it. So you could reuse this function over and over for other
 suitable targets.
+
+> **Extra Credit:** As an exercise, try to pass something else into `hello_world`. Try for example
+>to pass the number `5` or the string `"foo"`. You'll get errors telling you that they don't have
+>the attribute `msg`. They don't care about `me` itself not being a string or a number. If you are
+>familiar with other programming languages (especially C/Java) you may be tempted to start *validating*
+>`who` to make sure it's of the right type before you send it. This is usually not recommended in Python.
+>Python philosophy is to [handle](https://docs.python.org/2/tutorial/errors.html) the error if it happens
+>rather than to add a lot of code to prevent it from happening. See [duck typing](https://en.wikipedia.org/wiki/Duck_typing)
+>and the concept of _Leap before you Look_.
+
 
 ### Finding others to send to
 
@@ -520,7 +521,7 @@ the `>>>`). For brevity in this tutorual we'll turn the echo off. First exit `py
     > quit()
     Closing the Python console.
     > py/noecho
-    Evennia Interactive Python mode
+    Evennia Interactive Python mode (no echoing of prompts)
     Python 3.7.1 (default, Oct 22 2018, 11:21:55)
     [GCC 8.2.0] on Linux
     [py mode - quit() to exit]
