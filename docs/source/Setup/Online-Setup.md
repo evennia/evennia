@@ -66,7 +66,7 @@ web services you are running through this router though.
 
 You can connect Evennia to the Internet without any changes to your settings. The default settings
 are easy to use but are not necessarily the safest. You can customize your online presence in your
-[settings file](../Component/Server-Conf#settings-file). To have Evennia recognize changed port settings you have
+[settings file](../Components/Server-Conf#settings-file). To have Evennia recognize changed port settings you have
 to do a full `evennia reboot` to also restart the Portal and not just the Server component.
 
 Below is an example of a simple set of settings, mostly using the defaults. Evennia will require
@@ -179,7 +179,7 @@ AMP_PORT = 4006
 ```
 
 The `AMP_PORT` is required to work, since this is the internal port linking Evennia's 
-[Server and Portal](../Component/Portal-And-Server) components together. The other ports are encrypted ports that may be
+[Server and Portal](../Components/Portal-And-Server) components together. The other ports are encrypted ports that may be
 useful for custom protocols but are otherwise not used.
 
 ### Lockdown mode

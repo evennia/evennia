@@ -160,7 +160,7 @@ Your final folder structure should look like this:
     mygame/
 ```
 
-You can [configure Evennia](../Component/Server-Conf#settings-file) extensively, for example
+You can [configure Evennia](../Components/Server-Conf#settings-file) extensively, for example
 to use a [different database](./Choosing-An-SQL-Server). For now we'll just stick
 to the defaults though.
 
@@ -272,7 +272,7 @@ Your final folder structure should look like this:
     mygame/
 ```
 
-You can [configure Evennia](../Component/Server-Conf#settings-file) extensively, for example
+You can [configure Evennia](../Components/Server-Conf#settings-file) extensively, for example
 to use a [different database](./Choosing-An-SQL-Server). We'll go with the
 defaults here.
 
@@ -413,7 +413,7 @@ path\to\muddev
     mygame\
 ```
 
-You can [configure Evennia](../Component/Server-Conf#settings-file) extensively, for example
+You can [configure Evennia](../Components/Server-Conf#settings-file) extensively, for example
 to use a [different database](./Choosing-An-SQL-Server). We'll go with the
 defaults here.
 

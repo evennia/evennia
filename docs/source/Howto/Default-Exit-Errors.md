@@ -2,8 +2,8 @@
 
 
 Evennia allows for exits to have any name. The command "kitchen" is a valid exit name as well as
-"jump out the window" or "north". An exit actually consists of two parts: an [Exit Object](../Component/Objects)
-and an [Exit Command](../Component/Commands) stored on said exit object. The command has the same key and aliases
+"jump out the window" or "north". An exit actually consists of two parts: an [Exit Object](../Components/Objects)
+and an [Exit Command](../Components/Commands) stored on said exit object. The command has the same key and aliases
 as the object, which is why you can see the exit in the room and just write its name to traverse it.
 
 If you try to enter the name of a non-existing exit, it is thus the same as trying a non-exising
@@ -90,7 +90,7 @@ commands:
      You cannot move east.
 
 Further expansions by the exit system (including manipulating the way the Exit command itself is
-created) can be done by modifying the [Exit typeclass](../Component/Typeclasses) directly.
+created) can be done by modifying the [Exit typeclass](../Components/Typeclasses) directly.
 
 ## Additional Comments
 
@@ -109,7 +109,7 @@ So why didn't we create a single error command above? Something like this:
 The anwer is that this would *not* work and understanding why is important in order to not be
 confused when working with commands and command sets.
 
-The reason it doesn't work is because Evennia's [command system](../Component/Commands) compares commands *both*
+The reason it doesn't work is because Evennia's [command system](../Components/Commands) compares commands *both*
 by `key` and by `aliases`.  If *either* of those match, the two commands are considered *identical*
 as far as cmdset merging system is concerned.
 

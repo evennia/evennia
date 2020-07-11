@@ -99,12 +99,12 @@ yourself and what you get back is now a list of zero, one or more matches!
 
 These are the main database entities one can search for:
 
-- [Objects](../../../Component/Objects)
-- [Accounts](../../../Component/Accounts)
-- [Scripts](../../../Component/Scripts),
-- [Channels](../../../Component/Communications#channels), 
+- [Objects](../../../Components/Objects)
+- [Accounts](../../../Components/Accounts)
+- [Scripts](../../../Components/Scripts),
+- [Channels](../../../Components/Communications#channels), 
 - [Messages](Communication#Msg) 
-- [Help Entries](../../../Component/Help-System).
+- [Help Entries](../../../Components/Help-System).
 
 Most of the time you'll likely spend your time searching for Objects and the occasional Accounts.
 
@@ -134,7 +134,7 @@ general search function. If we assume `room` is a particular Room instance,
 
 ### Search by Tags 
 
-Think of a [Tag](../../../Component/Tags) as the label the airport puts on your luggage when flying. 
+Think of a [Tag](../../../Components/Tags) as the label the airport puts on your luggage when flying. 
 Everyone going on the same plane gets a tag grouping them together so the airport can know what should 
 go to which plane. Entities in Evennia can be grouped in the same way. Any number of tags can be attached
 to each object. 
@@ -168,7 +168,7 @@ This gets all three books.
  
 ### Search by Attribute
 
-We can also search by the [Attributes](../../../Component/Attributes) associated with entities. 
+We can also search by the [Attributes](../../../Components/Attributes) associated with entities. 
 
 For example, let's give our rose thorns: 
 

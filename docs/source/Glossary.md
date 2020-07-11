@@ -49,7 +49,7 @@ representation in the game world. Through their Account they can instead choose 
 [puppet](./Glossary#puppet) one (or more, depending on game mode) [Characters](./Glossary#character) in
 the game.
 
-In the default [multisession mode](Component/Sessions#multisession-mode) of Evennia, you immediately start
+In the default [multisession mode](Components/Sessions#multisession-mode) of Evennia, you immediately start
 puppeting a Character with the same name as your Account when you log in - mimicking how older
 servers used to work.
 
@@ -66,7 +66,7 @@ The term _Attribute_ should not be confused with ([properties](./Glossary#proper
 [fields](./Glossary#field). The `Attribute` represents arbitrary pieces of data that can be attached
 to any [typeclassed](./Glossary#typeclass) entity in Evennia. Attributes allows storing new persistent
 data on typeclasses without changing their underlying database schemas. 
-[Read more about Attributes here](Component/Attributes).
+[Read more about Attributes here](Components/Attributes).
 
 ### _channel_
 
@@ -82,7 +82,7 @@ comm system here](Communications#channels).
 The _Character_ is the term we use for the default avatar being [puppeted](./Glossary#puppet) by the
 [account](./Glossary#account) in the game world. It is represented by the `Character` typeclass (which
 is a child of [Object](./Glossary#object)). Many developers use children of this class to represent
-monsters and other NPCs. You can [read more about it here](Component/Objects#subclasses-of-object).
+monsters and other NPCs. You can [read more about it here](Components/Objects#subclasses-of-object).
 
 ### _django_
 
@@ -133,7 +133,7 @@ A _field_ or _database field_ in Evennia refers to a [property](./Glossary#prope
 properties per typeclass are database fields but they are often tied to the core functionality of
 that base typeclass (for example [Objects](./Glossary#object) store its location as a field). In all
 other cases, [attributes](./Glossary#attribute) are used to add new persistent data to the typeclass.
-[Read more about typeclass properties here](Component/Typeclasses#about-typeclass-properties).
+[Read more about typeclass properties here](Components/Typeclasses#about-typeclass-properties).
 
 ### _git_
 
@@ -211,7 +211,7 @@ try to use `object` to refer to the general term and capitalized `Object` when w
 typeclass.
 
 The `Object` is a typeclass that represents all *in-game* entities, including
-[Characters](./Glossary#character), rooms, trees, weapons etc. [Read more about Objects here](Component/Objects).
+[Characters](./Glossary#character), rooms, trees, weapons etc. [Read more about Objects here](Components/Objects).
 
 ### _pip_
 
@@ -264,16 +264,16 @@ well.
 
 ### _script_
 
-When we refer to _Scripts_, we generally refer to the `Script` [typeclass](Component/Typeclasses). Scripts are
+When we refer to _Scripts_, we generally refer to the `Script` [typeclass](Components/Typeclasses). Scripts are
 the mavericks of Evennia - they are like [Objects](./Glossary#object) but without any in-game
 existence. They are useful as custom places to store data but also as building blocks in persistent
 game systems. Since the can be initialized with timing capabilities they can also be used for long-
 time persistent time keeping (for fast updates other types of timers may be better though). 
-[Read more about Scripts here](Component/Scripts)
+[Read more about Scripts here](Components/Scripts)
 
 ### _session_
 
-A [Session](Component/Sessions) is a Python object representing a single client connection to the server. A
+A [Session](Components/Sessions) is a Python object representing a single client connection to the server. A
 given human player could connect to the game from different clients and each would get a Session
 (even if you did not allow them to actually log in and get access to an
 [account](./Glossary#account)).
@@ -284,7 +284,7 @@ can be useful for certain game states.
 
 ### _ticker_
 
-The [Ticker handler](Component/TickerHandler) runs Evennia's optional 'ticker' system. In other engines, such
+The [Ticker handler](Components/TickerHandler) runs Evennia's optional 'ticker' system. In other engines, such
 as [DIKU](https://en.wikipedia.org/wiki/DikuMUD), all game events are processed only at specific
 intervals called 'ticks'. Evennia has no such technical limitation (events are processed whenever
 needed) but using a fixed tick can still be useful for certain types of game systems, like combat.
@@ -293,7 +293,7 @@ to be called when those ticks come around.
 
 ### _typeclass_
 
-The [typeclass](Component/Typeclasses) is an Evennia-specific term. A typeclass allows developers to work with
+The [typeclass](Components/Typeclasses) is an Evennia-specific term. A typeclass allows developers to work with
 database-persistent objects as if they were normal Python objects. It makes use of specific
 [Django](./Glossary#django) features to link a Python class to a database table. Sometimes we refer to
 such code entities as _being typeclassed_.

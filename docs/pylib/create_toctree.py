@@ -19,11 +19,11 @@ _NO_REMAP_STARTSWITH = ["http://", "https://", "github:", "api:",
                         "feature-request", "report-bug", "issue", "bug-report"]
 
 TXT_REMAPS = {
-    "Developer Central": "Evennia Component overview",
+    "Developer Central": "Evennia Components overview",
     "Getting Started": "Setup Quickstart",
 }
 URL_REMAPS = {
-    "Developer-Central": "Component/Component-Overview",
+    "Developer-Central": "Components/Components-Overview",
     "Tutorials": "Howto/Howto-Overview",
     "../Howto/Starting/Directory-Overview": "Gamedir-Overview",
     "Howto/Starting/Directory-Overview": "Gamedir-Overview",
@@ -43,12 +43,13 @@ URL_REMAPS = {
     "issues": "github:issue",
     "bug": "github:issue",
     "bug-report": "github:issue",
-    "Components/Components-Overview": "Component-Overview",
-    "Components-Overview": "Component-Overview",
-    "Concepts/Concepts-Overview": "Concept-Overview",
-    "Concepts-Overview": "Concept-Overview",
+    "Components/Components-Overview": "Components-Overview",
+    "Components-Overview": "Components-Overview",
+    "Concepts/Concepts-Overview": "Concepts-Overview",
+    "Concepts-Overview": "Concepts-Overview",
 }
 
+_USED_REFS = {}
 
 _CURRFILE = None
 
@@ -58,6 +59,8 @@ def create_toctree():
 
     """
     global _CURRFILE
+
+    print("  -- Auto-Remapper")
 
     def _get_rel_source_ref(path):
         """Get the path relative the source/ dir"""
@@ -115,6 +118,7 @@ def create_toctree():
 
     def _sub(match):
         # inline reference links
+        global _USED_REFS
         grpdict = match.groupdict()
         txt, url = grpdict['txt'], grpdict['url']
 
@@ -131,16 +135,21 @@ def create_toctree():
             fname = part[0] if part else fname
             fname = fname.rsplit(".", 1)[0]
             fname, *anchor = fname.rsplit("#", 1)
+            _USED_REFS[fname] = url
+
             if _CURRFILE in docref_map and fname in docref_map[_CURRFILE]:
+                cfilename = _CURRFILE.rsplit("/", 1)[-1]
                 urlout = docref_map[_CURRFILE][fname] + ('#' + anchor[0] if anchor else '')
-                if urlout != url:
-                    print(f"  Remapped link [{txt}]({url}) -> [{txt}]({urlout})")
+                if urlout != url and not _CURRFILE.endswith("toc.md"):
+                    print(f"  {cfilename}: [{txt}]({url}) -> [{txt}]({urlout})")
             else:
                 urlout = url
+
         return f"[{txt}]({urlout})"
 
     def _sub_doc(match):
         # reference links set at the bottom of the page
+        global _USED_REFS
         grpdict = match.groupdict()
         txt, url = grpdict['txt'], grpdict['url']
 
@@ -148,7 +157,7 @@ def create_toctree():
         url = URL_REMAPS.get(url, url)
 
         if any(url.startswith(noremap) for noremap in _NO_REMAP_STARTSWITH):
-            return f"[{txt}]({url})"
+            return f"[{txt}]: {url}"
 
         if "http" in url and "://" in url:
             urlout = url
@@ -157,12 +166,16 @@ def create_toctree():
             fname = part[0] if part else fname
             fname = fname.rsplit(".", 1)[0]
             fname, *anchor = fname.rsplit("#", 1)
+            _USED_REFS[fname] = url
+
             if _CURRFILE in docref_map and fname in docref_map[_CURRFILE]:
+                cfilename = _CURRFILE.rsplit("/", 1)[-1]
                 urlout = docref_map[_CURRFILE][fname] + ('#' + anchor[0] if anchor else '')
-                if urlout != url:
-                    print(f"  Remapped link [{txt}]: {url} -> [{txt}]: {urlout}")
+                if urlout != url and not _CURRFILE.endswith("toc.md"):
+                    print(f"  {cfilename}: [{txt}]: {url} -> [{txt}]: {urlout}")
             else:
                 urlout = url
+
         return f"[{txt}]: {urlout}"
 
     # replace / correct links in all files
@@ -180,10 +193,10 @@ def create_toctree():
             with open(path, 'w') as fil:
                 fil.write(outtxt)
             count += 1
-            print(f" -- Auto-relinked links in {path.name}")
+            print(f"  -- Auto-relinked links in {path.name}")
 
     if count > 0:
-        print(f"Auto-corrected links in {count} documents.")
+        print(f"  -- Auto-corrected links in {count} documents.")
 
     # write tocfile
     with open(_TOC_FILE, "w") as fil:
@@ -196,12 +209,18 @@ def create_toctree():
             if ref == "toc":
                 continue
 
+            if "Part1/" in ref:
+                continue
+
             linkname = ref.replace("-", " ")
             fil.write(f"\n- [{linkname}]({ref})")
 
-
         # we add a self-reference so the toc itself is also a part of a toctree
         fil.write("\n\n```toctree::\n  :hidden:\n\n  toc\n```")
+
+    for (fname, src_url) in sorted(toc_map.items(), key=lambda tup: tup[0]):
+        if fname not in _USED_REFS:
+            print(f"    WARNING: no links found to {fname}.md ({src_url})")
 
 if __name__ == "__main__":
     create_toctree()

@@ -3,13 +3,13 @@
 [prev lesson](../Starting-Part1) | [next lesson](./Tutorial-World-Introduction)
 
 In this lesson we will test out what we can do in-game out-of-the-box. Evennia ships with 
-[around 90 default commands](../../../Component/Default-Command-Help), and while you can override those as you please, 
+[around 90 default commands](../../../Components/Default-Command-Help), and while you can override those as you please, 
 they can be quite useful.
 
 Connect and log into your new game and you will end up in the "Limbo" location. This 
 is the only room in the game at this point. Let's explore the commands a little.
 
-The default commands has syntax [similar to MUX](../../../Concept/Using-MUX-as-a-Standard):
+The default commands has syntax [similar to MUX](../../../Concepts/Using-MUX-as-a-Standard):
 
      command[/switch/switch...] [arguments ...]
 
@@ -127,14 +127,14 @@ dropped in the room, then try this:
 
     lock box = get:false()
 
-Locks represent a rather [big topic](../../../Component/Locks), but for now that will do what we want. This will lock
+Locks represent a rather [big topic](../../../Components/Locks), but for now that will do what we want. This will lock
 the box so noone can lift it. The exception is superusers, they override all locks and will pick it
 up anyway. Make sure you are quelling your superuser powers and try to get the box now:
 
     > get box
     You can't get that.
 
-Think thís default error message looks dull? The `get` command looks for an [Attribute](../../../Component/Attributes)
+Think thís default error message looks dull? The `get` command looks for an [Attribute](../../../Components/Attributes)
 named `get_err_msg` for returning a nicer error message (we just happen to know this, you would need
 to peek into the
 [code](https://github.com/evennia/evennia/blob/master/evennia/commands/default/general.py#L235) for
@@ -156,7 +156,7 @@ later, in the [Commands tutorial](./Adding-Commands).
 
 ## Get a Personality
 
-[Scripts](../../../Component/Scripts) are powerful out-of-character objects useful for many "under the hood" things.
+[Scripts](../../../Components/Scripts) are powerful out-of-character objects useful for many "under the hood" things.
 One of their optional abilities is to do things on a timer. To try out a first script, let's put one
 on ourselves. There is an example script in `evennia/contrib/tutorial_examples/bodyfunctions.py`
 that is called `BodyFunctions`. To add this to us we will use the `script` command:
@@ -185,14 +185,14 @@ When you are tired of your character's "insights", kill the script with
     script/stop self = tutorial_examples.bodyfunctions.BodyFunctions
 
 You create your own scripts in Python, outside the game; the path you give to `script` is literally
-the Python path to your script file. The [Scripts](../../../Component/Scripts) page explains more details.
+the Python path to your script file. The [Scripts](../../../Components/Scripts) page explains more details.
 
 ## Pushing Your Buttons
 
 If we get back to the box we made, there is only so much fun you can have with it at this point. It's
 just a dumb generic object. If you renamed it to `stone` and changed its description, noone would be
-the wiser. However, with the combined use of custom [Typeclasses](../../../Component/Typeclasses), [Scripts](../../../Component/Scripts)
-and object-based [Commands](../../../Component/Commands), you could expand it and other items to be as unique, complex
+the wiser. However, with the combined use of custom [Typeclasses](../../../Components/Typeclasses), [Scripts](../../../Components/Scripts)
+and object-based [Commands](../../../Components/Commands), you could expand it and other items to be as unique, complex
 and interactive as you want.
 
 Let's take an example. So far we have only created objects that use the default object typeclass
@@ -208,7 +208,7 @@ The same way we did with the Script Earler, we specify a "Python-path" to the Py
 to use for creating the object. There you go - one red button.
 
 The RedButton is an example object intended to show off a few of Evennia's features. You will find
-that the [Typeclass](../../../Component/Typeclasses) and [Commands](../../../Component/Commands) controlling it are 
+that the [Typeclass](../../../Components/Typeclasses) and [Commands](../../../Components/Commands) controlling it are 
 inside [evennia/contrib/tutorial_examples](api:evennia.contrib.tutorial_examples)
 
 If you wait for a while (make sure you dropped it!) the button will blink invitingly. 

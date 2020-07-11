@@ -53,15 +53,14 @@ appreciate the work done with the server! You can also encourage the community t
 issues by putting up a monetary [bounty][bountysource] on it. 
 
 
-[form](https://docs.google.com/spreadsheet/viewform?hl=en_US&formkey=dGN0VlJXMWpCT3VHaHpscDEzY1RoZGc6MQ#gid=0)
-[group](http://groups.google.com/group/evennia/)
-[issues](https://github.com/evennia/evennia/issues)
-[issues-master](https://github.com/evennia/evennia/issues?utf8=%E2%9C%93&q=is%3Aissue%20is%3Aopen%20label%3Abug%20label%3Amaster-branch)
-[chat](http://webchat.freenode.net/?channels=evennia)
-[paypal](https://www.paypal.com/se/cgi-bin/webscr?cmd=_flow&SESSION=Z-VlOvfGjYq2qvCDOUGpb6C8Due7skT0qOklQEy5EbaD1f0eyEQaYlmCc8O&dispatch=5885d80a13c0db1f8e263663d3faee8d64ad11bbf4d2a5a1a0d303a50933f9b2)
-[donate-img](http://images-focus-opensocial.googleusercontent.com/gadgets/proxy?url=https://www.paypalobjects.com/en%255fUS/SE/i/btn/btn%255fdonateCC%255fLG.gif&container=focus&gadget=a&rewriteMime=image/*)
-[patreon](https://www.patreon.com/griatch)
-[patreon-img](http://www.evennia.com/_/rsrc/1424724909023/home/evennia_patreon_100x100.png)
-[issues-bounties](https://github.com/evennia/evennia/labels/bounty)
-[bountysource](https://www.bountysource.com/teams/evennia)
-
+[form]: https://docs.google.com/spreadsheet/viewform?hl=en_US&formkey=dGN0VlJXMWpCT3VHaHpscDEzY1RoZGc6MQ#gid=0
+[group]:http://groups.google.com/group/evennia/
+[issues]:https://github.com/evennia/evennia/issues
+[issues-master]:https://github.com/evennia/evennia/issues?utf8=%E2%9C%93&q=is%3Aissue%20is%3Aopen%20label%3Abug%20label%3Amaster-branch
+[chat]: http://webchat.freenode.net/?channels=evennia
+[paypal]: https://www.paypal.com/se/cgi-bin/webscr?cmd=_flow&SESSION=Z-VlOvfGjYq2qvCDOUGpb6C8Due7skT0qOklQEy5EbaD1f0eyEQaYlmCc8O&dispatch=5885d80a13c0db1f8e263663d3faee8d64ad11bbf4d2a5a1a0d303a50933f9b2
+[donate-img]: http://images-focus-opensocial.googleusercontent.com/gadgets/proxy?url=https://www.paypalobjects.com/en%255fUS/SE/i/btn/btn%255fdonateCC%255fLG.gif&container=focus&gadget=a&rewriteMime=image/*
+[patreon]: https://www.patreon.com/griatch
+[patreon-img]: http://www.evennia.com/_/rsrc/1424724909023/home/evennia_patreon_100x100.png
+[issues-bounties]:https://github.com/evennia/evennia/labels/bounty
+[bountysource]: https://www.bountysource.com/teams/evennia

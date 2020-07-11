@@ -1,4 +1,4 @@
-## Django Database queries
+# Django Database queries
 
 [prev lesson](./Searching-Things) | [next lesson](../Starting-Part2)
 
@@ -184,7 +184,7 @@ will_transform = (
         
 Running this query makes our newly lycantrrophic Character appear in `will_transform`. Success! 
 
-> Don't confuse database fields with [Attributes](../../../Component/Attributes) you set via `obj.db.attr = 'foo'` or
+> Don't confuse database fields with [Attributes](../../../Components/Attributes) you set via `obj.db.attr = 'foo'` or
 `obj.attributes.add()`. Attributes are custom database entities *linked* to an object. They are not
 separate fields *on* that object like `db_key` or `db_location` are. 
 
@@ -390,7 +390,7 @@ in a format like the following:
 ]
 ```
 
-# Conclusions 
+## Conclusions 
 
 We have covered a lot of ground in this lesson and covered several more complex topics. Knowing how to 
 query using Django is a powerful skill to have. 

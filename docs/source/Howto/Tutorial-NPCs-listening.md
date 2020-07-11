@@ -6,7 +6,7 @@ their location. In this example the NPC parrots what is said, but any actions co
 this way.
 
 It is assumed that you already know how to create custom room and character typeclasses, please see
-the [Basic Game tutorial](Starting/Tutorial-for-basic-MUSH-like-game) if you haven't already done this.
+the [Basic Game tutorial](Starting/Part3/Tutorial-for-basic-MUSH-like-game) if you haven't already done this.
 
 What we will need is simply a new NPC typeclass that can react when someone speaks.
 

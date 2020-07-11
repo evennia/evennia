@@ -50,7 +50,7 @@ and back (assuming we created it in limbo).
 
 Using the `@tel`command like shown above is obviously not what we want. `@tel` is an admin command
 and normal players will thus never be able to enter the train! It is also not really a good idea to
-use [Exits](../Component/Objects#exits) to get in and out of the train - Exits are (at least by default) objects
+use [Exits](../Components/Objects#exits) to get in and out of the train - Exits are (at least by default) objects
 too. They point to a specific destination. If we put an Exit in this room leading inside the train
 it would stay here when the train moved away (still leading into the train like a magic portal!). In
 the same way, if we put an Exit object inside the train, it would always point back to this room,
@@ -58,7 +58,7 @@ regardless of where the Train has moved. Now, one *could* define custom Exit typ
 the train or change their destination in the right way - but this seems to be a pretty cumbersome
 solution.
 
-What we will do instead is to create some new [commands](../Component/Commands): one for entering the train and
+What we will do instead is to create some new [commands](../Components/Commands): one for entering the train and
 another for leaving it again. These will be stored *on the train object* and will thus be made
 available to whomever is either inside it or in the same room as the train.
 
@@ -122,7 +122,7 @@ documentation.
 These commands are work in a pretty straightforward way: `CmdEnterTrain` moves the location of the
 player to inside the train and `CmdLeaveTrain` does the opposite: it moves the player back to the
 current location of the train (back outside to its current location). We stacked them in a
-[cmdset](../Component/Command-Sets) `CmdSetTrain` so they can be used.
+[cmdset](../Components/Command-Sets) `CmdSetTrain` so they can be used.
 
 To make the commands work we need to add this cmdset to our train typeclass:
 
@@ -159,7 +159,7 @@ As seen above, when this hook is called on our train, our new cmdset will be loa
 If you have played around a bit, you've probably figured out that you can use `leave train` when
 outside the train and `enter train` when inside. This doesn't make any sense ... so let's go ahead
 and fix that.  We need to tell Evennia that you can not enter the train when you're already inside
-or leave the train when you're outside. One solution to this is [locks](../Component/Locks): we will lock down
+or leave the train when you're outside. One solution to this is [locks](../Components/Locks): we will lock down
 the commands so that they can only be called if the player is at the correct location.
 
 Right now commands defaults to the lock `cmd:all()`. The `cmd` lock type in combination with the
@@ -322,7 +322,7 @@ If we wanted full control of the train we could now just add a command to step i
 when desired. We want the train to move on its own though, without us having to force it by manually
 calling the `goto_next_room` method.
 
-To do this we will create two [scripts](../Component/Scripts): one script that runs when the train has stopped at
+To do this we will create two [scripts](../Components/Scripts): one script that runs when the train has stopped at
 a station and is responsible for starting the train again after a while. The other script will take
 care of the driving.
 
@@ -416,7 +416,7 @@ enter/exit commands check so the train is not moving before allowing the caller 
 * Have train conductor commands that can override the automatic start/stop.
 * Allow for in-between stops between the start- and end station
 * Have a rail road track instead of hard-coding the rooms in the train object. This could for
-example be a custom [Exit](../Component/Objects#exits) only traversable by trains. The train will follow the
+example be a custom [Exit](../Components/Objects#exits) only traversable by trains. The train will follow the
 track. Some track segments can split to lead to two different rooms and a player can switch the
 direction to which room it goes.
 * Create another kind of vehicle!

@@ -29,7 +29,7 @@ pip install python-twitter
 ## A basic tweet command
 
 Evennia doesn't have a `tweet` command out of the box so you need to write your own little
-[Command](../Component/Commands) in order to tweet. If you are unsure about how commands work and how to add
+[Command](../Components/Commands) in order to tweet. If you are unsure about how commands work and how to add
 them, it can be an idea to go through the [Adding a Command Tutorial](../Howto/Starting/Part1/Adding-Commands)
 before continuing.
 
@@ -89,7 +89,7 @@ Be sure to substitute your own actual API/Access keys and secrets in the appropr
 
 We default to limiting tweet access to players with `Developers`-level access *or* to those players
 that have the permission "tweet" (allow individual characters to tweet with `@perm/player playername
-= tweet`). You may change the [lock](../Component/Locks) as you feel is appropriate. Change the overall
+= tweet`). You may change the [lock](../Components/Locks) as you feel is appropriate. Change the overall
 permission to `Players` if you want everyone to be able to tweet.
 
 Now add this command to your default command set (e.g in `mygame/commands/defalt_cmdsets.py`") and
