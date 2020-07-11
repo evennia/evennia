@@ -125,18 +125,18 @@ gloss over this bit and jump directly to **World Building**. Vice versa, many "g
 tend to jump directly to this part without doing the **Planning** first. Neither way is good and
 *will* lead to you having to redo all your hard work at least once, probably more.
 
-Evennia's [Evennia Component overview](../../../Component/Component-Overview) tries to help you with this bit of development. We
+Evennia's [Evennia Component overview](../../../Components/Components-Overview) tries to help you with this bit of development. We
 also have a slew of [Tutorials](../../Howto-Overview) with worked examples. Evennia tries hard to make this
 part easier for you, but there is no way around the fact that if you want anything but a very basic
 Talker-type game you *will* have to bite the bullet and code your game (or find a coder willing to
 do it for you).
 
 Even if you won't code anything yourself, as a designer you need to at least understand the basic
-paradigms of Evennia, such as [Objects](../../../Component/Objects), 
-[Commands](../../../Component/Commands) and [Scripts](../../../Component/Scripts) and
+paradigms of Evennia, such as [Objects](../../../Components/Objects), 
+[Commands](../../../Components/Commands) and [Scripts](../../../Components/Scripts) and
 how they hang together. We recommend you go through the [Tutorial World](../Part1/Tutorial-World-Introduction) in detail (as well as glancing at its code) to get at least a feel for what is
 involved behind the scenes. You could also look through the tutorial for 
-[building a game from scratch](../Tutorial-for-basic-MUSH-like-game).
+[building a game from scratch](../Part3/Tutorial-for-basic-MUSH-like-game).
 
 During Coding you look back at the things you wanted during the **Planning** phase and try to
 implement them. Don't be shy to update your plans if you find things easier/harder than you thought.

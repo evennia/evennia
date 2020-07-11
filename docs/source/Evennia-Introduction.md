@@ -35,7 +35,7 @@ implementations indeed.
 
 The server ships with a default set of player commands that are similar to the MUX command set. We
 *do not* aim specifically to be a MUX server, but we had to pick some default to go with (see
-[this](Concept/Soft-Code) for more about our original motivations).  It's easy to remove or add commands, or
+[this](Concepts/Soft-Code) for more about our original motivations).  It's easy to remove or add commands, or
 to have the command syntax mimic other systems, like Diku, LP, MOO and so on. Or why not create a
 new and better command system of your own design.
 
@@ -99,7 +99,7 @@ generation and more
 - RSS feeds can be echoed to in-game channels (things like Twitter can easily be added)
 - Several different databases supported (SQLite3, MySQL, PostgreSQL, ...)
 
-For more extensive feature information, see the [Evennia Component overview](Component/Component-Overview).
+For more extensive feature information, see the [Evennia Component overview](Components/Components-Overview).
 
 ## What you need to know to work with Evennia
 
@@ -141,8 +141,8 @@ programming](http://www.tutorialspoint.com/python/python_classes_objects.htm), u
 [Classes](http://docs.python.org/tutorial/classes.html), their methods and properties
 
 Obviously, the more things you feel comfortable with, the easier time you'll have to find your way.
-With just basic knowledge you should be able to define your own [Commands](Component/Commands), create custom
-[Objects](Component/Objects) as well as make your world come alive with basic [Scripts](Component/Scripts). You can
+With just basic knowledge you should be able to define your own [Commands](Components/Commands), create custom
+[Objects](Components/Objects) as well as make your world come alive with basic [Scripts](Components/Scripts). You can
 definitely build a whole advanced and customized game from extending Evennia's examples only.
 
 ### I know my Python stuff and I am willing to use it!
@@ -177,6 +177,6 @@ be searched from the same place for discussion topics you are interested in.
 2. Read the [Game Planning](Howto/Starting/Part2/Game-Planning) wiki page. It gives some ideas for your work flow and the
 state of mind you should aim for - including cutting down the scope of your game for its first
 release.
-3. Do the [Tutorial for basic MUSH-like game](Howto/Starting/Tutorial-for-basic-MUSH-like-game) carefully from
+3. Do the [Tutorial for basic MUSH-like game](Howto/Starting/Part3/Tutorial-for-basic-MUSH-like-game) carefully from
 beginning to end and try to understand what does what. Even if you are not interested in a MUSH for
 your own game, you will end up with a small (very small) game that you can build or learn from.

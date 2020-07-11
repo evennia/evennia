@@ -1,43 +1,51 @@
-# Evennia Starting Tutorial (Part 1)
+# Starting Tutorial (Part 1)
 
-  [Next lesson](Part1/Building-Quickstart)
+[Start](Part1/Building-Quickstart)
   
-This is a multi-part Tutorial that will gradually take you from first installation to making your 
-own first little game in Evennia. Let's get started! 
+```sidebar:: Tutorial Parts
 
-```sidebar:: Parts of the Starting tutorial
-
-  **Part 1**: What we have
+  **Part 1: What we have**
     A tour of Evennia and how to use the tools, including an introduction to Python.
-  Part 2: `What we want <Starting-Part2>`_
+  Part 2: `What we want <./Starting-Part2.html>`_
     Planning our tutorial game and what to think about when planning your own in the future.
-  Part 3: `How we get there <Starting-Part3>`_ 
+  Part 3: `How we get there <./Starting-Part3.html>`_ 
        Getting down to the meat of extending Evennia to make our game
-  Part 4: `Using what we created <Starting-Part4>`_
+  Part 4: `Using what we created <./Starting-Part4.html>`_
     Building a tech-demo and world content to go with our code
-  Part 5: `Showing the world <Starting-Part5>`_
+  Part 5: `Showing the world <./Starting-Part5.html>`_
     Taking our new game online and let players try it out
 ```
 
+Welcome to Evennia! This multi-part Tutorial will help you get off the ground. It consists
+of five parts, each with several lessons. You can pick what seems interesting, but if you 
+follow through to the end you will have created a little online game of your own to play 
+and share with others! 
+
 ## Lessons of Part 1 - "What we have"
 
-1. Introduction & Overview (you are here)
-1. [Building stuff](Part1/Building-Quickstart)
-1. [The Tutorial World](Part1/Tutorial-World-Introduction)
-1. [Python basics](Part1/Python-basic-introduction)
-1. [Game dir overview](Part1/Gamedir-Overview)
-1. [Python classes and objects](Part1/Python-classes-and-objects)
-1. [Accessing the Evennia library](Part1/Evennia-Library-Overview)
-1. [Typeclasses - Persistent objects](Part1/Learning-Typeclasses)
-1. [Making our first own commands](Part1/Adding-Commands)
-1. [Parsing and replacing default Commands](Part1/More-on-Commands)
-1. [Creating things](Part1/Creating-Things)
-1. [Searching for things](Part1/Searching-Things)
-1. [Advanced searching with Django queries](Part1/Django-queries)
+```toctree::
+    :numbered: 
+    :maxdepth: 1
+
+    Building stuff <Part1/Building-Quickstart>
+    The Tutorial World <Part1/Tutorial-World-Introduction>
+    Python basics <Part1/Python-basic-introduction>
+    Game dir overview <Part1/Gamedir-Overview>
+    Python classes and objects <Part1/Python-classes-and-objects>
+    Accessing the Evennia library <Part1/Evennia-Library-Overview>
+    Typeclasses and Persistent objects <Part1/Learning-Typeclasses>
+    Making first own Commands <Part1/Adding-Commands>
+    Parsing and replacing default Commands <Part1/More-on-Commands>
+    Creating things <Part1/Creating-Things>
+    Searching for things <Part1/Searching-Things>
+    Advanced searching with Django queries <Part1/Django-queries>
+```
 
 In this first part we'll focus on what we get out of the box in Evennia - we'll get used to the tools,
-where things are and how we find things we are looking for. We will also dive into some of things you'll 
-need to know to fully utilize the system, including giving a brief rundown of Python concepts. 
+and how to find things we are looking for. We will also dive into some of things you'll 
+need to know to fully utilize the system, including giving you a brief rundown of Python concepts. If you are
+an experienced Python programmer, some sections may feel a bit basic, but you will at least not have seen 
+these concepts in the context of Evennia before. 
 
 ## Things you will need 
 
@@ -106,4 +114,4 @@ first enter that gamedir and run
 
   You should now be good to go!  
   
-  [Next lesson](Part1/Building-Quickstart)
+  [Start](Part1/Building-Quickstart)

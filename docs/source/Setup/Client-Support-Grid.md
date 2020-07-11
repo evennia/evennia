@@ -71,25 +71,25 @@ Workaround:
 * Press Control Enter, then Enter key again to send blank line.
 
 
-[1](https://github.com/evennia/evennia/wiki/Web%20features#web-client)
-[2](https://github.com/evennia/evennia/issues?utf8=%E2%9C%93&q=client+status%3Dopen+])
-[3](http://tintin.sourceforge.net/)
-[4](http://tinyfugue.sourceforge.net/)
-[5](http://mushclient.com/)
-[6](http://forums.zuggsoft.com/index.php?page=4&action=file&file_id=65)
-[7](http://forums.zuggsoft.com/index.php?page=4&action=category&cat_id=11)
-[8](http://www.potatomushclient.com/)
-[9](http://www.mudlet.org/)
-[10](https://archive.org/details/tucows_196173_SimpleMU_MU_Client)
-[11](http://www.riverdark.net/atlantis/)
-[12](https://sourceforge.net/projects/g-mud/)
-[13](http://www.beipmu.com/)
-[14](https://itunes.apple.com/us/app/mudrammer-a-modern-mud-client/id597157072)
-[15](https://itunes.apple.com/us/app/mudmaster/id341160033)
-[16](http://bt.happygoatstudios.com/)
-[17](https://play.google.com/store/apps/details?id=com.crap.mukluk)
-[18](https://github.com/GNOME/gnome-mud)
-[19](https://spyrit.ierne.eu.org/)
-[20](http://jamochamud.org/)
-[21](http://duckclient.com/)
-[22](https://www.kildclient.org/)
+[1]: https://github.com/evennia/evennia/wiki/Web%20features#web-client
+[2]: https://github.com/evennia/evennia/issues?utf8=%E2%9C%93&q=client+status%3Dopen+]
+[3]: http://tintin.sourceforge.net/
+[4]: http://tinyfugue.sourceforge.net/
+[5]: http://mushclient.com/
+[6]: http://forums.zuggsoft.com/index.php?page=4&action=file&file_id=65
+[7]: http://forums.zuggsoft.com/index.php?page=4&action=category&cat_id=11
+[8]: http://www.potatomushclient.com/
+[9]: http://www.mudlet.org/
+[10]: https://archive.org/details/tucows_196173_SimpleMU_MU_Client
+[11]: http://www.riverdark.net/atlantis/
+[12]: https://sourceforge.net/projects/g-mud/
+[13]: http://www.beipmu.com/
+[14]: https://itunes.apple.com/us/app/mudrammer-a-modern-mud-client/id597157072
+[15]: https://itunes.apple.com/us/app/mudmaster/id341160033
+[16]: http://bt.happygoatstudios.com/
+[17]: https://play.google.com/store/apps/details?id=com.crap.mukluk
+[18]: https://github.com/GNOME/gnome-mud
+[19]: https://spyrit.ierne.eu.org/
+[20]: http://jamochamud.org/
+[21]: http://duckclient.com/
+[22]: https://www.kildclient.org/

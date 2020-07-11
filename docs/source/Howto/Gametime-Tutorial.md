@@ -98,7 +98,7 @@ time, and assuming a standard calendar (see below for the same feature with a cu
 instance, it can be used to have a specific message every (in-game) day at 6:00 AM showing how the
 sun rises.
 
-The function `schedule()` should be used here.  It will create a [script](../Component/Scripts) with some
+The function `schedule()` should be used here.  It will create a [script](../Components/Scripts) with some
 additional features to make sure the script is always executed when the game time matches the given
 parameters.
 

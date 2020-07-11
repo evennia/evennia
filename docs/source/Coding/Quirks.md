@@ -64,7 +64,7 @@ update the database you'd need to explicitly re-assign the updated data to the `
 
 ### Commands are matched by name *or* alias
 
-When merging [command sets](../Component/Commands) it's important to remember that command objects are identified
+When merging [command sets](../Components/Commands) it's important to remember that command objects are identified
 *both* by key *or* alias. So if you have a command with a key `look` and an alias `ls`, introducing
 another command with a key `ls` will be assumed by the system to be *identical* to the first one.
 This usually means merging cmdsets will overload one of them depending on priority. Whereas this is

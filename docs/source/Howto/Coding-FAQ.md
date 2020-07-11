@@ -23,8 +23,8 @@ reloading)
 - [Use wide characters with EvTable](./Coding-FAQ#non-latin-characters-in-evtable)
 
 ## Removing default commands
-**Q:** How does one *remove* (not replace) e.g. the default `get` [Command](../Component/Commands) from the
-Character [Command Set](../Component/Command-Sets)?
+**Q:** How does one *remove* (not replace) e.g. the default `get` [Command](../Components/Commands) from the
+Character [Command Set](../Components/Command-Sets)?
 
 **A:** Go to `mygame/commands/default_cmdsets.py`. Find the `CharacterCmdSet` class. It has one
 method named `at_cmdset_creation`. At the end of that method, add the following line:
@@ -36,7 +36,7 @@ for more info.
 combat, immobilized, etc.)
 
 **A:** The `at_before_move` hook is called by Evennia just before performing any move. If it returns
-`False`, the move is aborted. Let's say we want to check for an [Attribute](../Component/Attributes) `cantmove`.
+`False`, the move is aborted. Let's say we want to check for an [Attribute](../Components/Attributes) `cantmove`.
 Add the following code to the `Character` class:
 
 ```python
@@ -52,7 +52,7 @@ def at_before_move(self, destination):
 **Q:** An object has a Command on it starts up an EvMenu instance. How do I capture a reference to
 that object for use in the menu?
 
-**A:** When an [EvMenu](../Component/EvMenu) is started, the menu object is stored as `caller.ndb._menutree`.
+**A:** When an [EvMenu](../Components/EvMenu) is started, the menu object is stored as `caller.ndb._menutree`.
 This is a good place to store menu-specific things since it will clean itself up when the menu
 closes. When initiating the menu, any additional keywords you give will be available for you as
 properties on this menu object:
@@ -101,7 +101,7 @@ CHANNEL_COLORS`.
 **Q:** I want certain commands to turn off in a given room. They should still work normally for
 staff.
 
-**A:** This is done using a custom cmdset on a room [locked with the 'call' lock type](../Component/Locks). Only
+**A:** This is done using a custom cmdset on a room [locked with the 'call' lock type](../Components/Locks). Only
 if this lock is passed will the commands on the room be made available to an object inside it. Here
 is an example of a room where certain commands are disabled for non-staff:
 
@@ -142,7 +142,7 @@ superusers).
 command to only be available on a full moon, from midnight to three in-game time.
 
 **A:** This is easiest accomplished by putting the "werewolf" command on the Character as normal,
-but to [lock](../Component/Locks) it with the "cmd" type lock. Only if the "cmd" lock type is passed will the
+but to [lock](../Components/Locks) it with the "cmd" type lock. Only if the "cmd" lock type is passed will the
 command be available.
 
 ```python

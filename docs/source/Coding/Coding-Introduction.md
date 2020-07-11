@@ -39,7 +39,7 @@ available at the top level of Evennia's  "flat API". See the [flat API](../Evenn
 info on how to explore it efficiently.
 
 You can complement your exploration by peeking at the sections of the much more detailed 
-[Evennia Component overview](../Component/Component-Overview). The [Tutorials](../Howto/Howto-Overview) section also contains a growing collection
+[Evennia Component overview](../Components/Components-Overview). The [Tutorials](../Howto/Howto-Overview) section also contains a growing collection
 of system- or implementation-specific help.
 
 ### Use a python syntax checker

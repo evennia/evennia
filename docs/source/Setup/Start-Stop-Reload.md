@@ -20,7 +20,7 @@ to give you a menu with options.
 
 ## Starting Evennia
 
-Evennia consists of two components, the Evennia [Server and Portal](../Component/Portal-And-Server).  Briefly,
+Evennia consists of two components, the Evennia [Server and Portal](../Components/Portal-And-Server).  Briefly,
 the  *Server* is what is running the mud. It handles all game-specific things but doesn't care
 exactly how players connect, only that they have. The *Portal* is a gateway to which players
 connect. It knows everything about telnet, ssh, webclient protocols etc but very little about the
@@ -67,7 +67,7 @@ reboots. Since they are connected to the *Portal*, their connections are not los
 
 
 Reloading is as close to a "warm reboot" you can get. It reinitializes all code of Evennia, but
-doesn't kill "persistent" [Scripts](../Component/Scripts). It also calls `at_server_reload()` hooks on all
+doesn't kill "persistent" [Scripts](../Components/Scripts). It also calls `at_server_reload()` hooks on all
 objects so you
 can save eventual temporary properties you want.
 

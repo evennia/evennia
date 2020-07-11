@@ -12,7 +12,7 @@ individually track the time, they instead subscribe to be called by a global tic
 keeping.  Not only does this centralize and organize much of the code in one place, it also has less
 computing overhead.
 
-Evennia offers the [TickerHandler](../Component/TickerHandler) specifically for using the subscription model. We
+Evennia offers the [TickerHandler](../Components/TickerHandler) specifically for using the subscription model. We
 will use it for our weather system.
 
 We will assume you know how to make your own Typeclasses. If not see one of the beginning tutorials.

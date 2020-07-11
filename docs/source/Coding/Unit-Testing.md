@@ -153,7 +153,7 @@ class in the same module to get access to the command-specific utilities mention
 ### Unit testing contribs with custom models
 
 A special case is if you were to create a contribution to go to the `evennia/contrib` folder that
-uses its [own database models](../Concept/New-Models). The problem with this is that Evennia (and Django) will
+uses its [own database models](../Concepts/New-Models). The problem with this is that Evennia (and Django) will
 only recognize models in `settings.INSTALLED_APPS`. If a user wants to use your contrib, they will
 be required to add your models to their settings file. But since contribs are optional you cannot
 add the model to Evennia's central `settings_default.py` file - this would always create your

@@ -3,7 +3,7 @@
 The documents in this section aims to teach how to use Evennia in a tutorial or
 a step-by-step way. They often give hints on about solving a problem or implementing
 a particular feature or concept. They will often refer to the
-[components](../Component/Component-Overview) or [concepts](../Concept/Concept-Overview)
+[components](../Components/Components-Overview) or [concepts](../Concepts/Concepts-Overview)
 docs for those that want to dive deeper.
 
 ## The Starting Tutorial
@@ -34,11 +34,15 @@ in mind for your own game, this will give you a good start.
 1. [On planning a game](Starting/Part2/Game-Planning)
 1. [Multisession modes](../Unimplemented)
 1. [Layout of our tutorial game](../Unimplemented)
-1. [Making use of contribs](Starting/Starting-Part3)
-1. [Making a custom Character](Starting/Implementing-a-game-rule-system)
+1. [Some useful Contribs](Starting/Part2/Some-Useful-Contribs)
+
+### Part3: How we get there
+
+1. [Introduction & Overview](Starting/Starting-Part3)
+1. [Making a custom Character](Starting/Part3/Implementing-a-game-rule-system)
 1. [Character generation](../Unimplemented)
 1. [Resolving skills and challenges](../Unimplemented)
-1. [NPCs and mobiles](Starting/Coordinates)
+1. [NPCs and mobiles](./Coordinates)
 1. [Quests and Zones](../Unimplemented)
 1. [A Combat system](../Unimplemented)
 
@@ -51,8 +55,8 @@ in mind for your own game, this will give you a good start.
 ### Part 5: Showing the world
 
 1. [Introduction & Overview](Starting/Starting-Part5)
-1. [Add a web page](Starting/Add-a-simple-new-web-page)
-1. [More on adding web features](Starting/Web-Tutorial)
+1. [Add a web page](Starting/Part5/Add-a-simple-new-web-page)
+1. [More on adding web features](Starting/Part5/Web-Tutorial)
 1. [Taking your game online](../Unimplemented)
 1. [Next steps](../Unimplemented)
 
