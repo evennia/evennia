@@ -3,7 +3,7 @@
 [prev lesson](../Starting-Part1) | [next lesson](./Tutorial-World-Introduction)
 
 In this lesson we will test out what we can do in-game out-of-the-box. Evennia ships with 
-[around 90 default commands](../../../Components/Default-Command-Help), and while you can override those as you please, 
+[around 90 default commands](api:evennia.commands.default#modules), and while you can override those as you please, 
 they can be quite useful.
 
 Connect and log into your new game and you will end up in the "Limbo" location. This 

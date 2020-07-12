@@ -83,7 +83,7 @@ planning at this stage can solve many problems before they happen.
 In this section we will try to create an actual "map" object that an account can pick up and look
 at.
 
-Evennia offers a range of [default commands](../Components/Default-Command-Help) for 
+Evennia offers a range of [default commands](api:evennia.commands.default#modules) for 
 [creating objects and rooms in-game](../Howto/Starting/Part1/Building-Quickstart). While readily accessible, these commands are made to do very
 specific, restricted things and will thus not offer as much flexibility to experiment (for an
 advanced exception see [in-line functions](../Concepts/TextTags#new-inlinefuncs)). Additionally, entering long

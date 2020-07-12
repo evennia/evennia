@@ -10,6 +10,7 @@ This documentation cover more over-arching concepts of Evennia, often involving 
 
 ## Access 
 
+- [Multisession modes](./Multisession-modes)
 - [Permissions](./Building-Permissions)
 - [Banning](./Banning)
 

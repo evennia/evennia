@@ -100,6 +100,8 @@ in mind for your own game, this will give you a good start.
 - [View Character on website](./Web-Character-View-Tutorial)
 
 ## Deep-dives
+
+- [Parsing command inputs](./Parsing-commands-tutorial)
 - [Understanding color-tags](./Understanding-Color-Tags)
 - [Play paper&pen RPGs online with Evennia](./Evennia-for-roleplaying-sessions)
 - [Evennia for Diku Users](./Evennia-for-Diku-Users)

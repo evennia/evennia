@@ -56,7 +56,7 @@ This the the structure of the Evennia library:
    - [`settings_default.py`](../../../Components/Server-Conf#Settings-file) - Root settings of Evennia. Copy settings
 from here to `mygame/server/settings.py` file.
    - [`commands/`](../../../Components/Commands) - The command parser and handler.
-     - `default/` - The [default commands](../../../Components/Default-Command-Help) and cmdsets. 
+     - `default/` - The [default commands](api:evennia.commands.default#modules) and cmdsets. 
    - [`comms/`](../../../Components/Communications) - Systems for communicating in-game. 
    - `contrib/` - Optional plugins too game-specific for core Evennia.
    - `game_template/` - Copied to become the "game directory" when using `evennia --init`. 
