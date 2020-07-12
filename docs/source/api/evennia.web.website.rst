@@ -1,4 +1,4 @@
-evennia.web.website package
+evennia.web.website 
 ===========================
 
 .. automodule:: evennia.web.website
@@ -10,41 +10,17 @@ Subpackages
 -----------
 
 .. toctree::
+   :maxdepth: 6
 
    evennia.web.website.templatetags
 
 Submodules
 ----------
 
-evennia.web.website.forms module
---------------------------------
+.. toctree::
+   :maxdepth: 6
 
-.. automodule:: evennia.web.website.forms
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.web.website.tests module
---------------------------------
-
-.. automodule:: evennia.web.website.tests
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.web.website.urls module
--------------------------------
-
-.. automodule:: evennia.web.website.urls
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.web.website.views module
---------------------------------
-
-.. automodule:: evennia.web.website.views
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
+   evennia.web.website.forms
+   evennia.web.website.tests
+   evennia.web.website.urls
+   evennia.web.website.views

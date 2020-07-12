@@ -1,4 +1,4 @@
-evennia.locks package
+evennia.locks 
 =====================
 
 .. automodule:: evennia.locks
@@ -9,27 +9,8 @@ evennia.locks package
 Submodules
 ----------
 
-evennia.locks.lockfuncs module
-------------------------------
+.. toctree::
+   :maxdepth: 6
 
-.. automodule:: evennia.locks.lockfuncs
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.locks.lockhandler module
---------------------------------
-
-.. automodule:: evennia.locks.lockhandler
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.locks.tests module
---------------------------
-
-.. automodule:: evennia.locks.tests
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
+   evennia.locks.lockfuncs
+   evennia.locks.lockhandler
