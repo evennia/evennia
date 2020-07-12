@@ -11,7 +11,7 @@ Most MUDs will use some sort of combat system. There are several main variations
 - _Twitch_ - This is the traditional MUD hack&slash style combat. In a twitch system there is often no difference between your normal "move-around-and-explore mode" and the "combat mode". You enter an attack command and the system will calculate if the attack hits and how much damage was caused. Normally attack commands have some sort of timeout or notion of recovery/balance to reduce the advantage of spamming or client scripting. Whereas the simplest systems just means entering `kill <target>` over and over, more sophisticated twitch systems include anything from defensive stances to tactical positioning. 
 - _Turn-based_ - a turn based system means that the system pauses to make sure all combatants can choose their actions before continuing. In some systems, such entered actions happen immediately (like twitch-based) whereas in others the resolution happens simultaneously at the end of the turn. The disadvantage of a turn-based system is that the game must switch to a "combat mode" and one also needs to take special care of how to handle new combatants and the passage of time. The advantage is that success is not dependent on typing speed or of setting up quick client macros. This potentially allows for emoting as part of combat which is an advantage for roleplay-heavy games. 
 
-To implement a freeform combat system all you need is a dice roller and a roleplaying rulebook. See [contrib/dice.py](https://github.com/evennia/evennia/blob/master/evennia/contrib/dice.py) for an example dice roller. To implement at twitch-based system you basically need a few combat [commands](Commands), possibly ones with a [cooldown](Command-Cooldown). You also need a [game rule module](Implementing-a-game-rule-system) that makes use of it. We will focus on the turn-based variety here. 
+To implement a freeform combat system all you need is a dice roller and a roleplaying rulebook. See [contrib/dice.py](https://github.com/evennia/evennia/blob/master/evennia/contrib/dice.py) for an example dice roller. To implement at twitch-based system you basically need a few combat [commands](./Commands), possibly ones with a [cooldown](./Command-Cooldown). You also need a [game rule module](./Implementing-a-game-rule-system) that makes use of it. We will focus on the turn-based variety here. 
 
 ## Tutorial overview
 
@@ -28,18 +28,18 @@ This tutorial will implement the slightly more complex turn-based combat system.
 
 For creating the combat system we will need the following components:
 
-- A combat handler. This is the main mechanic of the system. This is a [Script](Scripts) object created for each combat.  It is not assigned to a specific object but is shared by the combating characters and handles all the combat information. Since Scripts are database entities it also means that the combat will not be affected by a server reload.
-- A combat [command set](Command-Sets) with the relevant commands needed for combat, such as the various attack/defend options and the `flee/disengage` command to leave the combat mode.
-- A rule resolution system. The basics of making such a module is described in the [rule system tutorial](Implementing-a-game-rule-system). We will only sketch such a module here for our end-turn combat resolution.
-- An `attack` [command](Commands) for initiating the combat mode. This is added to the default command set. It will create the combat handler and add the character(s) to it. It will also assign the combat command set to the characters. 
+- A combat handler. This is the main mechanic of the system. This is a [Script](./Scripts) object created for each combat.  It is not assigned to a specific object but is shared by the combating characters and handles all the combat information. Since Scripts are database entities it also means that the combat will not be affected by a server reload.
+- A combat [command set](./Command-Sets) with the relevant commands needed for combat, such as the various attack/defend options and the `flee/disengage` command to leave the combat mode.
+- A rule resolution system. The basics of making such a module is described in the [rule system tutorial](./Implementing-a-game-rule-system). We will only sketch such a module here for our end-turn combat resolution.
+- An `attack` [command](./Commands) for initiating the combat mode. This is added to the default command set. It will create the combat handler and add the character(s) to it. It will also assign the combat command set to the characters. 
 
 ## The combat handler
 
-The _combat handler_ is implemented as a stand-alone [Script](Scripts).  This Script is created when the first Character decides to attack another and is deleted when no one is fighting any more. Each handler represents one instance of combat and one combat only. Each instance of combat can hold any number of characters but each character can only be part of one combat at a time (a player would need to disengage from the first combat before they could join another). 
+The _combat handler_ is implemented as a stand-alone [Script](./Scripts).  This Script is created when the first Character decides to attack another and is deleted when no one is fighting any more. Each handler represents one instance of combat and one combat only. Each instance of combat can hold any number of characters but each character can only be part of one combat at a time (a player would need to disengage from the first combat before they could join another). 
 
 The reason we don't store this Script "on" any specific character is because any character may leave the combat at any time. Instead the script holds references to all characters involved in the combat.  Vice-versa, all characters holds a back-reference to the current combat handler. While we don't use this very much here this might allow the combat commands on the characters to access and update the combat handler state directly. 
 
-_Note: Another way to implement a combat handler would be to use a normal Python object and handle time-keeping with the [TickerHandler](TickerHandler). This would require either adding custom hook methods on the character or to implement a custom child of the TickerHandler class to track turns. Whereas the TickerHandler is easy to use, a Script offers more power in this case._
+_Note: Another way to implement a combat handler would be to use a normal Python object and handle time-keeping with the [TickerHandler](./TickerHandler). This would require either adding custom hook methods on the character or to implement a custom child of the TickerHandler class to track turns. Whereas the TickerHandler is easy to use, a Script offers more power in this case._
 
 Here is a basic combat handler. Assuming our game folder is named `mygame`, we store it in `mygame/typeclasses/combat_handler.py`:
 
@@ -284,7 +284,7 @@ class CombatCmdSet(CmdSet):
 
 ## Rules module
 
-A general way to implement a rule module is found in the [rule system tutorial](Implementing-a-game-rule-system). Proper resolution would likely require us to change our Characters to store things like strength, weapon skills and so on. So for this example we will settle for a very simplistic rock-paper-scissors kind of setup with some randomness thrown in. We will not deal with damage here but just announce the results of each turn. In a real system the Character objects would hold stats to affect their skills, their chosen weapon affect the choices, they would be able to lose health etc.
+A general way to implement a rule module is found in the [rule system tutorial](./Implementing-a-game-rule-system). Proper resolution would likely require us to change our Characters to store things like strength, weapon skills and so on. So for this example we will settle for a very simplistic rock-paper-scissors kind of setup with some randomness thrown in. We will not deal with damage here but just announce the results of each turn. In a real system the Character objects would hold stats to affect their skills, their chosen weapon affect the choices, they would be able to lose health etc.
 
 Within each turn, there are "sub-turns", each consisting of one action per character. The actions within each sub-turn happens simultaneously and only once they have all been resolved we move on to the next sub-turn (or end the full turn). 
 
@@ -424,7 +424,7 @@ class CmdAttack(Command):
             target.msg("%s attacks you! You are in combat." % self.caller)       
 ```
 
-The `attack` command will not go into the combat cmdset but rather into the default cmdset. See e.g. the [Adding Command Tutorial](Adding-Command-Tutorial) if you are unsure about how to do this. 
+The `attack` command will not go into the combat cmdset but rather into the default cmdset. See e.g. the [Adding Command Tutorial](./Adding-Command-Tutorial) if you are unsure about how to do this. 
 
 ## Expanding the example
 

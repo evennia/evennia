@@ -7,7 +7,7 @@ One way to implement a dynamic MUD is by using "tickers", also known as "heartbe
 
 Tickers are very common or even unavoidable in other mud code bases.  Certain code bases are even hard-coded to rely on the concept of the global 'tick'. Evennia has no such notion - the decision to use tickers is very much up to the need of your game and which requirements you have. The "ticker recipe" is just one way of cranking the wheels.
 
-The most fine-grained way to manage the flow of time is of course to use [Scripts](Scripts). Many types of operations (weather being the classic example) are however done on multiple objects in the same way at regular intervals, and for this, storing separate Scripts on each object is inefficient. The way to do this is to use a ticker with a "subscription model" - let objects sign up to be triggered at the same interval, unsubscribing when the updating is no longer desired. 
+The most fine-grained way to manage the flow of time is of course to use [Scripts](./Scripts). Many types of operations (weather being the classic example) are however done on multiple objects in the same way at regular intervals, and for this, storing separate Scripts on each object is inefficient. The way to do this is to use a ticker with a "subscription model" - let objects sign up to be triggered at the same interval, unsubscribing when the updating is no longer desired. 
 
 Evennia offers an optimized implementation of the subscription model - the *TickerHandler*. This is a singleton global handler reachable from `evennia.TICKER_HANDLER`. You can assign any *callable* (a function or, more commonly, a method on a database object) to this handler. The TickerHandler will then call this callable at an interval you specify, and with the arguments you supply when adding it. This continues until the callable un-subscribes from the ticker. The handler survives a reboot and is highly optimized in resource usage.
 
@@ -73,11 +73,11 @@ If you add a ticker with exactly the same combination of callback, interval and 
 
 The `callable` can be on any form as long as it accepts the arguments you give to send to it in `TickerHandler.add`. 
 
-> Note that everything you supply to the TickerHandler will need to be pickled at some point to be saved into the database. Most of the time the handler will correctly store things like database objects, but the same restrictions as for [Attributes](Attributes) apply to what the TickerHandler may store. 
+> Note that everything you supply to the TickerHandler will need to be pickled at some point to be saved into the database. Most of the time the handler will correctly store things like database objects, but the same restrictions as for [Attributes](./Attributes) apply to what the TickerHandler may store. 
 
 When testing, you can stop all tickers in the entire game with `tickerhandler.clear()`. You can also view the currently subscribed objects with `tickerhandler.all()`.
 
-See the [Weather Tutorial](Weather-Tutorial) for an example of using the TickerHandler.
+See the [Weather Tutorial](./Weather-Tutorial) for an example of using the TickerHandler.
 
 ### When *not* to use TickerHandler
 

@@ -1,7 +1,7 @@
 # Inputfuncs
 
 
-An *inputfunc* is an Evennia function that handles a particular input (an [inputcommand](OOB)) from the client. The inputfunc is the last destination for the inputcommand along the [ingoing message path](Messagepath#the-ingoing-message-path). The inputcommand always has the form `(commandname, (args), {kwargs})` and Evennia will use this to try to find and call an inputfunc on the form 
+An *inputfunc* is an Evennia function that handles a particular input (an [inputcommand](./OOB)) from the client. The inputfunc is the last destination for the inputcommand along the [ingoing message path](./Messagepath#the-ingoing-message-path). The inputcommand always has the form `(commandname, (args), {kwargs})` and Evennia will use this to try to find and call an inputfunc on the form 
 
 ```python
     def commandname(session, *args, **kwargs):
@@ -31,7 +31,7 @@ Evennia defines a few default inputfuncs to handle the common cases. These are d
  - Input: `("text", (textstring,), {})`
  - Output: Depends on Command triggered
 
-This is the most common of inputcommands, and the only one supported by every traditional mud. The argument is usually what the user sent from their command line. Since all text input from the user like this is considered a [Command](Commands), this inputfunc will do things like nick-replacement and then pass on the input to the central Commandhandler. 
+This is the most common of inputcommands, and the only one supported by every traditional mud. The argument is usually what the user sent from their command line. Since all text input from the user like this is considered a [Command](./Commands), this inputfunc will do things like nick-replacement and then pass on the input to the central Commandhandler. 
 
 ### echo
 
@@ -110,7 +110,7 @@ Retrieves a value from the Character or Account currently controlled by this Ses
                        "interval": secs, "stop": False})` 
  - Output: Depends on the repeated function. Will return `("text", (repeatlist),{}` with a list of accepted names if given an unfamiliar callback name. 
 
-This will tell evennia to repeatedly call a named function at a given interval. Behind the scenes this will set up a [Ticker](TickerHandler). Only previously acceptable functions are possible to repeat-call in this way, you'll need to overload this inputfunc to add the ones you want to offer. By default only two example functions are allowed, "test1" and "test2", which will just echo a text back at the given interval. Stop the repeat by sending `"stop": True` (note that you must include both the callback name and interval for Evennia to know what to stop). 
+This will tell evennia to repeatedly call a named function at a given interval. Behind the scenes this will set up a [Ticker](./TickerHandler). Only previously acceptable functions are possible to repeat-call in this way, you'll need to overload this inputfunc to add the ones you want to offer. By default only two example functions are allowed, "test1" and "test2", which will just echo a text back at the given interval. Stop the repeat by sending `"stop": True` (note that you must include both the callback name and interval for Evennia to know what to stop). 
 
 ### unrepeat
 
@@ -125,7 +125,7 @@ This is a convenience wrapper for sending "stop" to the `repeat` inputfunc.
  - Input: `("monitor", (), ("name":field_or_argname, stop=False)`
  - Output (on change): `("monitor", (), {"name":name, "value":value})`
 
-This sets up on-object monitoring of Attributes or database fields. Whenever the field or Attribute changes in any way, the outputcommand will be sent. This is using the [MonitorHandler](MonitorHandler) behind the scenes. Pass the "stop" key to stop monitoring. Note that you must supply the name also when stopping to let the system know which monitor should be cancelled. 
+This sets up on-object monitoring of Attributes or database fields. Whenever the field or Attribute changes in any way, the outputcommand will be sent. This is using the [MonitorHandler](./MonitorHandler) behind the scenes. Pass the "stop" key to stop monitoring. Note that you must supply the name also when stopping to let the system know which monitor should be cancelled. 
 
 Only fields/attributes in a whitelist are allowed to be used, you have to overload this function to add more. By default the following fields/attributes can be monitored:
 

@@ -47,20 +47,20 @@ The text at the very top of the command class definition is the class' `__doc__`
 
 You should also supply the `help_category` class property if you can; this helps to group help entries together for people to more easily find them. See the `help` command in-game to see the default categories. If you don't specify the category, "General" is assumed. 
 
-If you don't want your command to be picked up by the auto-help system at all (like if you want to write its docs manually using the info in the next section or you use a [cmdset](Command-Sets) that has its own help functionality) you can explicitly set `auto_help` class property to `False` in your command definition.
+If you don't want your command to be picked up by the auto-help system at all (like if you want to write its docs manually using the info in the next section or you use a [cmdset](./Command-Sets) that has its own help functionality) you can explicitly set `auto_help` class property to `False` in your command definition.
 
 Alternatively, you can keep the advantages of *auto-help* in commands, but control the display of command helps.  You can do so by overriding the command's `get_help()` method.  By default, this method will return the class docstring.  You could modify it to add custom behavior:  the text returned by this method will be displayed to the character asking for help in this command.
 
 ## Database help entries
 
-These are all help entries not involving commands (this is handled automatically by the [Command Auto-help system](Help-System#command-auto-help-system)).  Non-automatic help entries describe how your particular game is played - its rules, world descriptions and so on.
+These are all help entries not involving commands (this is handled automatically by the [Command Auto-help system](./Help-System#command-auto-help-system)).  Non-automatic help entries describe how your particular game is played - its rules, world descriptions and so on.
 
 A help entry consists of four parts: 
 
 - The *topic*. This is the name of the help entry. This is what players search for when they are looking for help. The topic can contain spaces and also partial matches will be found.
 - The *help category*. Examples are *Administration*, *Building*, *Comms* or *General*. This is an overall grouping of similar help topics, used by the engine to give a better overview.
 - The *text* - the help text itself, of any length.
-- locks - a [lock definition](Locks). This can be used to limit access to this help entry, maybe because it's staff-only or otherwise meant to be restricted. Help commands check for `access_type`s `view` and `edit`. An example of a lock string would be `view:perm(Builders)`.
+- locks - a [lock definition](./Locks). This can be used to limit access to this help entry, maybe because it's staff-only or otherwise meant to be restricted. Help commands check for `access_type`s `view` and `edit`. An example of a lock string would be `view:perm(Builders)`.
 
 You can create new help entries in code by using `evennia.create_help_entry()`.
 
@@ -81,6 +81,6 @@ Using `@sethelp` you can add, delete and append text to existing entries. By def
 
 If the category *Roleplaying* did not already exist, it is created and will appear in the help index. 
 
-You can, finally, define a lock for the help entry by following the category with a [lock definition](Locks): 
+You can, finally, define a lock for the help entry by following the category with a [lock definition](./Locks): 
 
     > @sethelp/add emote, Roleplaying, view:all() = Emoting is ... 

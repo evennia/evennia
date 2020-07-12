@@ -45,7 +45,7 @@ The property `blist` is now `[1,2,3,4]` whereas `object.db.mylist` remains uncha
 
 ### Commands are matched by name *or* alias
 
-When merging [command sets](Commands) it's important to remember that command objects are identified *both* by key *or* alias. So if you have a command with a key `look` and an alias `ls`, introducing another command with a key `ls` will be assumed by the system to be *identical* to the first one. This usually means merging cmdsets will overload one of them depending on priority. Whereas this is logical once you know how command objects are handled, it may be confusing if you are just looking at the command strings thinking they are parsed as-is.
+When merging [command sets](./Commands) it's important to remember that command objects are identified *both* by key *or* alias. So if you have a command with a key `look` and an alias `ls`, introducing another command with a key `ls` will be assumed by the system to be *identical* to the first one. This usually means merging cmdsets will overload one of them depending on priority. Whereas this is logical once you know how command objects are handled, it may be confusing if you are just looking at the command strings thinking they are parsed as-is.
 
 ### Objects turning to `DefaultObject`
 
@@ -63,7 +63,7 @@ The moral of the story-- it can be dangerous to tinker with magic methods on typ
 
 ### Known upstream bugs
 
-- There is currently (Autumn 2017) a bug in the `zope.interface` installer on some Linux Ubuntu distributions (notably Ubuntu 16.04 LTS). Zope is a dependency of Twisted. The error manifests in the server not starting with an error that `zope.interface` is not found even though `pip list` shows it's installed. The reason is a missing empty `__init__.py` file at the root of the zope package. If the virtualenv is named "evenv" as suggested in the [Getting Started](Getting-Started) instructions, use the following command to fix it: 
+- There is currently (Autumn 2017) a bug in the `zope.interface` installer on some Linux Ubuntu distributions (notably Ubuntu 16.04 LTS). Zope is a dependency of Twisted. The error manifests in the server not starting with an error that `zope.interface` is not found even though `pip list` shows it's installed. The reason is a missing empty `__init__.py` file at the root of the zope package. If the virtualenv is named "evenv" as suggested in the [Getting Started](./Getting-Started) instructions, use the following command to fix it: 
 
     ```shell
     touch evenv/local/lib/python2.7/site-packages/zope/__init__.py

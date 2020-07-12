@@ -17,7 +17,7 @@ We will find most of these things are already part of vanilla Evennia, but that 
 
 ## Starting out
 
-We will assume you start from scratch. You need Evennia installed, as per the [Getting Started](Getting-Started) instructions. Initialize a new game directory with `evennia init <gamedirname>`. In this tutorial we assume your game dir is simply named `mygame`. You can use the default database and keep all other settings to default for now. Familiarize yourself with the `mygame` folder before continuing. You might want to browse the [First Steps Coding](First-Steps-Coding) tutorial, just to see roughly where things are modified.
+We will assume you start from scratch. You need Evennia installed, as per the [Getting Started](./Getting-Started) instructions. Initialize a new game directory with `evennia init <gamedirname>`. In this tutorial we assume your game dir is simply named `mygame`. You can use the default database and keep all other settings to default for now. Familiarize yourself with the `mygame` folder before continuing. You might want to browse the [First Steps Coding](./First-Steps-Coding) tutorial, just to see roughly where things are modified.
 
 ## The Game Master role
 
@@ -28,7 +28,7 @@ In brief:
 
 ### The permission hierarchy
 
-Evennia has the following [permission hierarchy](Building-Permissions#assigning-permissions) out of the box: *Players, Helpers, Builders, Admins* and finally *Developers*. We could change these but then we'd need to update our Default commands to use the changes. We want to keep this simple, so instead we map our different roles on top of this permission ladder.
+Evennia has the following [permission hierarchy](./Building-Permissions#assigning-permissions) out of the box: *Players, Helpers, Builders, Admins* and finally *Developers*. We could change these but then we'd need to update our Default commands to use the changes. We want to keep this simple, so instead we map our different roles on top of this permission ladder.
 
 1. `Players` is the permission set on normal players. This is the default for anyone creating a new account on the server.
 2. `Helpers` are like `Players` except they also have the ability to create/edit new help entries. This could be granted to players who are willing to help with writing lore or custom logs for everyone.
@@ -36,7 +36,7 @@ Evennia has the following [permission hierarchy](Building-Permissions#assigning-
 4. `Admins` is the permission level the GM should have. Admins can do everything builders can (create/describe rooms etc) but also kick accounts, rename them and things like that.
 5. `Developers`-level permission are the server administrators, the ones with the ability to restart/shutdown the server as well as changing the permission levels.
 
-> The [superuser](Building-Permissions#the-super-user) is not part of the hierarchy and actually completely bypasses it. We'll assume server admin(s) will "just" be Developers.
+> The [superuser](./Building-Permissions#the-super-user) is not part of the hierarchy and actually completely bypasses it. We'll assume server admin(s) will "just" be Developers.
 
 ### How to grant permissions
 
@@ -69,7 +69,7 @@ So let's make this possible. This is what we'll do:
 
 #### Character modification
 
-Let's first start by customizing the Character. We recommend you browse the beginning of the [Account](Accounts) page to make sure you know how Evennia differentiates between the OOC "Account objects" (not to be confused with the `Accounts` permission, which is just a string specifying your access) and the IC "Character objects".
+Let's first start by customizing the Character. We recommend you browse the beginning of the [Account](./Accounts) page to make sure you know how Evennia differentiates between the OOC "Account objects" (not to be confused with the `Accounts` permission, which is just a string specifying your access) and the IC "Character objects".
 
 Open `mygame/typeclasses/characters.py` and modify the default `Character` class:
 
@@ -103,13 +103,13 @@ class Character(DefaultCharacter):
 
 ```
 
-Above, we change how the Character's name is displayed: If the account controlling this Character is a GM, we attach the string `(GM)` to the Character's name so everyone can tell who's the boss. If we ourselves are Developers or GM's we will see database ids attached to Characters names, which can help if doing database searches against Characters of exactly the same name. We base the "gm-ingness" on having an flag (an [Attribute](Attributes)) named `is_gm`. We'll make sure new GM's actually get this flag below.
+Above, we change how the Character's name is displayed: If the account controlling this Character is a GM, we attach the string `(GM)` to the Character's name so everyone can tell who's the boss. If we ourselves are Developers or GM's we will see database ids attached to Characters names, which can help if doing database searches against Characters of exactly the same name. We base the "gm-ingness" on having an flag (an [Attribute](./Attributes)) named `is_gm`. We'll make sure new GM's actually get this flag below.
 
 > **Extra exercise:** This will only show the `(GM)` text on *Characters* puppeted by a GM account, that is, it will show only to those in the same location. If we wanted it to also pop up in, say, `who` listings and channels, we'd need to make a similar change to the `Account` typeclass in `mygame/typeclasses/accounts.py`. We leave this as an exercise to the reader.
 
 #### New @gm/@ungm command
 
-We will describe in some detail how to create and add an Evennia [command](Commands) here with the hope that we don't need to be as detailed when adding commands in the future. We will build on Evennia's default "mux-like" commands here.
+We will describe in some detail how to create and add an Evennia [command](./Commands) here with the hope that we don't need to be as detailed when adding commands in the future. We will build on Evennia's default "mux-like" commands here.
 
 Open `mygame/commands/command.py` and add a new Command class at the bottom:
 
@@ -211,7 +211,7 @@ In brief:
 
 There are many ways to build a Character sheet in text, from manually pasting strings together to more automated ways. Exactly what is the best/easiest way depends on the sheet one tries to create. We will here show two examples using the *EvTable* and *EvForm* utilities.Later we will create Commands to edit and display the output from those utilities.
 
-> Note that due to the limitations of the wiki, no color is used in any of the examples. See [the text tag documentation](TextTags) for how to add color to the tables and forms.
+> Note that due to the limitations of the wiki, no color is used in any of the examples. See [the text tag documentation](./TextTags) for how to add color to the tables and forms.
 
 #### Making a sheet with EvTable
 
@@ -581,7 +581,7 @@ Use `help dice` to see what syntax is supported or look at `evennia/contrib/dice
 
 ## Rooms
 
-Evennia comes with rooms out of the box, so no extra work needed. A GM will automatically have all needed building commands available. A fuller go-through is found in the [Building tutorial](Building-Quickstart). Here are some useful highlights:
+Evennia comes with rooms out of the box, so no extra work needed. A GM will automatically have all needed building commands available. A fuller go-through is found in the [Building tutorial](./Building-Quickstart). Here are some useful highlights:
 
 * `@dig roomname;alias = exit_there;alias, exit_back;alias` - this is the basic command for digging a new room. You can specify any exit-names and just enter the name of that exit to go there.
 * `@tunnel direction = roomname` - this is a specialized command that only accepts directions in the cardinal directions (n,ne,e,se,s,sw,w,nw) as well as in/out and up/down. It also automatically builds "matching" exits back in the opposite direction.
@@ -594,7 +594,7 @@ Evennia comes with rooms out of the box, so no extra work needed. A GM will auto
 
 ## Channels
 
-Evennia comes with [Channels](Communications#Channels) in-built and they are described fully in the documentation. For brevity, here are the relevant commands for normal use:
+Evennia comes with [Channels](./Communications#Channels) in-built and they are described fully in the documentation. For brevity, here are the relevant commands for normal use:
 
 * `@ccreate new_channel;alias;alias = short description` - Creates a new channel.
 * `addcom channel` - join an existing channel. Use `addcom alias = channel` to add a new alias you can use to talk to the channel, as many as desired.

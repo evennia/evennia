@@ -22,15 +22,15 @@ This would help in development to quickly refer to where a resource is located.
 
 ### Kovitikus (Sept. 11, 2019)
 
-[Batch Code](Batch-Code-Processor) should have a link in the developer area. It is currently only listed in the tutorials section as an afterthought to a tutorial title.
+[Batch Code](./Batch-Code-Processor) should have a link in the developer area. It is currently only listed in the tutorials section as an afterthought to a tutorial title.
 
 ***
 
-In regards to the general structure of each wiki page: I'd like to see a table of contents at the top of each one, so that it can be quickly navigated and is immediately apparent what sections are covered on the page. Similar to the current [Getting Started](Getting-Started) page.
+In regards to the general structure of each wiki page: I'd like to see a table of contents at the top of each one, so that it can be quickly navigated and is immediately apparent what sections are covered on the page. Similar to the current [Getting Started](./Getting-Started) page.
 
 ***
 
-The structuring of the page should also include a quick reference cheatsheet for certain aspects. Such as [Tags](Tags) including a quick reference section at the top that lists an example of every available method you can use in a clear and consistent format, along with a comment. Readers shouldn't have to decipher the article to gather such basic information and it should instead be available at first glance.
+The structuring of the page should also include a quick reference cheatsheet for certain aspects. Such as [Tags](./Tags) including a quick reference section at the top that lists an example of every available method you can use in a clear and consistent format, along with a comment. Readers shouldn't have to decipher the article to gather such basic information and it should instead be available at first glance.
 
 Example of a quick reference:
 

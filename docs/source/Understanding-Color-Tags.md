@@ -2,7 +2,7 @@
 
 This tutorial aims at dispelling confusions regarding the use of color tags within Evennia.
 
-Correct understanding of this topic requires having read the [TextTags](TextTags) page and learned Evennia's color tags. Here we'll explain by examples the reasons behind the unexpected (or apparently incoherent) behaviors of some color tags, as mentioned _en passant_ in the [TextTags](TextTags) page.
+Correct understanding of this topic requires having read the [TextTags](./TextTags) page and learned Evennia's color tags. Here we'll explain by examples the reasons behind the unexpected (or apparently incoherent) behaviors of some color tags, as mentioned _en passant_ in the [TextTags](./TextTags) page.
 
 
 All you'll need for this tutorial is access to a running instance of Evennia via a color-enabled client. The examples provided are just commands that you can type in your client.

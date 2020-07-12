@@ -19,7 +19,7 @@ You customize your website from your game directory. In the folder `web` you'll 
 
 Example: To override or modify `evennia/web/website/template/website/index.html` you need to add/modify `mygame/web/template_overrides/website/index.html`. 
 
-The detailed description on how to customize the website is best described in tutorial form. See the [Web Tutorial](Web-Tutorial) for more information.
+The detailed description on how to customize the website is best described in tutorial form. See the [Web Tutorial](./Web-Tutorial) for more information.
 
 ### Overloading Django views
 
@@ -62,7 +62,7 @@ Restart the server and reload the page in the browser - the website will now use
 
 Evennia comes with a MUD client accessible from a normal web browser. During
 development you can try it at `http://localhost:4001/webclient`. 
-[See the Webclient page](Webclient) for more details.
+[See the Webclient page](./Webclient) for more details.
 
 
 ## The Django 'Admin' Page
