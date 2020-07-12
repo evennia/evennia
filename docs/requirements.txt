@@ -1,7 +1,8 @@
 # requirements for building the docs
 
 sphinx==3.1.1
-sphinx-multiversion==0.2.3
+# sphinx-multiversion latest
+git+https://github.com/Holzhaus/sphinx-multiversion.git@master#egg=sphinx-multiversion
 
 # recommonmark custom branch with evennia-specific fixes
 git+https://github.com/evennia/recommonmark.git@evennia-mods#egg=recommonmark
