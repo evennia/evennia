@@ -12,7 +12,7 @@ This documentation covers how to setup and maintain the server, from first insta
 
 ## Installing custom game dirs
 
-- [Installing Arxcode](../Contrib/Arxcode-installing-help) - a custom gamedir based on the popular Evennia game [Arx](https://play.arxgame.org/)
+- [Installing Arxcode](../Contribs/Arxcode-installing-help) - a custom gamedir based on the popular Evennia game [Arx](https://play.arxgame.org/)
 
 ## Configuring
 
