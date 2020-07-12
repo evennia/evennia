@@ -90,5 +90,5 @@ Adding advanced and flexible building commands to your game is easy and will pro
 satisfy most creative builders. However, if you really, *really* want to offer online coding, there
 is of course nothing stopping you from adding that to Evennia, no matter our recommendations. You
 could even re-implement MUX' softcode in Python should you be very ambitious. The
-[in-game-python](../Contrib/Dialogues-in-events) is an optional
+[in-game-python](../Contribs/Dialogues-in-events) is an optional
 pseudo-softcode plugin aimed at developers wanting to script their game from inside it.

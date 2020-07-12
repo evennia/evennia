@@ -31,7 +31,7 @@ This is the manual of [Evennia](http://www.evennia.com), the open source Python
 ----
 - [API](./Evennia-API) - the full API-reference, generated from source
 - [Coding](Coding/Coding-Overview) - coding and development hints and resources
-- [Contributions](Contrib/Contrib-Overview) - game-specific tools and code added by the community
+- [Contributions](Contribs/Contrib-Overview) - game-specific tools and code added by the community
 ----
 - [Links](./Links) - useful links
 - [Table of Contents](./toc) - an alphabetical listing of all regular documentation pages
