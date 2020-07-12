@@ -56,7 +56,7 @@ _multiversion-check-env:
 _clean_api_index:
 	rm source/api/*
 
-# remove supervluous 'module' and 'package' text from api headers
+# remove superfluous 'module' and 'package' text from api headers
 _reformat_apidoc_headers:
 	for f in source/api/*.rst; do\
         perl -pi -e 's/(module|package)$$// if $$. == 1' $$f ;\
@@ -71,7 +71,7 @@ _multiversion-autodoc-index:
 	make _clean_api_index
 	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) SPHINX_APIDOC_OPTIONS=$(SPHINXAPIDOCENV) $(SPHINXAPIDOC) $(SPHINXAPIDOCOPTS) -o $(SOURCEDIR)/api/ $(EVDIR) $(SPHINXAPIDOCEXCLUDE)
 	make _reformat_apidoc_headers
-	git diff-index --quiet HEAD || git commit -a -m "Updated API autodoc index."
+	-git diff-index --quiet HEAD || git commit -a -m "Updated API autodoc index."
 
 _html-build:
 	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXBUILD) $(SPHINXOPTS) "$(SOURCEDIR)" "$(BUILDDIR)/html"

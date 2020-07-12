@@ -20,10 +20,11 @@ than, the doc-strings of each component in the [API](../Evennia-API).
 
 ## Commands 
 
-- [Commands](./Commands)
-- [Command-Sets](./Command-Sets)
-- [The Connection Screen](./Connection-Screen)
-- [Available default Commands](./Default-Command-Help)
+- [Command system](./Command-System)
+    - [Commands](./Commands)
+    - [Command-Sets](./Command-Sets)
+    - [The Connection Screen](./Connection-Screen)
+    - [Available default Commands](api:evennia.commands.default#modules)
 - [Batch-Processors](./Batch-Processors)
   - [Batch-Code-Processor](./Batch-Code-Processor)
   - [Batch-Command-Processor](./Batch-Command-Processor)

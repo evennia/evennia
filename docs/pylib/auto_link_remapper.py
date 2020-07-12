@@ -43,24 +43,25 @@ URL_REMAPS = {
     "issues": "github:issue",
     "bug": "github:issue",
     "bug-report": "github:issue",
-    "Components/Components-Overview": "Components-Overview",
-    "Components-Overview": "Components-Overview",
-    "Concepts/Concepts-Overview": "Concepts-Overview",
-    "Concepts-Overview": "Concepts-Overview",
+    "./Default-Command-Help": "api:evennia.commands.default#modules",
+    "../Components/Default-Command-Help": "api:evennia.commands.default#modules",
+    "../../../Components/Default-Command-Help": "api:evennia.commands.default#modules",
 }
 
 _USED_REFS = {}
 
 _CURRFILE = None
 
-def create_toctree():
+def auto_link_remapper():
     """
-    Create source/toc.md file
+    - Auto-Remaps links to fit with the actual document file structure. Requires
+      all doc files to have a unique name.
+    - Creates source/toc.md file
 
     """
     global _CURRFILE
 
-    print("  -- Auto-Remapper")
+    print("  -- Auto-Remapper starting.")
 
     def _get_rel_source_ref(path):
         """Get the path relative the source/ dir"""
@@ -135,12 +136,14 @@ def create_toctree():
             fname = part[0] if part else fname
             fname = fname.rsplit(".", 1)[0]
             fname, *anchor = fname.rsplit("#", 1)
-            _USED_REFS[fname] = url
+
+            if not _CURRFILE.endswith("toc.md"):
+                _USED_REFS[fname] = url
 
             if _CURRFILE in docref_map and fname in docref_map[_CURRFILE]:
                 cfilename = _CURRFILE.rsplit("/", 1)[-1]
                 urlout = docref_map[_CURRFILE][fname] + ('#' + anchor[0] if anchor else '')
-                if urlout != url and not _CURRFILE.endswith("toc.md"):
+                if urlout != url:
                     print(f"  {cfilename}: [{txt}]({url}) -> [{txt}]({urlout})")
             else:
                 urlout = url
@@ -166,12 +169,14 @@ def create_toctree():
             fname = part[0] if part else fname
             fname = fname.rsplit(".", 1)[0]
             fname, *anchor = fname.rsplit("#", 1)
-            _USED_REFS[fname] = url
+
+            if not _CURRFILE.endswith("toc.md"):
+                _USED_REFS[fname] = url
 
             if _CURRFILE in docref_map and fname in docref_map[_CURRFILE]:
                 cfilename = _CURRFILE.rsplit("/", 1)[-1]
                 urlout = docref_map[_CURRFILE][fname] + ('#' + anchor[0] if anchor else '')
-                if urlout != url and not _CURRFILE.endswith("toc.md"):
+                if urlout != url:
                     print(f"  {cfilename}: [{txt}]: {url} -> [{txt}]: {urlout}")
             else:
                 urlout = url
@@ -198,6 +203,10 @@ def create_toctree():
     if count > 0:
         print(f"  -- Auto-corrected links in {count} documents.")
 
+    for (fname, src_url) in sorted(toc_map.items(), key=lambda tup: tup[0]):
+        if fname not in _USED_REFS:
+            print(f"  ORPHANED DOC: no refs found to {src_url}.md")
+
     # write tocfile
     with open(_TOC_FILE, "w") as fil:
         fil.write("# Toc\n")
@@ -212,15 +221,16 @@ def create_toctree():
             if "Part1/" in ref:
                 continue
 
+            if not "/" in ref:
+                ref = "./" + ref
+
             linkname = ref.replace("-", " ")
             fil.write(f"\n- [{linkname}]({ref})")
 
         # we add a self-reference so the toc itself is also a part of a toctree
         fil.write("\n\n```toctree::\n  :hidden:\n\n  toc\n```")
 
-    for (fname, src_url) in sorted(toc_map.items(), key=lambda tup: tup[0]):
-        if fname not in _USED_REFS:
-            print(f"    WARNING: no links found to {fname}.md ({src_url})")
+    print("  -- Auto-Remapper finished.")
 
 if __name__ == "__main__":
-    create_toctree()
+    auto_link_remapper()

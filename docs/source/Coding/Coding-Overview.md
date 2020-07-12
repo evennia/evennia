@@ -18,8 +18,10 @@ to you, but some things may still be useful.
 
 ## Coding away
 
+- [Coding Introduction](./Coding-Introduction)
 - [Ways to Debug](./Debugging)
 - [Adding unit-tests](./Unit-Testing)
+- [Things to remember when importing from evennia](./Flat-API)
 
 ## Advanced concepts 
 

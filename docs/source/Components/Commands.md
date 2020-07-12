@@ -8,7 +8,7 @@ The basic way for users to communicate with the game is through *Commands*. Thes
 directly related to the game world such as *look*, *get*, *drop* and so on, or administrative
 commands such as *examine* or *@dig*.
 
-The [default commands](./Default-Command-Help) coming with Evennia are 'MUX-like' in that they use @
+The [default commands](api:evennia.commands.default#modules) coming with Evennia are 'MUX-like' in that they use @
 for admin commands, support things like switches, syntax with the '=' symbol etc, but there is
 nothing that prevents you from implementing a completely different command scheme for your game. You
 can find the default commands in `evennia/commands/default`. You should not edit these directly -
