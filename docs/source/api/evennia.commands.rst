@@ -1,4 +1,4 @@
-evennia.commands package
+evennia.commands 
 ========================
 
 .. automodule:: evennia.commands
@@ -10,57 +10,18 @@ Subpackages
 -----------
 
 .. toctree::
+   :maxdepth: 6
 
    evennia.commands.default
 
 Submodules
 ----------
 
-evennia.commands.cmdhandler module
-----------------------------------
+.. toctree::
+   :maxdepth: 6
 
-.. automodule:: evennia.commands.cmdhandler
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.commands.cmdparser module
----------------------------------
-
-.. automodule:: evennia.commands.cmdparser
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.commands.cmdset module
-------------------------------
-
-.. automodule:: evennia.commands.cmdset
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.commands.cmdsethandler module
--------------------------------------
-
-.. automodule:: evennia.commands.cmdsethandler
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.commands.command module
--------------------------------
-
-.. automodule:: evennia.commands.command
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.commands.tests module
------------------------------
-
-.. automodule:: evennia.commands.tests
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
+   evennia.commands.cmdhandler
+   evennia.commands.cmdparser
+   evennia.commands.cmdset
+   evennia.commands.cmdsethandler
+   evennia.commands.command
