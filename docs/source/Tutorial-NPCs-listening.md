@@ -3,7 +3,7 @@
 
 This tutorial shows the implementation of an NPC object that responds to characters speaking in their location. In this example the NPC parrots what is said, but any actions could be triggered this way.
 
-It is assumed that you already know how to create custom room and character typeclasses, please see the [Basic Game tutorial](Tutorial-for-basic-MUSH-like-game) if you haven't already done this.
+It is assumed that you already know how to create custom room and character typeclasses, please see the [Basic Game tutorial](./Tutorial-for-basic-MUSH-like-game) if you haven't already done this.
 
 What we will need is simply a new NPC typeclass that can react when someone speaks.
 

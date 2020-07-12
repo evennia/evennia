@@ -5,7 +5,7 @@ This tutorial will have us create a simple weather system for our MUD.  The way 
 
 One could imagine every outdoor room in the game having a script running on themselves that fires regularly. For this particular example it is however more efficient to do it another way, namely by using a "ticker-subscription" model. The principle is simple: Instead of having each Object individually track the time, they instead subscribe to be called by a global ticker who handles time keeping.  Not only does this centralize and organize much of the code in one place, it also has less computing overhead. 
 
-Evennia offers the [TickerHandler](TickerHandler) specifically for using the subscription model. We will use it for our weather system. 
+Evennia offers the [TickerHandler](./TickerHandler) specifically for using the subscription model. We will use it for our weather system. 
 
 We will assume you know how to make your own Typeclasses. If not see one of the beginning tutorials. We will create a new WeatherRoom typeclass that is aware of the day-night cycle.
 

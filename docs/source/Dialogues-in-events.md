@@ -1,7 +1,7 @@
 # Dialogues in events
 
 
-- Next tutorial: [adding a voice-operated elevator with events](A-voice-operated-elevator-using-events).
+- Next tutorial: [adding a voice-operated elevator with events](./A-voice-operated-elevator-using-events).
 
 This tutorial will walk you through the steps to create several dialogues with characters, using the [in-game Python system](https://github.com/evennia/evennia/blob/master/evennia/contrib/ingame_python/README.md).  This tutorial assumes the in-game Python system is installed in your game.  If it isn't, you can follow the installation steps given in [the documentation on in-game Python](https://github.com/evennia/evennia/blob/master/evennia/contrib/ingame_python/README.md), and come back on this tutorial once the system is installed.  **You do not need to read** the entire documentation, it's a good reference, but not the easiest way to learn about it.  Hence these tutorials.
 
@@ -176,4 +176,4 @@ Notice here that the first lines of dialogue are spoken to the entire room, but 
 - **Q:** is it possible to deploy callbacks on all characters sharing the same prototype?
 - **A:** not out of the box.  This depends on individual settings in code.  One can imagine that all characters of some type would share some events, but this is game-specific.  Rooms of the same zone could share the same events as well.  It is possible to do but requires modification of the source code.
 
-- Next tutorial: [adding a voice-operated elevator with events](A-voice-operated-elevator-using-events).
+- Next tutorial: [adding a voice-operated elevator with events](./A-voice-operated-elevator-using-events).

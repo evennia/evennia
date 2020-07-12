@@ -22,7 +22,7 @@ If you'd like to help develop Evennia more hands-on, here are some ways to get g
 - Look through our [online documentation wiki]([online documentation wiki](index)) and see if you can help improve or expand the documentation (even small things like fixing typos!). You don't need any particular permissions to edit the wiki.
 - Send a message to our [discussion group][group] and/or our [IRC chat][chat] asking about what needs doing, along with what your interests and skills are.
 - Take a look at our [issue tracker][issues] and see if there's something you feel like taking on. [here are bugs][issues-master] that need fixes. At any given time there may also be some [bounties][issues-bounties] open - these are issues members of the community has put up money to see fixed (if you want to put up a bounty yourself you can do so via our page on [bountysource][bountysource]).
-- Check out the [Contributing](Contributing) page on how to practically contribute with code using github.
+- Check out the [Contributing](./Contributing) page on how to practically contribute with code using github.
 
 ... And finally, if you want to help motivate and support development you can also drop some coins in the developer's cup. You can [make a donation via PayPal][paypal] or, even better, [become an Evennia patron on Patreon][patreon]! This is a great way to tip your hat and show that you appreciate the work done with the server! Finally, if you want to encourage the community to resolve a particular 
 

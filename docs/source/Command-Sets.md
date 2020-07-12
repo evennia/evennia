@@ -1,21 +1,21 @@
 # Command Sets
 
 
-Command Sets are intimately linked with [Commands](Commands) and you should be familiar with Commands before reading this page. The two pages were split for ease of reading.
+Command Sets are intimately linked with [Commands](./Commands) and you should be familiar with Commands before reading this page. The two pages were split for ease of reading.
 
 A *Command Set* (often referred to as a CmdSet or cmdset) is the basic unit for storing one or more *Commands*. A given Command can go into any number of different command sets. Storing Command classes in a command set is the way to make commands available to use in your game. 
 
-When storing a CmdSet on an object, you will make the commands in that command set available to the object. An example is the default command set stored on new Characters. This command set contains all the useful commands, from `look` and `inventory` to `@dig` and `@reload` ([permissions](Locks#Permissions) then limit which players may use them, but that's a separate topic).
+When storing a CmdSet on an object, you will make the commands in that command set available to the object. An example is the default command set stored on new Characters. This command set contains all the useful commands, from `look` and `inventory` to `@dig` and `@reload` ([permissions](./Locks#Permissions) then limit which players may use them, but that's a separate topic).
 
 When an account enters a command, cmdsets from the Account, Character, its location, and elsewhere are pulled together into a *merge stack*. This stack is merged together in a specific order to create a single "merged" cmdset, representing the pool of commands available at that very moment.
 
 An example would be a `Window` object that has a cmdset with two commands in it: `look through window` and `open window`. The command set would be visible to players in the room with the window, allowing them to use those commands only there. You could imagine all sorts of clever uses of this, like a `Television` object which had multiple commands for looking at it, switching channels and so on. The tutorial world included with Evennia showcases a dark room that replaces certain critical commands with its own versions because the Character cannot see. 
 
-If you want a quick start into defining your first commands and using them with command sets, you can head over to the [Adding Command Tutorial](Adding-Command-Tutorial) which steps through things without the explanations. 
+If you want a quick start into defining your first commands and using them with command sets, you can head over to the [Adding Command Tutorial](./Adding-Command-Tutorial) which steps through things without the explanations. 
 
 ## Defining Command Sets
 
-A CmdSet is, as most things in Evennia, defined as a Python class inheriting from the correct parent (`evennia.CmdSet`, which is a shortcut to `evennia.commands.cmdset.CmdSet`). The CmdSet class only needs to define one method, called `at_cmdset_creation()`. All other class parameters are optional, but are used for more advanced set manipulation and coding (see the [merge rules](Command-Sets#merge-rules) section). 
+A CmdSet is, as most things in Evennia, defined as a Python class inheriting from the correct parent (`evennia.CmdSet`, which is a shortcut to `evennia.commands.cmdset.CmdSet`). The CmdSet class only needs to define one method, called `at_cmdset_creation()`. All other class parameters are optional, but are used for more advanced set manipulation and coding (see the [merge rules](./Command-Sets#merge-rules) section). 
 
 ```python
 # file mygame/commands/mycmdset.py
@@ -84,24 +84,24 @@ Or you could add the cmdset as the *default* cmdset:
 
 An object can only have one "default" cmdset (but can also have none). This is meant as a safe fall-back even if all other cmdsets fail or are removed. It is always persistent and will not be affected by `cmdset.delete()`. To remove a default cmdset you must explicitly call `cmdset.remove_default()`.
 
-Command sets are often added to an object in its `at_object_creation` method. For more examples of adding commands, read the [Step by step tutorial](Adding-Command-Tutorial). Generally you can customize which command sets are added to your objects by using `self.cmdset.add()` or `self.cmdset.add_default()`. 
+Command sets are often added to an object in its `at_object_creation` method. For more examples of adding commands, read the [Step by step tutorial](./Adding-Command-Tutorial). Generally you can customize which command sets are added to your objects by using `self.cmdset.add()` or `self.cmdset.add_default()`. 
 
-> Important: Commands are identified uniquely by key *or* alias (see [Commands](Commands)). If any overlap exists, two commands are considered identical. Adding a Command to a command set that already has an identical command will *replace* the previous command. This is very important. You must take this behavior into account when attempting to overload any default Evennia commands with your own. Otherwise, you may accidentally "hide" your own command in your command set when adding a new one that has a matching alias. 
+> Important: Commands are identified uniquely by key *or* alias (see [Commands](./Commands)). If any overlap exists, two commands are considered identical. Adding a Command to a command set that already has an identical command will *replace* the previous command. This is very important. You must take this behavior into account when attempting to overload any default Evennia commands with your own. Otherwise, you may accidentally "hide" your own command in your command set when adding a new one that has a matching alias. 
 
 ### Properties on Command Sets
 
-There are several extra flags that you can set on CmdSets in order to modify how they work. All are optional and will be set to defaults otherwise.  Since many of these relate to *merging* cmdsets, you might want to read the [Adding and Merging Command Sets](Command-Sets#adding-and-merging-command-sets) section for some of these to make sense.
+There are several extra flags that you can set on CmdSets in order to modify how they work. All are optional and will be set to defaults otherwise.  Since many of these relate to *merging* cmdsets, you might want to read the [Adding and Merging Command Sets](./Command-Sets#adding-and-merging-command-sets) section for some of these to make sense.
 
 - `key` (string) - an identifier for the cmdset. This is optional, but should be unique. It is used for display in lists, but also to identify special merging behaviours using the `key_mergetype` dictionary below. 
 - `mergetype` (string) - allows for one of the following string values: "*Union*", "*Intersect*", "*Replace*", or "*Remove*".  
-- `priority` (int) - This defines the merge order of the merge stack - cmdsets will merge in rising order of priority with the highest priority set merging last. During a merger, the commands from the set with the higher priority will have precedence (just what happens depends on the [merge type](Command-Sets#adding-and-merging-command-sets)). If priority is identical, the order in the merge stack determines preference. The priority value must be greater or equal to `-100`. Most in-game sets should usually have priorities between `0` and `100`. Evennia default sets have priorities as follows (these can be changed if you want a different distribution): 
+- `priority` (int) - This defines the merge order of the merge stack - cmdsets will merge in rising order of priority with the highest priority set merging last. During a merger, the commands from the set with the higher priority will have precedence (just what happens depends on the [merge type](./Command-Sets#adding-and-merging-command-sets)). If priority is identical, the order in the merge stack determines preference. The priority value must be greater or equal to `-100`. Most in-game sets should usually have priorities between `0` and `100`. Evennia default sets have priorities as follows (these can be changed if you want a different distribution): 
     - EmptySet: `-101` (should be lower than all other sets)
     - SessionCmdSet: `-20`
     - AccountCmdSet: `-10`
     - CharacterCmdSet: `0`
     - ExitCmdSet: ` 101` (generally should always be available)
     - ChannelCmdSet: `101` (should usually always be available) - since exits never accept arguments, there is no collision between exits named the same as a channel even though the commands "collide".
-- `key_mergetype` (dict) - a dict of `key:mergetype` pairs. This allows this cmdset to merge differently with certain named cmdsets. If the cmdset to merge with has a `key` matching an entry in `key_mergetype`, it will not be merged according to the setting in `mergetype` but according to the mode in this dict. Please note that this is more complex than it may seem due to the [merge order](Command-Sets#adding-and-merging-command-sets) of command sets.  Please review that section before using `key_mergetype`.
+- `key_mergetype` (dict) - a dict of `key:mergetype` pairs. This allows this cmdset to merge differently with certain named cmdsets. If the cmdset to merge with has a `key` matching an entry in `key_mergetype`, it will not be merged according to the setting in `mergetype` but according to the mode in this dict. Please note that this is more complex than it may seem due to the [merge order](./Command-Sets#adding-and-merging-command-sets) of command sets.  Please review that section before using `key_mergetype`.
 - `duplicates` (bool/None default `None`) - this determines what happens when merging same-priority cmdsets containing same-key commands together. The`dupicate` option will *only* apply when merging the cmdset with this option onto one other cmdset with the same priority. The resulting cmdset will *not* retain this `duplicate` setting. 
     - `None` (default): No duplicates are allowed and the cmdset being merged "onto" the old one will take precedence. The result will be unique commands. *However*, the system will assume this value to be `True` for cmdsets on Objects, to avoid dangerous clashes. This is usually the safe bet.
     - `False`: Like `None` except the system will not auto-assume any value for cmdsets defined on Objects.
@@ -118,20 +118,20 @@ There are several extra flags that you can set on CmdSets in order to modify how
 
 ## Command Sets Searched
 
-When a user issues a command, it is matched against the [merged](Command-Sets#adding-and-merging-command-sets) command sets available to the player at the moment. Which those are may change at any time (such as when the player walks into the room with the `Window` object described earlier). 
+When a user issues a command, it is matched against the [merged](./Command-Sets#adding-and-merging-command-sets) command sets available to the player at the moment. Which those are may change at any time (such as when the player walks into the room with the `Window` object described earlier). 
 
 The currently valid command sets are collected from the following sources:
 
-- The cmdsets stored on the currently active [Session](Sessions). Default is the empty `SessionCmdSet` with merge priority `-20`.
-- The cmdsets defined on the [Account](Accounts). Default is the AccountCmdSet with merge priority `-10`. 
+- The cmdsets stored on the currently active [Session](./Sessions). Default is the empty `SessionCmdSet` with merge priority `-20`.
+- The cmdsets defined on the [Account](./Accounts). Default is the AccountCmdSet with merge priority `-10`. 
 - All cmdsets on the Character/Object (assuming the Account is currently puppeting such a Character/Object). Merge priority `0`.
 - The cmdsets of all objects carried by the puppeted Character (checks the `call` lock). Will not be included if `no_objs` option is active in the merge stack.
 - The cmdsets of the Character's current location (checks the `call` lock). Will not be included if `no_objs` option is active in the merge stack. 
 - The cmdsets of objects in the current location (checks the `call` lock). Will not be included if `no_objs` option is active in the merge stack. 
 - The cmdsets of Exits in the location. Merge priority `+101`. Will not be included if `no_exits` *or* `no_objs` option is active in the merge stack.
-- The [channel](Communications) cmdset containing commands for posting to all channels the account or character is currently connected to. Merge priority `+101`. Will not be included if `no_channels` option is active in the merge stack.
+- The [channel](./Communications) cmdset containing commands for posting to all channels the account or character is currently connected to. Merge priority `+101`. Will not be included if `no_channels` option is active in the merge stack.
 
-Note that an object does not *have* to share its commands with its surroundings. A Character's cmdsets should not be shared for example, or all other Characters would get multi-match errors just by being in the same room. The ability of an object to share its cmdsets is managed by its `call` [lock](Locks). For example, [Character objects](Objects) defaults to `call:false()` so that any cmdsets on them can only be accessed by themselves, not by other objects around them. Another example might be to lock an object with `call:inside()` to only make their commands available to objects inside them, or `cmd:holds()` to make their commands available only if they are held.
+Note that an object does not *have* to share its commands with its surroundings. A Character's cmdsets should not be shared for example, or all other Characters would get multi-match errors just by being in the same room. The ability of an object to share its cmdsets is managed by its `call` [lock](./Locks). For example, [Character objects](./Objects) defaults to `call:false()` so that any cmdsets on them can only be accessed by themselves, not by other objects around them. Another example might be to lock an object with `call:inside()` to only make their commands available to objects inside them, or `cmd:holds()` to make their commands available only if they are held.
 
 ## Adding and Merging Command Sets
 

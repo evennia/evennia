@@ -1,7 +1,7 @@
 # Building Permissions
 
 
-*OBS: This gives only a brief introduction to the access system. Locks and permissions are fully detailed* [here](Locks).
+*OBS: This gives only a brief introduction to the access system. Locks and permissions are fully detailed* [here](./Locks).
 
 ## The super user
 
@@ -9,7 +9,7 @@ There are strictly speaking two types of users in Evennia, the *super user* and 
 
 ## Assigning permissions
 
-Whereas permissions can be used for anything, those put in `settings.PERMISSION_HIERARCHY` will have a ranking relative each other as well. We refer to these types of permissions as *hierarchical permissions*. When building locks to check these permissions, the `perm()` [lock function](Locks) is used. By default Evennia creates the following hierarchy (spelled exactly like this):
+Whereas permissions can be used for anything, those put in `settings.PERMISSION_HIERARCHY` will have a ranking relative each other as well. We refer to these types of permissions as *hierarchical permissions*. When building locks to check these permissions, the `perm()` [lock function](./Locks) is used. By default Evennia creates the following hierarchy (spelled exactly like this):
 
 1. **Developers** basically have the same access as superusers except that they do *not* sidestep the Permission system. Assign only to really trusted server-admin staff since this level gives access both to server reload/shutdown functionality as well as (and this may be more critical) gives access to the all-powerful `@py` command that allows the execution of arbitrary Python code on the command line.
 1. **Admins** can do everything *except* affecting the server functions themselves. So an Admin couldn't reload or shutdown the server for example. They also cannot execute arbitrary Python code on the console or import files from the hard drive.

@@ -1,7 +1,7 @@
 # Nicks
 
 
-*Nicks*, short for *Nicknames* is a system allowing an object (usually a [Account](Accounts)) to assign custom replacement names for other game entities. 
+*Nicks*, short for *Nicknames* is a system allowing an object (usually a [Account](./Accounts)) to assign custom replacement names for other game entities. 
 
 Nicks are not to be confused with *Aliases*. Setting an Alias on a game entity actually changes an inherent attribute on that entity, and everyone in the game will be able to use that alias to address the entity thereafter. A *Nick* on the other hand, is used to map a different way *you alone* can refer to that entity. Nicks are also commonly used to replace your input text which means you can create your own aliases to default commands. 
 
@@ -60,7 +60,7 @@ You can also use [shell-type wildcards](http://www.linfo.org/wildcard.html):
 
 ## Coding with nicks
 
-Nicks are stored as the `Nick` database model and are referred from the normal Evennia [object](Objects) through the `nicks` property - this is known as the *NickHandler*. The NickHandler offers effective error checking, searches and conversion.
+Nicks are stored as the `Nick` database model and are referred from the normal Evennia [object](./Objects) through the `nicks` property - this is known as the *NickHandler*. The NickHandler offers effective error checking, searches and conversion.
 
 ```python
     # A command/channel nick:
@@ -84,11 +84,11 @@ Nicks are stored as the `Nick` database model and are referred from the normal E
 
 In a command definition you can reach the nick handler through `self.caller.nicks`. See the `nick` command in `evennia/commands/default/general.py` for more examples.
 
-As a last note, The Evennia [channel](Communications) alias systems are using nicks with the `nick_type="channel"` in order to allow users to create their own custom aliases to channels. 
+As a last note, The Evennia [channel](./Communications) alias systems are using nicks with the `nick_type="channel"` in order to allow users to create their own custom aliases to channels. 
 
 # Advanced note
 
-Internally, nicks are [Attributes](Attributes) saved with the `db_attrype` set to "nick" (normal Attributes has this set to `None`). 
+Internally, nicks are [Attributes](./Attributes) saved with the `db_attrype` set to "nick" (normal Attributes has this set to `None`). 
 
 The nick stores the replacement data in the Attribute.db_value field as a tuple with four fields `(regex_nick, template_string, raw_nick, raw_template)`. Here `regex_nick` is the converted regex representation of the `raw_nick` and the `template-string` is a version of the `raw_template` prepared for efficient replacement of any `$`- type markers. The `raw_nick` and `raw_template` are basically the unchanged strings you enter to the `nick` command (with unparsed `$` etc). 
 

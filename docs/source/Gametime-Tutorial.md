@@ -74,7 +74,7 @@ The line that is most relevant here is the game time epoch.  You see it shown at
 
 The `gametime` utility also has a way to schedule game-related events, taking into account your game time, and assuming a standard calendar (see below for the same feature with a custom calendar).  For instance, it can be used to have a specific message every (in-game) day at 6:00 AM showing how the sun rises.
 
-The function `schedule()` should be used here.  It will create a [script](Scripts) with some additional features to make sure the script is always executed when the game time matches the given parameters.
+The function `schedule()` should be used here.  It will create a [script](./Scripts) with some additional features to make sure the script is always executed when the game time matches the given parameters.
 
 The `schedule` function takes the following arguments:
 

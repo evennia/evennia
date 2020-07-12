@@ -148,11 +148,11 @@ deferred = utils.delay(10, _callback, obj, "Echo!", persistent=False)
 
 ```
 
-This creates an asynchronous delayed call. It will fire the given callback function after the given number of seconds. This is a very light wrapper over a Twisted [Deferred](https://twistedmatrix.com/documents/current/core/howto/defer.html). Normally this is run non-persistently, which means that if the server is `@reload`ed before the delay is over, the callback will never run (the server forgets it). If setting `persistent` to True, the delay will be stored in the database and survive a `@reload` - but for this to work it is susceptible to the same limitations incurred when saving to an [Attribute](Attributes).
+This creates an asynchronous delayed call. It will fire the given callback function after the given number of seconds. This is a very light wrapper over a Twisted [Deferred](https://twistedmatrix.com/documents/current/core/howto/defer.html). Normally this is run non-persistently, which means that if the server is `@reload`ed before the delay is over, the callback will never run (the server forgets it). If setting `persistent` to True, the delay will be stored in the database and survive a `@reload` - but for this to work it is susceptible to the same limitations incurred when saving to an [Attribute](./Attributes).
 
 The `deferred` return object can usually be ignored, but calling its `.cancel()` method will abort the delay prematurely.
 
-`utils.delay` is the lightest form of delayed call in Evennia. For other way to create time-bound tasks, see the [TickerHandler](TickerHandler) and [Scripts](Scripts).
+`utils.delay` is the lightest form of delayed call in Evennia. For other way to create time-bound tasks, see the [TickerHandler](./TickerHandler) and [Scripts](./Scripts).
 
 > Note that many delayed effects can be achieved without any need for an active timer. For example if you have a trait that should recover a point every 5 seconds you might just need its value when it's needed, but checking the current time and calculating on the fly what value it should have.
 
@@ -161,7 +161,7 @@ The `deferred` return object can usually be ignored, but calling its `.cancel()`
 
 This useful function takes two arguments - an object to check and a parent. It returns `True` if object inherits from parent *at any distance* (as opposed to Python's in-built `is_instance()` that will only catch immediate dependence). This function also accepts as input any combination of classes, instances or python-paths-to-classes.
 
-Note that Python code should usually work with [duck typing](http://en.wikipedia.org/wiki/Duck_typing). But in Evennia's case it can sometimes be useful to check if an object inherits from a given [Typeclass](Typeclasses) as a way of identification. Say for example that we have a typeclass *Animal*. This has a subclass *Felines* which in turn has a subclass *HouseCat*. Maybe there are a bunch of other animal types too, like horses and dogs. Using `inherits_from` will allow you to check for all animals in one go:
+Note that Python code should usually work with [duck typing](http://en.wikipedia.org/wiki/Duck_typing). But in Evennia's case it can sometimes be useful to check if an object inherits from a given [Typeclass](./Typeclasses) as a way of identification. Say for example that we have a typeclass *Animal*. This has a subclass *Felines* which in turn has a subclass *HouseCat*. Maybe there are a bunch of other animal types too, like horses and dogs. Using `inherits_from` will allow you to check for all animals in one go:
 
 ```python
      from evennia import utils
@@ -220,7 +220,7 @@ need to send byte-data over the wire, `to_str` is the only one you'll need.
 The difference from Python's in-built `str()` and `bytes()` operators are that
 the Evennia ones makes use of the `ENCODINGS` setting and will try very hard to
 never raise a traceback but instead echo errors through logging. See
-[here](Text-Encodings) for more info.
+[here](./Text-Encodings) for more info.
 
 ### Ansi Coloring Tools
 - [evennia.ansi](api:evennia.utils.ansi)

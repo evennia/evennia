@@ -31,4 +31,4 @@ That's it, really. New Evennia updates will now show up as a one-line title and 
 
      @rss2chan/delete rss = https://github.com/evennia/evennia/commits/master.atom
 
-You can connect any number of RSS feeds to a channel this way. You could also connect them to the same channels as [IRC](IRC) to have the feed echo to external chat channels as well. 
+You can connect any number of RSS feeds to a channel this way. You could also connect them to the same channels as [IRC](./IRC) to have the feed echo to external chat channels as well. 

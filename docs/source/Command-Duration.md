@@ -2,7 +2,7 @@
 
 
 Before reading this tutorial, if you haven't done so already, you might want to
-read [the documentation on commands](Commands) to get a basic understanding of
+read [the documentation on commands](./Commands) to get a basic understanding of
 how commands work in Evennia.
 
 In some types of games a command should not start and finish immediately.
@@ -40,7 +40,7 @@ class CmdTest(Command):
 > Important: The `yield` functionality will *only* work in the `func` method of
 > Commands. It only works because Evennia has especially
 > catered for it in Commands. If you want the same functionality elsewhere you
-> must use the [interactive decorator](Async-Process#The-@interactive-decorator).
+> must use the [interactive decorator](./Async-Process#The-@interactive-decorator).
 
 The important line is the `yield 10`.  It tells Evennia to "pause" the command
 and to wait for 10 seconds to execute the rest.  If you add this command and
@@ -159,7 +159,7 @@ The above version will have the echoes arrive one after another, each separated 
 
 As mentioned, a great thing about the delay introduced by `yield` or `utils.delay()` is that it does not block. It just goes on in the background and you are free to play normally in the interim. In some cases this is not what you want however. Some commands should simply "block" other commands while they are running. If you are in the process of crafting a helmet you shouldn't be able to also start crafting a shield at the same time, or if you just did a huge power-swing with your weapon you should not be able to do it again immediately. 
 
-The simplest way of implementing blocking is to use the technique covered in the [Command Cooldown](Command-Cooldown) tutorial. In that tutorial we implemented cooldowns by having the Command store the current time. Next time the Command was called, we compared the current time to the stored time to determine if enough time had passed for a renewed use. This is a *very* efficient, reliable and passive solution. The drawback is that there is nothing to tell the Player when enough time has passed unless they keep trying.
+The simplest way of implementing blocking is to use the technique covered in the [Command Cooldown](./Command-Cooldown) tutorial. In that tutorial we implemented cooldowns by having the Command store the current time. Next time the Command was called, we compared the current time to the stored time to determine if enough time had passed for a renewed use. This is a *very* efficient, reliable and passive solution. The drawback is that there is nothing to tell the Player when enough time has passed unless they keep trying.
 
 Here is an example where we will use `utils.delay` to tell the player when the cooldown has passed:
 

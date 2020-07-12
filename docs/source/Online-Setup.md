@@ -28,7 +28,7 @@ Evennia will by default accept incoming connections on all interfaces (`0.0.0.0`
 
 ### Settings example
 
-You can connect Evennia to the Internet without any changes to your settings. The default settings are easy to use but are not necessarily the safest. You can customize your online presence in your [settings file](Server-Conf#settings-file). To have Evennia recognize changed port settings you have to do a full `evennia reboot` to also restart the Portal and not just the Server component.
+You can connect Evennia to the Internet without any changes to your settings. The default settings are easy to use but are not necessarily the safest. You can customize your online presence in your [settings file](./Server-Conf#settings-file). To have Evennia recognize changed port settings you have to do a full `evennia reboot` to also restart the Portal and not just the Server component.
 
 Below is an example of a simple set of settings, mostly using the defaults. Evennia will require access to five computer ports, of which three (only) should be open to the outside world. Below we continue to assume that our server address is `203.0.113.0`. 
 
@@ -127,7 +127,7 @@ SSH_INTERFACES = ['0.0.0.0']
 AMP_PORT = 4006
 ```
 
-The `AMP_PORT` is required to work, since this is the internal port linking Evennia's [Server and Portal](Portal-And-Server) components together. The other ports are encrypted ports that may be useful for custom protocols but are otherwise not used. 
+The `AMP_PORT` is required to work, since this is the internal port linking Evennia's [Server and Portal](./Portal-And-Server) components together. The other ports are encrypted ports that may be useful for custom protocols but are otherwise not used. 
 
 ### Lockdown mode
 
@@ -141,7 +141,7 @@ To register, stand in your game dir, run
 
     evennia connections 
 
-and follow the instructions. See the [Game index page](Evennia-Game-Index) for more details.
+and follow the instructions. See the [Game index page](./Evennia-Game-Index) for more details.
 
 ## SSL
 
@@ -174,7 +174,7 @@ Also, on Freenode visit the #letsencrypt channel for assistance from the communi
 The only process missing from all of the above documentation is how to pass verification. This is how Let's Encrypt verifies that you have control over your domain (not necessarily ownership, it's Domain Validation (DV)). This can be done either with configuring a certain path on your web server or through a TXT record in your DNS. Which one you will want to do is a personal preference, but can also be based on your hosting choice. In a controlled/cPanel environment, you will most likely have to use DNS verification.
 
 ## Relevant SSL Proxy Setup Information
-- [Apache webserver configuration](Apache-Config) (optional)
+- [Apache webserver configuration](./Apache-Config) (optional)
 - [HAProxy Config](HAProxy-Config-(Optional))
 
 ## Hosting locally or remotely?
@@ -199,7 +199,7 @@ What we showed above is by far the simplest and probably cheapest option: Run Ev
 
 #### Setting up your own machine as a server
 
-[The first section](Online-Setup#connecting-from-the-outside) of this page describes how to do this and allow users to connect to the IP address of your machine/router. 
+[The first section](./Online-Setup#connecting-from-the-outside) of this page describes how to do this and allow users to connect to the IP address of your machine/router. 
 
 A complication with using a specific IP address like this is that your home IP might not remain the same. Many ISPs (Internet Service Providers) allocates a *dynamic* IP to you which could change at any time. When that happens, that IP you told people to go to will be worthless. Also, that long string of numbers is not very pretty, is it? It's hard to remember and not easy to use in marketing your game. What you need is to alias it to a more sensible domain name - an alias that follows you around also when the IP changes.
 
@@ -223,7 +223,7 @@ The options you probably need to look for are *shell account services*, *VPS:es*
 - Usually runs a Linux flavor, making it easy to install Evennia.
 - Support. You don't need to maintain the server hardware. If your house burns down, at least your game stays online. Many services guarantee a certain level of up-time and also do regular backups for you. Make sure to check, some offer lower rates in exchange for you yourself being fully responsible for your data/backups.
 - Usually offers a fixed domain name, so no need to mess with IP addresses.
-- May have the ability to easily deploy [docker](Running-Evennia-in-Docker) versions of evennia and/or your game. 
+- May have the ability to easily deploy [docker](./Running-Evennia-in-Docker) versions of evennia and/or your game. 
 
 **Disadvantages**
 - Might be pretty expensive (more so than a web hotel). Note that Evennia will normally need at least 100MB RAM and likely much more for a large production game. 
@@ -232,9 +232,9 @@ The options you probably need to look for are *shell account services*, *VPS:es*
 
 #### Installing Evennia on a remote server
 
-Firstly, if you are familiar with server infrastructure, consider using [Docker](Running-Evennia-in-Docker) to deploy your game to the remote server; it will likely ease installation and deployment. Docker images may be a little confusing if you are completely new to them though.
+Firstly, if you are familiar with server infrastructure, consider using [Docker](./Running-Evennia-in-Docker) to deploy your game to the remote server; it will likely ease installation and deployment. Docker images may be a little confusing if you are completely new to them though.
 
-If not using docker, and assuming you know how to connect to your account over ssh/PuTTy, you should be able to follow the [Getting Started](Getting-Started) instructions normally. You only need Python and GIT pre-installed; these should both be available on any servers (if not you should be able to easily ask for them to be installed). On a VPS or Cloud service you can install them yourself as needed. 
+If not using docker, and assuming you know how to connect to your account over ssh/PuTTy, you should be able to follow the [Getting Started](./Getting-Started) instructions normally. You only need Python and GIT pre-installed; these should both be available on any servers (if not you should be able to easily ask for them to be installed). On a VPS or Cloud service you can install them yourself as needed. 
 
 If `virtualenv` is not available and you can't get it, you can download it (it's just a single file) from [the virtualenv pypi](https://pypi.python.org/pypi/virtualenv). Using `virtualenv` you can install everything without actually needing to have further `root` access. Ports might be an issue, so make sure you know which ports are available to use and reconfigure Evennia accordingly. 
 

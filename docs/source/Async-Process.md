@@ -89,7 +89,7 @@ line quite pointless for processing any data from the function. Instead one has 
 - `at_err_kwargs` - an optional dictionary that will be fed as keyword arguments to the `at_err`
   errback.
 
-An example of making an asynchronous call from inside a [Command](Commands) definition:
+An example of making an asynchronous call from inside a [Command](./Commands) definition:
 
 ```python
     from evennia import utils, Command
@@ -136,7 +136,7 @@ sleep.
 ```
 
 This will delay the execution of the callback for 10 seconds. This function is explored much more in
-the [Command Duration Tutorial](Command-Duration).
+the [Command Duration Tutorial](./Command-Duration).
 
 You can also try the following snippet just see how it works:
 

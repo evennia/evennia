@@ -1,7 +1,7 @@
 # Tutorial Tweeting Game Stats
 
 
-This tutorial will create a simple script that will send a tweet to your already configured twitter account. Please see: [How to connect Evennia to Twitter](How-to-connect-Evennia-to-Twitter) if you haven't already done so.
+This tutorial will create a simple script that will send a tweet to your already configured twitter account. Please see: [How to connect Evennia to Twitter](./How-to-connect-Evennia-to-Twitter) if you haven't already done so.
 
 The script could be expanded to cover a variety of statistics you might wish to tweet about regularly, from player deaths to how much currency is in the economy etc.
 
@@ -79,6 +79,6 @@ In the `at_repeat` method (which is called immediately and then at interval seco
 1. Shows the number of Player Characters, Rooms and Other/Objects
 2. Shows the number of prototypes currently in the game and then selects 3 random keys to show 
 
-[Scripts Information](Scripts) will show you how to add it as a Global script, however, for testing it may be useful to start/stop it quickly from within the game.  Assuming that you create the file as `mygame/typeclasses/tweet_stats.py` it can be started by using the following command 
+[Scripts Information](./Scripts) will show you how to add it as a Global script, however, for testing it may be useful to start/stop it quickly from within the game.  Assuming that you create the file as `mygame/typeclasses/tweet_stats.py` it can be started by using the following command 
 
     @script Here = tweet_stats.TweetStats

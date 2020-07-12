@@ -16,7 +16,7 @@ You can combine the sending of normal text with the sending (updating of the pro
     self.msg("This is a text", prompt="This is a prompt")
 ```
 
-You can update the prompt on demand, this is normally done using [OOB](OOB)-tracking of the relevant Attributes (like the character's health). You could also make sure that attacking commands update the prompt when they cause a change in health, for example. 
+You can update the prompt on demand, this is normally done using [OOB](./OOB)-tracking of the relevant Attributes (like the character's health). You could also make sure that attacking commands update the prompt when they cause a change in health, for example. 
 
 Here is a simple example of the prompt sent/updated from a command class: 
 

@@ -25,9 +25,9 @@ Some features exemplified by the tutorial world:
 
 ## Install
 
-The tutorial world consists of a few modules in `evennia/contrib/tutorial_world/` containing custom [Typeclasses](Typeclasses) for [rooms and objects](Objects) and associated [Commands](Commands).
+The tutorial world consists of a few modules in `evennia/contrib/tutorial_world/` containing custom [Typeclasses](./Typeclasses) for [rooms and objects](./Objects) and associated [Commands](./Commands).
 
-These reusable bits and pieces are then put together into a functioning game area ("world" is maybe too big a word for such a small zone) using a [batch script](Batch-Processors) called `build.ev`. To install, log into the server as the superuser (user #1) and run:
+These reusable bits and pieces are then put together into a functioning game area ("world" is maybe too big a word for such a small zone) using a [batch script](./Batch-Processors) called `build.ev`. To install, log into the server as the superuser (user #1) and run:
 
     @batchcommand tutorial_world.build
 
