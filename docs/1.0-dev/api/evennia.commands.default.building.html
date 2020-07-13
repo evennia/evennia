@@ -1,0 +1,1953 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>evennia.commands.default.building &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.building</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-evennia.commands.default.building">
+<span id="evennia-commands-default-building"></span><h1>evennia.commands.default.building<a class="headerlink" href="#module-evennia.commands.default.building" title="Permalink to this headline">¶</a></h1>
+<p>Building and world design commands</p>
+<dl class="py class">
+<dt id="evennia.commands.default.building.ObjManipCommand">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.building.</code><code class="sig-name descname">ObjManipCommand</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#ObjManipCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.ObjManipCommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>This is a parent class for some of the defining objmanip commands
+since they tend to have some more variables to define new objects.</p>
+<p>Each object definition can have several components. First is
+always a name, followed by an optional alias list and finally an
+some optional data, such as a typeclass or a location. A comma ‘,’
+separates different objects. Like this:</p>
+<blockquote>
+<div><p>name1;alias;alias;alias:option, name2;alias;alias …</p>
+</div></blockquote>
+<p>Spaces between all components are stripped.</p>
+<p>A second situation is attribute manipulation. Such commands
+are simpler and offer combinations</p>
+<blockquote>
+<div><p>objname/attr/attr/attr, objname/attr, …</p>
+</div></blockquote>
+<dl class="py method">
+<dt id="evennia.commands.default.building.ObjManipCommand.parse">
+<code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#ObjManipCommand.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.ObjManipCommand.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>We need to expand the default parsing to get all
+the cases, see the module doc.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.ObjManipCommand.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.building.ObjManipCommand.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.ObjManipCommand.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.commands.default.building.ObjManipCommand.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.ObjManipCommand.key">
+<code class="sig-name descname">key</code><em class="property"> = 'command'</em><a class="headerlink" href="#evennia.commands.default.building.ObjManipCommand.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.ObjManipCommand.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.commands.default.building.ObjManipCommand.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.ObjManipCommand.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'command', 'tags': '', 'text': &quot;\n    This is a parent class for some of the defining objmanip commands\n    since they tend to have some more variables to define new objects.\n\n    Each object definition can have several components. First is\n    always a name, followed by an optional alias list and finally an\n    some optional data, such as a typeclass or a location. A comma ','\n    separates different objects. Like this:\n\n        name1;alias;alias;alias:option, name2;alias;alias ...\n\n    Spaces between all components are stripped.\n\n    A second situation is attribute manipulation. Such commands\n    are simpler and offer combinations\n\n        objname/attr/attr/attr, objname/attr, ...\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.ObjManipCommand.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.building.CmdSetObjAlias">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.building.</code><code class="sig-name descname">CmdSetObjAlias</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdSetObjAlias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdSetObjAlias" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>adding permanent aliases for object</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>alias &lt;obj&gt; [= [alias[,alias,alias,…]]]
+alias &lt;obj&gt; =
+alias/category &lt;obj&gt; = [alias[,alias,…]:&lt;category&gt;</p>
+</dd>
+<dt>Switches:</dt><dd><dl class="simple">
+<dt>category - requires ending input with :category, to store the</dt><dd><p>given aliases with the given category.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Assigns aliases to an object so it can be referenced by more
+than one name. Assign empty to remove all aliases from object. If
+assigning a category, all aliases given will be using this category.</p>
+<p>Observe that this is not the same thing as personal aliases
+created with the ‘nick’ command! Aliases set with alias are
+changing the object in question, making those aliases usable
+by everyone.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdSetObjAlias.key">
+<code class="sig-name descname">key</code><em class="property"> = 'alias'</em><a class="headerlink" href="#evennia.commands.default.building.CmdSetObjAlias.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdSetObjAlias.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['setobjalias']</em><a class="headerlink" href="#evennia.commands.default.building.CmdSetObjAlias.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdSetObjAlias.switch_options">
+<code class="sig-name descname">switch_options</code><em class="property"> = ('category',)</em><a class="headerlink" href="#evennia.commands.default.building.CmdSetObjAlias.switch_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdSetObjAlias.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(setobjalias) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdSetObjAlias.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdSetObjAlias.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.building.CmdSetObjAlias.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdSetObjAlias.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdSetObjAlias.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdSetObjAlias.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the aliases.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdSetObjAlias.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(setobjalias) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdSetObjAlias.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdSetObjAlias.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'setobjalias', 'category': 'building', 'key': 'alias', 'tags': '', 'text': &quot;\n    adding permanent aliases for object\n\n    Usage:\n      alias &lt;obj&gt; [= [alias[,alias,alias,...]]]\n      alias &lt;obj&gt; =\n      alias/category &lt;obj&gt; = [alias[,alias,...]:&lt;category&gt;\n\n    Switches:\n      category - requires ending input with :category, to store the\n        given aliases with the given category.\n\n    Assigns aliases to an object so it can be referenced by more\n    than one name. Assign empty to remove all aliases from object. If\n    assigning a category, all aliases given will be using this category.\n\n    Observe that this is not the same thing as personal aliases\n    created with the 'nick' command! Aliases set with alias are\n    changing the object in question, making those aliases usable\n    by everyone.\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.CmdSetObjAlias.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.building.CmdCopy">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.building.</code><code class="sig-name descname">CmdCopy</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdCopy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdCopy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.building.ObjManipCommand" title="evennia.commands.default.building.ObjManipCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.building.ObjManipCommand</span></code></a></p>
+<p>copy an object and its properties</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>copy &lt;original obj&gt; [= &lt;new_name&gt;][;alias;alias..]
+[:&lt;new_location&gt;] [,&lt;new_name2&gt; …]</p>
+</dd>
+</dl>
+<p>Create one or more copies of an object. If you don’t supply any targets,
+one exact copy of the original object will be created with the name <a href="#id1"><span class="problematic" id="id2">*</span></a>_copy.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdCopy.key">
+<code class="sig-name descname">key</code><em class="property"> = 'copy'</em><a class="headerlink" href="#evennia.commands.default.building.CmdCopy.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdCopy.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(copy) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdCopy.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdCopy.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.building.CmdCopy.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdCopy.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdCopy.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdCopy.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses ObjManipCommand.parse()</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdCopy.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.building.CmdCopy.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdCopy.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(copy) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdCopy.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdCopy.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'building', 'key': 'copy', 'tags': '', 'text': &quot;\n    copy an object and its properties\n\n    Usage:\n      copy &lt;original obj&gt; [= &lt;new_name&gt;][;alias;alias..]\n      [:&lt;new_location&gt;] [,&lt;new_name2&gt; ...]\n\n    Create one or more copies of an object. If you don't supply any targets,\n    one exact copy of the original object will be created with the name *_copy.\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.CmdCopy.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.building.CmdCpAttr">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.building.</code><code class="sig-name descname">CmdCpAttr</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdCpAttr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdCpAttr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.building.ObjManipCommand" title="evennia.commands.default.building.ObjManipCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.building.ObjManipCommand</span></code></a></p>
+<p>copy attributes between objects</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>cpattr[/switch] &lt;obj&gt;/&lt;attr&gt; = &lt;obj1&gt;/&lt;attr1&gt; [,&lt;obj2&gt;/&lt;attr2&gt;,&lt;obj3&gt;/&lt;attr3&gt;,…]
+cpattr[/switch] &lt;obj&gt;/&lt;attr&gt; = &lt;obj1&gt; [,&lt;obj2&gt;,&lt;obj3&gt;,…]
+cpattr[/switch] &lt;attr&gt; = &lt;obj1&gt;/&lt;attr1&gt; [,&lt;obj2&gt;/&lt;attr2&gt;,&lt;obj3&gt;/&lt;attr3&gt;,…]
+cpattr[/switch] &lt;attr&gt; = &lt;obj1&gt;[,&lt;obj2&gt;,&lt;obj3&gt;,…]</p>
+</dd>
+<dt>Switches:</dt><dd><p>move - delete the attribute from the source object after copying.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>cpattr coolness = Anna/chillout, Anna/nicety, Tom/nicety
+-&gt;
+copies the coolness attribute (defined on yourself), to attributes
+on Anna and Tom.</p>
+<p>Copy the attribute one object to one or more attributes on another object.
+If you don’t supply a source object, yourself is used.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdCpAttr.key">
+<code class="sig-name descname">key</code><em class="property"> = 'cpattr'</em><a class="headerlink" href="#evennia.commands.default.building.CmdCpAttr.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdCpAttr.switch_options">
+<code class="sig-name descname">switch_options</code><em class="property"> = ('move',)</em><a class="headerlink" href="#evennia.commands.default.building.CmdCpAttr.switch_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdCpAttr.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(cpattr) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdCpAttr.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdCpAttr.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.building.CmdCpAttr.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdCpAttr.check_from_attr">
+<code class="sig-name descname">check_from_attr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">attr</span></em>, <em class="sig-param"><span class="n">clear</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdCpAttr.check_from_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdCpAttr.check_from_attr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook for overriding on subclassed commands. Checks to make sure a
+caller can copy the attr from the object in question. If not, return a
+false value and the command will abort. An error message should be
+provided by this function.</p>
+<p>If clear is True, user is attempting to move the attribute.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdCpAttr.check_to_attr">
+<code class="sig-name descname">check_to_attr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">attr</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdCpAttr.check_to_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdCpAttr.check_to_attr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook for overriding on subclassed commands. Checks to make sure a
+caller can write to the specified attribute on the specified object.
+If not, return a false value and the attribute will be skipped. An
+error message should be provided by this function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdCpAttr.check_has_attr">
+<code class="sig-name descname">check_has_attr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">attr</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdCpAttr.check_has_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdCpAttr.check_has_attr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook for overriding on subclassed commands. Do any preprocessing
+required and verify an object has an attribute.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdCpAttr.get_attr">
+<code class="sig-name descname">get_attr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">attr</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdCpAttr.get_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdCpAttr.get_attr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook for overriding on subclassed commands. Do any preprocessing
+required and get the attribute from the object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdCpAttr.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdCpAttr.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdCpAttr.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do the copying.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdCpAttr.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.building.CmdCpAttr.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdCpAttr.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(cpattr) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdCpAttr.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdCpAttr.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'building', 'key': 'cpattr', 'tags': '', 'text': &quot;\n    copy attributes between objects\n\n    Usage:\n      cpattr[/switch] &lt;obj&gt;/&lt;attr&gt; = &lt;obj1&gt;/&lt;attr1&gt; [,&lt;obj2&gt;/&lt;attr2&gt;,&lt;obj3&gt;/&lt;attr3&gt;,...]\n      cpattr[/switch] &lt;obj&gt;/&lt;attr&gt; = &lt;obj1&gt; [,&lt;obj2&gt;,&lt;obj3&gt;,...]\n      cpattr[/switch] &lt;attr&gt; = &lt;obj1&gt;/&lt;attr1&gt; [,&lt;obj2&gt;/&lt;attr2&gt;,&lt;obj3&gt;/&lt;attr3&gt;,...]\n      cpattr[/switch] &lt;attr&gt; = &lt;obj1&gt;[,&lt;obj2&gt;,&lt;obj3&gt;,...]\n\n    Switches:\n      move - delete the attribute from the source object after copying.\n\n    Example:\n      cpattr coolness = Anna/chillout, Anna/nicety, Tom/nicety\n      -&gt;\n      copies the coolness attribute (defined on yourself), to attributes\n      on Anna and Tom.\n\n    Copy the attribute one object to one or more attributes on another object.\n    If you don't supply a source object, yourself is used.\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.CmdCpAttr.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.building.CmdMvAttr">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.building.</code><code class="sig-name descname">CmdMvAttr</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdMvAttr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdMvAttr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.building.ObjManipCommand" title="evennia.commands.default.building.ObjManipCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.building.ObjManipCommand</span></code></a></p>
+<p>move attributes between objects</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>mvattr[/switch] &lt;obj&gt;/&lt;attr&gt; = &lt;obj1&gt;/&lt;attr1&gt; [,&lt;obj2&gt;/&lt;attr2&gt;,&lt;obj3&gt;/&lt;attr3&gt;,…]
+mvattr[/switch] &lt;obj&gt;/&lt;attr&gt; = &lt;obj1&gt; [,&lt;obj2&gt;,&lt;obj3&gt;,…]
+mvattr[/switch] &lt;attr&gt; = &lt;obj1&gt;/&lt;attr1&gt; [,&lt;obj2&gt;/&lt;attr2&gt;,&lt;obj3&gt;/&lt;attr3&gt;,…]
+mvattr[/switch] &lt;attr&gt; = &lt;obj1&gt;[,&lt;obj2&gt;,&lt;obj3&gt;,…]</p>
+</dd>
+<dt>Switches:</dt><dd><p>copy - Don’t delete the original after moving.</p>
+</dd>
+</dl>
+<p>Move an attribute from one object to one or more attributes on another
+object. If you don’t supply a source object, yourself is used.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdMvAttr.key">
+<code class="sig-name descname">key</code><em class="property"> = 'mvattr'</em><a class="headerlink" href="#evennia.commands.default.building.CmdMvAttr.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdMvAttr.switch_options">
+<code class="sig-name descname">switch_options</code><em class="property"> = ('copy',)</em><a class="headerlink" href="#evennia.commands.default.building.CmdMvAttr.switch_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdMvAttr.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(mvattr) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdMvAttr.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdMvAttr.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.building.CmdMvAttr.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdMvAttr.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdMvAttr.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdMvAttr.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do the moving</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdMvAttr.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.building.CmdMvAttr.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdMvAttr.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(mvattr) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdMvAttr.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdMvAttr.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'building', 'key': 'mvattr', 'tags': '', 'text': &quot;\n    move attributes between objects\n\n    Usage:\n      mvattr[/switch] &lt;obj&gt;/&lt;attr&gt; = &lt;obj1&gt;/&lt;attr1&gt; [,&lt;obj2&gt;/&lt;attr2&gt;,&lt;obj3&gt;/&lt;attr3&gt;,...]\n      mvattr[/switch] &lt;obj&gt;/&lt;attr&gt; = &lt;obj1&gt; [,&lt;obj2&gt;,&lt;obj3&gt;,...]\n      mvattr[/switch] &lt;attr&gt; = &lt;obj1&gt;/&lt;attr1&gt; [,&lt;obj2&gt;/&lt;attr2&gt;,&lt;obj3&gt;/&lt;attr3&gt;,...]\n      mvattr[/switch] &lt;attr&gt; = &lt;obj1&gt;[,&lt;obj2&gt;,&lt;obj3&gt;,...]\n\n    Switches:\n      copy - Don't delete the original after moving.\n\n    Move an attribute from one object to one or more attributes on another\n    object. If you don't supply a source object, yourself is used.\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.CmdMvAttr.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.building.CmdCreate">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.building.</code><code class="sig-name descname">CmdCreate</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdCreate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdCreate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.building.ObjManipCommand" title="evennia.commands.default.building.ObjManipCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.building.ObjManipCommand</span></code></a></p>
+<p>create new objects</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>create[/drop] &lt;objname&gt;[;alias;alias…][:typeclass], &lt;objname&gt;…</p>
+</dd>
+<dt>switch:</dt><dd><dl class="simple">
+<dt>drop - automatically drop the new object into your current</dt><dd><p>location (this is not echoed). This also sets the new
+object’s home to the current location rather than to you.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Creates one or more new objects. If typeclass is given, the object
+is created as a child of this typeclass. The typeclass script is
+assumed to be located under types/ and any further
+directory structure is given in Python notation. So if you have a
+correct typeclass ‘RedButton’ defined in
+types/examples/red_button.py, you could create a new
+object of this type like this:</p>
+<blockquote>
+<div><p>create/drop button;red : examples.red_button.RedButton</p>
+</div></blockquote>
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdCreate.key">
+<code class="sig-name descname">key</code><em class="property"> = 'create'</em><a class="headerlink" href="#evennia.commands.default.building.CmdCreate.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdCreate.switch_options">
+<code class="sig-name descname">switch_options</code><em class="property"> = ('drop',)</em><a class="headerlink" href="#evennia.commands.default.building.CmdCreate.switch_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdCreate.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(create) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdCreate.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdCreate.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.building.CmdCreate.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdCreate.new_obj_lockstring">
+<code class="sig-name descname">new_obj_lockstring</code><em class="property"> = 'control:id({id}) or perm(Admin);delete:id({id}) or perm(Admin)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdCreate.new_obj_lockstring" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdCreate.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdCreate.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdCreate.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the object.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdCreate.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.building.CmdCreate.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdCreate.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(create) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdCreate.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdCreate.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'building', 'key': 'create', 'tags': '', 'text': &quot;\n    create new objects\n\n    Usage:\n      create[/drop] &lt;objname&gt;[;alias;alias...][:typeclass], &lt;objname&gt;...\n\n    switch:\n       drop - automatically drop the new object into your current\n              location (this is not echoed). This also sets the new\n              object's home to the current location rather than to you.\n\n    Creates one or more new objects. If typeclass is given, the object\n    is created as a child of this typeclass. The typeclass script is\n    assumed to be located under types/ and any further\n    directory structure is given in Python notation. So if you have a\n    correct typeclass 'RedButton' defined in\n    types/examples/red_button.py, you could create a new\n    object of this type like this:\n\n       create/drop button;red : examples.red_button.RedButton\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.CmdCreate.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.building.CmdDesc">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.building.</code><code class="sig-name descname">CmdDesc</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdDesc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdDesc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>describe an object or the current room.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>desc [&lt;obj&gt; =] &lt;description&gt;</p>
+</dd>
+<dt>Switches:</dt><dd><p>edit - Open up a line editor for more advanced editing.</p>
+</dd>
+</dl>
+<p>Sets the “desc” attribute on an object. If an object is not given,
+describe the current room.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdDesc.key">
+<code class="sig-name descname">key</code><em class="property"> = 'desc'</em><a class="headerlink" href="#evennia.commands.default.building.CmdDesc.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdDesc.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['describe']</em><a class="headerlink" href="#evennia.commands.default.building.CmdDesc.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdDesc.switch_options">
+<code class="sig-name descname">switch_options</code><em class="property"> = ('edit',)</em><a class="headerlink" href="#evennia.commands.default.building.CmdDesc.switch_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdDesc.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(desc) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdDesc.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdDesc.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.building.CmdDesc.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdDesc.edit_handler">
+<code class="sig-name descname">edit_handler</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdDesc.edit_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdDesc.edit_handler" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdDesc.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdDesc.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdDesc.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define command</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdDesc.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(desc) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdDesc.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdDesc.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'describe', 'category': 'building', 'key': 'desc', 'tags': '', 'text': '\n    describe an object or the current room.\n\n    Usage:\n      desc [&lt;obj&gt; =] &lt;description&gt;\n\n    Switches:\n      edit - Open up a line editor for more advanced editing.\n\n    Sets the &quot;desc&quot; attribute on an object. If an object is not given,\n    describe the current room.\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdDesc.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.building.CmdDestroy">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.building.</code><code class="sig-name descname">CmdDestroy</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdDestroy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdDestroy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>permanently delete objects</p>
+<dl>
+<dt>Usage:</dt><dd><p>destroy[/switches] [obj, obj2, obj3, [dbref-dbref], …]</p>
+</dd>
+<dt>Switches:</dt><dd><dl class="simple">
+<dt>override - The destroy command will usually avoid accidentally</dt><dd><p>destroying account objects. This switch overrides this safety.</p>
+</dd>
+</dl>
+<p>force - destroy without confirmation.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>destroy house, roof, door, 44-78
+destroy 5-10, flower, 45
+destroy/force north</p>
+<p>Destroys one or many objects. If dbrefs are used, a range to delete can be
+given, e.g. 4-10. Also the end points will be deleted. This command
+displays a confirmation before destroying, to make sure of your choice.
+You can specify the /force switch to bypass this confirmation.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdDestroy.key">
+<code class="sig-name descname">key</code><em class="property"> = 'destroy'</em><a class="headerlink" href="#evennia.commands.default.building.CmdDestroy.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdDestroy.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['del', 'delete']</em><a class="headerlink" href="#evennia.commands.default.building.CmdDestroy.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdDestroy.switch_options">
+<code class="sig-name descname">switch_options</code><em class="property"> = ('override', 'force')</em><a class="headerlink" href="#evennia.commands.default.building.CmdDestroy.switch_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdDestroy.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(destroy) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdDestroy.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdDestroy.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.building.CmdDestroy.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdDestroy.confirm">
+<code class="sig-name descname">confirm</code><em class="property"> = True</em><a class="headerlink" href="#evennia.commands.default.building.CmdDestroy.confirm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdDestroy.default_confirm">
+<code class="sig-name descname">default_confirm</code><em class="property"> = 'yes'</em><a class="headerlink" href="#evennia.commands.default.building.CmdDestroy.default_confirm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdDestroy.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdDestroy.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdDestroy.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implements the command.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdDestroy.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(destroy) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdDestroy.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdDestroy.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'del delete', 'category': 'building', 'key': 'destroy', 'tags': '', 'text': '\n    permanently delete objects\n\n    Usage:\n       destroy[/switches] [obj, obj2, obj3, [dbref-dbref], ...]\n\n    Switches:\n       override - The destroy command will usually avoid accidentally\n                  destroying account objects. This switch overrides this safety.\n       force - destroy without confirmation.\n    Examples:\n       destroy house, roof, door, 44-78\n       destroy 5-10, flower, 45\n       destroy/force north\n\n    Destroys one or many objects. If dbrefs are used, a range to delete can be\n    given, e.g. 4-10. Also the end points will be deleted. This command\n    displays a confirmation before destroying, to make sure of your choice.\n    You can specify the /force switch to bypass this confirmation.\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdDestroy.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.building.CmdDig">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.building.</code><code class="sig-name descname">CmdDig</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdDig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdDig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.building.ObjManipCommand" title="evennia.commands.default.building.ObjManipCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.building.ObjManipCommand</span></code></a></p>
+<p>build new rooms and connect them to the current location</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><dl class="simple">
+<dt>dig[/switches] &lt;roomname&gt;[;alias;alias…][:typeclass]</dt><dd><dl class="simple">
+<dt>[= &lt;exit_to_there&gt;[;alias][:typeclass]]</dt><dd><p>[, &lt;exit_to_here&gt;[;alias][:typeclass]]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt>Switches:</dt><dd><p>tel or teleport - move yourself to the new room</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>dig kitchen = north;n, south;s
+dig house:myrooms.MyHouseTypeclass
+dig sheer cliff;cliff;sheer = climb up, climb down</p>
+<p>This command is a convenient way to build rooms quickly; it creates the
+new room and you can optionally set up exits back and forth between your
+current room and the new one. You can add as many aliases as you
+like to the name of the room and the exits in question; an example
+would be ‘north;no;n’.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdDig.key">
+<code class="sig-name descname">key</code><em class="property"> = 'dig'</em><a class="headerlink" href="#evennia.commands.default.building.CmdDig.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdDig.switch_options">
+<code class="sig-name descname">switch_options</code><em class="property"> = ('teleport',)</em><a class="headerlink" href="#evennia.commands.default.building.CmdDig.switch_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdDig.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(dig) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdDig.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdDig.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.building.CmdDig.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdDig.new_room_lockstring">
+<code class="sig-name descname">new_room_lockstring</code><em class="property"> = 'control:id({id}) or perm(Admin); delete:id({id}) or perm(Admin); edit:id({id}) or perm(Admin)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdDig.new_room_lockstring" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdDig.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdDig.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdDig.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do the digging. Inherits variables from ObjManipCommand.parse()</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdDig.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.building.CmdDig.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdDig.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(dig) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdDig.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdDig.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'building', 'key': 'dig', 'tags': '', 'text': &quot;\n    build new rooms and connect them to the current location\n\n    Usage:\n      dig[/switches] &lt;roomname&gt;[;alias;alias...][:typeclass]\n            [= &lt;exit_to_there&gt;[;alias][:typeclass]]\n               [, &lt;exit_to_here&gt;[;alias][:typeclass]]\n\n    Switches:\n       tel or teleport - move yourself to the new room\n\n    Examples:\n       dig kitchen = north;n, south;s\n       dig house:myrooms.MyHouseTypeclass\n       dig sheer cliff;cliff;sheer = climb up, climb down\n\n    This command is a convenient way to build rooms quickly; it creates the\n    new room and you can optionally set up exits back and forth between your\n    current room and the new one. You can add as many aliases as you\n    like to the name of the room and the exits in question; an example\n    would be 'north;no;n'.\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.CmdDig.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.building.CmdTunnel">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.building.</code><code class="sig-name descname">CmdTunnel</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdTunnel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdTunnel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>create new rooms in cardinal directions only</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>tunnel[/switch] &lt;direction&gt;[:typeclass] [= &lt;roomname&gt;[;alias;alias;…][:typeclass]]</p>
+</dd>
+<dt>Switches:</dt><dd><p>oneway - do not create an exit back to the current location
+tel - teleport to the newly created room</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>tunnel n
+tunnel n = house;mike’s place;green building</p>
+<dl class="simple">
+<dt>This is a simple way to build using pre-defined directions:</dt><dd><p><a href="#id3"><span class="problematic" id="id4">|</span></a>wn,ne,e,se,s,sw,w,nw|n (north, northeast etc)
+<a href="#id5"><span class="problematic" id="id6">|</span></a>wu,d|n (up and down)
+<a href="#id7"><span class="problematic" id="id8">|</span></a>wi,o|n (in and out)</p>
+</dd>
+</dl>
+<p>The full names (north, in, southwest, etc) will always be put as
+main name for the exit, using the abbreviation as an alias (so an
+exit will always be able to be used with both “north” as well as
+“n” for example). Opposite directions will automatically be
+created back from the new room unless the /oneway switch is given.
+For more flexibility and power in creating rooms, use dig.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTunnel.key">
+<code class="sig-name descname">key</code><em class="property"> = 'tunnel'</em><a class="headerlink" href="#evennia.commands.default.building.CmdTunnel.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTunnel.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['tun']</em><a class="headerlink" href="#evennia.commands.default.building.CmdTunnel.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTunnel.switch_options">
+<code class="sig-name descname">switch_options</code><em class="property"> = ('oneway', 'tel')</em><a class="headerlink" href="#evennia.commands.default.building.CmdTunnel.switch_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTunnel.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd: perm(tunnel) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdTunnel.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTunnel.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.building.CmdTunnel.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTunnel.directions">
+<code class="sig-name descname">directions</code><em class="property"> = {'d': ('down', 'u'), 'e': ('east', 'w'), 'i': ('in', 'o'), 'n': ('north', 's'), 'ne': ('northeast', 'sw'), 'nw': ('northwest', 'se'), 'o': ('out', 'i'), 's': ('south', 'n'), 'se': ('southeast', 'nw'), 'sw': ('southwest', 'ne'), 'u': ('up', 'd'), 'w': ('west', 'e')}</em><a class="headerlink" href="#evennia.commands.default.building.CmdTunnel.directions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdTunnel.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdTunnel.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdTunnel.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implements the tunnel command</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTunnel.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd: perm(tunnel) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdTunnel.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTunnel.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'tun', 'category': 'building', 'key': 'tunnel', 'tags': '', 'text': '\n    create new rooms in cardinal directions only\n\n    Usage:\n      tunnel[/switch] &lt;direction&gt;[:typeclass] [= &lt;roomname&gt;[;alias;alias;...][:typeclass]]\n\n    Switches:\n      oneway - do not create an exit back to the current location\n      tel - teleport to the newly created room\n\n    Example:\n      tunnel n\n      tunnel n = house;mike\'s place;green building\n\n    This is a simple way to build using pre-defined directions:\n     |wn,ne,e,se,s,sw,w,nw|n (north, northeast etc)\n     |wu,d|n (up and down)\n     |wi,o|n (in and out)\n    The full names (north, in, southwest, etc) will always be put as\n    main name for the exit, using the abbreviation as an alias (so an\n    exit will always be able to be used with both &quot;north&quot; as well as\n    &quot;n&quot; for example). Opposite directions will automatically be\n    created back from the new room unless the /oneway switch is given.\n    For more flexibility and power in creating rooms, use dig.\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdTunnel.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.building.CmdLink">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.building.</code><code class="sig-name descname">CmdLink</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdLink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>link existing rooms together with exits</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>link[/switches] &lt;object&gt; = &lt;target&gt;
+link[/switches] &lt;object&gt; =
+link[/switches] &lt;object&gt;</p>
+</dd>
+<dt>Switch:</dt><dd><dl class="simple">
+<dt>twoway - connect two exits. For this to work, BOTH &lt;object&gt;</dt><dd><p>and &lt;target&gt; must be exit objects.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>If &lt;object&gt; is an exit, set its destination to &lt;target&gt;. Two-way operation
+instead sets the destination to the <em>locations</em> of the respective given
+arguments.
+The second form (a lone =) sets the destination to None (same as
+the unlink command) and the third form (without =) just shows the
+currently set destination.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdLink.key">
+<code class="sig-name descname">key</code><em class="property"> = 'link'</em><a class="headerlink" href="#evennia.commands.default.building.CmdLink.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdLink.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(link) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdLink.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdLink.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.building.CmdLink.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdLink.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdLink.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdLink.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform the link</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdLink.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.building.CmdLink.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdLink.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(link) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdLink.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdLink.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'building', 'key': 'link', 'tags': '', 'text': '\n    link existing rooms together with exits\n\n    Usage:\n      link[/switches] &lt;object&gt; = &lt;target&gt;\n      link[/switches] &lt;object&gt; =\n      link[/switches] &lt;object&gt;\n\n    Switch:\n      twoway - connect two exits. For this to work, BOTH &lt;object&gt;\n               and &lt;target&gt; must be exit objects.\n\n    If &lt;object&gt; is an exit, set its destination to &lt;target&gt;. Two-way operation\n    instead sets the destination to the *locations* of the respective given\n    arguments.\n    The second form (a lone =) sets the destination to None (same as\n    the unlink command) and the third form (without =) just shows the\n    currently set destination.\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdLink.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.building.CmdUnLink">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.building.</code><code class="sig-name descname">CmdUnLink</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdUnLink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdUnLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.building.CmdLink" title="evennia.commands.default.building.CmdLink"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.building.CmdLink</span></code></a></p>
+<p>remove exit-connections between rooms</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>unlink &lt;Object&gt;</p>
+</dd>
+</dl>
+<p>Unlinks an object, for example an exit, disconnecting
+it from whatever it was connected to.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdUnLink.key">
+<code class="sig-name descname">key</code><em class="property"> = 'unlink'</em><a class="headerlink" href="#evennia.commands.default.building.CmdUnLink.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdUnLink.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(unlink) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdUnLink.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdUnLink.help_key">
+<code class="sig-name descname">help_key</code><em class="property"> = 'Building'</em><a class="headerlink" href="#evennia.commands.default.building.CmdUnLink.help_key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdUnLink.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdUnLink.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdUnLink.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>All we need to do here is to set the right command
+and call func in CmdLink</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdUnLink.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.building.CmdUnLink.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdUnLink.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.building.CmdUnLink.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdUnLink.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(unlink) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdUnLink.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdUnLink.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'building', 'key': 'unlink', 'tags': '', 'text': '\n    remove exit-connections between rooms\n\n    Usage:\n      unlink &lt;Object&gt;\n\n    Unlinks an object, for example an exit, disconnecting\n    it from whatever it was connected to.\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdUnLink.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.building.CmdSetHome">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.building.</code><code class="sig-name descname">CmdSetHome</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdSetHome"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdSetHome" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.building.CmdLink" title="evennia.commands.default.building.CmdLink"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.building.CmdLink</span></code></a></p>
+<p>set an object’s home location</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>sethome &lt;obj&gt; [= &lt;home_location&gt;]
+sethom &lt;obj&gt;</p>
+</dd>
+</dl>
+<p>The “home” location is a “safety” location for objects; they
+will be moved there if their current location ceases to exist. All
+objects should always have a home location for this reason.
+It is also a convenient target of the “home” command.</p>
+<p>If no location is given, just view the object’s home location.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdSetHome.key">
+<code class="sig-name descname">key</code><em class="property"> = 'sethome'</em><a class="headerlink" href="#evennia.commands.default.building.CmdSetHome.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdSetHome.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(sethome) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdSetHome.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdSetHome.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.building.CmdSetHome.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdSetHome.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdSetHome.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdSetHome.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>implement the command</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdSetHome.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.building.CmdSetHome.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdSetHome.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(sethome) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdSetHome.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdSetHome.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'building', 'key': 'sethome', 'tags': '', 'text': '\n    set an object\'s home location\n\n    Usage:\n      sethome &lt;obj&gt; [= &lt;home_location&gt;]\n      sethom &lt;obj&gt;\n\n    The &quot;home&quot; location is a &quot;safety&quot; location for objects; they\n    will be moved there if their current location ceases to exist. All\n    objects should always have a home location for this reason.\n    It is also a convenient target of the &quot;home&quot; command.\n\n    If no location is given, just view the object\'s home location.\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdSetHome.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.building.CmdListCmdSets">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.building.</code><code class="sig-name descname">CmdListCmdSets</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdListCmdSets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdListCmdSets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>list command sets defined on an object</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>cmdsets &lt;obj&gt;</p>
+</dd>
+</dl>
+<p>This displays all cmdsets assigned
+to a user. Defaults to yourself.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdListCmdSets.key">
+<code class="sig-name descname">key</code><em class="property"> = 'cmdsets'</em><a class="headerlink" href="#evennia.commands.default.building.CmdListCmdSets.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdListCmdSets.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['listcmsets']</em><a class="headerlink" href="#evennia.commands.default.building.CmdListCmdSets.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdListCmdSets.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(listcmdsets) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdListCmdSets.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdListCmdSets.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.building.CmdListCmdSets.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdListCmdSets.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdListCmdSets.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdListCmdSets.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>list the cmdsets</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdListCmdSets.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(listcmdsets) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdListCmdSets.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdListCmdSets.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'listcmsets', 'category': 'building', 'key': 'cmdsets', 'tags': '', 'text': '\n    list command sets defined on an object\n\n    Usage:\n      cmdsets &lt;obj&gt;\n\n    This displays all cmdsets assigned\n    to a user. Defaults to yourself.\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdListCmdSets.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.building.CmdName">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.building.</code><code class="sig-name descname">CmdName</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.building.ObjManipCommand" title="evennia.commands.default.building.ObjManipCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.building.ObjManipCommand</span></code></a></p>
+<p>change the name and/or aliases of an object</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>name &lt;obj&gt; = &lt;newname&gt;;alias1;alias2</p>
+</dd>
+</dl>
+<p>Rename an object to something new. Use <a href="#id9"><span class="problematic" id="id10">*</span></a>obj to
+rename an account.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdName.key">
+<code class="sig-name descname">key</code><em class="property"> = 'name'</em><a class="headerlink" href="#evennia.commands.default.building.CmdName.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdName.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['rename']</em><a class="headerlink" href="#evennia.commands.default.building.CmdName.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdName.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(rename) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdName.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdName.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.building.CmdName.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdName.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdName.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdName.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>change the name</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdName.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(rename) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdName.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdName.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'rename', 'category': 'building', 'key': 'name', 'tags': '', 'text': '\n    change the name and/or aliases of an object\n\n    Usage:\n      name &lt;obj&gt; = &lt;newname&gt;;alias1;alias2\n\n    Rename an object to something new. Use *obj to\n    rename an account.\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdName.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.building.CmdOpen">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.building.</code><code class="sig-name descname">CmdOpen</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdOpen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdOpen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.building.ObjManipCommand" title="evennia.commands.default.building.ObjManipCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.building.ObjManipCommand</span></code></a></p>
+<p>open a new exit from the current room</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>open &lt;new exit&gt;[;alias;alias..][:typeclass] [,&lt;return exit&gt;[;alias;..][:typeclass]]] = &lt;destination&gt;</p>
+</dd>
+</dl>
+<p>Handles the creation of exits. If a destination is given, the exit
+will point there. The &lt;return exit&gt; argument sets up an exit at the
+destination leading back to the current room. Destination name
+can be given both as a #dbref and a name, if that name is globally
+unique.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdOpen.key">
+<code class="sig-name descname">key</code><em class="property"> = 'open'</em><a class="headerlink" href="#evennia.commands.default.building.CmdOpen.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdOpen.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(open) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdOpen.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdOpen.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.building.CmdOpen.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdOpen.create_exit">
+<code class="sig-name descname">create_exit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">exit_name</span></em>, <em class="sig-param"><span class="n">location</span></em>, <em class="sig-param"><span class="n">destination</span></em>, <em class="sig-param"><span class="n">exit_aliases</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdOpen.create_exit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdOpen.create_exit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function to avoid code duplication.
+At this point we know destination is a valid location</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdOpen.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdOpen.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdOpen.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is where the processing starts.
+Uses the ObjManipCommand.parser() for pre-processing
+as well as the self.create_exit() method.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdOpen.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.building.CmdOpen.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdOpen.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(open) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdOpen.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdOpen.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'building', 'key': 'open', 'tags': '', 'text': '\n    open a new exit from the current room\n\n    Usage:\n      open &lt;new exit&gt;[;alias;alias..][:typeclass] [,&lt;return exit&gt;[;alias;..][:typeclass]]] = &lt;destination&gt;\n\n    Handles the creation of exits. If a destination is given, the exit\n    will point there. The &lt;return exit&gt; argument sets up an exit at the\n    destination leading back to the current room. Destination name\n    can be given both as a #dbref and a name, if that name is globally\n    unique.\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdOpen.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.building.CmdSetAttribute">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.building.</code><code class="sig-name descname">CmdSetAttribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdSetAttribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdSetAttribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.building.ObjManipCommand" title="evennia.commands.default.building.ObjManipCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.building.ObjManipCommand</span></code></a></p>
+<p>set attribute on an object or account</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>set &lt;obj&gt;/&lt;attr&gt; = &lt;value&gt;
+set &lt;obj&gt;/&lt;attr&gt; =
+set &lt;obj&gt;/&lt;attr&gt;
+set <a href="#id11"><span class="problematic" id="id12">*</span></a>&lt;account&gt;/&lt;attr&gt; = &lt;value&gt;</p>
+</dd>
+<dt>Switch:</dt><dd><p>edit: Open the line editor (string values only)
+script: If we’re trying to set an attribute on a script
+channel: If we’re trying to set an attribute on a channel
+account: If we’re trying to set an attribute on an account
+room: Setting an attribute on a room (global search)
+exit: Setting an attribute on an exit (global search)
+char: Setting an attribute on a character (global search)
+character: Alias for char, as above.</p>
+</dd>
+</dl>
+<p>Sets attributes on objects. The second example form above clears a
+previously set attribute while the third form inspects the current value of
+the attribute (if any). The last one (with the star) is a shortcut for
+operating on a player Account rather than an Object.</p>
+<p>The most common data to save with this command are strings and
+numbers. You can however also set Python primitives such as lists,
+dictionaries and tuples on objects (this might be important for
+the functionality of certain custom objects).  This is indicated
+by you starting your value with one of <a href="#id13"><span class="problematic" id="id14">|</span></a>c’<a href="#id15"><span class="problematic" id="id16">|</span></a>n, <a href="#id17"><span class="problematic" id="id18">|</span></a>c”<a href="#id19"><span class="problematic" id="id20">|</span></a>n, <a href="#id21"><span class="problematic" id="id22">|</span></a>c(<a href="#id23"><span class="problematic" id="id24">|</span></a>n, <a href="#id25"><span class="problematic" id="id26">|</span></a>c[<a href="#id27"><span class="problematic" id="id28">|</span></a>n
+or <a href="#id29"><span class="problematic" id="id30">|</span></a>c{ <a href="#id31"><span class="problematic" id="id32">|</span></a>n.</p>
+<p>Once you have stored a Python primitive as noted above, you can include
+<a href="#id33"><span class="problematic" id="id34">|</span></a>c[&lt;key&gt;]|n in &lt;attr&gt; to reference nested values in e.g. a list or dict.</p>
+<p>Remember that if you use Python primitives like this, you must
+write proper Python syntax too - notably you must include quotes
+around your strings or you will get an error.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdSetAttribute.key">
+<code class="sig-name descname">key</code><em class="property"> = 'set'</em><a class="headerlink" href="#evennia.commands.default.building.CmdSetAttribute.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdSetAttribute.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(set) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdSetAttribute.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdSetAttribute.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.building.CmdSetAttribute.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdSetAttribute.nested_re">
+<code class="sig-name descname">nested_re</code><em class="property"> = re.compile('\\[.*?\\]')</em><a class="headerlink" href="#evennia.commands.default.building.CmdSetAttribute.nested_re" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdSetAttribute.not_found">
+<code class="sig-name descname">not_found</code><em class="property"> = &lt;object object&gt;</em><a class="headerlink" href="#evennia.commands.default.building.CmdSetAttribute.not_found" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdSetAttribute.check_obj">
+<code class="sig-name descname">check_obj</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdSetAttribute.check_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdSetAttribute.check_obj" title="Permalink to this definition">¶</a></dt>
+<dd><p>This may be overridden by subclasses in case restrictions need to be
+placed on whether certain objects can have attributes set by certain
+accounts.</p>
+<p>This function is expected to display its own error message.</p>
+<p>Returning False will abort the command.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdSetAttribute.check_attr">
+<code class="sig-name descname">check_attr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">attr_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdSetAttribute.check_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdSetAttribute.check_attr" title="Permalink to this definition">¶</a></dt>
+<dd><p>This may be overridden by subclasses in case restrictions need to be
+placed on what attributes can be set by who beyond the normal lock.</p>
+<p>This functions is expected to display its own error message. It is
+run once for every attribute that is checked, blocking only those
+attributes which are not permitted and letting the others through.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdSetAttribute.split_nested_attr">
+<code class="sig-name descname">split_nested_attr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdSetAttribute.split_nested_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdSetAttribute.split_nested_attr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Yields tuples of (possible attr name, nested keys on that attr).
+For performance, this is biased to the deepest match, but allows compatability
+with older attrs that might have been named with <strong>[]</strong>’s.</p>
+<p>&gt; list(split_nested_attr(“nested[‘asdf’][0]”))
+[</p>
+<blockquote>
+<div><p>(‘nested’, [‘asdf’, 0]),
+(“nested[‘asdf’]”, [0]),
+(“nested[‘asdf’][0]”, []),</p>
+</div></blockquote>
+<p>]</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdSetAttribute.do_nested_lookup">
+<code class="sig-name descname">do_nested_lookup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">keys</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdSetAttribute.do_nested_lookup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdSetAttribute.do_nested_lookup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdSetAttribute.view_attr">
+<code class="sig-name descname">view_attr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">attr</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdSetAttribute.view_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdSetAttribute.view_attr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look up the value of an attribute and return a string displaying it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdSetAttribute.rm_attr">
+<code class="sig-name descname">rm_attr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">attr</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdSetAttribute.rm_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdSetAttribute.rm_attr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove an attribute from the object, or a nested data structure, and report back.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdSetAttribute.set_attr">
+<code class="sig-name descname">set_attr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">attr</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdSetAttribute.set_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdSetAttribute.set_attr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdSetAttribute.edit_handler">
+<code class="sig-name descname">edit_handler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">attr</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdSetAttribute.edit_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdSetAttribute.edit_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Activate the line editor</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdSetAttribute.search_for_obj">
+<code class="sig-name descname">search_for_obj</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">objname</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdSetAttribute.search_for_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdSetAttribute.search_for_obj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Searches for an object matching objname. The object may be of different typeclasses.
+:param objname: Name of the object we’re looking for</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A typeclassed object, or None if nothing is found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdSetAttribute.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdSetAttribute.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdSetAttribute.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implement the set attribute - a limited form of py.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdSetAttribute.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.building.CmdSetAttribute.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdSetAttribute.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(set) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdSetAttribute.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdSetAttribute.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'building', 'key': 'set', 'tags': '', 'text': '\n    set attribute on an object or account\n\n    Usage:\n      set &lt;obj&gt;/&lt;attr&gt; = &lt;value&gt;\n      set &lt;obj&gt;/&lt;attr&gt; =\n      set &lt;obj&gt;/&lt;attr&gt;\n      set *&lt;account&gt;/&lt;attr&gt; = &lt;value&gt;\n\n    Switch:\n        edit: Open the line editor (string values only)\n        script: If we\'re trying to set an attribute on a script\n        channel: If we\'re trying to set an attribute on a channel\n        account: If we\'re trying to set an attribute on an account\n        room: Setting an attribute on a room (global search)\n        exit: Setting an attribute on an exit (global search)\n        char: Setting an attribute on a character (global search)\n        character: Alias for char, as above.\n\n    Sets attributes on objects. The second example form above clears a\n    previously set attribute while the third form inspects the current value of\n    the attribute (if any). The last one (with the star) is a shortcut for\n    operating on a player Account rather than an Object.\n\n    The most common data to save with this command are strings and\n    numbers. You can however also set Python primitives such as lists,\n    dictionaries and tuples on objects (this might be important for\n    the functionality of certain custom objects).  This is indicated\n    by you starting your value with one of |c\'|n, |c&quot;|n, |c(|n, |c[|n\n    or |c{ |n.\n\n    Once you have stored a Python primitive as noted above, you can include\n    |c[&lt;key&gt;]|n in &lt;attr&gt; to reference nested values in e.g. a list or dict.\n\n    Remember that if you use Python primitives like this, you must\n    write proper Python syntax too - notably you must include quotes\n    around your strings or you will get an error.\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdSetAttribute.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.building.CmdTypeclass">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.building.</code><code class="sig-name descname">CmdTypeclass</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdTypeclass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>set or change an object’s typeclass</p>
+<dl>
+<dt>Usage:</dt><dd><p>typeclass[/switch] &lt;object&gt; [= typeclass.path]
+typeclass/prototype &lt;object&gt; = prototype_key</p>
+<p>typeclass/list/show [typeclass.path]
+swap - this is a shorthand for using /force/reset flags.
+update - this is a shorthand for using the /force/reload flag.</p>
+</dd>
+<dt>Switch:</dt><dd><dl class="simple">
+<dt>show, examine - display the current typeclass of object (default) or, if</dt><dd><p>given a typeclass path, show the docstring of that typeclass.</p>
+</dd>
+<dt>update - <em>only</em> re-run at_object_creation on this object</dt><dd><p>meaning locks or other properties set later may remain.</p>
+</dd>
+<dt>reset - clean out <em>all</em> the attributes and properties on the</dt><dd><p>object - basically making this a new clean object.</p>
+</dd>
+<dt>force - change to the typeclass also if the object</dt><dd><p>already has a typeclass of the same name.</p>
+</dd>
+<dt>list - show available typeclasses. Only typeclasses in modules actually</dt><dd><p>imported or used from somewhere in the code will show up here
+(those typeclasses are still available if you know the path)</p>
+</dd>
+<dt>prototype - clean and overwrite the object with the specified</dt><dd><p>prototype key - effectively making a whole new object.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>type button = examples.red_button.RedButton
+type/prototype button=a red button</p>
+<p>If the typeclass_path is not given, the current object’s typeclass is
+assumed.</p>
+<p>View or set an object’s typeclass. If setting, the creation hooks of the
+new typeclass will be run on the object. If you have clashing properties on
+the old class, use /reset. By default you are protected from changing to a
+typeclass of the same name as the one you already have - use /force to
+override this protection.</p>
+<p>The given typeclass must be identified by its location using python
+dot-notation pointing to the correct module and class. If no typeclass is
+given (or a wrong typeclass is given). Errors in the path or new typeclass
+will lead to the old typeclass being kept. The location of the typeclass
+module is searched from the default typeclass directory, as defined in the
+server settings.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTypeclass.key">
+<code class="sig-name descname">key</code><em class="property"> = 'typeclass'</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTypeclass.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['parent', 'swap', 'update', 'type']</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTypeclass.switch_options">
+<code class="sig-name descname">switch_options</code><em class="property"> = ('show', 'examine', 'update', 'reset', 'force', 'list', 'prototype')</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.switch_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTypeclass.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(typeclass) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTypeclass.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdTypeclass.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdTypeclass.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implements command</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTypeclass.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(typeclass) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTypeclass.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'parent swap update type', 'category': 'building', 'key': 'typeclass', 'tags': '', 'text': &quot;\n    set or change an object's typeclass\n\n    Usage:\n      typeclass[/switch] &lt;object&gt; [= typeclass.path]\n      typeclass/prototype &lt;object&gt; = prototype_key\n\n      typeclass/list/show [typeclass.path]\n      swap - this is a shorthand for using /force/reset flags.\n      update - this is a shorthand for using the /force/reload flag.\n\n    Switch:\n      show, examine - display the current typeclass of object (default) or, if\n            given a typeclass path, show the docstring of that typeclass.\n      update - *only* re-run at_object_creation on this object\n              meaning locks or other properties set later may remain.\n      reset - clean out *all* the attributes and properties on the\n              object - basically making this a new clean object.\n      force - change to the typeclass also if the object\n              already has a typeclass of the same name.\n      list - show available typeclasses. Only typeclasses in modules actually\n             imported or used from somewhere in the code will show up here\n             (those typeclasses are still available if you know the path)\n      prototype - clean and overwrite the object with the specified\n               prototype key - effectively making a whole new object.\n\n    Example:\n      type button = examples.red_button.RedButton\n      type/prototype button=a red button\n\n    If the typeclass_path is not given, the current object's typeclass is\n    assumed.\n\n    View or set an object's typeclass. If setting, the creation hooks of the\n    new typeclass will be run on the object. If you have clashing properties on\n    the old class, use /reset. By default you are protected from changing to a\n    typeclass of the same name as the one you already have - use /force to\n    override this protection.\n\n    The given typeclass must be identified by its location using python\n    dot-notation pointing to the correct module and class. If no typeclass is\n    given (or a wrong typeclass is given). Errors in the path or new typeclass\n    will lead to the old typeclass being kept. The location of the typeclass\n    module is searched from the default typeclass directory, as defined in the\n    server settings.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.CmdTypeclass.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.building.CmdWipe">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.building.</code><code class="sig-name descname">CmdWipe</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdWipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdWipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.building.ObjManipCommand" title="evennia.commands.default.building.ObjManipCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.building.ObjManipCommand</span></code></a></p>
+<p>clear all attributes from an object</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>wipe &lt;object&gt;[/&lt;attr&gt;[/&lt;attr&gt;…]]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>wipe box
+wipe box/colour</p>
+<p>Wipes all of an object’s attributes, or optionally only those
+matching the given attribute-wildcard search string.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdWipe.key">
+<code class="sig-name descname">key</code><em class="property"> = 'wipe'</em><a class="headerlink" href="#evennia.commands.default.building.CmdWipe.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdWipe.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(wipe) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdWipe.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdWipe.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.building.CmdWipe.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdWipe.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdWipe.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdWipe.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>inp is the dict produced in ObjManipCommand.parse()</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdWipe.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.building.CmdWipe.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdWipe.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(wipe) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdWipe.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdWipe.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'building', 'key': 'wipe', 'tags': '', 'text': &quot;\n    clear all attributes from an object\n\n    Usage:\n      wipe &lt;object&gt;[/&lt;attr&gt;[/&lt;attr&gt;...]]\n\n    Example:\n      wipe box\n      wipe box/colour\n\n    Wipes all of an object's attributes, or optionally only those\n    matching the given attribute-wildcard search string.\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.CmdWipe.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.building.CmdLock">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.building.</code><code class="sig-name descname">CmdLock</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdLock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdLock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.building.ObjManipCommand" title="evennia.commands.default.building.ObjManipCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.building.ObjManipCommand</span></code></a></p>
+<p>assign a lock definition to an object</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>lock &lt;object or <a href="#id35"><span class="problematic" id="id36">*</span></a>account&gt;[ = &lt;lockstring&gt;]
+or
+lock[/switch] &lt;object or <a href="#id37"><span class="problematic" id="id38">*</span></a>account&gt;/&lt;access_type&gt;</p>
+</dd>
+<dt>Switch:</dt><dd><p>del - delete given access type
+view - view lock associated with given access type (default)</p>
+</dd>
+</dl>
+<p>If no lockstring is given, shows all locks on
+object.</p>
+<dl class="simple">
+<dt>Lockstring is of the form</dt><dd><p>access_type:[NOT] func1(args)[ AND|OR][ NOT] func2(args) …]</p>
+</dd>
+</dl>
+<p>Where func1, func2 … valid lockfuncs with or without arguments.
+Separator expressions need not be capitalized.</p>
+<dl class="simple">
+<dt>For example:</dt><dd><p>‘get: id(25) or perm(Admin)’</p>
+</dd>
+</dl>
+<p>The ‘get’ lock access_type is checked e.g. by the ‘get’ command.
+An object locked with this example lock will only be possible to pick up
+by Admins or by an object with id=25.</p>
+<p>You can add several access_types after one another by separating
+them by ‘;’, i.e:</p>
+<blockquote>
+<div><p>‘get:id(25); delete:perm(Builder)’</p>
+</div></blockquote>
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdLock.key">
+<code class="sig-name descname">key</code><em class="property"> = 'lock'</em><a class="headerlink" href="#evennia.commands.default.building.CmdLock.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdLock.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['locks']</em><a class="headerlink" href="#evennia.commands.default.building.CmdLock.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdLock.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd: perm(locks) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdLock.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdLock.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.building.CmdLock.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdLock.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdLock.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdLock.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets up the command</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdLock.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd: perm(locks) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdLock.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdLock.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'locks', 'category': 'building', 'key': 'lock', 'tags': '', 'text': &quot;\n    assign a lock definition to an object\n\n    Usage:\n      lock &lt;object or *account&gt;[ = &lt;lockstring&gt;]\n      or\n      lock[/switch] &lt;object or *account&gt;/&lt;access_type&gt;\n\n    Switch:\n      del - delete given access type\n      view - view lock associated with given access type (default)\n\n    If no lockstring is given, shows all locks on\n    object.\n\n    Lockstring is of the form\n       access_type:[NOT] func1(args)[ AND|OR][ NOT] func2(args) ...]\n    Where func1, func2 ... valid lockfuncs with or without arguments.\n    Separator expressions need not be capitalized.\n\n    For example:\n       'get: id(25) or perm(Admin)'\n    The 'get' lock access_type is checked e.g. by the 'get' command.\n    An object locked with this example lock will only be possible to pick up\n    by Admins or by an object with id=25.\n\n    You can add several access_types after one another by separating\n    them by ';', i.e:\n       'get:id(25); delete:perm(Builder)'\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.CmdLock.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.building.CmdExamine">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.building.</code><code class="sig-name descname">CmdExamine</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdExamine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdExamine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.building.ObjManipCommand" title="evennia.commands.default.building.ObjManipCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.building.ObjManipCommand</span></code></a></p>
+<p>get detailed information about an object</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>examine [&lt;object&gt;[/attrname]]
+examine [<a href="#id39"><span class="problematic" id="id40">*</span></a>&lt;account&gt;[/attrname]]</p>
+</dd>
+<dt>Switch:</dt><dd><p>account - examine an Account (same as adding <a href="#id41"><span class="problematic" id="id42">*</span></a>)
+object - examine an Object (useful when OOC)</p>
+</dd>
+</dl>
+<p>The examine command shows detailed game info about an
+object and optionally a specific attribute on it.
+If object is not specified, the current location is examined.</p>
+<p>Append a * before the search string to examine an account.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdExamine.key">
+<code class="sig-name descname">key</code><em class="property"> = 'examine'</em><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdExamine.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['exam', 'ex']</em><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdExamine.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(examine) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdExamine.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdExamine.arg_regex">
+<code class="sig-name descname">arg_regex</code><em class="property"> = re.compile('(/\\w+?(\\s|$))|\\s|$', re.IGNORECASE)</em><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.arg_regex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdExamine.account_mode">
+<code class="sig-name descname">account_mode</code><em class="property"> = False</em><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.account_mode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdExamine.list_attribute">
+<code class="sig-name descname">list_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">crop</span></em>, <em class="sig-param"><span class="n">attr</span></em>, <em class="sig-param"><span class="n">category</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdExamine.list_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.list_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Formats a single attribute line.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdExamine.format_attributes">
+<code class="sig-name descname">format_attributes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">attrname</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">crop</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdExamine.format_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.format_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function that returns info about attributes and/or
+non-persistent data stored on object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdExamine.format_output">
+<code class="sig-name descname">format_output</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">avail_cmdset</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdExamine.format_output"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.format_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function that creates a nice report about an object.</p>
+<p>returns a string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdExamine.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdExamine.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process command</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdExamine.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(examine) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdExamine.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'exam ex', 'category': 'building', 'key': 'examine', 'tags': '', 'text': '\n    get detailed information about an object\n\n    Usage:\n      examine [&lt;object&gt;[/attrname]]\n      examine [*&lt;account&gt;[/attrname]]\n\n    Switch:\n      account - examine an Account (same as adding *)\n      object - examine an Object (useful when OOC)\n\n    The examine command shows detailed game info about an\n    object and optionally a specific attribute on it.\n    If object is not specified, the current location is examined.\n\n    Append a * before the search string to examine an account.\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdExamine.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.building.CmdFind">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.building.</code><code class="sig-name descname">CmdFind</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdFind"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdFind" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>search the database for objects</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>find[/switches] &lt;name or dbref or <a href="#id43"><span class="problematic" id="id44">*</span></a>account&gt; [= dbrefmin[-dbrefmax]]
+locate - this is a shorthand for using the /loc switch.</p>
+</dd>
+<dt>Switches:</dt><dd><p>room       - only look for rooms (location=None)
+exit       - only look for exits (destination!=None)
+char       - only look for characters (BASE_CHARACTER_TYPECLASS)
+exact      - only exact matches are returned.
+loc        - display object location if exists and match has one result
+startswith - search for names starting with the string, rather than containing</p>
+</dd>
+</dl>
+<p>Searches the database for an object of a particular name or exact #dbref.
+Use <a href="#id45"><span class="problematic" id="id46">*</span></a>accountname to search for an account. The switches allows for
+limiting object matches to certain game entities. Dbrefmin and dbrefmax
+limits matches to within the given dbrefs range, or above/below if only
+one is given.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdFind.key">
+<code class="sig-name descname">key</code><em class="property"> = 'find'</em><a class="headerlink" href="#evennia.commands.default.building.CmdFind.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdFind.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['locate', 'search']</em><a class="headerlink" href="#evennia.commands.default.building.CmdFind.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdFind.switch_options">
+<code class="sig-name descname">switch_options</code><em class="property"> = ('room', 'exit', 'char', 'exact', 'loc', 'startswith')</em><a class="headerlink" href="#evennia.commands.default.building.CmdFind.switch_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdFind.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(find) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdFind.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdFind.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.building.CmdFind.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdFind.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdFind.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdFind.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search functionality</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdFind.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(find) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdFind.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdFind.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'locate search', 'category': 'building', 'key': 'find', 'tags': '', 'text': '\n    search the database for objects\n\n    Usage:\n      find[/switches] &lt;name or dbref or *account&gt; [= dbrefmin[-dbrefmax]]\n      locate - this is a shorthand for using the /loc switch.\n\n    Switches:\n      room       - only look for rooms (location=None)\n      exit       - only look for exits (destination!=None)\n      char       - only look for characters (BASE_CHARACTER_TYPECLASS)\n      exact      - only exact matches are returned.\n      loc        - display object location if exists and match has one result\n      startswith - search for names starting with the string, rather than containing\n\n    Searches the database for an object of a particular name or exact #dbref.\n    Use *accountname to search for an account. The switches allows for\n    limiting object matches to certain game entities. Dbrefmin and dbrefmax\n    limits matches to within the given dbrefs range, or above/below if only\n    one is given.\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdFind.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.building.CmdTeleport">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.building.</code><code class="sig-name descname">CmdTeleport</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdTeleport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdTeleport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>teleport object to another location</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>tel/switch [&lt;object&gt; to||=] &lt;target location&gt;</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>tel Limbo
+tel/quiet box = Limbo
+tel/tonone box</p>
+<dl>
+<dt>Switches:</dt><dd><dl class="simple">
+<dt>quiet  - don’t echo leave/arrive messages to the source/target</dt><dd><p>locations for the move.</p>
+</dd>
+<dt>intoexit - if target is an exit, teleport INTO</dt><dd><p>the exit object instead of to its destination</p>
+</dd>
+<dt>tonone - if set, teleport the object to a None-location. If this</dt><dd><p>switch is set, &lt;target location&gt; is ignored.
+Note that the only way to retrieve
+an object from a None location is by direct #dbref
+reference. A puppeted object cannot be moved to None.</p>
+</dd>
+</dl>
+<p>loc - teleport object to the target’s location instead of its contents</p>
+</dd>
+</dl>
+<p>Teleports an object somewhere. If no object is given, you yourself are
+teleported to the target location.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTeleport.key">
+<code class="sig-name descname">key</code><em class="property"> = 'tel'</em><a class="headerlink" href="#evennia.commands.default.building.CmdTeleport.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTeleport.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['teleport']</em><a class="headerlink" href="#evennia.commands.default.building.CmdTeleport.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTeleport.switch_options">
+<code class="sig-name descname">switch_options</code><em class="property"> = ('quiet', 'intoexit', 'tonone', 'loc')</em><a class="headerlink" href="#evennia.commands.default.building.CmdTeleport.switch_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTeleport.rhs_split">
+<code class="sig-name descname">rhs_split</code><em class="property"> = ('=', ' to ')</em><a class="headerlink" href="#evennia.commands.default.building.CmdTeleport.rhs_split" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTeleport.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(teleport) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdTeleport.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTeleport.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.building.CmdTeleport.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdTeleport.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdTeleport.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdTeleport.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs the teleport</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTeleport.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(teleport) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdTeleport.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTeleport.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'teleport', 'category': 'building', 'key': 'tel', 'tags': '', 'text': &quot;\n    teleport object to another location\n\n    Usage:\n      tel/switch [&lt;object&gt; to||=] &lt;target location&gt;\n\n    Examples:\n      tel Limbo\n      tel/quiet box = Limbo\n      tel/tonone box\n\n    Switches:\n      quiet  - don't echo leave/arrive messages to the source/target\n               locations for the move.\n      intoexit - if target is an exit, teleport INTO\n                 the exit object instead of to its destination\n      tonone - if set, teleport the object to a None-location. If this\n               switch is set, &lt;target location&gt; is ignored.\n               Note that the only way to retrieve\n               an object from a None location is by direct #dbref\n               reference. A puppeted object cannot be moved to None.\n      loc - teleport object to the target's location instead of its contents\n\n    Teleports an object somewhere. If no object is given, you yourself are\n    teleported to the target location.\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.building.CmdTeleport.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.building.CmdScript">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.building.</code><code class="sig-name descname">CmdScript</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdScript"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdScript" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>attach a script to an object</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>script[/switch] &lt;obj&gt; [= script_path or &lt;scriptkey&gt;]</p>
+</dd>
+<dt>Switches:</dt><dd><p>start - start all non-running scripts on object, or a given script only
+stop - stop all scripts on objects, or a given script only</p>
+</dd>
+</dl>
+<p>If no script path/key is given, lists all scripts active on the given
+object.
+Script path can be given from the base location for scripts as given in
+settings. If adding a new script, it will be started automatically
+(no /start switch is needed). Using the /start or /stop switches on an
+object without specifying a script key/path will start/stop ALL scripts on
+the object.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdScript.key">
+<code class="sig-name descname">key</code><em class="property"> = 'script'</em><a class="headerlink" href="#evennia.commands.default.building.CmdScript.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdScript.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['addscript']</em><a class="headerlink" href="#evennia.commands.default.building.CmdScript.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdScript.switch_options">
+<code class="sig-name descname">switch_options</code><em class="property"> = ('start', 'stop')</em><a class="headerlink" href="#evennia.commands.default.building.CmdScript.switch_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdScript.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(script) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdScript.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdScript.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.building.CmdScript.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdScript.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdScript.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdScript.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do stuff</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdScript.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(script) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdScript.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdScript.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'addscript', 'category': 'building', 'key': 'script', 'tags': '', 'text': '\n    attach a script to an object\n\n    Usage:\n      script[/switch] &lt;obj&gt; [= script_path or &lt;scriptkey&gt;]\n\n    Switches:\n      start - start all non-running scripts on object, or a given script only\n      stop - stop all scripts on objects, or a given script only\n\n    If no script path/key is given, lists all scripts active on the given\n    object.\n    Script path can be given from the base location for scripts as given in\n    settings. If adding a new script, it will be started automatically\n    (no /start switch is needed). Using the /start or /stop switches on an\n    object without specifying a script key/path will start/stop ALL scripts on\n    the object.\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdScript.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.building.CmdTag">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.building.</code><code class="sig-name descname">CmdTag</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdTag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdTag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>handles the tags of an object</p>
+<dl>
+<dt>Usage:</dt><dd><p>tag[/del] &lt;obj&gt; [= &lt;tag&gt;[:&lt;category&gt;]]
+tag/search &lt;tag&gt;[:&lt;category]</p>
+</dd>
+<dt>Switches:</dt><dd><p>search - return all objects with a given Tag
+del - remove the given tag. If no tag is specified,</p>
+<blockquote>
+<div><p>clear all tags on object.</p>
+</div></blockquote>
+</dd>
+</dl>
+<p>Manipulates and lists tags on objects. Tags allow for quick
+grouping of and searching for objects.  If only &lt;obj&gt; is given,
+list all tags on the object.  If /search is used, list objects
+with the given tag.
+The category can be used for grouping tags themselves, but it
+should be used with restrain - tags on their own are usually
+enough to for most grouping schemes.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTag.key">
+<code class="sig-name descname">key</code><em class="property"> = 'tag'</em><a class="headerlink" href="#evennia.commands.default.building.CmdTag.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTag.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['tags']</em><a class="headerlink" href="#evennia.commands.default.building.CmdTag.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTag.options">
+<code class="sig-name descname">options</code><em class="property"> = ('search', 'del')</em><a class="headerlink" href="#evennia.commands.default.building.CmdTag.options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTag.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(tag) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdTag.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTag.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.building.CmdTag.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTag.arg_regex">
+<code class="sig-name descname">arg_regex</code><em class="property"> = re.compile('(/\\w+?(\\s|$))|\\s|$', re.IGNORECASE)</em><a class="headerlink" href="#evennia.commands.default.building.CmdTag.arg_regex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdTag.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdTag.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdTag.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implement the tag functionality</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTag.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(tag) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdTag.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdTag.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'tags', 'category': 'building', 'key': 'tag', 'tags': '', 'text': '\n    handles the tags of an object\n\n    Usage:\n      tag[/del] &lt;obj&gt; [= &lt;tag&gt;[:&lt;category&gt;]]\n      tag/search &lt;tag&gt;[:&lt;category]\n\n    Switches:\n      search - return all objects with a given Tag\n      del - remove the given tag. If no tag is specified,\n            clear all tags on object.\n\n    Manipulates and lists tags on objects. Tags allow for quick\n    grouping of and searching for objects.  If only &lt;obj&gt; is given,\n    list all tags on the object.  If /search is used, list objects\n    with the given tag.\n    The category can be used for grouping tags themselves, but it\n    should be used with restrain - tags on their own are usually\n    enough to for most grouping schemes.\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdTag.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.building.CmdSpawn">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.building.</code><code class="sig-name descname">CmdSpawn</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdSpawn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdSpawn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>spawn objects from prototype</p>
+<dl>
+<dt>Usage:</dt><dd><p>spawn[/noloc] &lt;prototype_key&gt;
+spawn[/noloc] &lt;prototype_dict&gt;</p>
+<p>spawn/search [prototype_keykey][;tag[,tag]]
+spawn/list [tag, tag, …]
+spawn/show [&lt;prototype_key&gt;]
+spawn/update &lt;prototype_key&gt;</p>
+<p>spawn/save &lt;prototype_dict&gt;
+spawn/edit [&lt;prototype_key&gt;]
+olc     - equivalent to spawn/edit</p>
+</dd>
+<dt>Switches:</dt><dd><dl class="simple">
+<dt>noloc - allow location to be None if not specified explicitly. Otherwise,</dt><dd><p>location will default to caller’s current location.</p>
+</dd>
+</dl>
+<p>search - search prototype by name or tags.
+list - list available prototypes, optionally limit by tags.
+show, examine - inspect prototype by key. If not given, acts like list.
+raw - show the raw dict of the prototype as a one-line string for manual editing.
+save - save a prototype to the database. It will be listable by /list.
+delete - remove a prototype from database, if allowed to.
+update - find existing objects with the same prototype_key and update</p>
+<blockquote>
+<div><p>them with latest version of given prototype. If given with /save,
+will auto-update all objects with the old version of the prototype
+without asking first.</p>
+</div></blockquote>
+<p>edit, menu, olc - create/manipulate prototype in a menu interface.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>spawn GOBLIN
+spawn {“key”:”goblin”, “typeclass”:”monster.Monster”, “location”:”#2”}
+spawn/save {“key”: “grunt”, prototype: “goblin”};;mobs;edit:all()</p>
+<dl>
+<dt>Dictionary keys:</dt><dd><dl class="simple">
+<dt><a href="#id47"><span class="problematic" id="id48">|</span></a>wprototype_parent  <a href="#id49"><span class="problematic" id="id50">|</span></a>n - name of parent prototype to use. Required if typeclass is</dt><dd><p>not set. Can be a path or a list for multiple inheritance (inherits
+left to right). If set one of the parents must have a typeclass.</p>
+</dd>
+</dl>
+<p><a href="#id51"><span class="problematic" id="id52">|</span></a>wtypeclass  <a href="#id53"><span class="problematic" id="id54">|</span></a>n - string. Required if prototype_parent is not set.
+<a href="#id55"><span class="problematic" id="id56">|</span></a>wkey        <a href="#id57"><span class="problematic" id="id58">|</span></a>n - string, the main object identifier
+<a href="#id59"><span class="problematic" id="id60">|</span></a>wlocation   <a href="#id61"><span class="problematic" id="id62">|</span></a>n - this should be a valid object or #dbref
+<a href="#id63"><span class="problematic" id="id64">|</span></a>whome       <a href="#id65"><span class="problematic" id="id66">|</span></a>n - valid object or #dbref
+<a href="#id67"><span class="problematic" id="id68">|</span></a>wdestination|n - only valid for exits (object or dbref)
+<a href="#id69"><span class="problematic" id="id70">|</span></a>wpermissions|n - string or list of permission strings
+<a href="#id71"><span class="problematic" id="id72">|</span></a>wlocks      <a href="#id73"><span class="problematic" id="id74">|</span></a>n - a lock-string
+<a href="#id75"><span class="problematic" id="id76">|</span></a>waliases    <a href="#id77"><span class="problematic" id="id78">|</span></a>n - string or list of strings.
+<a href="#id79"><span class="problematic" id="id80">|</span></a>wndb_|n&lt;name&gt;  - value of a nattribute (<a href="#id89"><span class="problematic" id="id90">ndb_</span></a> is stripped)</p>
+<dl class="simple">
+<dt><a href="#id81"><span class="problematic" id="id82">|</span></a>wprototype_key|n   - name of this prototype. Unique. Used to store/retrieve from db</dt><dd><p>and update existing prototyped objects if desired.</p>
+</dd>
+</dl>
+<p><a href="#id83"><span class="problematic" id="id84">|</span></a>wprototype_desc|n  - desc of this prototype. Used in listings
+<a href="#id85"><span class="problematic" id="id86">|</span></a>wprototype_locks|n - locks of this prototype. Limits who may use prototype
+<a href="#id87"><span class="problematic" id="id88">|</span></a>wprototype_tags|n  - tags of this prototype. Used to find prototype</p>
+<p>any other keywords are interpreted as Attributes and their values.</p>
+</dd>
+</dl>
+<p>The available prototypes are defined globally in modules set in
+settings.PROTOTYPE_MODULES. If spawn is used without arguments it
+displays a list of available prototypes.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdSpawn.key">
+<code class="sig-name descname">key</code><em class="property"> = 'spawn'</em><a class="headerlink" href="#evennia.commands.default.building.CmdSpawn.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdSpawn.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['olc']</em><a class="headerlink" href="#evennia.commands.default.building.CmdSpawn.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdSpawn.switch_options">
+<code class="sig-name descname">switch_options</code><em class="property"> = ('noloc', 'search', 'list', 'show', 'raw', 'examine', 'save', 'delete', 'menu', 'olc', 'update', 'edit')</em><a class="headerlink" href="#evennia.commands.default.building.CmdSpawn.switch_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdSpawn.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(spawn) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdSpawn.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdSpawn.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.building.CmdSpawn.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.building.CmdSpawn.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/building.html#CmdSpawn.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.building.CmdSpawn.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implements the spawner</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdSpawn.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(spawn) or perm(Builder)'</em><a class="headerlink" href="#evennia.commands.default.building.CmdSpawn.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.building.CmdSpawn.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'olc', 'category': 'building', 'key': 'spawn', 'tags': '', 'text': '\n    spawn objects from prototype\n\n    Usage:\n      spawn[/noloc] &lt;prototype_key&gt;\n      spawn[/noloc] &lt;prototype_dict&gt;\n\n      spawn/search [prototype_keykey][;tag[,tag]]\n      spawn/list [tag, tag, ...]\n      spawn/show [&lt;prototype_key&gt;]\n      spawn/update &lt;prototype_key&gt;\n\n      spawn/save &lt;prototype_dict&gt;\n      spawn/edit [&lt;prototype_key&gt;]\n      olc     - equivalent to spawn/edit\n\n    Switches:\n      noloc - allow location to be None if not specified explicitly. Otherwise,\n              location will default to caller\'s current location.\n      search - search prototype by name or tags.\n      list - list available prototypes, optionally limit by tags.\n      show, examine - inspect prototype by key. If not given, acts like list.\n      raw - show the raw dict of the prototype as a one-line string for manual editing.\n      save - save a prototype to the database. It will be listable by /list.\n      delete - remove a prototype from database, if allowed to.\n      update - find existing objects with the same prototype_key and update\n               them with latest version of given prototype. If given with /save,\n               will auto-update all objects with the old version of the prototype\n               without asking first.\n      edit, menu, olc - create/manipulate prototype in a menu interface.\n\n    Example:\n      spawn GOBLIN\n      spawn {&quot;key&quot;:&quot;goblin&quot;, &quot;typeclass&quot;:&quot;monster.Monster&quot;, &quot;location&quot;:&quot;#2&quot;}\n      spawn/save {&quot;key&quot;: &quot;grunt&quot;, prototype: &quot;goblin&quot;};;mobs;edit:all()\n    \x0c\n    Dictionary keys:\n      |wprototype_parent  |n - name of parent prototype to use. Required if typeclass is\n                        not set. Can be a path or a list for multiple inheritance (inherits\n                        left to right). If set one of the parents must have a typeclass.\n      |wtypeclass  |n - string. Required if prototype_parent is not set.\n      |wkey        |n - string, the main object identifier\n      |wlocation   |n - this should be a valid object or #dbref\n      |whome       |n - valid object or #dbref\n      |wdestination|n - only valid for exits (object or dbref)\n      |wpermissions|n - string or list of permission strings\n      |wlocks      |n - a lock-string\n      |waliases    |n - string or list of strings.\n      |wndb_|n&lt;name&gt;  - value of a nattribute (ndb_ is stripped)\n\n      |wprototype_key|n   - name of this prototype. Unique. Used to store/retrieve from db\n                            and update existing prototyped objects if desired.\n      |wprototype_desc|n  - desc of this prototype. Used in listings\n      |wprototype_locks|n - locks of this prototype. Limits who may use prototype\n      |wprototype_tags|n  - tags of this prototype. Used to find prototype\n\n      any other keywords are interpreted as Attributes and their values.\n\n    The available prototypes are defined globally in modules set in\n    settings.PROTOTYPE_MODULES. If spawn is used without arguments it\n    displays a list of available prototypes.\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.building.CmdSpawn.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.commands.default.building.rst.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.commands.default.building.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.1/api/evennia.commands.default.building.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.building</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+    </div>
+  </body>
+</html>

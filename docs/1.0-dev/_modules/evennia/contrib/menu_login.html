@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.menu_login &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.menu_login</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.menu_login</a></li> 
       </ul>
     </div>  
 
@@ -86,14 +83,14 @@
 <span class="c1"># Menu nodes</span>
 
 
-<div class="viewcode-block" id="_show_help"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.menu_login._show_help">[docs]</a><span class="k">def</span> <span class="nf">_show_help</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_show_help</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Echo help message, then re-run node that triggered it&quot;&quot;&quot;</span>
     <span class="n">help_entry</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;help_entry&quot;</span><span class="p">]</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">help_entry</span><span class="p">)</span>
-    <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># re-run calling node</span></div>
+    <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># re-run calling node</span>
 
 
-<div class="viewcode-block" id="node_enter_username"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.menu_login.node_enter_username">[docs]</a><span class="k">def</span> <span class="nf">node_enter_username</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_text</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="node_enter_username"><a class="viewcode-back" href="../../../api/evennia.contrib.menu_login.html#evennia.contrib.menu_login.node_enter_username">[docs]</a><span class="k">def</span> <span class="nf">node_enter_username</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_text</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Start node of menu</span>
 <span class="sd">    Start login by displaying the connection screen and ask for a user name.</span>
@@ -156,7 +153,7 @@
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
 
 
-<div class="viewcode-block" id="node_enter_password"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.menu_login.node_enter_password">[docs]</a><span class="k">def</span> <span class="nf">node_enter_password</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="node_enter_password"><a class="viewcode-back" href="../../../api/evennia.contrib.menu_login.html#evennia.contrib.menu_login.node_enter_password">[docs]</a><span class="k">def</span> <span class="nf">node_enter_password</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Handle password input.</span>
 
@@ -228,7 +225,7 @@
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
 
 
-<div class="viewcode-block" id="node_quit_or_login"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.menu_login.node_quit_or_login">[docs]</a><span class="k">def</span> <span class="nf">node_quit_or_login</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_text</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="node_quit_or_login"><a class="viewcode-back" href="../../../api/evennia.contrib.menu_login.html#evennia.contrib.menu_login.node_quit_or_login">[docs]</a><span class="k">def</span> <span class="nf">node_quit_or_login</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_text</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Exit menu, either by disconnecting or logging in.</span>
 
@@ -246,7 +243,7 @@
 <span class="c1"># EvMenu helper function</span>
 
 
-<div class="viewcode-block" id="_node_formatter"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.menu_login._node_formatter">[docs]</a><span class="k">def</span> <span class="nf">_node_formatter</span><span class="p">(</span><span class="n">nodetext</span><span class="p">,</span> <span class="n">optionstext</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_node_formatter</span><span class="p">(</span><span class="n">nodetext</span><span class="p">,</span> <span class="n">optionstext</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Do not display the options, only the text.</span>
 
 <span class="sd">    This function is used by EvMenu to format the text of nodes. The menu login</span>
@@ -254,23 +251,23 @@
 <span class="sd">    and let the nodes handle everything on their own.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">nodetext</span></div>
+    <span class="k">return</span> <span class="n">nodetext</span>
 
 
 <span class="c1"># Commands and CmdSets</span>
 
 
-<div class="viewcode-block" id="UnloggedinCmdSet"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.menu_login.UnloggedinCmdSet">[docs]</a><span class="k">class</span> <span class="nc">UnloggedinCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<div class="viewcode-block" id="UnloggedinCmdSet"><a class="viewcode-back" href="../../../api/evennia.contrib.menu_login.html#evennia.contrib.menu_login.UnloggedinCmdSet">[docs]</a><span class="k">class</span> <span class="nc">UnloggedinCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
     <span class="s2">&quot;Cmdset for the unloggedin state&quot;</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultUnloggedin&quot;</span>
     <span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>
 
-<div class="viewcode-block" id="UnloggedinCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.menu_login.UnloggedinCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="UnloggedinCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.menu_login.html#evennia.contrib.menu_login.UnloggedinCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Called when cmdset is first created.&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdUnloggedinLook</span><span class="p">())</span></div></div>
 
 
-<div class="viewcode-block" id="CmdUnloggedinLook"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.menu_login.CmdUnloggedinLook">[docs]</a><span class="k">class</span> <span class="nc">CmdUnloggedinLook</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdUnloggedinLook"><a class="viewcode-back" href="../../../api/evennia.contrib.menu_login.html#evennia.contrib.menu_login.CmdUnloggedinLook">[docs]</a><span class="k">class</span> <span class="nc">CmdUnloggedinLook</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An unloggedin version of the look command. This is called by the server</span>
 <span class="sd">    when the account first connects. It sets up the menu before handing off</span>
@@ -282,7 +279,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
     <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;^$&quot;</span>
 
-<div class="viewcode-block" id="CmdUnloggedinLook.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.menu_login.CmdUnloggedinLook.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdUnloggedinLook.func"><a class="viewcode-back" href="../../../api/evennia.contrib.menu_login.html#evennia.contrib.menu_login.CmdUnloggedinLook.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run the menu using the nodes in this module.</span>
 
@@ -298,6 +295,7 @@
         <span class="p">)</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -335,17 +333,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.menu_login</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.menu_login</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

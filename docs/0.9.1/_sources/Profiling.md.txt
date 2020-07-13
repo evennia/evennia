@@ -41,7 +41,7 @@ Python comes with its own profiler, named cProfile (this is for cPython, no test
 
     evennia --profiler start
 
-This will start Evennia with the Server component running (in daemon mode) under cProfile. You could instead try `--profile` with the `portal` argument to profile the Portal (you would then need to [start the Server separately](Start-Stop-Reload)).
+This will start Evennia with the Server component running (in daemon mode) under cProfile. You could instead try `--profile` with the `portal` argument to profile the Portal (you would then need to [start the Server separately](./Start-Stop-Reload)).
 
 Please note that while the profiler is running, your process will use a lot more memory than usual. Memory usage is even likely to climb over time. So don't leave it running perpetually but monitor it carefully (for example using the `top` command on Linux or the Task Manager's memory display on Windows).
 

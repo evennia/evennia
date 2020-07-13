@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.typeclasses.managers &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.typeclasses.managers</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.typeclasses.managers</a></li> 
       </ul>
     </div>  
 
@@ -64,7 +61,7 @@
 <span class="c1"># Managers</span>
 
 
-<div class="viewcode-block" id="TypedObjectManager"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.managers.TypedObjectManager">[docs]</a><span class="k">class</span> <span class="nc">TypedObjectManager</span><span class="p">(</span><span class="n">idmapper</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">SharedMemoryManager</span><span class="p">):</span>
+<div class="viewcode-block" id="TypedObjectManager"><a class="viewcode-back" href="../../../api/evennia.typeclasses.managers.html#evennia.typeclasses.managers.TypedObjectManager">[docs]</a><span class="k">class</span> <span class="nc">TypedObjectManager</span><span class="p">(</span><span class="n">idmapper</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">SharedMemoryManager</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Common ObjectManager for all dbobjects.</span>
 
@@ -74,18 +71,16 @@
     <span class="c1"># in other methods. Returns querysets.</span>
 
     <span class="c1"># Attribute manager methods</span>
-<div class="viewcode-block" id="TypedObjectManager.get_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.managers.TypedObjectManager.get_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">get_attribute</span><span class="p">(</span>
+<div class="viewcode-block" id="TypedObjectManager.get_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.managers.html#evennia.typeclasses.managers.TypedObjectManager.get_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">get_attribute</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strvalue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attrtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return Attribute objects by key, by category, by value, by</span>
-<span class="sd">        strvalue, by object (it is stored on) or with a combination of</span>
-<span class="sd">        those criteria.</span>
+<span class="sd">        Return Attribute objects by key, by category, by value, by strvalue, by</span>
+<span class="sd">        object (it is stored on) or with a combination of those criteria.</span>
 
-<span class="sd">        Attrs:</span>
+<span class="sd">        Args:</span>
 <span class="sd">            key (str, optional): The attribute&#39;s key to search for</span>
-<span class="sd">            category (str, optional): The category of the attribute(s)</span>
-<span class="sd">                to search for.</span>
+<span class="sd">            category (str, optional): The category of the attribute(s) to search for.</span>
 <span class="sd">            value (str, optional): The attribute value to search for.</span>
 <span class="sd">                Note that this is not a very efficient operation since it</span>
 <span class="sd">                will query for a pickled entity. Mutually exclusive to</span>
@@ -99,10 +94,10 @@
 <span class="sd">            attrype (str, optional): An attribute-type to search for.</span>
 <span class="sd">                By default this is either `None` (normal Attributes) or</span>
 <span class="sd">                `&quot;nick&quot;`.</span>
-<span class="sd">            kwargs (any): Currently unused. Reserved for future use.</span>
+<span class="sd">            **kwargs (any): Currently unused. Reserved for future use.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            attributes (list): The matching Attributes.</span>
+<span class="sd">            list: The matching Attributes.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dbmodel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">__dbclass__</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
@@ -124,11 +119,11 @@
             <span class="p">)</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TypedObjectManager.get_nick"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.managers.TypedObjectManager.get_nick">[docs]</a>    <span class="k">def</span> <span class="nf">get_nick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strvalue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="TypedObjectManager.get_nick"><a class="viewcode-back" href="../../../api/evennia.typeclasses.managers.html#evennia.typeclasses.managers.TypedObjectManager.get_nick">[docs]</a>    <span class="k">def</span> <span class="nf">get_nick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strvalue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a nick, in parallel to `get_attribute`.</span>
 
-<span class="sd">        Attrs:</span>
+<span class="sd">        Args:</span>
 <span class="sd">            key (str, optional): The nicks&#39;s key to search for</span>
 <span class="sd">            category (str, optional): The category of the nicks(s) to search for.</span>
 <span class="sd">            value (str, optional): The attribute value to search for. Note that this</span>
@@ -147,7 +142,7 @@
             <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">strvalue</span><span class="o">=</span><span class="n">strvalue</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="n">obj</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TypedObjectManager.get_by_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.managers.TypedObjectManager.get_by_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">get_by_attribute</span><span class="p">(</span>
+<div class="viewcode-block" id="TypedObjectManager.get_by_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.managers.html#evennia.typeclasses.managers.TypedObjectManager.get_by_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">get_by_attribute</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strvalue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attrtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -191,7 +186,7 @@
             <span class="n">query</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;db_attributes__db_value&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="nb">dict</span><span class="p">(</span><span class="n">query</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TypedObjectManager.get_by_nick"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.managers.TypedObjectManager.get_by_nick">[docs]</a>    <span class="k">def</span> <span class="nf">get_by_nick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nick</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;inputline&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="TypedObjectManager.get_by_nick"><a class="viewcode-back" href="../../../api/evennia.typeclasses.managers.html#evennia.typeclasses.managers.TypedObjectManager.get_by_nick">[docs]</a>    <span class="k">def</span> <span class="nf">get_by_nick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nick</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;inputline&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get object based on its key or nick.</span>
 
@@ -209,18 +204,18 @@
 
     <span class="c1"># Tag manager methods</span>
 
-<div class="viewcode-block" id="TypedObjectManager.get_tag"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.managers.TypedObjectManager.get_tag">[docs]</a>    <span class="k">def</span> <span class="nf">get_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tagtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">global_search</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="TypedObjectManager.get_tag"><a class="viewcode-back" href="../../../api/evennia.typeclasses.managers.html#evennia.typeclasses.managers.TypedObjectManager.get_tag">[docs]</a>    <span class="k">def</span> <span class="nf">get_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tagtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">global_search</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return Tag objects by key, by category, by object (it is</span>
 <span class="sd">        stored on) or with a combination of those criteria.</span>
 
-<span class="sd">        Attrs:</span>
+<span class="sd">        Args:</span>
 <span class="sd">            key (str, optional): The Tag&#39;s key to search for</span>
 <span class="sd">            category (str, optional): The Tag of the attribute(s)</span>
 <span class="sd">                to search for.</span>
 <span class="sd">            obj (Object, optional): On which object the Tag to</span>
 <span class="sd">                search for is.</span>
-<span class="sd">            tagtype (str, optional): One of None (normal tags),</span>
+<span class="sd">            tagtype (str, optional): One of `None` (normal tags),</span>
 <span class="sd">                &quot;alias&quot; or &quot;permission&quot;</span>
 <span class="sd">            global_search (bool, optional): Include all possible tags,</span>
 <span class="sd">                not just tags on this object</span>
@@ -258,7 +253,7 @@
                 <span class="p">)</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TypedObjectManager.get_permission"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.managers.TypedObjectManager.get_permission">[docs]</a>    <span class="k">def</span> <span class="nf">get_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="TypedObjectManager.get_permission"><a class="viewcode-back" href="../../../api/evennia.typeclasses.managers.html#evennia.typeclasses.managers.TypedObjectManager.get_permission">[docs]</a>    <span class="k">def</span> <span class="nf">get_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a permission from the database.</span>
 
@@ -273,7 +268,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tag</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span> <span class="n">tagtype</span><span class="o">=</span><span class="s2">&quot;permission&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TypedObjectManager.get_alias"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.managers.TypedObjectManager.get_alias">[docs]</a>    <span class="k">def</span> <span class="nf">get_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="TypedObjectManager.get_alias"><a class="viewcode-back" href="../../../api/evennia.typeclasses.managers.html#evennia.typeclasses.managers.TypedObjectManager.get_alias">[docs]</a>    <span class="k">def</span> <span class="nf">get_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get an alias from the database.</span>
 
@@ -288,7 +283,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tag</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span> <span class="n">tagtype</span><span class="o">=</span><span class="s2">&quot;alias&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TypedObjectManager.get_by_tag"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.managers.TypedObjectManager.get_by_tag">[docs]</a>    <span class="k">def</span> <span class="nf">get_by_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tagtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="TypedObjectManager.get_by_tag"><a class="viewcode-back" href="../../../api/evennia.typeclasses.managers.html#evennia.typeclasses.managers.TypedObjectManager.get_by_tag">[docs]</a>    <span class="k">def</span> <span class="nf">get_by_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tagtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return objects having tags with a given key or category or combination of the two.</span>
 <span class="sd">        Also accepts multiple tags/category/tagtype</span>
@@ -304,7 +299,7 @@
 <span class="sd">                this is either `None` (a normal Tag), `alias` or</span>
 <span class="sd">                `permission`. This always apply to all queried tags.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            match (str): &quot;all&quot; (default) or &quot;any&quot;; determines whether the</span>
 <span class="sd">                target object must be tagged with ALL of the provided</span>
 <span class="sd">                tags/categories or ANY single one. ANY will perform a weighted</span>
@@ -380,7 +375,7 @@
 
         <span class="k">return</span> <span class="n">query</span></div>
 
-<div class="viewcode-block" id="TypedObjectManager.get_by_permission"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.managers.TypedObjectManager.get_by_permission">[docs]</a>    <span class="k">def</span> <span class="nf">get_by_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="TypedObjectManager.get_by_permission"><a class="viewcode-back" href="../../../api/evennia.typeclasses.managers.html#evennia.typeclasses.managers.TypedObjectManager.get_by_permission">[docs]</a>    <span class="k">def</span> <span class="nf">get_by_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return objects having permissions with a given key or category or</span>
 <span class="sd">        combination of the two.</span>
@@ -393,7 +388,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_by_tag</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">tagtype</span><span class="o">=</span><span class="s2">&quot;permission&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TypedObjectManager.get_by_alias"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.managers.TypedObjectManager.get_by_alias">[docs]</a>    <span class="k">def</span> <span class="nf">get_by_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="TypedObjectManager.get_by_alias"><a class="viewcode-back" href="../../../api/evennia.typeclasses.managers.html#evennia.typeclasses.managers.TypedObjectManager.get_by_alias">[docs]</a>    <span class="k">def</span> <span class="nf">get_by_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return objects having aliases with a given key or category or</span>
 <span class="sd">        combination of the two.</span>
@@ -406,7 +401,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_by_tag</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">tagtype</span><span class="o">=</span><span class="s2">&quot;alias&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TypedObjectManager.create_tag"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.managers.TypedObjectManager.create_tag">[docs]</a>    <span class="k">def</span> <span class="nf">create_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tagtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="TypedObjectManager.create_tag"><a class="viewcode-back" href="../../../api/evennia.typeclasses.managers.html#evennia.typeclasses.managers.TypedObjectManager.create_tag">[docs]</a>    <span class="k">def</span> <span class="nf">create_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tagtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a new Tag of the base type associated with this</span>
 <span class="sd">        object.  This makes sure to create case-insensitive tags.</span>
@@ -456,7 +451,7 @@
             <span class="n">tag</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">tag</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="TypedObjectManager.dbref"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.managers.TypedObjectManager.dbref">[docs]</a>    <span class="k">def</span> <span class="nf">dbref</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbref</span><span class="p">,</span> <span class="n">reqhash</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="TypedObjectManager.dbref"><a class="viewcode-back" href="../../../api/evennia.typeclasses.managers.html#evennia.typeclasses.managers.TypedObjectManager.dbref">[docs]</a>    <span class="k">def</span> <span class="nf">dbref</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbref</span><span class="p">,</span> <span class="n">reqhash</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determing if input is a valid dbref.</span>
 
@@ -484,7 +479,7 @@
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">dbref</span></div>
 
-<div class="viewcode-block" id="TypedObjectManager.get_id"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.managers.TypedObjectManager.get_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbref</span><span class="p">):</span>
+<div class="viewcode-block" id="TypedObjectManager.get_id"><a class="viewcode-back" href="../../../api/evennia.typeclasses.managers.html#evennia.typeclasses.managers.TypedObjectManager.get_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbref</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find object with given dbref.</span>
 
@@ -502,7 +497,7 @@
             <span class="k">pass</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="TypedObjectManager.dbref_search"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.managers.TypedObjectManager.dbref_search">[docs]</a>    <span class="k">def</span> <span class="nf">dbref_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbref</span><span class="p">):</span>
+<div class="viewcode-block" id="TypedObjectManager.dbref_search"><a class="viewcode-back" href="../../../api/evennia.typeclasses.managers.html#evennia.typeclasses.managers.TypedObjectManager.dbref_search">[docs]</a>    <span class="k">def</span> <span class="nf">dbref_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbref</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Alias to get_id.</span>
 
@@ -515,7 +510,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">dbref</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TypedObjectManager.get_dbref_range"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.managers.TypedObjectManager.get_dbref_range">[docs]</a>    <span class="k">def</span> <span class="nf">get_dbref_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">min_dbref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_dbref</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="TypedObjectManager.get_dbref_range"><a class="viewcode-back" href="../../../api/evennia.typeclasses.managers.html#evennia.typeclasses.managers.TypedObjectManager.get_dbref_range">[docs]</a>    <span class="k">def</span> <span class="nf">get_dbref_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">min_dbref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_dbref</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get objects within a certain range of dbrefs.</span>
 
@@ -535,7 +530,7 @@
             <span class="n">retval</span> <span class="o">=</span> <span class="n">retval</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">id__lte</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dbref</span><span class="p">(</span><span class="n">max_dbref</span><span class="p">,</span> <span class="n">reqhash</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">retval</span></div>
 
-<div class="viewcode-block" id="TypedObjectManager.get_typeclass_totals"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.managers.TypedObjectManager.get_typeclass_totals">[docs]</a>    <span class="k">def</span> <span class="nf">get_typeclass_totals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
+<div class="viewcode-block" id="TypedObjectManager.get_typeclass_totals"><a class="viewcode-back" href="../../../api/evennia.typeclasses.managers.html#evennia.typeclasses.managers.TypedObjectManager.get_typeclass_totals">[docs]</a>    <span class="k">def</span> <span class="nf">get_typeclass_totals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a queryset of typeclass composition statistics.</span>
 
@@ -563,7 +558,7 @@
             <span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="s2">&quot;typeclass&quot;</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">,</span> <span class="s2">&quot;percent&quot;</span><span class="p">)</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TypedObjectManager.object_totals"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.managers.TypedObjectManager.object_totals">[docs]</a>    <span class="k">def</span> <span class="nf">object_totals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TypedObjectManager.object_totals"><a class="viewcode-back" href="../../../api/evennia.typeclasses.managers.html#evennia.typeclasses.managers.TypedObjectManager.object_totals">[docs]</a>    <span class="k">def</span> <span class="nf">object_totals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get info about database statistics.</span>
 
@@ -577,7 +572,7 @@
         <span class="n">stats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_typeclass_totals</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;typeclass&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;typeclass&quot;</span><span class="p">):</span> <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;count&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">stats</span><span class="p">}</span></div>
 
-<div class="viewcode-block" id="TypedObjectManager.typeclass_search"><a class="viewcode-back" href="../../../api/evennia.typeclasses.html#evennia.typeclasses.managers.TypedObjectManager.typeclass_search">[docs]</a>    <span class="k">def</span> <span class="nf">typeclass_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typeclass</span><span class="p">,</span> <span class="n">include_children</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">include_parents</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="TypedObjectManager.typeclass_search"><a class="viewcode-back" href="../../../api/evennia.typeclasses.managers.html#evennia.typeclasses.managers.TypedObjectManager.typeclass_search">[docs]</a>    <span class="k">def</span> <span class="nf">typeclass_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typeclass</span><span class="p">,</span> <span class="n">include_children</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">include_parents</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Searches through all objects returning those which has a</span>
 <span class="sd">        certain typeclass. If location is set, limit search to objects</span>
@@ -695,7 +690,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            args (any): These are passed on as arguments to the default</span>
 <span class="sd">                django get method.</span>
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            kwargs (any): These are passed on as normal arguments</span>
 <span class="sd">                to the default django get method</span>
 <span class="sd">        Returns:</span>
@@ -717,7 +712,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            args (any): These are passed on as arguments to the default</span>
 <span class="sd">                django filter method.</span>
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            kwargs (any): These are passed on as normal arguments</span>
 <span class="sd">                to the default django filter method.</span>
 <span class="sd">        Returns:</span>
@@ -840,7 +835,7 @@
 <span class="sd">        Variation of get that not only returns the current typeclass</span>
 <span class="sd">        but also all subclasses of that typeclass.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            kwargs (any): These are passed on as normal arguments</span>
 <span class="sd">                to the default django get method.</span>
 <span class="sd">        Returns:</span>
@@ -865,7 +860,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            args (any): These are passed on as arguments to the default</span>
 <span class="sd">                django filter method.</span>
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            kwargs (any): These are passed on as normal arguments</span>
 <span class="sd">                to the default django filter method.</span>
 <span class="sd">        Returns:</span>
@@ -894,6 +889,7 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_typeclass_path__in</span><span class="o">=</span><span class="n">paths</span><span class="p">)</span>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -931,17 +927,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.typeclasses.managers</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.typeclasses.managers</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

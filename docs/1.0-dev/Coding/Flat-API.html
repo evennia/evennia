@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Things to remember about the flat API &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Things to remember about the flat API</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="things-to-remember-about-the-flat-api">
+<h1>Things to remember about the flat API<a class="headerlink" href="#things-to-remember-about-the-flat-api" title="Permalink to this headline">¶</a></h1>
+<p>The flat API is a series of ‘shortcuts’ on the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> main library root (defined in
+<code class="docutils literal notranslate"><span class="pre">evennia/__init__.py</span></code>). Its componentas are documented <a class="reference internal" href="../Evennia-API.html"><span class="doc">as part of the auto-documentation</span></a>.</p>
+<div class="section" id="to-remember-when-importing-from-evennia">
+<h2>To remember when importing from <code class="docutils literal notranslate"><span class="pre">evennia</span></code><a class="headerlink" href="#to-remember-when-importing-from-evennia" title="Permalink to this headline">¶</a></h2>
+<p>Properties on the root of the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> package are <em>not</em> modules in their own right. They are just
+shortcut properties stored in the <code class="docutils literal notranslate"><span class="pre">evennia/__init__.py</span></code> module. That means that you cannot use dot-
+notation to <code class="docutils literal notranslate"><span class="pre">import</span></code> nested module-names over <code class="docutils literal notranslate"><span class="pre">evennia</span></code>. The rule of thumb is that you cannot use
+<code class="docutils literal notranslate"><span class="pre">import</span></code> for more than one level down. Hence you can do</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">import</span> <span class="nn">evennia</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">evennia</span><span class="o">.</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>or import one level down</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>but you <em>cannot</em> import two levels down</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="kn">from</span> <span class="nn">evennia.default_cmds</span> <span class="kn">import</span> <span class="n">CmdLook</span> <span class="c1"># error!</span>
+</pre></div>
+</td></tr></table></div>
+<p>This will give you an <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> telling you that the module <code class="docutils literal notranslate"><span class="pre">default_cmds</span></code> cannot be found -
+this is becasue <code class="docutils literal notranslate"><span class="pre">default_cmds</span></code> is just a <em>variable</em> stored in <code class="docutils literal notranslate"><span class="pre">evennia.__init__.py</span></code>; this cannot be
+imported from. If you really want full control over which level of package you import you can always
+bypass the root package and import directly from from the real location. For example
+<code class="docutils literal notranslate"><span class="pre">evennia.DefaultObject</span></code> is a shortcut to <code class="docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject</span></code>. Using this full
+path will have the import mechanism work normally. See <code class="docutils literal notranslate"><span class="pre">evennia/__init__.py</span></code> to see where the
+package imports from.</p>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Things to remember about the flat API</a><ul>
+<li><a class="reference internal" href="#to-remember-when-importing-from-evennia">To remember when importing from <code class="docutils literal notranslate"><span class="pre">evennia</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Coding/Flat-API.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Flat-API.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Things to remember about the flat API</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+    </div>
+  </body>
+</html>

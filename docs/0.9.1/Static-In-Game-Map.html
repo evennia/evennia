@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Static In Game Map &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -27,10 +26,8 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">Static In Game Map</a></li>
-
-
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Static In Game Map</a></li> 
       </ul>
     </div>  
 
@@ -350,8 +347,7 @@ Exits: north(#8), east(#9), south(#10), west(#11)
 42
 43
 44
-45
-46</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># We place our map into a sting here.</span>
+45</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># We place our map into a sting here.</span>
 <span class="n">world_map</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
 <span class="s2">≈≈↑↑↑↑↑∩∩</span>
 <span class="s2">≈≈↑╔═╗↑∩∩</span>
@@ -391,8 +387,7 @@ Exits: north(#8), east(#9), south(#10), west(#11)
     <span class="nb">map</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     
     <span class="c1">#For each row we need, add the characters we need.</span>
-    <span class="k">for</span> <span class="n">valuey</span> <span class="ow">in</span> <span class="n">world_map</span><span class="p">[</span><span class="n">y</span><span class="o">-</span><span class="n">radius</span><span class="p">:</span><span class="n">y</span><span class="o">+</span><span class="n">radius</span><span class="o">+</span><span class="mi">1</span><span class="p">]:</span>
-        <span class="k">for</span> <span class="n">valuex</span> <span class="ow">in</span> <span class="n">valuey</span><span class="p">[</span><span class="n">x</span><span class="o">-</span><span class="n">radius</span><span class="p">:</span><span class="n">x</span><span class="o">+</span><span class="n">radius</span><span class="o">+</span><span class="mi">1</span><span class="p">]:</span>
+    <span class="k">for</span> <span class="n">valuey</span> <span class="ow">in</span> <span class="n">world_map</span><span class="p">[</span><span class="n">y</span><span class="o">-</span><span class="n">radius</span><span class="p">:</span><span class="n">y</span><span class="o">+</span><span class="n">radius</span><span class="o">+</span><span class="mi">1</span><span class="p">]:</span>         <span class="k">for</span> <span class="n">valuex</span> <span class="ow">in</span> <span class="n">valuey</span><span class="p">[</span><span class="n">x</span><span class="o">-</span><span class="n">radius</span><span class="p">:</span><span class="n">x</span><span class="o">+</span><span class="n">radius</span><span class="o">+</span><span class="mi">1</span><span class="p">]:</span>
             <span class="nb">map</span> <span class="o">+=</span> <span class="n">valuex</span>
         <span class="nb">map</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
     
@@ -560,6 +555,7 @@ Exits: north(#8), east(#9), south(#10), west(#11)
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -600,7 +596,7 @@ Exits: north(#8), east(#9), south(#10), west(#11)
    </div>
 <h3>Versions</h3>
 <ul>
-  <li><a href="../1.0-dev/Static-In-Game-Map.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
   <li><a href="Static-In-Game-Map.html">0.9.1 (master branch)</a></li>
 </ul>
 
@@ -617,15 +613,13 @@ Exits: north(#8), east(#9), south(#10), west(#11)
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1 documentation</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">Static In Game Map</a></li>
-
-
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 0.9.1</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Static In Game Map</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

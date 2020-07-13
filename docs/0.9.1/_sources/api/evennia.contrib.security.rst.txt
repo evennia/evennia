@@ -1,4 +1,4 @@
-evennia.contrib.security package
+evennia.contrib.security 
 ================================
 
 .. automodule:: evennia.contrib.security
@@ -10,5 +10,6 @@ Subpackages
 -----------
 
 .. toctree::
+   :maxdepth: 6
 
    evennia.contrib.security.auditing

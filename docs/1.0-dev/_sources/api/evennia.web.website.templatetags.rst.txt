@@ -1,4 +1,4 @@
-evennia.web.website.templatetags package
+evennia.web.website.templatetags 
 ========================================
 
 .. automodule:: evennia.web.website.templatetags
@@ -6,14 +6,10 @@ evennia.web.website.templatetags package
    :undoc-members:
    :show-inheritance:
 
-Submodules
-----------
+Modules
+-------
 
-evennia.web.website.templatetags.addclass module
-------------------------------------------------
+.. toctree::
+   :maxdepth: 6
 
-.. automodule:: evennia.web.website.templatetags.addclass
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
+   evennia.web.website.templatetags.addclass

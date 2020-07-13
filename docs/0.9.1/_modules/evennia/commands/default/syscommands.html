@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.commands.default.syscommands &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.commands.default.syscommands</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.syscommands</a></li> 
       </ul>
     </div>  
 
@@ -82,7 +79,7 @@
 <span class="c1"># (i.e. an lone return key)</span>
 
 
-<div class="viewcode-block" id="SystemNoInput"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.syscommands.SystemNoInput">[docs]</a><span class="k">class</span> <span class="nc">SystemNoInput</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="SystemNoInput"><a class="viewcode-back" href="../../../../api/evennia.commands.default.syscommands.html#evennia.commands.default.syscommands.SystemNoInput">[docs]</a><span class="k">class</span> <span class="nc">SystemNoInput</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is called when there is no input given</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -90,7 +87,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="n">CMD_NOINPUT</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
 
-<div class="viewcode-block" id="SystemNoInput.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.syscommands.SystemNoInput.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SystemNoInput.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.syscommands.html#evennia.commands.default.syscommands.SystemNoInput.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Do nothing.&quot;</span>
         <span class="k">pass</span></div></div>
 
@@ -99,7 +96,7 @@
 <span class="c1"># Command called when there was no match to the</span>
 <span class="c1"># command name</span>
 <span class="c1">#</span>
-<div class="viewcode-block" id="SystemNoMatch"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.syscommands.SystemNoMatch">[docs]</a><span class="k">class</span> <span class="nc">SystemNoMatch</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="SystemNoMatch"><a class="viewcode-back" href="../../../../api/evennia.commands.default.syscommands.html#evennia.commands.default.syscommands.SystemNoMatch">[docs]</a><span class="k">class</span> <span class="nc">SystemNoMatch</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    No command was found matching the given input.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -107,7 +104,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="n">CMD_NOMATCH</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
 
-<div class="viewcode-block" id="SystemNoMatch.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.syscommands.SystemNoMatch.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SystemNoMatch.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.syscommands.html#evennia.commands.default.syscommands.SystemNoMatch.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is given the failed raw string as input.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -117,7 +114,7 @@
 <span class="c1">#</span>
 <span class="c1"># Command called when there were mulitple matches to the command.</span>
 <span class="c1">#</span>
-<div class="viewcode-block" id="SystemMultimatch"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.syscommands.SystemMultimatch">[docs]</a><span class="k">class</span> <span class="nc">SystemMultimatch</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="SystemMultimatch"><a class="viewcode-back" href="../../../../api/evennia.commands.default.syscommands.html#evennia.commands.default.syscommands.SystemMultimatch">[docs]</a><span class="k">class</span> <span class="nc">SystemMultimatch</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Multiple command matches.</span>
 
@@ -137,7 +134,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="n">CMD_MULTIMATCH</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
 
-<div class="viewcode-block" id="SystemMultimatch.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.syscommands.SystemMultimatch.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SystemMultimatch.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.syscommands.html#evennia.commands.default.syscommands.SystemMultimatch.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Handle multiple-matches by using the at_search_result default handler.</span>
 
@@ -156,7 +153,7 @@
 <span class="c1">#  &gt; ooc Hello!</span>
 
 
-<div class="viewcode-block" id="SystemSendToChannel"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.syscommands.SystemSendToChannel">[docs]</a><span class="k">class</span> <span class="nc">SystemSendToChannel</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="SystemSendToChannel"><a class="viewcode-back" href="../../../../api/evennia.commands.default.syscommands.html#evennia.commands.default.syscommands.SystemSendToChannel">[docs]</a><span class="k">class</span> <span class="nc">SystemSendToChannel</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a special command that the cmdhandler calls</span>
 <span class="sd">    when it detects that the command given matches</span>
@@ -166,11 +163,11 @@
     <span class="n">key</span> <span class="o">=</span> <span class="n">CMD_CHANNEL</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
 
-<div class="viewcode-block" id="SystemSendToChannel.parse"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.syscommands.SystemSendToChannel.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SystemSendToChannel.parse"><a class="viewcode-back" href="../../../../api/evennia.commands.default.syscommands.html#evennia.commands.default.syscommands.SystemSendToChannel.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">channelname</span><span class="p">,</span> <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">channelname</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">msg</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="SystemSendToChannel.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.syscommands.SystemSendToChannel.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SystemSendToChannel.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.syscommands.html#evennia.commands.default.syscommands.SystemSendToChannel.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a new message and send it to channel, using</span>
 <span class="sd">        the already formatted input.</span>
@@ -197,6 +194,7 @@
         <span class="n">channel</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">msgobj</span><span class="p">)</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -234,17 +232,15 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.commands.default.syscommands</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.syscommands</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

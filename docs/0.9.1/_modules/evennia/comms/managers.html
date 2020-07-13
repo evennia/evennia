@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.comms.managers &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.comms.managers</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.comms.managers</a></li> 
       </ul>
     </div>  
 
@@ -63,7 +60,7 @@
 <span class="c1"># error class</span>
 
 
-<div class="viewcode-block" id="CommError"><a class="viewcode-back" href="../../../api/evennia.comms.html#evennia.comms.comms.CommError">[docs]</a><span class="k">class</span> <span class="nc">CommError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="CommError"><a class="viewcode-back" href="../../../api/evennia.comms.managers.html#evennia.comms.comms.CommError">[docs]</a><span class="k">class</span> <span class="nc">CommError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Raised by comm system, to allow feedback to player when caught.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -76,7 +73,7 @@
 <span class="c1">#</span>
 
 
-<div class="viewcode-block" id="identify_object"><a class="viewcode-back" href="../../../api/evennia.comms.html#evennia.comms.comms.identify_object">[docs]</a><span class="k">def</span> <span class="nf">identify_object</span><span class="p">(</span><span class="n">inp</span><span class="p">):</span>
+<div class="viewcode-block" id="identify_object"><a class="viewcode-back" href="../../../api/evennia.comms.managers.html#evennia.comms.comms.identify_object">[docs]</a><span class="k">def</span> <span class="nf">identify_object</span><span class="p">(</span><span class="n">inp</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function. Identifies if an object is an account or an object;</span>
 <span class="sd">    return its database model</span>
@@ -106,7 +103,7 @@
         <span class="k">return</span> <span class="n">inp</span><span class="p">,</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="to_object"><a class="viewcode-back" href="../../../api/evennia.comms.html#evennia.comms.comms.to_object">[docs]</a><span class="k">def</span> <span class="nf">to_object</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">objtype</span><span class="o">=</span><span class="s2">&quot;account&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="to_object"><a class="viewcode-back" href="../../../api/evennia.comms.managers.html#evennia.comms.comms.to_object">[docs]</a><span class="k">def</span> <span class="nf">to_object</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">objtype</span><span class="o">=</span><span class="s2">&quot;account&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Locates the object related to the given accountname or channel key.</span>
 <span class="sd">    If input was already the correct object, return it.</span>
@@ -156,7 +153,7 @@
 <span class="c1">#</span>
 
 
-<div class="viewcode-block" id="MsgManager"><a class="viewcode-back" href="../../../api/evennia.comms.html#evennia.comms.comms.MsgManager">[docs]</a><span class="k">class</span> <span class="nc">MsgManager</span><span class="p">(</span><span class="n">TypedObjectManager</span><span class="p">):</span>
+<div class="viewcode-block" id="MsgManager"><a class="viewcode-back" href="../../../api/evennia.comms.managers.html#evennia.comms.comms.MsgManager">[docs]</a><span class="k">class</span> <span class="nc">MsgManager</span><span class="p">(</span><span class="n">TypedObjectManager</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This MsgManager implements methods for searching and manipulating</span>
 <span class="sd">    Messages directly from the database.</span>
@@ -171,7 +168,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="MsgManager.identify_object"><a class="viewcode-back" href="../../../api/evennia.comms.html#evennia.comms.comms.MsgManager.identify_object">[docs]</a>    <span class="k">def</span> <span class="nf">identify_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">):</span>
+<div class="viewcode-block" id="MsgManager.identify_object"><a class="viewcode-back" href="../../../api/evennia.comms.managers.html#evennia.comms.comms.MsgManager.identify_object">[docs]</a>    <span class="k">def</span> <span class="nf">identify_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Wrapper to identify_object if accessing via the manager directly.</span>
 
@@ -186,7 +183,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">identify_object</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MsgManager.get_message_by_id"><a class="viewcode-back" href="../../../api/evennia.comms.html#evennia.comms.comms.MsgManager.get_message_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_message_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idnum</span><span class="p">):</span>
+<div class="viewcode-block" id="MsgManager.get_message_by_id"><a class="viewcode-back" href="../../../api/evennia.comms.managers.html#evennia.comms.comms.MsgManager.get_message_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_message_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idnum</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve message by its id.</span>
 
@@ -202,7 +199,7 @@
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="MsgManager.get_messages_by_sender"><a class="viewcode-back" href="../../../api/evennia.comms.html#evennia.comms.comms.MsgManager.get_messages_by_sender">[docs]</a>    <span class="k">def</span> <span class="nf">get_messages_by_sender</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sender</span><span class="p">,</span> <span class="n">exclude_channel_messages</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="MsgManager.get_messages_by_sender"><a class="viewcode-back" href="../../../api/evennia.comms.managers.html#evennia.comms.comms.MsgManager.get_messages_by_sender">[docs]</a>    <span class="k">def</span> <span class="nf">get_messages_by_sender</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sender</span><span class="p">,</span> <span class="n">exclude_channel_messages</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all messages sent by one entity - this could be either a</span>
 <span class="sd">        account or an object</span>
@@ -245,7 +242,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">CommError</span></div>
 
-<div class="viewcode-block" id="MsgManager.get_messages_by_receiver"><a class="viewcode-back" href="../../../api/evennia.comms.html#evennia.comms.comms.MsgManager.get_messages_by_receiver">[docs]</a>    <span class="k">def</span> <span class="nf">get_messages_by_receiver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recipient</span><span class="p">):</span>
+<div class="viewcode-block" id="MsgManager.get_messages_by_receiver"><a class="viewcode-back" href="../../../api/evennia.comms.managers.html#evennia.comms.comms.MsgManager.get_messages_by_receiver">[docs]</a>    <span class="k">def</span> <span class="nf">get_messages_by_receiver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recipient</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all messages sent to one given recipient.</span>
 
@@ -269,7 +266,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">CommError</span></div>
 
-<div class="viewcode-block" id="MsgManager.get_messages_by_channel"><a class="viewcode-back" href="../../../api/evennia.comms.html#evennia.comms.comms.MsgManager.get_messages_by_channel">[docs]</a>    <span class="k">def</span> <span class="nf">get_messages_by_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
+<div class="viewcode-block" id="MsgManager.get_messages_by_channel"><a class="viewcode-back" href="../../../api/evennia.comms.managers.html#evennia.comms.comms.MsgManager.get_messages_by_channel">[docs]</a>    <span class="k">def</span> <span class="nf">get_messages_by_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all persistent messages sent to one channel.</span>
 
@@ -282,7 +279,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_receivers_channels</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">db_hide_from_channels</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MsgManager.search_message"><a class="viewcode-back" href="../../../api/evennia.comms.html#evennia.comms.comms.MsgManager.search_message">[docs]</a>    <span class="k">def</span> <span class="nf">search_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">freetext</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dbref</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="MsgManager.search_message"><a class="viewcode-back" href="../../../api/evennia.comms.managers.html#evennia.comms.comms.MsgManager.search_message">[docs]</a>    <span class="k">def</span> <span class="nf">search_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">freetext</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dbref</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Search the message database for particular messages. At least</span>
 <span class="sd">        one of the arguments must be given to do a search.</span>
@@ -352,7 +349,7 @@
 <span class="c1">#</span>
 
 
-<div class="viewcode-block" id="ChannelDBManager"><a class="viewcode-back" href="../../../api/evennia.comms.html#evennia.comms.comms.ChannelDBManager">[docs]</a><span class="k">class</span> <span class="nc">ChannelDBManager</span><span class="p">(</span><span class="n">TypedObjectManager</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelDBManager"><a class="viewcode-back" href="../../../api/evennia.comms.managers.html#evennia.comms.comms.ChannelDBManager">[docs]</a><span class="k">class</span> <span class="nc">ChannelDBManager</span><span class="p">(</span><span class="n">TypedObjectManager</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This ChannelManager implements methods for searching and</span>
 <span class="sd">    manipulating Channels directly from the database.</span>
@@ -367,7 +364,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ChannelDBManager.get_all_channels"><a class="viewcode-back" href="../../../api/evennia.comms.html#evennia.comms.comms.ChannelDBManager.get_all_channels">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelDBManager.get_all_channels"><a class="viewcode-back" href="../../../api/evennia.comms.managers.html#evennia.comms.comms.ChannelDBManager.get_all_channels">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all channels.</span>
 
@@ -377,7 +374,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ChannelDBManager.get_channel"><a class="viewcode-back" href="../../../api/evennia.comms.html#evennia.comms.comms.ChannelDBManager.get_channel">[docs]</a>    <span class="k">def</span> <span class="nf">get_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channelkey</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelDBManager.get_channel"><a class="viewcode-back" href="../../../api/evennia.comms.managers.html#evennia.comms.comms.ChannelDBManager.get_channel">[docs]</a>    <span class="k">def</span> <span class="nf">get_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channelkey</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the channel object if given its key.</span>
 <span class="sd">        Also searches its aliases.</span>
@@ -401,7 +398,7 @@
         <span class="p">)</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">results</span> <span class="k">else</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="ChannelDBManager.get_subscriptions"><a class="viewcode-back" href="../../../api/evennia.comms.html#evennia.comms.comms.ChannelDBManager.get_subscriptions">[docs]</a>    <span class="k">def</span> <span class="nf">get_subscriptions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subscriber</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelDBManager.get_subscriptions"><a class="viewcode-back" href="../../../api/evennia.comms.managers.html#evennia.comms.comms.ChannelDBManager.get_subscriptions">[docs]</a>    <span class="k">def</span> <span class="nf">get_subscriptions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subscriber</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return all channels a given entity is subscribed to.</span>
 
@@ -419,7 +416,7 @@
             <span class="k">return</span> <span class="n">subscriber</span><span class="o">.</span><span class="n">object_subscription_set</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
         <span class="k">return</span> <span class="p">[]</span></div>
 
-<div class="viewcode-block" id="ChannelDBManager.search_channel"><a class="viewcode-back" href="../../../api/evennia.comms.html#evennia.comms.comms.ChannelDBManager.search_channel">[docs]</a>    <span class="k">def</span> <span class="nf">search_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ostring</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelDBManager.search_channel"><a class="viewcode-back" href="../../../api/evennia.comms.managers.html#evennia.comms.comms.ChannelDBManager.search_channel">[docs]</a>    <span class="k">def</span> <span class="nf">search_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ostring</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Search the channel database for a particular channel.</span>
 
@@ -451,7 +448,7 @@
     <span class="n">channel_search</span> <span class="o">=</span> <span class="n">search_channel</span></div>
 
 
-<div class="viewcode-block" id="ChannelManager"><a class="viewcode-back" href="../../../api/evennia.comms.html#evennia.comms.comms.ChannelManager">[docs]</a><span class="k">class</span> <span class="nc">ChannelManager</span><span class="p">(</span><span class="n">ChannelDBManager</span><span class="p">,</span> <span class="n">TypeclassManager</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelManager"><a class="viewcode-back" href="../../../api/evennia.comms.managers.html#evennia.comms.comms.ChannelManager">[docs]</a><span class="k">class</span> <span class="nc">ChannelManager</span><span class="p">(</span><span class="n">ChannelDBManager</span><span class="p">,</span> <span class="n">TypeclassManager</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper to group the typeclass manager to a consistent name.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -459,6 +456,7 @@
     <span class="k">pass</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -496,17 +494,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.comms.managers</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.comms.managers</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

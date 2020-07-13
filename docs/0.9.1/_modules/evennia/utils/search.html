@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.utils.search &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.utils.search</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.search</a></li> 
       </ul>
     </div>  
 
@@ -80,7 +77,7 @@
     <span class="s2">&quot;search_message&quot;</span><span class="p">,</span>
     <span class="s2">&quot;search_channel&quot;</span><span class="p">,</span>
     <span class="s2">&quot;search_help_entry&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;search_object_tag&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;search_tag&quot;</span><span class="p">,</span>
     <span class="s2">&quot;search_script_tag&quot;</span><span class="p">,</span>
     <span class="s2">&quot;search_account_tag&quot;</span><span class="p">,</span>
     <span class="s2">&quot;search_channel_tag&quot;</span><span class="p">,</span>
@@ -322,7 +319,7 @@
 <span class="n">search_tag</span> <span class="o">=</span> <span class="n">search_object_by_tag</span>  <span class="c1"># this is the most common case</span>
 
 
-<div class="viewcode-block" id="search_account_tag"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.search.search_account_tag">[docs]</a><span class="k">def</span> <span class="nf">search_account_tag</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tagtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="search_account_tag"><a class="viewcode-back" href="../../../api/evennia.utils.search.html#evennia.utils.search.search_account_tag">[docs]</a><span class="k">def</span> <span class="nf">search_account_tag</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tagtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find account based on tag or category.</span>
 
@@ -346,7 +343,7 @@
     <span class="k">return</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_by_tag</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">tagtype</span><span class="o">=</span><span class="n">tagtype</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="search_script_tag"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.search.search_script_tag">[docs]</a><span class="k">def</span> <span class="nf">search_script_tag</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tagtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="search_script_tag"><a class="viewcode-back" href="../../../api/evennia.utils.search.html#evennia.utils.search.search_script_tag">[docs]</a><span class="k">def</span> <span class="nf">search_script_tag</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tagtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find script based on tag or category.</span>
 
@@ -370,7 +367,7 @@
     <span class="k">return</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_by_tag</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">tagtype</span><span class="o">=</span><span class="n">tagtype</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="search_channel_tag"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.search.search_channel_tag">[docs]</a><span class="k">def</span> <span class="nf">search_channel_tag</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tagtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="search_channel_tag"><a class="viewcode-back" href="../../../api/evennia.utils.search.html#evennia.utils.search.search_channel_tag">[docs]</a><span class="k">def</span> <span class="nf">search_channel_tag</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tagtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find channel based on tag or category.</span>
 
@@ -398,6 +395,7 @@
 <span class="n">search_tag_object</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_tag</span>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -435,17 +433,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.utils.search</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.search</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

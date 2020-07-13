@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MonitorHandler &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">MonitorHandler</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="monitorhandler">
+<h1>MonitorHandler<a class="headerlink" href="#monitorhandler" title="Permalink to this headline">¶</a></h1>
+<p>The <em>MonitorHandler</em> is a system for watching changes in properties or Attributes on objects. A
+monitor can be thought of as a sort of trigger that responds to change.</p>
+<p>The main use for the MonitorHandler is to report changes to the client; for example the client
+Session may ask Evennia to monitor the value of the Characer’s <code class="docutils literal notranslate"><span class="pre">health</span></code> attribute and report
+whenever it changes. This way the client could for example update its health bar graphic as needed.</p>
+<div class="section" id="using-the-monitorhandler">
+<h2>Using the MonitorHandler<a class="headerlink" href="#using-the-monitorhandler" title="Permalink to this headline">¶</a></h2>
+<p>The MontorHandler is accessed from the singleton <code class="docutils literal notranslate"><span class="pre">evennia.MONITOR_HANDLER</span></code>. The code for the handler
+is in <code class="docutils literal notranslate"><span class="pre">evennia.scripts.monitorhandler</span></code>.</p>
+<p>Here’s how to add a new monitor:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">MONITOR_HANDLER</span>
+
+<span class="n">MONITOR_HANDLER</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span>
+                    <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">obj</span></code> (<a class="reference internal" href="Typeclasses.html"><span class="doc">Typeclassed</span></a> entity) - the object to monitor. Since this must be
+typeclassed, it means you can’t monitor changes on <a class="reference internal" href="Sessions.html"><span class="doc">Sessions</span></a> with the monitorhandler, for
+example.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fieldname</span></code> (str) - the name of a field or <a class="reference internal" href="Attributes.html"><span class="doc">Attribute</span></a> on <code class="docutils literal notranslate"><span class="pre">obj</span></code>. If you want to
+monitor a database field you must specify its full name, including the starting <code class="docutils literal notranslate"><span class="pre">db_</span></code> (like
+<code class="docutils literal notranslate"><span class="pre">db_key</span></code>, <code class="docutils literal notranslate"><span class="pre">db_location</span></code> etc). Any names not starting with <code class="docutils literal notranslate"><span class="pre">db_</span></code> are instead assumed to be the names
+of Attributes. This difference matters, since the MonitorHandler will automatically know to watch
+the <code class="docutils literal notranslate"><span class="pre">db_value</span></code> field of the Attribute.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">callback</span></code>(callable) - This will be called as <code class="docutils literal notranslate"><span class="pre">callback(fieldname=fieldname,</span> <span class="pre">obj=obj,</span> <span class="pre">**kwargs)</span></code>
+when the field updates.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">idstring</span></code> (str) - this is used to separate multiple monitors on the same object and fieldname.
+This is required in order to properly identify and remove the monitor later. It’s also used for
+saving it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">persistent</span></code> (bool) - if True, the monitor will survive a server reboot.</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">MONITOR_HANDLER</span> <span class="k">as</span> <span class="n">monitorhandler</span>
+
+<span class="k">def</span> <span class="nf">_monitor_callback</span><span class="p">(</span><span class="n">fieldname</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>    
+    <span class="c1"># reporting callback that works both</span>
+    <span class="c1"># for db-fields and Attributes</span>
+    <span class="k">if</span> <span class="n">fieldname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;db_&quot;</span><span class="p">):</span>
+        <span class="n">new_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span> <span class="c1"># an attribute    </span>
+        <span class="n">new_value</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fieldname</span><span class="p">)</span>
+
+    <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2"> changed to &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> \
+                  <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">new_value</span><span class="p">))</span>
+
+<span class="c1"># (we could add _some_other_monitor_callback here too)</span>
+
+<span class="c1"># monitor Attribute (assume we have obj from before)</span>
+<span class="n">monitorhandler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="n">_monitor_callback</span><span class="p">)</span>  
+
+<span class="c1"># monitor same db-field with two different callbacks (must separate by id_string)</span>
+<span class="n">monitorhandler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="n">_monitor_callback</span><span class="p">,</span> <span class="n">id_string</span><span class="o">=</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>  
+<span class="n">monitorhandler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="n">_some_other_monitor_callback</span><span class="p">,</span> <span class="n">id_string</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>A monitor is uniquely identified by the combination of the <em>object instance</em> it is monitoring, the
+<em>name</em> of the field/attribute to monitor on that object and its <code class="docutils literal notranslate"><span class="pre">idstring</span></code> (<code class="docutils literal notranslate"><span class="pre">obj</span></code> + <code class="docutils literal notranslate"><span class="pre">fieldname</span></code> +
+<code class="docutils literal notranslate"><span class="pre">idstring</span></code>). The <code class="docutils literal notranslate"><span class="pre">idstring</span></code> will be the empty string unless given explicitly.</p>
+<p>So to “un-monitor” the above you need to supply enough information for the system to uniquely find
+the monitor to remove:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">monitorhandler</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;desc&quot;</span><span class="p">)</span>
+<span class="n">monitorhandler</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
+<span class="n">monitorhandler</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">MonitorHandler</a><ul>
+<li><a class="reference internal" href="#using-the-monitorhandler">Using the MonitorHandler</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Components/MonitorHandler.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="MonitorHandler.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">MonitorHandler</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+    </div>
+  </body>
+</html>

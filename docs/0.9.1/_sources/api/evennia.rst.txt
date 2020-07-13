@@ -1,4 +1,4 @@
-evennia package
+evennia 
 ===============
 
 .. automodule:: evennia
@@ -10,12 +10,12 @@ Subpackages
 -----------
 
 .. toctree::
+   :maxdepth: 6
 
    evennia.accounts
    evennia.commands
    evennia.comms
    evennia.contrib
-   evennia.game_template
    evennia.help
    evennia.locks
    evennia.objects
@@ -29,11 +29,7 @@ Subpackages
 Submodules
 ----------
 
-evennia.settings\_default module
---------------------------------
+.. toctree::
+   :maxdepth: 6
 
-.. automodule:: evennia.settings_default
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
+   evennia.settings_default

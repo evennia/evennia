@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>evennia package &#8212; Evennia 0.9.1 documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>evennia &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -27,10 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia package</a></li>
-
-
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia</a></li> 
       </ul>
     </div>  
 
@@ -40,45 +37,78 @@
           <div class="body" role="main">
             
   <div class="section" id="module-evennia">
-<span id="evennia-package"></span><h1>evennia package<a class="headerlink" href="#module-evennia" title="Permalink to this headline">¶</a></h1>
-<dl>
-<dt>[1m[36mEvennia[0m ‘flat’ API (use [1m[37mevennia.&lt;component&gt;.__doc__[0m to read doc-strings</dt><dd><p>and [1m[37mdict(evennia.component)[0m or
-[1m[37mevennia.component.__dict__ to see contents)</p>
-</dd>
-<dt>[1m[36mTypeclass-bases:[0m                      [1m[36mDatabase models[0m:</dt><dd><dl class="simple">
-<dt>DefaultAccount     DefaultObject          AccountDB     ObjectDB</dt><dd><dl class="simple">
-<dt>DefaultGuest       DefaultCharacter     ChannelDB</dt><dd><p>DefaultRoom          ScriptDB</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p>DefaultChannel       DefaultExit          Msg
-DefaultScript</p>
-</dd>
-<dt>[1m[36mSearch functions:[0m                     [1m[36mCommand parents and helpers:[0m</dt><dd><p>search_account       search_object        default_cmds
-search_script        search_channel       Command       InterruptCommand
-search_help          search_message       CmdSet
-search_tag           managers          [1m[36mUtilities:[0m</p>
-</dd>
-<dt>[1m[36mCreate functions:[0m                        settings       lockfuncs</dt><dd><p>create_account       create_object        logger         gametime
-create_script        create_channel       ansi           spawn
-create_help_entry    create_message       contrib        managers</p>
-</dd>
-<dt>[1m[36mGlobal handlers:[0m                         set_trace</dt><dd><p>TICKER_HANDLER       TASK_HANDLER         EvMenu         EvTable
-SESSION_HANDLER      CHANNEL_HANDLER      EvForm         EvEditor</p>
-</dd>
-</dl>
-<dl class="function">
-<dt id="evennia._init">
-<code class="sig-prename descclassname">evennia.</code><code class="sig-name descname">_init</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia.html#_init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia._init" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function is called automatically by the launcher only after
-Evennia has fully initialized all its models. It sets up the API
-in a safe environment where all models are available already.</p>
-</dd></dl>
-
-<dl class="function">
+<span id="evennia"></span><h1>evennia<a class="headerlink" href="#module-evennia" title="Permalink to this headline">¶</a></h1>
+<p>Evennia MU* creation system.</p>
+<p>Online manual and API docs are found at <a class="reference external" href="http://www.evennia.com">http://www.evennia.com</a>.</p>
+<p>Flat-API shortcut names:</p>
+<ul class="simple">
+<li><p>evennia.ANSIString</p></li>
+<li><p>evennia.AccountDB</p></li>
+<li><p>evennia.BASE_ACCOUNT_TYPECLASS</p></li>
+<li><p>evennia.BASE_CHANNEL_TYPECLASS</p></li>
+<li><p>evennia.BASE_CHARACTER_TYPECLASS</p></li>
+<li><p>evennia.BASE_EXIT_TYPECLASS</p></li>
+<li><p>evennia.BASE_GUEST_TYPECLASS</p></li>
+<li><p>evennia.BASE_OBJECT_TYPECLASS</p></li>
+<li><p>evennia.BASE_ROOM_TYPECLASS</p></li>
+<li><p>evennia.BASE_SCRIPT_TYPECLASS</p></li>
+<li><p>evennia.CHANNEL_HANDLER</p></li>
+<li><p>evennia.ChannelDB</p></li>
+<li><p>evennia.CmdSet</p></li>
+<li><p>evennia.Command</p></li>
+<li><p>evennia.DefaultAccount</p></li>
+<li><p>evennia.DefaultChannel</p></li>
+<li><p>evennia.DefaultCharacter</p></li>
+<li><p>evennia.DefaultExit</p></li>
+<li><p>evennia.DefaultGuest</p></li>
+<li><p>evennia.DefaultObject</p></li>
+<li><p>evennia.DefaultRoom</p></li>
+<li><p>evennia.DefaultScript</p></li>
+<li><p>evennia.EvEditor</p></li>
+<li><p>evennia.EvForm</p></li>
+<li><p>evennia.EvMenu</p></li>
+<li><p>evennia.EvMore</p></li>
+<li><p>evennia.EvTable</p></li>
+<li><p>evennia.GLOBAL_SCRIPTS</p></li>
+<li><p>evennia.InterruptCommand</p></li>
+<li><p>evennia.MONITOR_HANDLER</p></li>
+<li><p>evennia.Msg</p></li>
+<li><p>evennia.OPTION_CLASSES</p></li>
+<li><p>evennia.ObjectDB</p></li>
+<li><p>evennia.SESSION_HANDLER</p></li>
+<li><p>evennia.ScriptDB</p></li>
+<li><p>evennia.TASK_HANDLER</p></li>
+<li><p>evennia.TICKER_HANDLER</p></li>
+<li><p>evennia.ansi</p></li>
+<li><p>evennia.contrib</p></li>
+<li><p>evennia.create_account</p></li>
+<li><p>evennia.create_channel</p></li>
+<li><p>evennia.create_help_entry</p></li>
+<li><p>evennia.create_message</p></li>
+<li><p>evennia.create_object</p></li>
+<li><p>evennia.create_script</p></li>
+<li><p>evennia.default_cmds</p></li>
+<li><p>evennia.gametime</p></li>
+<li><p>evennia.inputhandler</p></li>
+<li><p>evennia.lockfuncs</p></li>
+<li><p>evennia.logger</p></li>
+<li><p>evennia.managers</p></li>
+<li><p>evennia.search_account</p></li>
+<li><p>evennia.search_channel</p></li>
+<li><p>evennia.search_help</p></li>
+<li><p>evennia.search_message</p></li>
+<li><p>evennia.search_object</p></li>
+<li><p>evennia.search_script</p></li>
+<li><p>evennia.search_tag</p></li>
+<li><p>evennia.set_trace</p></li>
+<li><p>evennia.settings</p></li>
+<li><p>evennia.signals</p></li>
+<li><p>evennia.spawn</p></li>
+<li><p>evennia.syscmdkeys</p></li>
+</ul>
+<dl class="py function">
 <dt id="evennia.set_trace">
-<code class="sig-prename descclassname">evennia.</code><code class="sig-name descname">set_trace</code><span class="sig-paren">(</span><em class="sig-param">term_size=(140</em>, <em class="sig-param">80)</em>, <em class="sig-param">debugger='auto'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia.html#set_trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.set_trace" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.</code><code class="sig-name descname">set_trace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">term_size</span><span class="o">=</span><span class="default_value">140, 80</span></em>, <em class="sig-param"><span class="n">debugger</span><span class="o">=</span><span class="default_value">'auto'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia.html#set_trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.set_trace" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper function for running a debugger inside the Evennia event loop.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -88,7 +118,7 @@ in a safe environment where all models are available already.</p>
 <li><p><strong>debugger</strong> (<em>str</em><em>, </em><em>optional</em>) – One of ‘auto’, ‘pdb’ or ‘pudb’. Pdb is the standard debugger. Pudb
 is an external package with a different, more ‘graphical’, ncurses-based UI. With
 ‘auto’, will use pudb if possible, otherwise fall back to pdb. Pudb is available through
-<cite>pip install pudb</cite>.</p></li>
+<strong>pip install pudb</strong>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -114,455 +144,385 @@ with ‘q’, remove the break line and restart server when finished.</p></li>
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="evennia.accounts.html">evennia.accounts package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="evennia.accounts.html#subpackages">Subpackages</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="evennia.accounts.html">evennia.accounts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.accounts.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.accounts.accounts.html">evennia.accounts.accounts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.accounts.admin.html">evennia.accounts.admin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.accounts.bots.html">evennia.accounts.bots</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.accounts.manager.html">evennia.accounts.manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.accounts.models.html">evennia.accounts.models</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.accounts.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.accounts.html#module-evennia.accounts.accounts">evennia.accounts.accounts module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.accounts.html#module-evennia.accounts.admin">evennia.accounts.admin module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.accounts.html#module-evennia.accounts.bots">evennia.accounts.bots module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.accounts.html#module-evennia.accounts.manager">evennia.accounts.manager module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.accounts.html#module-evennia.accounts.models">evennia.accounts.models module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.accounts.html#module-evennia.accounts.tests">evennia.accounts.tests module</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="evennia.commands.html">evennia.commands package</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="evennia.commands.html">evennia.commands</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="evennia.commands.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="evennia.commands.default.html">evennia.commands.default package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="evennia.commands.default.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.commands.default.html#module-evennia.commands.default.account">evennia.commands.default.account module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.commands.default.html#module-evennia.commands.default.admin">evennia.commands.default.admin module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.commands.default.html#module-evennia.commands.default.batchprocess">evennia.commands.default.batchprocess module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.commands.default.html#module-evennia.commands.default.building">evennia.commands.default.building module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.commands.default.html#module-evennia.commands.default.cmdset_account">evennia.commands.default.cmdset_account module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.commands.default.html#module-evennia.commands.default.cmdset_character">evennia.commands.default.cmdset_character module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.commands.default.html#module-evennia.commands.default.cmdset_session">evennia.commands.default.cmdset_session module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.commands.default.html#module-evennia.commands.default.cmdset_unloggedin">evennia.commands.default.cmdset_unloggedin module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.commands.default.html#module-evennia.commands.default.comms">evennia.commands.default.comms module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.commands.default.html#module-evennia.commands.default.general">evennia.commands.default.general module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.commands.default.html#module-evennia.commands.default.help">evennia.commands.default.help module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.commands.default.html#module-evennia.commands.default.muxcommand">evennia.commands.default.muxcommand module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.commands.default.html#module-evennia.commands.default.syscommands">evennia.commands.default.syscommands module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.commands.default.html#module-evennia.commands.default.system">evennia.commands.default.system module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.commands.default.html#evennia-commands-default-tests-module">evennia.commands.default.tests module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.commands.default.html#module-evennia.commands.default.unloggedin">evennia.commands.default.unloggedin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.commands.default.html">evennia.commands.default</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="evennia.commands.default.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="evennia.commands.default.account.html">evennia.commands.default.account</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.commands.default.admin.html">evennia.commands.default.admin</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.commands.default.batchprocess.html">evennia.commands.default.batchprocess</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.commands.default.building.html">evennia.commands.default.building</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.commands.default.cmdset_account.html">evennia.commands.default.cmdset_account</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.commands.default.cmdset_character.html">evennia.commands.default.cmdset_character</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.commands.default.cmdset_session.html">evennia.commands.default.cmdset_session</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.commands.default.cmdset_unloggedin.html">evennia.commands.default.cmdset_unloggedin</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.commands.default.comms.html">evennia.commands.default.comms</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.commands.default.general.html">evennia.commands.default.general</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.commands.default.help.html">evennia.commands.default.help</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.commands.default.muxcommand.html">evennia.commands.default.muxcommand</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.commands.default.syscommands.html">evennia.commands.default.syscommands</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.commands.default.system.html">evennia.commands.default.system</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.commands.default.tests.html">evennia.commands.default.tests</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.commands.default.unloggedin.html">evennia.commands.default.unloggedin</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.commands.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.commands.html#module-evennia.commands.cmdhandler">evennia.commands.cmdhandler module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.commands.html#module-evennia.commands.cmdparser">evennia.commands.cmdparser module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.commands.html#module-evennia.commands.cmdset">evennia.commands.cmdset module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.commands.html#module-evennia.commands.cmdsethandler">evennia.commands.cmdsethandler module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.commands.html#module-evennia.commands.command">evennia.commands.command module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.commands.html#module-evennia.commands.tests">evennia.commands.tests module</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="evennia.comms.html">evennia.comms package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="evennia.comms.html#subpackages">Subpackages</a><ul class="simple">
+<li class="toctree-l2"><a class="reference internal" href="evennia.commands.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.commands.cmdhandler.html">evennia.commands.cmdhandler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.commands.cmdparser.html">evennia.commands.cmdparser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.commands.cmdset.html">evennia.commands.cmdset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.commands.cmdsethandler.html">evennia.commands.cmdsethandler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.commands.command.html">evennia.commands.command</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.comms.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.comms.html#module-evennia.comms.admin">evennia.comms.admin module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.comms.html#module-evennia.comms.channelhandler">evennia.comms.channelhandler module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.comms.html#module-evennia.comms.comms">evennia.comms.comms module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.comms.html#module-evennia.comms.managers">evennia.comms.managers module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.comms.html#module-evennia.comms.models">evennia.comms.models module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.comms.html#module-evennia.comms.tests">evennia.comms.tests module</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.html">evennia.contrib package</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="evennia.comms.html">evennia.comms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.comms.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.comms.admin.html">evennia.comms.admin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.comms.channelhandler.html">evennia.comms.channelhandler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.comms.comms.html">evennia.comms.comms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.comms.managers.html">evennia.comms.managers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.comms.models.html">evennia.comms.models</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.html">evennia.contrib</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.ingame_python.html">evennia.contrib.ingame_python package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.ingame_python.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.ingame_python.html#module-evennia.contrib.ingame_python.callbackhandler">evennia.contrib.ingame_python.callbackhandler module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.ingame_python.html#module-evennia.contrib.ingame_python.commands">evennia.contrib.ingame_python.commands module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.ingame_python.html#module-evennia.contrib.ingame_python.eventfuncs">evennia.contrib.ingame_python.eventfuncs module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.ingame_python.html#module-evennia.contrib.ingame_python.scripts">evennia.contrib.ingame_python.scripts module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.ingame_python.html#module-evennia.contrib.ingame_python.tests">evennia.contrib.ingame_python.tests module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.ingame_python.html#module-evennia.contrib.ingame_python.typeclasses">evennia.contrib.ingame_python.typeclasses module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.ingame_python.html#module-evennia.contrib.ingame_python.utils">evennia.contrib.ingame_python.utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.ingame_python.html">evennia.contrib.ingame_python</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.ingame_python.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="evennia.contrib.ingame_python.callbackhandler.html">evennia.contrib.ingame_python.callbackhandler</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.contrib.ingame_python.commands.html">evennia.contrib.ingame_python.commands</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.contrib.ingame_python.eventfuncs.html">evennia.contrib.ingame_python.eventfuncs</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.contrib.ingame_python.scripts.html">evennia.contrib.ingame_python.scripts</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.contrib.ingame_python.tests.html">evennia.contrib.ingame_python.tests</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.contrib.ingame_python.typeclasses.html">evennia.contrib.ingame_python.typeclasses</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.contrib.ingame_python.utils.html">evennia.contrib.ingame_python.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.security.html">evennia.contrib.security package</a><ul>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.security.html">evennia.contrib.security</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="evennia.contrib.security.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="evennia.contrib.security.auditing.html">evennia.contrib.security.auditing package</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="evennia.contrib.security.auditing.html">evennia.contrib.security.auditing</a><ul>
 <li class="toctree-l6"><a class="reference internal" href="evennia.contrib.security.auditing.html#submodules">Submodules</a></li>
-<li class="toctree-l6"><a class="reference internal" href="evennia.contrib.security.auditing.html#module-evennia.contrib.security.auditing.outputs">evennia.contrib.security.auditing.outputs module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="evennia.contrib.security.auditing.html#module-evennia.contrib.security.auditing.server">evennia.contrib.security.auditing.server module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="evennia.contrib.security.auditing.html#module-evennia.contrib.security.auditing.tests">evennia.contrib.security.auditing.tests module</a></li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.turnbattle.html">evennia.contrib.turnbattle package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.turnbattle.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.turnbattle.html#module-evennia.contrib.turnbattle.tb_basic">evennia.contrib.turnbattle.tb_basic module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.turnbattle.html#module-evennia.contrib.turnbattle.tb_equip">evennia.contrib.turnbattle.tb_equip module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.turnbattle.html#module-evennia.contrib.turnbattle.tb_items">evennia.contrib.turnbattle.tb_items module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.turnbattle.html#module-evennia.contrib.turnbattle.tb_magic">evennia.contrib.turnbattle.tb_magic module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.turnbattle.html#module-evennia.contrib.turnbattle.tb_range">evennia.contrib.turnbattle.tb_range module</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorial_examples.html">evennia.contrib.tutorial_examples package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.tutorial_examples.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.tutorial_examples.html#module-evennia.contrib.tutorial_examples.bodyfunctions">evennia.contrib.tutorial_examples.bodyfunctions module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.tutorial_examples.html#module-evennia.contrib.tutorial_examples.cmdset_red_button">evennia.contrib.tutorial_examples.cmdset_red_button module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.tutorial_examples.html#evennia-contrib-tutorial-examples-example-batch-code-module">evennia.contrib.tutorial_examples.example_batch_code module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.tutorial_examples.html#module-evennia.contrib.tutorial_examples.red_button">evennia.contrib.tutorial_examples.red_button module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.tutorial_examples.html#module-evennia.contrib.tutorial_examples.red_button_scripts">evennia.contrib.tutorial_examples.red_button_scripts module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.tutorial_examples.html#module-evennia.contrib.tutorial_examples.tests">evennia.contrib.tutorial_examples.tests module</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorial_world.html">evennia.contrib.tutorial_world package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.tutorial_world.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.tutorial_world.html#module-evennia.contrib.tutorial_world.mob">evennia.contrib.tutorial_world.mob module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.tutorial_world.html#module-evennia.contrib.tutorial_world.objects">evennia.contrib.tutorial_world.objects module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.tutorial_world.html#module-evennia.contrib.tutorial_world.rooms">evennia.contrib.tutorial_world.rooms module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.turnbattle.html">evennia.contrib.turnbattle</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.turnbattle.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="evennia.contrib.turnbattle.tb_basic.html">evennia.contrib.turnbattle.tb_basic</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.contrib.turnbattle.tb_equip.html">evennia.contrib.turnbattle.tb_equip</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.contrib.turnbattle.tb_items.html">evennia.contrib.turnbattle.tb_items</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.contrib.turnbattle.tb_magic.html">evennia.contrib.turnbattle.tb_magic</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.contrib.turnbattle.tb_range.html">evennia.contrib.turnbattle.tb_range</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#module-evennia.contrib.barter">evennia.contrib.barter module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#module-evennia.contrib.building_menu">evennia.contrib.building_menu module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#module-evennia.contrib.chargen">evennia.contrib.chargen module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#module-evennia.contrib.clothing">evennia.contrib.clothing module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#module-evennia.contrib.color_markups">evennia.contrib.color_markups module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#module-evennia.contrib.custom_gametime">evennia.contrib.custom_gametime module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#module-evennia.contrib.dice">evennia.contrib.dice module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#module-evennia.contrib.email_login">evennia.contrib.email_login module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#module-evennia.contrib.extended_room">evennia.contrib.extended_room module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.html#id59">```</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorial_examples.html">evennia.contrib.tutorial_examples</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.tutorial_examples.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="evennia.contrib.tutorial_examples.bodyfunctions.html">evennia.contrib.tutorial_examples.bodyfunctions</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.contrib.tutorial_examples.cmdset_red_button.html">evennia.contrib.tutorial_examples.cmdset_red_button</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.contrib.tutorial_examples.example_batch_code.html">evennia.contrib.tutorial_examples.example_batch_code</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.contrib.tutorial_examples.red_button.html">evennia.contrib.tutorial_examples.red_button</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.contrib.tutorial_examples.red_button_scripts.html">evennia.contrib.tutorial_examples.red_button_scripts</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.contrib.tutorial_examples.tests.html">evennia.contrib.tutorial_examples.tests</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#module-evennia.contrib.fieldfill">evennia.contrib.fieldfill module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#module-evennia.contrib.gendersub">evennia.contrib.gendersub module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#module-evennia.contrib.health_bar">evennia.contrib.health_bar module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#module-evennia.contrib.mail">evennia.contrib.mail module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#module-evennia.contrib.mapbuilder">evennia.contrib.mapbuilder module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#module-evennia.contrib.menu_login">evennia.contrib.menu_login module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#module-evennia.contrib.multidescer">evennia.contrib.multidescer module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#module-evennia.contrib.puzzles">evennia.contrib.puzzles module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#module-evennia.contrib.random_string_generator">evennia.contrib.random_string_generator module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#module-evennia.contrib.rplanguage">evennia.contrib.rplanguage module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#module-evennia.contrib.rpsystem">evennia.contrib.rpsystem module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#module-evennia.contrib.simpledoor">evennia.contrib.simpledoor module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#module-evennia.contrib.slow_exit">evennia.contrib.slow_exit module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#module-evennia.contrib.talking_npc">evennia.contrib.talking_npc module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#module-evennia.contrib.tests">evennia.contrib.tests module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#module-evennia.contrib.tree_select">evennia.contrib.tree_select module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#module-evennia.contrib.unixcommand">evennia.contrib.unixcommand module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#module-evennia.contrib.wilderness">evennia.contrib.wilderness module</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="evennia.game_template.html">evennia.game_template package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="evennia.game_template.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="evennia.game_template.commands.html">evennia.game_template.commands package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="evennia.game_template.commands.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.game_template.commands.html#module-evennia.game_template.commands.command">evennia.game_template.commands.command module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.game_template.commands.html#module-evennia.game_template.commands.default_cmdsets">evennia.game_template.commands.default_cmdsets module</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="evennia.game_template.server.html">evennia.game_template.server package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="evennia.game_template.server.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="evennia.game_template.server.conf.html">evennia.game_template.server.conf package</a><ul>
-<li class="toctree-l6"><a class="reference internal" href="evennia.game_template.server.conf.html#submodules">Submodules</a></li>
-<li class="toctree-l6"><a class="reference internal" href="evennia.game_template.server.conf.html#module-evennia.game_template.server.conf.at_initial_setup">evennia.game_template.server.conf.at_initial_setup module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="evennia.game_template.server.conf.html#module-evennia.game_template.server.conf.at_search">evennia.game_template.server.conf.at_search module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="evennia.game_template.server.conf.html#module-evennia.game_template.server.conf.at_server_startstop">evennia.game_template.server.conf.at_server_startstop module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="evennia.game_template.server.conf.html#module-evennia.game_template.server.conf.cmdparser">evennia.game_template.server.conf.cmdparser module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="evennia.game_template.server.conf.html#module-evennia.game_template.server.conf.connection_screens">evennia.game_template.server.conf.connection_screens module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="evennia.game_template.server.conf.html#module-evennia.game_template.server.conf.inlinefuncs">evennia.game_template.server.conf.inlinefuncs module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="evennia.game_template.server.conf.html#module-evennia.game_template.server.conf.inputfuncs">evennia.game_template.server.conf.inputfuncs module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="evennia.game_template.server.conf.html#module-evennia.game_template.server.conf.lockfuncs">evennia.game_template.server.conf.lockfuncs module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="evennia.game_template.server.conf.html#module-evennia.game_template.server.conf.mssp">evennia.game_template.server.conf.mssp module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="evennia.game_template.server.conf.html#module-evennia.game_template.server.conf.portal_services_plugins">evennia.game_template.server.conf.portal_services_plugins module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="evennia.game_template.server.conf.html#evennia-game-template-server-conf-secret-settings-module">evennia.game_template.server.conf.secret_settings module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="evennia.game_template.server.conf.html#module-evennia.game_template.server.conf.server_services_plugins">evennia.game_template.server.conf.server_services_plugins module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="evennia.game_template.server.conf.html#module-evennia.game_template.server.conf.serversession">evennia.game_template.server.conf.serversession module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="evennia.game_template.server.conf.html#evennia-game-template-server-conf-settings-module">evennia.game_template.server.conf.settings module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="evennia.game_template.server.conf.html#module-evennia.game_template.server.conf.web_plugins">evennia.game_template.server.conf.web_plugins module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorial_world.html">evennia.contrib.tutorial_world</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.tutorial_world.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="evennia.contrib.tutorial_world.mob.html">evennia.contrib.tutorial_world.mob</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.contrib.tutorial_world.objects.html">evennia.contrib.tutorial_world.objects</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.contrib.tutorial_world.rooms.html">evennia.contrib.tutorial_world.rooms</a></li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="evennia.game_template.typeclasses.html">evennia.game_template.typeclasses package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="evennia.game_template.typeclasses.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.game_template.typeclasses.html#evennia-game-template-typeclasses-accounts-module">evennia.game_template.typeclasses.accounts module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.game_template.typeclasses.html#evennia-game-template-typeclasses-channels-module">evennia.game_template.typeclasses.channels module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.game_template.typeclasses.html#evennia-game-template-typeclasses-characters-module">evennia.game_template.typeclasses.characters module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.game_template.typeclasses.html#evennia-game-template-typeclasses-exits-module">evennia.game_template.typeclasses.exits module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.game_template.typeclasses.html#evennia-game-template-typeclasses-objects-module">evennia.game_template.typeclasses.objects module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.game_template.typeclasses.html#evennia-game-template-typeclasses-rooms-module">evennia.game_template.typeclasses.rooms module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.game_template.typeclasses.html#evennia-game-template-typeclasses-scripts-module">evennia.game_template.typeclasses.scripts module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.barter.html">evennia.contrib.barter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.building_menu.html">evennia.contrib.building_menu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.chargen.html">evennia.contrib.chargen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.clothing.html">evennia.contrib.clothing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.color_markups.html">evennia.contrib.color_markups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.custom_gametime.html">evennia.contrib.custom_gametime</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.dice.html">evennia.contrib.dice</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.email_login.html">evennia.contrib.email_login</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.extended_room.html">evennia.contrib.extended_room</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.fieldfill.html">evennia.contrib.fieldfill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.gendersub.html">evennia.contrib.gendersub</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.health_bar.html">evennia.contrib.health_bar</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.mail.html">evennia.contrib.mail</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.mapbuilder.html">evennia.contrib.mapbuilder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.menu_login.html">evennia.contrib.menu_login</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.multidescer.html">evennia.contrib.multidescer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.puzzles.html">evennia.contrib.puzzles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.random_string_generator.html">evennia.contrib.random_string_generator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rplanguage.html">evennia.contrib.rplanguage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpsystem.html">evennia.contrib.rpsystem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.simpledoor.html">evennia.contrib.simpledoor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.slow_exit.html">evennia.contrib.slow_exit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.talking_npc.html">evennia.contrib.talking_npc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tree_select.html">evennia.contrib.tree_select</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.unixcommand.html">evennia.contrib.unixcommand</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.wilderness.html">evennia.contrib.wilderness</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="evennia.game_template.web.html">evennia.game_template.web package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="evennia.game_template.web.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.game_template.web.html#module-evennia.game_template.web.urls">evennia.game_template.web.urls module</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="evennia.game_template.world.html">evennia.game_template.world package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="evennia.game_template.world.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.game_template.world.html#module-evennia.game_template.world.prototypes">evennia.game_template.world.prototypes module</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.help.html">evennia.help</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.help.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.help.admin.html">evennia.help.admin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.help.manager.html">evennia.help.manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.help.models.html">evennia.help.models</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="evennia.help.html">evennia.help package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="evennia.help.html#subpackages">Subpackages</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="evennia.locks.html">evennia.locks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.locks.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.locks.lockfuncs.html">evennia.locks.lockfuncs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="evennia.locks.lockfuncs.html#mux-name-affects-effect">MUX Name:      Affects:        Effect:</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.help.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.help.html#module-evennia.help.admin">evennia.help.admin module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.help.html#module-evennia.help.manager">evennia.help.manager module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.help.html#module-evennia.help.models">evennia.help.models module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.locks.lockhandler.html">evennia.locks.lockhandler</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="evennia.locks.html">evennia.locks package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="evennia.locks.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.locks.html#module-evennia.locks.lockfuncs">evennia.locks.lockfuncs module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.locks.html#module-evennia.locks.lockhandler">evennia.locks.lockhandler module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.locks.html#module-evennia.locks.tests">evennia.locks.tests module</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="evennia.objects.html">evennia.objects package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="evennia.objects.html#subpackages">Subpackages</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="evennia.objects.html">evennia.objects</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.objects.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.admin.html">evennia.objects.admin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html">evennia.objects.manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html">evennia.objects.models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html">evennia.objects.objects</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.objects.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.objects.html#module-evennia.objects.admin">evennia.objects.admin module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.objects.html#module-evennia.objects.manager">evennia.objects.manager module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.objects.html#module-evennia.objects.models">evennia.objects.models module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.objects.html#module-evennia.objects.objects">evennia.objects.objects module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.objects.html#module-evennia.objects.tests">evennia.objects.tests module</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="evennia.prototypes.html">evennia.prototypes package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="evennia.prototypes.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.prototypes.html#module-evennia.prototypes.menus">evennia.prototypes.menus module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.prototypes.html#module-evennia.prototypes.protfuncs">evennia.prototypes.protfuncs module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.prototypes.html#module-evennia.prototypes.prototypes">evennia.prototypes.prototypes module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.prototypes.html#module-evennia.prototypes.spawner">evennia.prototypes.spawner module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="evennia.prototypes.html#id23">}</a></li>
-<li class="toctree-l3"><a class="reference internal" href="evennia.prototypes.html#id28">}</a></li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.prototypes.html">evennia.prototypes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.prototypes.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.prototypes.menus.html">evennia.prototypes.menus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.prototypes.protfuncs.html">evennia.prototypes.protfuncs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.prototypes.prototypes.html">evennia.prototypes.prototypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.prototypes.spawner.html">evennia.prototypes.spawner</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.prototypes.html#module-evennia.prototypes.tests">evennia.prototypes.tests module</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="evennia.scripts.html">evennia.scripts package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="evennia.scripts.html#subpackages">Subpackages</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="evennia.scripts.html">evennia.scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.scripts.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.scripts.admin.html">evennia.scripts.admin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.scripts.manager.html">evennia.scripts.manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.scripts.models.html">evennia.scripts.models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.scripts.monitorhandler.html">evennia.scripts.monitorhandler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.scripts.scripthandler.html">evennia.scripts.scripthandler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.scripts.scripts.html">evennia.scripts.scripts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.scripts.taskhandler.html">evennia.scripts.taskhandler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.scripts.tickerhandler.html">evennia.scripts.tickerhandler</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.scripts.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.scripts.html#module-evennia.scripts.admin">evennia.scripts.admin module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.scripts.html#module-evennia.scripts.manager">evennia.scripts.manager module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.scripts.html#module-evennia.scripts.models">evennia.scripts.models module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.scripts.html#module-evennia.scripts.monitorhandler">evennia.scripts.monitorhandler module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.scripts.html#module-evennia.scripts.scripthandler">evennia.scripts.scripthandler module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.scripts.html#module-evennia.scripts.scripts">evennia.scripts.scripts module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.scripts.html#module-evennia.scripts.taskhandler">evennia.scripts.taskhandler module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.scripts.html#module-evennia.scripts.tests">evennia.scripts.tests module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.scripts.html#module-evennia.scripts.tickerhandler">evennia.scripts.tickerhandler module</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="evennia.server.html">evennia.server package</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="evennia.server.html">evennia.server</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="evennia.server.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="evennia.server.game_index_client.html">evennia.server.game_index_client package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.game_index_client.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.game_index_client.html#module-evennia.server.game_index_client.client">evennia.server.game_index_client.client module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.game_index_client.html#module-evennia.server.game_index_client.service">evennia.server.game_index_client.service module</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="evennia.server.portal.html">evennia.server.portal package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.portal.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.portal.html#module-evennia.server.portal.amp">evennia.server.portal.amp module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.portal.html#module-evennia.server.portal.amp_server">evennia.server.portal.amp_server module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.portal.html#module-evennia.server.portal.grapevine">evennia.server.portal.grapevine module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.portal.html#module-evennia.server.portal.irc">evennia.server.portal.irc module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.portal.html#module-evennia.server.portal.mccp">evennia.server.portal.mccp module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.portal.html#module-evennia.server.portal.mssp">evennia.server.portal.mssp module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.portal.html#module-evennia.server.portal.mxp">evennia.server.portal.mxp module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.portal.html#module-evennia.server.portal.naws">evennia.server.portal.naws module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.portal.html#module-evennia.server.portal.portal">evennia.server.portal.portal module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.portal.html#module-evennia.server.portal.portalsessionhandler">evennia.server.portal.portalsessionhandler module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.portal.html#module-evennia.server.portal.rss">evennia.server.portal.rss module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.portal.html#module-evennia.server.portal.ssh">evennia.server.portal.ssh module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.portal.html#module-evennia.server.portal.ssl">evennia.server.portal.ssl module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.portal.html#module-evennia.server.portal.suppress_ga">evennia.server.portal.suppress_ga module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.portal.html#module-evennia.server.portal.telnet">evennia.server.portal.telnet module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.portal.html#module-evennia.server.portal.telnet_oob">evennia.server.portal.telnet_oob module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.portal.html#module-evennia.server.portal.telnet_ssl">evennia.server.portal.telnet_ssl module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.portal.html#module-evennia.server.portal.tests">evennia.server.portal.tests module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.portal.html#module-evennia.server.portal.ttype">evennia.server.portal.ttype module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.portal.html#module-evennia.server.portal.webclient">evennia.server.portal.webclient module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.portal.html#module-evennia.server.portal.webclient_ajax">evennia.server.portal.webclient_ajax module</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="evennia.server.profiling.html">evennia.server.profiling package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.profiling.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.profiling.html#module-evennia.server.profiling.dummyrunner">evennia.server.profiling.dummyrunner module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.profiling.html#module-evennia.server.profiling.dummyrunner_settings">evennia.server.profiling.dummyrunner_settings module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.profiling.html#module-evennia.server.profiling.memplot">evennia.server.profiling.memplot module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.profiling.html#module-evennia.server.profiling.settings_mixin">evennia.server.profiling.settings_mixin module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.profiling.html#module-evennia.server.profiling.test_queries">evennia.server.profiling.test_queries module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.profiling.html#module-evennia.server.profiling.tests">evennia.server.profiling.tests module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.profiling.html#module-evennia.server.profiling.timetrace">evennia.server.profiling.timetrace module</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="evennia.server.tests.html">evennia.server.tests package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.tests.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.tests.html#module-evennia.server.tests.test_amp_connection">evennia.server.tests.test_amp_connection module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.tests.html#module-evennia.server.tests.test_initial_setup">evennia.server.tests.test_initial_setup module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.tests.html#module-evennia.server.tests.test_launcher">evennia.server.tests.test_launcher module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.tests.html#module-evennia.server.tests.test_misc">evennia.server.tests.test_misc module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.tests.html#module-evennia.server.tests.test_server">evennia.server.tests.test_server module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.server.tests.html#module-evennia.server.tests.testrunner">evennia.server.tests.testrunner module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.server.game_index_client.html">evennia.server.game_index_client</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="evennia.server.game_index_client.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.game_index_client.client.html">evennia.server.game_index_client.client</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.game_index_client.service.html">evennia.server.game_index_client.service</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.server.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.server.html#module-evennia.server.admin">evennia.server.admin module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.server.html#module-evennia.server.amp_client">evennia.server.amp_client module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.server.html#module-evennia.server.connection_wizard">evennia.server.connection_wizard module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.server.html#module-evennia.server.deprecations">evennia.server.deprecations module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.server.html#module-evennia.server.evennia_launcher">evennia.server.evennia_launcher module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.server.html#module-evennia.server.initial_setup">evennia.server.initial_setup module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.server.html#module-evennia.server.inputfuncs">evennia.server.inputfuncs module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.server.html#module-evennia.server.manager">evennia.server.manager module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.server.html#module-evennia.server.models">evennia.server.models module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.server.html#module-evennia.server.server">evennia.server.server module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.server.html#module-evennia.server.serversession">evennia.server.serversession module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.server.html#module-evennia.server.session">evennia.server.session module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.server.html#module-evennia.server.sessionhandler">evennia.server.sessionhandler module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.server.html#module-evennia.server.signals">evennia.server.signals module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.server.html#module-evennia.server.throttle">evennia.server.throttle module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.server.html#module-evennia.server.validators">evennia.server.validators module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.server.html#module-evennia.server.webserver">evennia.server.webserver module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.server.portal.html">evennia.server.portal</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="evennia.server.portal.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.portal.amp.html">evennia.server.portal.amp</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.portal.amp_server.html">evennia.server.portal.amp_server</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.portal.grapevine.html">evennia.server.portal.grapevine</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.portal.irc.html">evennia.server.portal.irc</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.portal.mccp.html">evennia.server.portal.mccp</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.portal.mssp.html">evennia.server.portal.mssp</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.portal.mxp.html">evennia.server.portal.mxp</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.portal.naws.html">evennia.server.portal.naws</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.portal.portal.html">evennia.server.portal.portal</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.portal.portalsessionhandler.html">evennia.server.portal.portalsessionhandler</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.portal.rss.html">evennia.server.portal.rss</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.portal.ssh.html">evennia.server.portal.ssh</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.portal.ssl.html">evennia.server.portal.ssl</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.portal.suppress_ga.html">evennia.server.portal.suppress_ga</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.portal.telnet.html">evennia.server.portal.telnet</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.portal.telnet_oob.html">evennia.server.portal.telnet_oob</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.portal.telnet_ssl.html">evennia.server.portal.telnet_ssl</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.portal.tests.html">evennia.server.portal.tests</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.portal.ttype.html">evennia.server.portal.ttype</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.portal.webclient.html">evennia.server.portal.webclient</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.portal.webclient_ajax.html">evennia.server.portal.webclient_ajax</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="evennia.typeclasses.html">evennia.typeclasses package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="evennia.typeclasses.html#subpackages">Subpackages</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.typeclasses.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.typeclasses.html#module-evennia.typeclasses.admin">evennia.typeclasses.admin module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.typeclasses.html#module-evennia.typeclasses.attributes">evennia.typeclasses.attributes module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.typeclasses.html#module-evennia.typeclasses.managers">evennia.typeclasses.managers module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.typeclasses.html#module-evennia.typeclasses.models">evennia.typeclasses.models module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.typeclasses.html#module-evennia.typeclasses.tags">evennia.typeclasses.tags module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.typeclasses.html#module-evennia.typeclasses.tests">evennia.typeclasses.tests module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.server.profiling.html">evennia.server.profiling</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="evennia.server.profiling.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.profiling.dummyrunner.html">evennia.server.profiling.dummyrunner</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.profiling.dummyrunner_settings.html">evennia.server.profiling.dummyrunner_settings</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.profiling.memplot.html">evennia.server.profiling.memplot</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.profiling.settings_mixin.html">evennia.server.profiling.settings_mixin</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.profiling.test_queries.html">evennia.server.profiling.test_queries</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.profiling.tests.html">evennia.server.profiling.tests</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.server.profiling.timetrace.html">evennia.server.profiling.timetrace</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="evennia.utils.html">evennia.utils package</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.server.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.server.admin.html">evennia.server.admin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.server.amp_client.html">evennia.server.amp_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.server.connection_wizard.html">evennia.server.connection_wizard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.server.deprecations.html">evennia.server.deprecations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.server.evennia_launcher.html">evennia.server.evennia_launcher</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.server.initial_setup.html">evennia.server.initial_setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.server.inputfuncs.html">evennia.server.inputfuncs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.server.manager.html">evennia.server.manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.server.models.html">evennia.server.models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.server.server.html">evennia.server.server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.server.serversession.html">evennia.server.serversession</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.server.session.html">evennia.server.session</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.server.sessionhandler.html">evennia.server.sessionhandler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.server.signals.html">evennia.server.signals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.server.throttle.html">evennia.server.throttle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.server.validators.html">evennia.server.validators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.server.webserver.html">evennia.server.webserver</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.typeclasses.html">evennia.typeclasses</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.typeclasses.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.typeclasses.admin.html">evennia.typeclasses.admin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.typeclasses.attributes.html">evennia.typeclasses.attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.typeclasses.managers.html">evennia.typeclasses.managers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.typeclasses.models.html">evennia.typeclasses.models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.typeclasses.tags.html">evennia.typeclasses.tags</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.utils.html">evennia.utils</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="evennia.utils.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="evennia.utils.idmapper.html">evennia.utils.idmapper package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="evennia.utils.idmapper.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.utils.idmapper.html#module-evennia.utils.idmapper.manager">evennia.utils.idmapper.manager module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.utils.idmapper.html#module-evennia.utils.idmapper.models">evennia.utils.idmapper.models module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.utils.idmapper.html#module-evennia.utils.idmapper.tests">evennia.utils.idmapper.tests module</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="evennia.utils.tests.html">evennia.utils.tests package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="evennia.utils.tests.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="evennia.utils.tests.data.html">evennia.utils.tests.data package</a><ul>
-<li class="toctree-l6"><a class="reference internal" href="evennia.utils.tests.data.html#submodules">Submodules</a></li>
-<li class="toctree-l6"><a class="reference internal" href="evennia.utils.tests.data.html#module-evennia.utils.tests.data.evform_example">evennia.utils.tests.data.evform_example module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="evennia.utils.tests.data.html#module-evennia.utils.tests.data.prototypes_example">evennia.utils.tests.data.prototypes_example module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.utils.idmapper.html">evennia.utils.idmapper</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="evennia.utils.idmapper.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="evennia.utils.idmapper.manager.html">evennia.utils.idmapper.manager</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.utils.idmapper.models.html">evennia.utils.idmapper.models</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.utils.idmapper.tests.html">evennia.utils.idmapper.tests</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.utils.tests.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.utils.tests.html#module-evennia.utils.tests.test_batchprocessors">evennia.utils.tests.test_batchprocessors module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.utils.tests.html#module-evennia.utils.tests.test_create_functions">evennia.utils.tests.test_create_functions module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.utils.tests.html#module-evennia.utils.tests.test_eveditor">evennia.utils.tests.test_eveditor module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.utils.tests.html#module-evennia.utils.tests.test_evform">evennia.utils.tests.test_evform module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.utils.tests.html#module-evennia.utils.tests.test_evmenu">evennia.utils.tests.test_evmenu module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.utils.tests.html#module-evennia.utils.tests.test_gametime">evennia.utils.tests.test_gametime module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.utils.tests.html#module-evennia.utils.tests.test_tagparsing">evennia.utils.tests.test_tagparsing module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.utils.tests.html#module-evennia.utils.tests.test_text2html">evennia.utils.tests.test_text2html module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.utils.tests.html#module-evennia.utils.tests.test_utils">evennia.utils.tests.test_utils module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.utils.tests.html#module-evennia.utils.tests.test_validatorfuncs">evennia.utils.tests.test_validatorfuncs module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.utils.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.utils.ansi.html">evennia.utils.ansi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.utils.batchprocessors.html">evennia.utils.batchprocessors</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="evennia.utils.batchprocessors.html#batch-command-processor-file-syntax">Batch-command processor file syntax</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="evennia.utils.batchprocessors.html#example-of-batch-ev-file">Example of batch.ev file:</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="evennia.utils.batchprocessors.html#batch-code-processor-file-syntax">Batch-code processor file syntax</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="evennia.utils.batchprocessors.html#example-batch-py-file">Example batch.py file</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.utils.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.utils.html#module-evennia.utils.ansi">evennia.utils.ansi module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.utils.html#module-evennia.utils.batchprocessors">evennia.utils.batchprocessors module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="evennia.utils.html#example-of-batch-ev-file">Example of batch.ev file:</a></li>
-<li class="toctree-l3"><a class="reference internal" href="evennia.utils.html#example-batch-py-file">Example batch.py file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.utils.containers.html">evennia.utils.containers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.utils.create.html">evennia.utils.create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.utils.dbserialize.html">evennia.utils.dbserialize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.utils.eveditor.html">evennia.utils.eveditor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.utils.evform.html">evennia.utils.evform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.utils.evmenu.html">evennia.utils.evmenu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.utils.evmore.html">evennia.utils.evmore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.utils.evtable.html">evennia.utils.evtable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.utils.gametime.html">evennia.utils.gametime</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.utils.inlinefuncs.html">evennia.utils.inlinefuncs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.utils.logger.html">evennia.utils.logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.utils.optionclasses.html">evennia.utils.optionclasses</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.utils.optionhandler.html">evennia.utils.optionhandler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.utils.picklefield.html">evennia.utils.picklefield</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.utils.search.html">evennia.utils.search</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.utils.test_resources.html">evennia.utils.test_resources</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.utils.text2html.html">evennia.utils.text2html</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.utils.utils.html">evennia.utils.utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.utils.validatorfuncs.html">evennia.utils.validatorfuncs</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.utils.html#module-evennia.utils.containers">evennia.utils.containers module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.utils.html#module-evennia.utils.create">evennia.utils.create module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.utils.html#module-evennia.utils.dbserialize">evennia.utils.dbserialize module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.utils.html#module-evennia.utils.eveditor">evennia.utils.eveditor module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.utils.html#module-evennia.utils.evform">evennia.utils.evform module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.utils.html#module-evennia.utils.evmenu">evennia.utils.evmenu module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.utils.html#module-evennia.utils.evmore">evennia.utils.evmore module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.utils.html#module-evennia.utils.evtable">evennia.utils.evtable module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.utils.html#module-evennia.utils.gametime">evennia.utils.gametime module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.utils.html#module-evennia.utils.inlinefuncs">evennia.utils.inlinefuncs module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.utils.html#module-evennia.utils.logger">evennia.utils.logger module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.utils.html#module-evennia.utils.optionclasses">evennia.utils.optionclasses module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.utils.html#module-evennia.utils.optionhandler">evennia.utils.optionhandler module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.utils.html#module-evennia.utils.picklefield">evennia.utils.picklefield module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.utils.html#module-evennia.utils.search">evennia.utils.search module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.utils.html#module-evennia.utils.test_resources">evennia.utils.test_resources module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.utils.html#module-evennia.utils.text2html">evennia.utils.text2html module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.utils.html#module-evennia.utils.utils">evennia.utils.utils module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.utils.html#module-evennia.utils.validatorfuncs">evennia.utils.validatorfuncs module</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="evennia.web.html">evennia.web package</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="evennia.web.html">evennia.web</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="evennia.web.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="evennia.web.utils.html">evennia.web.utils package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="evennia.web.utils.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.web.utils.html#module-evennia.web.utils.backends">evennia.web.utils.backends module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.web.utils.html#module-evennia.web.utils.general_context">evennia.web.utils.general_context module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.web.utils.html#module-evennia.web.utils.middleware">evennia.web.utils.middleware module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.web.utils.html#module-evennia.web.utils.tests">evennia.web.utils.tests module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.web.utils.html">evennia.web.utils</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="evennia.web.utils.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="evennia.web.utils.backends.html">evennia.web.utils.backends</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.web.utils.general_context.html">evennia.web.utils.general_context</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.web.utils.middleware.html">evennia.web.utils.middleware</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.web.utils.tests.html">evennia.web.utils.tests</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="evennia.web.webclient.html">evennia.web.webclient package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="evennia.web.webclient.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.web.webclient.html#module-evennia.web.webclient.urls">evennia.web.webclient.urls module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.web.webclient.html#module-evennia.web.webclient.views">evennia.web.webclient.views module</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="evennia.web.website.html">evennia.web.website package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.web.webclient.html">evennia.web.webclient</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="evennia.web.webclient.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="evennia.web.webclient.urls.html">evennia.web.webclient.urls</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.web.webclient.views.html">evennia.web.webclient.views</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.web.website.html">evennia.web.website</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="evennia.web.website.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="evennia.web.website.templatetags.html">evennia.web.website.templatetags package</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="evennia.web.website.templatetags.html">evennia.web.website.templatetags</a><ul>
 <li class="toctree-l6"><a class="reference internal" href="evennia.web.website.templatetags.html#submodules">Submodules</a></li>
-<li class="toctree-l6"><a class="reference internal" href="evennia.web.website.templatetags.html#module-evennia.web.website.templatetags.addclass">evennia.web.website.templatetags.addclass module</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.web.website.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.web.website.html#module-evennia.web.website.forms">evennia.web.website.forms module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.web.website.html#module-evennia.web.website.tests">evennia.web.website.tests module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.web.website.html#module-evennia.web.website.urls">evennia.web.website.urls module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.web.website.html#module-evennia.web.website.views">evennia.web.website.views module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="evennia.web.website.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="evennia.web.website.forms.html">evennia.web.website.forms</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.web.website.tests.html">evennia.web.website.tests</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.web.website.urls.html">evennia.web.website.urls</a></li>
+<li class="toctree-l5"><a class="reference internal" href="evennia.web.website.views.html">evennia.web.website.views</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.web.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.web.html#module-evennia.web.urls">evennia.web.urls module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.web.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.web.urls.html">evennia.web.urls</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -570,21 +530,16 @@ with ‘q’, remove the break line and restart server when finished.</p></li>
 </div>
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="evennia.settings_default.html">evennia.settings_default</a></li>
+</ul>
 </div>
-<div class="section" id="module-evennia.settings_default">
-<span id="evennia-settings-default-module"></span><h2>evennia.settings_default module<a class="headerlink" href="#module-evennia.settings_default" title="Permalink to this headline">¶</a></h2>
-<p>Master configuration file for Evennia.</p>
-<p>NOTE: NO MODIFICATIONS SHOULD BE MADE TO THIS FILE!</p>
-<p>All settings changes should be done by copy-pasting the variable and
-its value to &lt;gamedir&gt;/server/conf/settings.py.</p>
-<p>Hint: Don’t copy&amp;paste over more from this file than you actually want
-to change.  Anything you don’t copy&amp;paste will thus retain its default
-value - which may change as Evennia is developed. This way you can
-always be sure of what you have changed and what is default behaviour.</p>
 </div>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -605,10 +560,9 @@ always be sure of what you have changed and what is default behaviour.</p>
 <script>$('#searchbox').show(0);</script>
 <p><h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">evennia package</a><ul>
+<li><a class="reference internal" href="#">evennia</a><ul>
 <li><a class="reference internal" href="#subpackages">Subpackages</a></li>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-evennia.settings_default">evennia.settings_default module</a></li>
 </ul>
 </li>
 </ul>
@@ -639,15 +593,13 @@ always be sure of what you have changed and what is default behaviour.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia package</a></li>
-
-
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.utils.ansi &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.utils.ansi</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.ansi</a></li> 
       </ul>
     </div>  
 
@@ -49,9 +46,12 @@
 <span class="sd">to apply colour to text according to the ANSI standard.</span>
 
 <span class="sd">Examples:</span>
-<span class="sd"> This is |rRed text|n and this is normal again.</span>
 
-<span class="sd">Mostly you should not need to call parse_ansi() explicitly;</span>
+<span class="sd">```python</span>
+<span class="sd">&quot;This is |rRed text|n and this is normal again.&quot;</span>
+<span class="sd">```</span>
+
+<span class="sd">Mostly you should not need to call `parse_ansi()` explicitly;</span>
 <span class="sd">it is run by Evennia just before returning data to/from the</span>
 <span class="sd">user.  Depreciated example forms are available by extending</span>
 <span class="sd">the ansi mapping.</span>
@@ -120,7 +120,7 @@
 <span class="n">_COLOR_NO_DEFAULT</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">COLOR_NO_DEFAULT</span>
 
 
-<div class="viewcode-block" id="ANSIParser"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.ANSIParser">[docs]</a><span class="k">class</span> <span class="nc">ANSIParser</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="ANSIParser"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIParser">[docs]</a><span class="k">class</span> <span class="nc">ANSIParser</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class that parses ANSI markup</span>
 <span class="sd">    to ANSI command sequences</span>
@@ -246,7 +246,7 @@
     <span class="c1"># instance of each</span>
     <span class="n">ansi_escapes</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ANSI_ESCAPES</span><span class="p">),</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ANSIParser.sub_ansi"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.ANSIParser.sub_ansi">[docs]</a>    <span class="k">def</span> <span class="nf">sub_ansi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ansimatch</span><span class="p">):</span>
+<div class="viewcode-block" id="ANSIParser.sub_ansi"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIParser.sub_ansi">[docs]</a>    <span class="k">def</span> <span class="nf">sub_ansi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ansimatch</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Replacer used by `re.sub` to replace ANSI</span>
 <span class="sd">        markers with correct ANSI sequences</span>
@@ -260,7 +260,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ansi_map_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ansimatch</span><span class="o">.</span><span class="n">group</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ANSIParser.sub_brightbg"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.ANSIParser.sub_brightbg">[docs]</a>    <span class="k">def</span> <span class="nf">sub_brightbg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ansimatch</span><span class="p">):</span>
+<div class="viewcode-block" id="ANSIParser.sub_brightbg"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIParser.sub_brightbg">[docs]</a>    <span class="k">def</span> <span class="nf">sub_brightbg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ansimatch</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Replacer used by `re.sub` to replace ANSI</span>
 <span class="sd">        bright background markers with Xterm256 replacement</span>
@@ -274,7 +274,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ansi_xterm256_bright_bg_map_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ansimatch</span><span class="o">.</span><span class="n">group</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ANSIParser.sub_xterm256"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.ANSIParser.sub_xterm256">[docs]</a>    <span class="k">def</span> <span class="nf">sub_xterm256</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rgbmatch</span><span class="p">,</span> <span class="n">use_xterm256</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">color_type</span><span class="o">=</span><span class="s2">&quot;fg&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="ANSIParser.sub_xterm256"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIParser.sub_xterm256">[docs]</a>    <span class="k">def</span> <span class="nf">sub_xterm256</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rgbmatch</span><span class="p">,</span> <span class="n">use_xterm256</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">color_type</span><span class="o">=</span><span class="s2">&quot;fg&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is a replacer method called by `re.sub` with the matched</span>
 <span class="sd">        tag. It must return the correct ansi sequence.</span>
@@ -395,7 +395,7 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">ANSI_NORMAL</span> <span class="o">+</span> <span class="n">ANSI_BLUE</span></div>
 
-<div class="viewcode-block" id="ANSIParser.strip_raw_codes"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.ANSIParser.strip_raw_codes">[docs]</a>    <span class="k">def</span> <span class="nf">strip_raw_codes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+<div class="viewcode-block" id="ANSIParser.strip_raw_codes"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIParser.strip_raw_codes">[docs]</a>    <span class="k">def</span> <span class="nf">strip_raw_codes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Strips raw ANSI codes from a string.</span>
 
@@ -408,7 +408,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ansi_regex</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ANSIParser.strip_mxp"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.ANSIParser.strip_mxp">[docs]</a>    <span class="k">def</span> <span class="nf">strip_mxp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+<div class="viewcode-block" id="ANSIParser.strip_mxp"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIParser.strip_mxp">[docs]</a>    <span class="k">def</span> <span class="nf">strip_mxp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Strips all MXP codes from a string.</span>
 
@@ -421,7 +421,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mxp_sub</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\2&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ANSIParser.parse_ansi"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.ANSIParser.parse_ansi">[docs]</a>    <span class="k">def</span> <span class="nf">parse_ansi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">xterm256</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mxp</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="ANSIParser.parse_ansi"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIParser.parse_ansi">[docs]</a>    <span class="k">def</span> <span class="nf">parse_ansi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">xterm256</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mxp</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parses a string, subbing color codes according to the stored</span>
 <span class="sd">        mapping.</span>
@@ -505,7 +505,7 @@
 <span class="c1">#</span>
 
 
-<div class="viewcode-block" id="parse_ansi"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.parse_ansi">[docs]</a><span class="k">def</span> <span class="nf">parse_ansi</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="n">ANSI_PARSER</span><span class="p">,</span> <span class="n">xterm256</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mxp</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="parse_ansi"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.parse_ansi">[docs]</a><span class="k">def</span> <span class="nf">parse_ansi</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="n">ANSI_PARSER</span><span class="p">,</span> <span class="n">xterm256</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mxp</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parses a string, subbing color codes as needed.</span>
 
@@ -523,7 +523,7 @@
     <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_ansi</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="n">strip_ansi</span><span class="p">,</span> <span class="n">xterm256</span><span class="o">=</span><span class="n">xterm256</span><span class="p">,</span> <span class="n">mxp</span><span class="o">=</span><span class="n">mxp</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="strip_ansi"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.strip_ansi">[docs]</a><span class="k">def</span> <span class="nf">strip_ansi</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="n">ANSI_PARSER</span><span class="p">):</span>
+<div class="viewcode-block" id="strip_ansi"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.strip_ansi">[docs]</a><span class="k">def</span> <span class="nf">strip_ansi</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="n">ANSI_PARSER</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Strip all ansi from the string. This handles the Evennia-specific</span>
 <span class="sd">    markup.</span>
@@ -539,7 +539,7 @@
     <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_ansi</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="strip_raw_ansi"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.strip_raw_ansi">[docs]</a><span class="k">def</span> <span class="nf">strip_raw_ansi</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="n">ANSI_PARSER</span><span class="p">):</span>
+<div class="viewcode-block" id="strip_raw_ansi"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.strip_raw_ansi">[docs]</a><span class="k">def</span> <span class="nf">strip_raw_ansi</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="n">ANSI_PARSER</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Remove raw ansi codes from string. This assumes pure</span>
 <span class="sd">    ANSI-bytecodes in the string.</span>
@@ -555,7 +555,7 @@
     <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">strip_raw_codes</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="raw"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.raw">[docs]</a><span class="k">def</span> <span class="nf">raw</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+<div class="viewcode-block" id="raw"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.raw">[docs]</a><span class="k">def</span> <span class="nf">raw</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Escapes a string into a form which won&#39;t be colorized by the ansi</span>
 <span class="sd">    parser.</span>
@@ -567,7 +567,7 @@
     <span class="k">return</span> <span class="n">string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;{&quot;</span><span class="p">,</span> <span class="s2">&quot;{{&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">,</span> <span class="s2">&quot;||&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="_spacing_preflight"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi._spacing_preflight">[docs]</a><span class="k">def</span> <span class="nf">_spacing_preflight</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_spacing_preflight</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This wrapper function is used to do some preflight checks on</span>
 <span class="sd">    functions used for padding ANSIStrings.</span>
@@ -587,10 +587,10 @@
             <span class="k">return</span> <span class="bp">self</span>
         <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">fillchar</span><span class="p">,</span> <span class="n">_difference</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">wrapped</span></div>
+    <span class="k">return</span> <span class="n">wrapped</span>
 
 
-<div class="viewcode-block" id="_query_super"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi._query_super">[docs]</a><span class="k">def</span> <span class="nf">_query_super</span><span class="p">(</span><span class="n">func_name</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_query_super</span><span class="p">(</span><span class="n">func_name</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Have the string class handle this with the cleaned string instead</span>
 <span class="sd">    of ANSIString.</span>
@@ -600,10 +600,10 @@
     <span class="k">def</span> <span class="nf">wrapped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clean</span><span class="p">(),</span> <span class="n">func_name</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">wrapped</span></div>
+    <span class="k">return</span> <span class="n">wrapped</span>
 
 
-<div class="viewcode-block" id="_on_raw"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi._on_raw">[docs]</a><span class="k">def</span> <span class="nf">_on_raw</span><span class="p">(</span><span class="n">func_name</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_on_raw</span><span class="p">(</span><span class="n">func_name</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Like query_super, but makes the operation run on the raw string.</span>
 
@@ -625,10 +625,10 @@
             <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">decoded</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span>
 
-    <span class="k">return</span> <span class="n">wrapped</span></div>
+    <span class="k">return</span> <span class="n">wrapped</span>
 
 
-<div class="viewcode-block" id="_transform"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi._transform">[docs]</a><span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="n">func_name</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="n">func_name</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Some string functions, like those manipulating capital letters,</span>
 <span class="sd">    return a string the same length as the original. This function</span>
@@ -655,17 +655,17 @@
             <span class="n">clean_string</span><span class="o">=</span><span class="n">replacement_string</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">wrapped</span></div>
+    <span class="k">return</span> <span class="n">wrapped</span>
 
 
-<div class="viewcode-block" id="ANSIMeta"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.ANSIMeta">[docs]</a><span class="k">class</span> <span class="nc">ANSIMeta</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
+<div class="viewcode-block" id="ANSIMeta"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIMeta">[docs]</a><span class="k">class</span> <span class="nc">ANSIMeta</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Many functions on ANSIString are just light wrappers around the string</span>
 <span class="sd">    base class. We apply them here, as part of the classes construction.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ANSIMeta.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.ANSIMeta.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ANSIMeta.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIMeta.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">func_name</span> <span class="ow">in</span> <span class="p">[</span>
             <span class="s2">&quot;count&quot;</span><span class="p">,</span>
             <span class="s2">&quot;startswith&quot;</span><span class="p">,</span>
@@ -691,7 +691,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="ANSIString"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.ANSIString">[docs]</a><span class="k">class</span> <span class="nc">ANSIString</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ANSIMeta</span><span class="p">):</span>
+<div class="viewcode-block" id="ANSIString"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIString">[docs]</a><span class="k">class</span> <span class="nc">ANSIString</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ANSIMeta</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Unicode-like object that is aware of ANSI codes.</span>
 
@@ -833,7 +833,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;ANSIString(</span><span class="si">%s</span><span class="s2">, decoded=True)&quot;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ANSIString.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.ANSIString.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ANSIString.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIString.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        When the ANSIString is first initialized, a few internal variables</span>
 <span class="sd">        have to be set.</span>
@@ -858,7 +858,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_code_indexes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_code_indexes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_char_indexes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_indexes</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ANSIString._shifter"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.ANSIString._shifter">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_shifter</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">offset</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Takes a list of integers, and produces a new one incrementing all</span>
@@ -867,9 +867,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">offset</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">iterable</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">offset</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">iterable</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">offset</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">iterable</span><span class="p">]</span>
 
-<div class="viewcode-block" id="ANSIString._adder"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.ANSIString._adder">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_adder</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Joins two ANSIStrings, preserving calculated info.</span>
@@ -887,7 +887,7 @@
             <span class="n">code_indexes</span><span class="o">=</span><span class="n">code_indexes</span><span class="p">,</span>
             <span class="n">char_indexes</span><span class="o">=</span><span class="n">char_indexes</span><span class="p">,</span>
             <span class="n">clean_string</span><span class="o">=</span><span class="n">clean_string</span><span class="p">,</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -921,7 +921,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">))</span>
 
-<div class="viewcode-block" id="ANSIString._slice"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.ANSIString._slice">[docs]</a>    <span class="k">def</span> <span class="nf">_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slc</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slc</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This function takes a slice() object.</span>
 
@@ -962,7 +962,7 @@
             <span class="n">append_tail</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_interleving</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_char_indexes</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">append_tail</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">string</span> <span class="o">+</span> <span class="n">append_tail</span><span class="p">,</span> <span class="n">decoded</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">string</span> <span class="o">+</span> <span class="n">append_tail</span><span class="p">,</span> <span class="n">decoded</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -995,7 +995,7 @@
                 <span class="n">result</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">result</span> <span class="o">+</span> <span class="n">clean</span> <span class="o">+</span> <span class="n">append_tail</span><span class="p">,</span> <span class="n">decoded</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ANSIString.clean"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.ANSIString.clean">[docs]</a>    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ANSIString.clean"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIString.clean">[docs]</a>    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a string object *without* the ANSI escapes.</span>
 
@@ -1005,7 +1005,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clean_string</span></div>
 
-<div class="viewcode-block" id="ANSIString.raw"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.ANSIString.raw">[docs]</a>    <span class="k">def</span> <span class="nf">raw</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ANSIString.raw"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIString.raw">[docs]</a>    <span class="k">def</span> <span class="nf">raw</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a string object with the ANSI escapes.</span>
 
@@ -1015,7 +1015,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span></div>
 
-<div class="viewcode-block" id="ANSIString.partition"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.ANSIString.partition">[docs]</a>    <span class="k">def</span> <span class="nf">partition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sep</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="ANSIString.partition"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIString.partition">[docs]</a>    <span class="k">def</span> <span class="nf">partition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sep</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Splits once into three sections (with the separator being the middle section)</span>
 
@@ -1026,13 +1026,11 @@
 <span class="sd">            sep (str): The separator to split the string on.</span>
 <span class="sd">            reverse (boolean): Whether to split the string on the last</span>
 <span class="sd">                occurrence of the separator rather than the first.</span>
+
 <span class="sd">        Returns:</span>
-<span class="sd">            result (tuple):</span>
-<span class="sd">               prefix (ANSIString): The part of the string before the</span>
-<span class="sd">                   separator</span>
-<span class="sd">               sep (ANSIString): The separator itself</span>
-<span class="sd">               postfix (ANSIString): The part of the string after the</span>
-<span class="sd">                   separator.</span>
+<span class="sd">            ANSIString: The part of the string before the separator</span>
+<span class="sd">            ANSIString: The separator itself</span>
+<span class="sd">            ANSIString: The part of the string after the separator.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sep</span><span class="p">,</span> <span class="s2">&quot;_clean_string&quot;</span><span class="p">):</span>
@@ -1048,7 +1046,7 @@
             <span class="n">current_index</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
-<div class="viewcode-block" id="ANSIString._get_indexes"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.ANSIString._get_indexes">[docs]</a>    <span class="k">def</span> <span class="nf">_get_indexes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_indexes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Two tables need to be made, one which contains the indexes of all</span>
 <span class="sd">        readable characters, and one which contains the indexes of all ANSI</span>
@@ -1075,9 +1073,9 @@
             <span class="k">return</span> <span class="n">code_indexes</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">)))</span>
         <span class="c1"># all indexes not occupied by ansi codes are normal characters</span>
         <span class="n">char_indexes</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">))</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">code_indexes</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">code_indexes</span><span class="p">,</span> <span class="n">char_indexes</span></div>
+        <span class="k">return</span> <span class="n">code_indexes</span><span class="p">,</span> <span class="n">char_indexes</span>
 
-<div class="viewcode-block" id="ANSIString._get_interleving"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.ANSIString._get_interleving">[docs]</a>    <span class="k">def</span> <span class="nf">_get_interleving</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_interleving</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the code characters from the given slice end to the next</span>
 <span class="sd">        character.</span>
@@ -1096,7 +1094,7 @@
                 <span class="n">s</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_string</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">break</span>
-        <span class="k">return</span> <span class="n">s</span></div>
+        <span class="k">return</span> <span class="n">s</span>
 
     <span class="k">def</span> <span class="nf">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1122,7 +1120,7 @@
     <span class="k">def</span> <span class="nf">__rmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__mul__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ANSIString.split"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.ANSIString.split">[docs]</a>    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="ANSIString.split"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIString.split">[docs]</a>    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Splits a string based on a separator.</span>
 
@@ -1169,7 +1167,7 @@
             <span class="k">return</span> <span class="p">[</span><span class="n">part</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">res</span> <span class="k">if</span> <span class="n">part</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">res</span></div>
 
-<div class="viewcode-block" id="ANSIString.rsplit"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.ANSIString.rsplit">[docs]</a>    <span class="k">def</span> <span class="nf">rsplit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="ANSIString.rsplit"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIString.rsplit">[docs]</a>    <span class="k">def</span> <span class="nf">rsplit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Like split, but starts from the end of the string rather than the</span>
 <span class="sd">        beginning.</span>
@@ -1217,7 +1215,7 @@
             <span class="k">return</span> <span class="p">[</span><span class="n">part</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">res</span> <span class="k">if</span> <span class="n">part</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">res</span></div>
 
-<div class="viewcode-block" id="ANSIString.strip"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.ANSIString.strip">[docs]</a>    <span class="k">def</span> <span class="nf">strip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chars</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ANSIString.strip"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIString.strip">[docs]</a>    <span class="k">def</span> <span class="nf">strip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chars</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Strip from both ends, taking ANSI markers into account.</span>
 
@@ -1263,7 +1261,7 @@
         <span class="n">rstripped</span> <span class="o">=</span> <span class="n">rstripped</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">lstripped</span> <span class="o">+</span> <span class="n">raw</span><span class="p">[</span><span class="n">ir1</span> <span class="p">:</span> <span class="n">ir2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">rstripped</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ANSIString.lstrip"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.ANSIString.lstrip">[docs]</a>    <span class="k">def</span> <span class="nf">lstrip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chars</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ANSIString.lstrip"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIString.lstrip">[docs]</a>    <span class="k">def</span> <span class="nf">lstrip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chars</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Strip from the left, taking ANSI markers into account.</span>
 
@@ -1296,7 +1294,7 @@
             <span class="n">ir1</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">lstripped</span> <span class="o">+</span> <span class="n">raw</span><span class="p">[</span><span class="n">ir1</span><span class="p">:])</span></div>
 
-<div class="viewcode-block" id="ANSIString.rstrip"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.ANSIString.rstrip">[docs]</a>    <span class="k">def</span> <span class="nf">rstrip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chars</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ANSIString.rstrip"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIString.rstrip">[docs]</a>    <span class="k">def</span> <span class="nf">rstrip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chars</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Strip from the right, taking ANSI markers into account.</span>
 
@@ -1326,24 +1324,27 @@
         <span class="n">rstripped</span> <span class="o">=</span> <span class="n">rstripped</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">raw</span><span class="p">[:</span> <span class="n">ir2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">rstripped</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ANSIString.join"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.ANSIString.join">[docs]</a>    <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">):</span>
+<div class="viewcode-block" id="ANSIString.join"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIString.join">[docs]</a>    <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Joins together strings in an iterable, using this string between each</span>
 <span class="sd">        one.</span>
 
 <span class="sd">        NOTE: This should always be used for joining strings when ANSIStrings</span>
-<span class="sd">            are involved. Otherwise color information will be discarded by</span>
-<span class="sd">            python, due to details in the C implementation of strings.</span>
+<span class="sd">        are involved. Otherwise color information will be discarded by python,</span>
+<span class="sd">        due to details in the C implementation of strings.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            iterable (list of strings): A list of strings to join together</span>
+
 <span class="sd">        Returns:</span>
-<span class="sd">            result (ANSIString): A single string with all of the iterable&#39;s</span>
-<span class="sd">                contents concatenated, with this string between each. For</span>
-<span class="sd">                example:</span>
-<span class="sd">                    ANSIString(&#39;, &#39;).join([&#39;up&#39;, &#39;right&#39;, &#39;left&#39;, &#39;down&#39;])</span>
-<span class="sd">                ...Would return:</span>
-<span class="sd">                    ANSIString(&#39;up, right, left, down&#39;)</span>
+<span class="sd">            ANSIString: A single string with all of the iterable&#39;s</span>
+<span class="sd">                contents concatenated, with this string between each.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            ::</span>
+
+<span class="sd">                &gt;&gt;&gt; ANSIString(&#39;, &#39;).join([&#39;up&#39;, &#39;right&#39;, &#39;left&#39;, &#39;down&#39;])</span>
+<span class="sd">                ANSIString(&#39;up, right, left, down&#39;)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
@@ -1357,7 +1358,7 @@
             <span class="n">last_item</span> <span class="o">=</span> <span class="n">item</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
-<div class="viewcode-block" id="ANSIString._filler"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.ANSIString._filler">[docs]</a>    <span class="k">def</span> <span class="nf">_filler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">char</span><span class="p">,</span> <span class="n">amount</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_filler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">char</span><span class="p">,</span> <span class="n">amount</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a line of characters in a more efficient way than just adding</span>
 <span class="sd">        ANSIStrings.</span>
@@ -1386,11 +1387,11 @@
         <span class="n">raw_string</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">line</span> <span class="o">+</span> <span class="n">postfix</span>
         <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span>
             <span class="n">raw_string</span><span class="p">,</span> <span class="n">clean_string</span><span class="o">=</span><span class="n">line</span><span class="p">,</span> <span class="n">char_indexes</span><span class="o">=</span><span class="n">char_indexes</span><span class="p">,</span> <span class="n">code_indexes</span><span class="o">=</span><span class="n">code_indexes</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
 
     <span class="c1"># The following methods should not be called with the &#39;_difference&#39; argument explicitly. This is</span>
     <span class="c1"># data provided by the wrapper _spacing_preflight.</span>
-<div class="viewcode-block" id="ANSIString.center"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.ANSIString.center">[docs]</a>    <span class="nd">@_spacing_preflight</span>
+<div class="viewcode-block" id="ANSIString.center"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIString.center">[docs]</a>    <span class="nd">@_spacing_preflight</span>
     <span class="k">def</span> <span class="nf">center</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">fillchar</span><span class="p">,</span> <span class="n">_difference</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Center some text with some spaces padding both sides.</span>
@@ -1409,7 +1410,7 @@
         <span class="n">result</span> <span class="o">=</span> <span class="n">spacing</span> <span class="o">+</span> <span class="bp">self</span> <span class="o">+</span> <span class="n">spacing</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filler</span><span class="p">(</span><span class="n">fillchar</span><span class="p">,</span> <span class="n">remainder</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
-<div class="viewcode-block" id="ANSIString.ljust"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.ANSIString.ljust">[docs]</a>    <span class="nd">@_spacing_preflight</span>
+<div class="viewcode-block" id="ANSIString.ljust"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIString.ljust">[docs]</a>    <span class="nd">@_spacing_preflight</span>
     <span class="k">def</span> <span class="nf">ljust</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">fillchar</span><span class="p">,</span> <span class="n">_difference</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Left justify some text.</span>
@@ -1424,7 +1425,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filler</span><span class="p">(</span><span class="n">fillchar</span><span class="p">,</span> <span class="n">_difference</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ANSIString.rjust"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.ansi.ANSIString.rjust">[docs]</a>    <span class="nd">@_spacing_preflight</span>
+<div class="viewcode-block" id="ANSIString.rjust"><a class="viewcode-back" href="../../../api/evennia.utils.ansi.html#evennia.utils.ansi.ANSIString.rjust">[docs]</a>    <span class="nd">@_spacing_preflight</span>
     <span class="k">def</span> <span class="nf">rjust</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">fillchar</span><span class="p">,</span> <span class="n">_difference</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Right justify some text.</span>
@@ -1440,6 +1441,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filler</span><span class="p">(</span><span class="n">fillchar</span><span class="p">,</span> <span class="n">_difference</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -1477,17 +1479,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.utils.ansi</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.ansi</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

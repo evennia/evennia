@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.utils.inlinefuncs &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.utils.inlinefuncs</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.inlinefuncs</a></li> 
       </ul>
     </div>  
 
@@ -47,21 +44,21 @@
 
 <span class="sd">This parser accepts nested inlinefunctions on the form</span>
 
-<span class="sd">```</span>
+<span class="sd">```python</span>
 <span class="sd">$funcname(arg, arg, ...)</span>
 <span class="sd">```</span>
 
-<span class="sd">embedded in any text where any arg can be another $funcname{} call.</span>
+<span class="sd">embedded in any text where any arg can be another ``$funcname()`` call.</span>
 <span class="sd">This functionality is turned off by default - to activate,</span>
 <span class="sd">`settings.INLINEFUNC_ENABLED` must be set to `True`.</span>
 
-<span class="sd">Each token starts with &quot;$funcname(&quot; where there must be no space</span>
-<span class="sd">between the $funcname and (. It ends with a matched ending parentesis.</span>
-<span class="sd">&quot;)&quot;.</span>
+<span class="sd">Each token starts with `$funcname(` where there must be no space</span>
+<span class="sd">between the `$funcname` and `&quot;(&quot;`. The inlinefunc ends with a matched ending parentesis.</span>
+<span class="sd">`&quot;)&quot;`.</span>
 
 <span class="sd">Inside the inlinefunc definition, one can use `\` to escape. This is</span>
 <span class="sd">mainly needed for escaping commas in flowing text (which would</span>
-<span class="sd">otherwise be interpreted as an argument separator), or to escape `}`</span>
+<span class="sd">otherwise be interpreted as an argument separator), or to escape `)`</span>
 <span class="sd">when not intended to close the function block. Enclosing text in</span>
 <span class="sd">matched `\&quot;\&quot;\&quot;` (triple quotes) or `&#39;&#39;&#39;` (triple single-quotes) will</span>
 <span class="sd">also escape *everything* within without needing to escape individual</span>
@@ -88,19 +85,22 @@
 <span class="sd">never raise an exception.</span>
 
 <span class="sd">There are two reserved function names:</span>
+
 <span class="sd">- &quot;nomatch&quot;: This is called if the user uses a functionname that is</span>
-<span class="sd">    not registered. The nomatch function will get the name of the</span>
-<span class="sd">    not-found function as its first argument followed by the normal</span>
-<span class="sd">    arguments to the given function. If not defined the default effect is</span>
-<span class="sd">    to print `&lt;UNKNOWN&gt;` to replace the unknown function.</span>
+<span class="sd">  not registered. The nomatch function will get the name of the</span>
+<span class="sd">  not-found function as its first argument followed by the normal</span>
+<span class="sd">  arguments to the given function. If not defined the default effect is</span>
+<span class="sd">  to print `&lt;UNKNOWN&gt;` to replace the unknown function.</span>
 <span class="sd">- &quot;stackfull&quot;: This is called when the maximum nested function stack is reached.</span>
 <span class="sd">  When this happens, the original parsed string is returned and the result of</span>
 <span class="sd">  the `stackfull` inlinefunc is appended to the end. By default this is an</span>
 <span class="sd">  error message.</span>
 
-<span class="sd">Error handling:</span>
-<span class="sd">   Syntax errors, notably not completely closing all inlinefunc</span>
-<span class="sd">   blocks, will lead to the entire string remaining unparsed.</span>
+<span class="sd">Syntax errors, notably failing to completely closing all inlinefunc</span>
+<span class="sd">blocks, will lead to the entire string remaining unparsed. Inlineparsing should</span>
+<span class="sd">never traceback.</span>
+
+<span class="sd">----</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -114,7 +114,7 @@
 <span class="c1"># example/testing inline functions</span>
 
 
-<div class="viewcode-block" id="pad"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.inlinefuncs.pad">[docs]</a><span class="k">def</span> <span class="nf">pad</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="pad"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.pad">[docs]</a><span class="k">def</span> <span class="nf">pad</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inlinefunc. Pads text to given width.</span>
 
@@ -125,7 +125,7 @@
 <span class="sd">        align (str, optional): Alignment of padding; one of &#39;c&#39;, &#39;l&#39; or &#39;r&#39;.</span>
 <span class="sd">        fillchar (str, optional): Character used for padding. Defaults to a space.</span>
 
-<span class="sd">    Kwargs:</span>
+<span class="sd">    Keyword args:</span>
 <span class="sd">        session (Session): Session performing the pad.</span>
 
 <span class="sd">    Example:</span>
@@ -145,7 +145,7 @@
     <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="n">align</span><span class="p">,</span> <span class="n">fillchar</span><span class="o">=</span><span class="n">fillchar</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="crop"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.inlinefuncs.crop">[docs]</a><span class="k">def</span> <span class="nf">crop</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="crop"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.crop">[docs]</a><span class="k">def</span> <span class="nf">crop</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inlinefunc. Crops ingoing text to given widths.</span>
 
@@ -155,7 +155,7 @@
 <span class="sd">            crop in characters.</span>
 <span class="sd">        suffix (str, optional): End string to mark the fact that a part</span>
 <span class="sd">            of the string was cropped. Defaults to `[...]`.</span>
-<span class="sd">    Kwargs:</span>
+<span class="sd">    Keyword args:</span>
 <span class="sd">        session (Session): Session performing the crop.</span>
 
 <span class="sd">    Example:</span>
@@ -173,14 +173,14 @@
     <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="space"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.inlinefuncs.space">[docs]</a><span class="k">def</span> <span class="nf">space</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="space"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.space">[docs]</a><span class="k">def</span> <span class="nf">space</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inlinefunc. Inserts an arbitrary number of spaces. Defaults to 4 spaces.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        spaces (int, optional): The number of spaces to insert.</span>
 
-<span class="sd">    Kwargs:</span>
+<span class="sd">    Keyword args:</span>
 <span class="sd">        session (Session): Session performing the crop.</span>
 
 <span class="sd">    Example:</span>
@@ -193,7 +193,7 @@
     <span class="k">return</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">width</span></div>
 
 
-<div class="viewcode-block" id="clr"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.inlinefuncs.clr">[docs]</a><span class="k">def</span> <span class="nf">clr</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="clr"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.clr">[docs]</a><span class="k">def</span> <span class="nf">clr</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inlinefunc. Colorizes nested text.</span>
 
@@ -203,7 +203,7 @@
 <span class="sd">        text (str, optional): Text</span>
 <span class="sd">        endclr (str, optional): The color to use at the end of the string. Defaults</span>
 <span class="sd">            to `|n` (reset-color).</span>
-<span class="sd">    Kwargs:</span>
+<span class="sd">    Keyword args:</span>
 <span class="sd">        session (Session): Session object triggering inlinefunc.</span>
 
 <span class="sd">    Example:</span>
@@ -224,11 +224,11 @@
     <span class="k">return</span> <span class="n">text</span></div>
 
 
-<div class="viewcode-block" id="null"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.inlinefuncs.null">[docs]</a><span class="k">def</span> <span class="nf">null</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="null"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.null">[docs]</a><span class="k">def</span> <span class="nf">null</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">args</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="nomatch"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.inlinefuncs.nomatch">[docs]</a><span class="k">def</span> <span class="nf">nomatch</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="nomatch"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.nomatch">[docs]</a><span class="k">def</span> <span class="nf">nomatch</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Default implementation of nomatch returns the function as-is as a string.</span>
 
@@ -301,7 +301,7 @@
 <span class="n">_PARSING_CACHE</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">LimitedSizeOrderedDict</span><span class="p">(</span><span class="n">size_limit</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="ParseStack"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.inlinefuncs.ParseStack">[docs]</a><span class="k">class</span> <span class="nc">ParseStack</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
+<div class="viewcode-block" id="ParseStack"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.ParseStack">[docs]</a><span class="k">class</span> <span class="nc">ParseStack</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Custom stack that always concatenates strings together when the</span>
 <span class="sd">    strings are added next to one another. Tuples are stored</span>
@@ -318,7 +318,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ParseStack.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.inlinefuncs.ParseStack.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ParseStack.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.ParseStack.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="c1"># always start stack with the empty string</span>
         <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
@@ -335,7 +335,7 @@
     <span class="k">def</span> <span class="nf">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ParseStack.append"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.inlinefuncs.ParseStack.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<div class="viewcode-block" id="ParseStack.append"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.ParseStack.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The stack will merge strings, add other things as normal</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -351,11 +351,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_string_last</span> <span class="o">=</span> <span class="kc">False</span></div></div>
 
 
-<div class="viewcode-block" id="InlinefuncError"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.inlinefuncs.InlinefuncError">[docs]</a><span class="k">class</span> <span class="nc">InlinefuncError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+<div class="viewcode-block" id="InlinefuncError"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.InlinefuncError">[docs]</a><span class="k">class</span> <span class="nc">InlinefuncError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="parse_inlinefunc"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.inlinefuncs.parse_inlinefunc">[docs]</a><span class="k">def</span> <span class="nf">parse_inlinefunc</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">strip</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">available_funcs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stacktrace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="parse_inlinefunc"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.parse_inlinefunc">[docs]</a><span class="k">def</span> <span class="nf">parse_inlinefunc</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">strip</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">available_funcs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stacktrace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse the incoming string.</span>
 
@@ -366,7 +366,7 @@
 <span class="sd">        available_funcs (dict, optional): Define an alternative source of functions to parse for.</span>
 <span class="sd">            If unset, use the functions found through `settings.INLINEFUNC_MODULES`.</span>
 <span class="sd">        stacktrace (bool, optional): If set, print the stacktrace to log.</span>
-<span class="sd">    Kwargs:</span>
+<span class="sd">    Keyword args:</span>
 <span class="sd">        session (Session): This is sent to this function by Evennia when triggering</span>
 <span class="sd">            it. It is passed to the inlinefunc.</span>
 <span class="sd">        kwargs (any): All other kwargs are also passed on to the inlinefunc.</span>
@@ -546,11 +546,11 @@
 <span class="n">_RE_NICK_SPACE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2"> &quot;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="NickTemplateInvalid"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.inlinefuncs.NickTemplateInvalid">[docs]</a><span class="k">class</span> <span class="nc">NickTemplateInvalid</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+<div class="viewcode-block" id="NickTemplateInvalid"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.NickTemplateInvalid">[docs]</a><span class="k">class</span> <span class="nc">NickTemplateInvalid</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="initialize_nick_templates"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.inlinefuncs.initialize_nick_templates">[docs]</a><span class="k">def</span> <span class="nf">initialize_nick_templates</span><span class="p">(</span><span class="n">in_template</span><span class="p">,</span> <span class="n">out_template</span><span class="p">):</span>
+<div class="viewcode-block" id="initialize_nick_templates"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.initialize_nick_templates">[docs]</a><span class="k">def</span> <span class="nf">initialize_nick_templates</span><span class="p">(</span><span class="n">in_template</span><span class="p">,</span> <span class="n">out_template</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Initialize the nick templates for matching and remapping a string.</span>
 
@@ -562,11 +562,11 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        regex  (regex): Regex to match against strings</span>
 <span class="sd">        template (str): Template with markers {arg1}, {arg2}, etc for</span>
-<span class="sd">            replacement using the standard .format method.</span>
+<span class="sd">        replacement using the standard .format method.</span>
 
 <span class="sd">    Raises:</span>
-<span class="sd">        NickTemplateInvalid: If the in/out template does not have a matching</span>
-<span class="sd">            number of $args.</span>
+<span class="sd">        evennia.utils.inlinefuncs.NickTemplateInvalid: If the in/out template</span>
+<span class="sd">        does not have a matching number of $args.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># create the regex for in_template</span>
@@ -586,7 +586,7 @@
     <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regex_string</span><span class="p">),</span> <span class="n">template_string</span></div>
 
 
-<div class="viewcode-block" id="parse_nick_template"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.inlinefuncs.parse_nick_template">[docs]</a><span class="k">def</span> <span class="nf">parse_nick_template</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">template_regex</span><span class="p">,</span> <span class="n">outtemplate</span><span class="p">):</span>
+<div class="viewcode-block" id="parse_nick_template"><a class="viewcode-back" href="../../../api/evennia.utils.inlinefuncs.html#evennia.utils.inlinefuncs.parse_nick_template">[docs]</a><span class="k">def</span> <span class="nf">parse_nick_template</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">template_regex</span><span class="p">,</span> <span class="n">outtemplate</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse a text using a template and map it to another template</span>
 
@@ -605,6 +605,7 @@
     <span class="k">return</span> <span class="n">string</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -642,17 +643,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.utils.inlinefuncs</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.inlinefuncs</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

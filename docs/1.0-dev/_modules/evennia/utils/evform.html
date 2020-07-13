@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.utils.evform &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.utils.evform</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.evform</a></li> 
       </ul>
     </div>  
 
@@ -135,28 +132,28 @@
 
 <span class="sd">This produces the following result:</span>
 
-<span class="sd">```</span>
-<span class="sd">.------------------------------------------------.</span>
-<span class="sd">|                                                |</span>
-<span class="sd">|  Name: Tom the        Player: Griatch          |</span>
-<span class="sd">|        Bouncer                                 |</span>
-<span class="sd">|                                                |</span>
-<span class="sd"> &gt;----------------------------------------------&lt;</span>
-<span class="sd">|                                                |</span>
-<span class="sd">| Desc:  A sturdy       STR: 12     DEX: 10      |</span>
-<span class="sd">|        fellow         INT: 5      STA: 18      |</span>
-<span class="sd">|                       LUC: 10     MAG: 3       |</span>
-<span class="sd">|                                                |</span>
-<span class="sd"> &gt;----------------------------------------------&lt;</span>
-<span class="sd">|          |                                     |</span>
-<span class="sd">| HP|MV|MP | Skill      |Value      |Exp         |</span>
-<span class="sd">| ~~+~~+~~ | ~~~~~~~~~~~+~~~~~~~~~~~+~~~~~~~~~~~ |</span>
-<span class="sd">| **|**|** | Shooting   |12         |550/1200    |</span>
-<span class="sd">|   |**|*  | Herbalism  |14         |990/1400    |</span>
-<span class="sd">|   |* |   | Smithing   |9          |205/900     |</span>
-<span class="sd">|          |                                     |</span>
-<span class="sd"> ------------------------------------------------</span>
-<span class="sd">```</span>
+<span class="sd">::</span>
+
+<span class="sd">    .------------------------------------------------.</span>
+<span class="sd">    |                                                |</span>
+<span class="sd">    |  Name: Tom the        Player: Griatch          |</span>
+<span class="sd">    |        Bouncer                                 |</span>
+<span class="sd">    |                                                |</span>
+<span class="sd">     &gt;----------------------------------------------&lt;</span>
+<span class="sd">    |                                                |</span>
+<span class="sd">    | Desc:  A sturdy       STR: 12     DEX: 10      |</span>
+<span class="sd">    |        fellow         INT: 5      STA: 18      |</span>
+<span class="sd">    |                       LUC: 10     MAG: 3       |</span>
+<span class="sd">    |                                                |</span>
+<span class="sd">     &gt;----------------------------------------------&lt;</span>
+<span class="sd">    |          |                                     |</span>
+<span class="sd">    | HP|MV|MP | Skill      |Value      |Exp         |</span>
+<span class="sd">    | ~~+~~+~~ | ~~~~~~~~~~~+~~~~~~~~~~~+~~~~~~~~~~~ |</span>
+<span class="sd">    | **|**|** | Shooting   |12         |550/1200    |</span>
+<span class="sd">    |   |**|*  | Herbalism  |14         |990/1400    |</span>
+<span class="sd">    |   |* |   | Smithing   |9          |205/900     |</span>
+<span class="sd">    |          |                                     |</span>
+<span class="sd">     ------------------------------------------------</span>
 
 <span class="sd">The marked forms have been replaced with EvCells of text and with</span>
 <span class="sd">EvTables. The form can be updated by simply re-applying `form.map()`</span>
@@ -170,6 +167,8 @@
 <span class="sd">small for it). If you try to fit a table into an area it cannot fit</span>
 <span class="sd">into (when including its borders and at least one line of text), the</span>
 <span class="sd">form will raise an error.</span>
+
+<span class="sd">----</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -189,7 +188,7 @@
 <span class="n">_ANSI_ESCAPE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\|\|&quot;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="_to_rect"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.evform._to_rect">[docs]</a><span class="k">def</span> <span class="nf">_to_rect</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_to_rect</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Forces all lines to be as long as the longest</span>
 
@@ -202,10 +201,10 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">maxl</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">line</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">maxl</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">))</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">]</span></div>
+    <span class="k">return</span> <span class="p">[</span><span class="n">line</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">maxl</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">))</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="_to_ansi"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.evform._to_ansi">[docs]</a><span class="k">def</span> <span class="nf">_to_ansi</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">regexable</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_to_ansi</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">regexable</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="s2">&quot;convert to ANSIString&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="c1"># since ansi will be parsed twice (here and in the normal ansi send), we have to</span>
@@ -216,10 +215,10 @@
     <span class="k">elif</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">_to_ansi</span><span class="p">(</span><span class="n">o</span><span class="p">)</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">regexable</span><span class="o">=</span><span class="n">regexable</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">ANSIString</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">regexable</span><span class="o">=</span><span class="n">regexable</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="EvForm"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.evform.EvForm">[docs]</a><span class="k">class</span> <span class="nc">EvForm</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="EvForm"><a class="viewcode-back" href="../../../api/evennia.utils.evform.html#evennia.utils.evform.EvForm">[docs]</a><span class="k">class</span> <span class="nc">EvForm</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This object is instantiated with a text file and parses</span>
 <span class="sd">    it for rectangular form fields. It can then be fed a</span>
@@ -228,18 +227,18 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="EvForm.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.evform.EvForm.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cells</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tables</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvForm.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.evform.html#evennia.utils.evform.EvForm.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cells</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tables</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initiate the form</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            filename (str): Path to template file.</span>
-<span class="sd">            cells (dict): A dictionary mapping of {id:text}</span>
-<span class="sd">            tables (dict): A dictionary mapping of {id:EvTable}.</span>
-<span class="sd">            form (dict): A dictionary of {&quot;FORMCHAR&quot;:char,</span>
-<span class="sd">                                          &quot;TABLECHAR&quot;:char,</span>
-<span class="sd">                                          &quot;FORM&quot;:templatestring}</span>
-<span class="sd">                    if this is given, filename is not read.</span>
+<span class="sd">            cells (dict): A dictionary mapping  `{id: text}`</span>
+<span class="sd">            tables (dict): A dictionary mapping  `{id: EvTable}`.</span>
+<span class="sd">            form (dict): A dictionary</span>
+<span class="sd">                `{&quot;FORMCHAR&quot;:char, &quot;TABLECHAR&quot;:char, &quot;FORM&quot;:templatestring}`.</span>
+<span class="sd">                If this is given, filename is not read.</span>
+
 <span class="sd">        Notes:</span>
 <span class="sd">            Other kwargs are fed as options to the EvCells and EvTables</span>
 <span class="sd">            (see `evtable.EvCell` and `evtable.EvTable` for more info).</span>
@@ -270,7 +269,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">reload</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EvForm._parse_rectangles"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.evform.EvForm._parse_rectangles">[docs]</a>    <span class="k">def</span> <span class="nf">_parse_rectangles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cellchar</span><span class="p">,</span> <span class="n">tablechar</span><span class="p">,</span> <span class="n">form</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_parse_rectangles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cellchar</span><span class="p">,</span> <span class="n">tablechar</span><span class="p">,</span> <span class="n">form</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parse a form for rectangular formfields identified by formchar</span>
 <span class="sd">        enclosing an identifier.</span>
@@ -413,9 +412,9 @@
                 <span class="n">table</span> <span class="o">=</span> <span class="n">EvTable</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
             <span class="n">mapping</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">iyup</span><span class="p">,</span> <span class="n">leftix</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">table</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">mapping</span></div>
+        <span class="k">return</span> <span class="n">mapping</span>
 
-<div class="viewcode-block" id="EvForm._populate_form"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.evform.EvForm._populate_form">[docs]</a>    <span class="k">def</span> <span class="nf">_populate_form</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_form</span><span class="p">,</span> <span class="n">mapping</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_populate_form</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_form</span><span class="p">,</span> <span class="n">mapping</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Insert cell contents into form at given locations</span>
 
@@ -428,9 +427,9 @@
                 <span class="n">formline</span> <span class="o">=</span> <span class="n">form</span><span class="p">[</span><span class="n">iy0</span> <span class="o">+</span> <span class="n">il</span><span class="p">]</span>
                 <span class="c1"># insert new content, replacing old</span>
                 <span class="n">form</span><span class="p">[</span><span class="n">iy0</span> <span class="o">+</span> <span class="n">il</span><span class="p">]</span> <span class="o">=</span> <span class="n">formline</span><span class="p">[:</span><span class="n">ix0</span><span class="p">]</span> <span class="o">+</span> <span class="n">rectline</span> <span class="o">+</span> <span class="n">formline</span><span class="p">[</span><span class="n">ix0</span> <span class="o">+</span> <span class="n">width</span> <span class="p">:]</span>
-        <span class="k">return</span> <span class="n">form</span></div>
+        <span class="k">return</span> <span class="n">form</span>
 
-<div class="viewcode-block" id="EvForm.map"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.evform.EvForm.map">[docs]</a>    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cells</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tables</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvForm.map"><a class="viewcode-back" href="../../../api/evennia.utils.evform.html#evennia.utils.evform.EvForm.map">[docs]</a>    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cells</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tables</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add mapping for form.</span>
 
@@ -455,7 +454,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tables_mapping</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_tables</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reload</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EvForm.reload"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.evform.EvForm.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvForm.reload"><a class="viewcode-back" href="../../../api/evennia.utils.evform.html#evennia.utils.evform.EvForm.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates the form from a stored file name.</span>
 
@@ -507,7 +506,7 @@
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">form</span><span class="p">]))</span></div>
 
 
-<div class="viewcode-block" id="_test"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.evform._test">[docs]</a><span class="k">def</span> <span class="nf">_test</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">_test</span><span class="p">():</span>
     <span class="s2">&quot;test evform. This is used by the unittest system.&quot;</span>
     <span class="n">form</span> <span class="o">=</span> <span class="n">EvForm</span><span class="p">(</span><span class="s2">&quot;evennia.utils.tests.data.evform_example&quot;</span><span class="p">)</span>
 
@@ -541,9 +540,10 @@
     <span class="p">)</span>
     <span class="c1"># add the tables to the proper ids in the form</span>
     <span class="n">form</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">tables</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="n">tableA</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="n">tableB</span><span class="p">})</span>
-    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">form</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -581,17 +581,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.utils.evform</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.evform</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

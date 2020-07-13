@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.web.api.views &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.web.api.views</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.web.api.views</a></li> 
       </ul>
     </div>  
 
@@ -68,7 +65,7 @@
 <span class="kn">from</span> <span class="nn">evennia.web.api.permissions</span> <span class="k">import</span> <span class="n">EvenniaPermission</span>
 
 
-<div class="viewcode-block" id="TypeclassViewSetMixin"><a class="viewcode-back" href="../../../../api/evennia.web.api.html#evennia.web.api.views.TypeclassViewSetMixin">[docs]</a><span class="k">class</span> <span class="nc">TypeclassViewSetMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TypeclassViewSetMixin"><a class="viewcode-back" href="../../../../api/evennia.web.api.views.html#evennia.web.api.views.TypeclassViewSetMixin">[docs]</a><span class="k">class</span> <span class="nc">TypeclassViewSetMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This mixin adds some shared functionality to each viewset of a typeclass. They all use the same</span>
 <span class="sd">    permission classes and filter backend. You can override any of these in your own viewsets.</span>
@@ -80,7 +77,7 @@
     <span class="c1"># for example: mygame.com/api/objects?db_key=bob to find matches based on objects having a db_key of bob</span>
     <span class="n">filter_backends</span> <span class="o">=</span> <span class="p">[</span><span class="n">DjangoFilterBackend</span><span class="p">]</span>
 
-<div class="viewcode-block" id="TypeclassViewSetMixin.set_attribute"><a class="viewcode-back" href="../../../../api/evennia.web.api.html#evennia.web.api.views.TypeclassViewSetMixin.set_attribute">[docs]</a>    <span class="nd">@action</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;put&quot;</span><span class="p">,</span> <span class="s2">&quot;post&quot;</span><span class="p">])</span>
+<div class="viewcode-block" id="TypeclassViewSetMixin.set_attribute"><a class="viewcode-back" href="../../../../api/evennia.web.api.views.html#evennia.web.api.views.TypeclassViewSetMixin.set_attribute">[docs]</a>    <span class="nd">@action</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;put&quot;</span><span class="p">,</span> <span class="s2">&quot;post&quot;</span><span class="p">])</span>
     <span class="k">def</span> <span class="nf">set_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is an example of a custom action added to a viewset. Based on the name of the</span>
@@ -115,7 +112,7 @@
         <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">attr</span><span class="o">.</span><span class="n">errors</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_400_BAD_REQUEST</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="ObjectDBViewSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.html#evennia.web.api.views.ObjectDBViewSet">[docs]</a><span class="k">class</span> <span class="nc">ObjectDBViewSet</span><span class="p">(</span><span class="n">TypeclassViewSetMixin</span><span class="p">,</span> <span class="n">ModelViewSet</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectDBViewSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.views.html#evennia.web.api.views.ObjectDBViewSet">[docs]</a><span class="k">class</span> <span class="nc">ObjectDBViewSet</span><span class="p">(</span><span class="n">TypeclassViewSetMixin</span><span class="p">,</span> <span class="n">ModelViewSet</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An example of a basic viewset for all ObjectDB instances. It declares the</span>
 <span class="sd">    serializer to use for both retrieving and changing/creating/deleting</span>
@@ -128,7 +125,7 @@
     <span class="n">filterset_class</span> <span class="o">=</span> <span class="n">ObjectDBFilterSet</span></div>
 
 
-<div class="viewcode-block" id="CharacterViewSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.html#evennia.web.api.views.CharacterViewSet">[docs]</a><span class="k">class</span> <span class="nc">CharacterViewSet</span><span class="p">(</span><span class="n">ObjectDBViewSet</span><span class="p">):</span>
+<div class="viewcode-block" id="CharacterViewSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.views.html#evennia.web.api.views.CharacterViewSet">[docs]</a><span class="k">class</span> <span class="nc">CharacterViewSet</span><span class="p">(</span><span class="n">ObjectDBViewSet</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This overrides the queryset to only retrieve Character objects</span>
 <span class="sd">    based on your DefaultCharacter typeclass path.</span>
@@ -139,19 +136,19 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="RoomViewSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.html#evennia.web.api.views.RoomViewSet">[docs]</a><span class="k">class</span> <span class="nc">RoomViewSet</span><span class="p">(</span><span class="n">ObjectDBViewSet</span><span class="p">):</span>
+<div class="viewcode-block" id="RoomViewSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.views.html#evennia.web.api.views.RoomViewSet">[docs]</a><span class="k">class</span> <span class="nc">RoomViewSet</span><span class="p">(</span><span class="n">ObjectDBViewSet</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Viewset for Room objects&quot;&quot;&quot;</span>
 
     <span class="n">queryset</span> <span class="o">=</span> <span class="n">DefaultRoom</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">typeclass_search</span><span class="p">(</span><span class="n">DefaultRoom</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">include_children</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ExitViewSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.html#evennia.web.api.views.ExitViewSet">[docs]</a><span class="k">class</span> <span class="nc">ExitViewSet</span><span class="p">(</span><span class="n">ObjectDBViewSet</span><span class="p">):</span>
+<div class="viewcode-block" id="ExitViewSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.views.html#evennia.web.api.views.ExitViewSet">[docs]</a><span class="k">class</span> <span class="nc">ExitViewSet</span><span class="p">(</span><span class="n">ObjectDBViewSet</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Viewset for Exit objects&quot;&quot;&quot;</span>
 
     <span class="n">queryset</span> <span class="o">=</span> <span class="n">DefaultExit</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">typeclass_search</span><span class="p">(</span><span class="n">DefaultExit</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">include_children</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="AccountDBViewSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.html#evennia.web.api.views.AccountDBViewSet">[docs]</a><span class="k">class</span> <span class="nc">AccountDBViewSet</span><span class="p">(</span><span class="n">TypeclassViewSetMixin</span><span class="p">,</span> <span class="n">ModelViewSet</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountDBViewSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.views.html#evennia.web.api.views.AccountDBViewSet">[docs]</a><span class="k">class</span> <span class="nc">AccountDBViewSet</span><span class="p">(</span><span class="n">TypeclassViewSetMixin</span><span class="p">,</span> <span class="n">ModelViewSet</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Viewset for Account objects&quot;&quot;&quot;</span>
 
     <span class="n">serializer_class</span> <span class="o">=</span> <span class="n">AccountSerializer</span>
@@ -159,7 +156,7 @@
     <span class="n">filterset_class</span> <span class="o">=</span> <span class="n">AccountDBFilterSet</span></div>
 
 
-<div class="viewcode-block" id="ScriptDBViewSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.html#evennia.web.api.views.ScriptDBViewSet">[docs]</a><span class="k">class</span> <span class="nc">ScriptDBViewSet</span><span class="p">(</span><span class="n">TypeclassViewSetMixin</span><span class="p">,</span> <span class="n">ModelViewSet</span><span class="p">):</span>
+<div class="viewcode-block" id="ScriptDBViewSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.views.html#evennia.web.api.views.ScriptDBViewSet">[docs]</a><span class="k">class</span> <span class="nc">ScriptDBViewSet</span><span class="p">(</span><span class="n">TypeclassViewSetMixin</span><span class="p">,</span> <span class="n">ModelViewSet</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Viewset for Script objects&quot;&quot;&quot;</span>
 
     <span class="n">serializer_class</span> <span class="o">=</span> <span class="n">ScriptDBSerializer</span>
@@ -167,6 +164,7 @@
     <span class="n">filterset_class</span> <span class="o">=</span> <span class="n">ScriptDBFilterSet</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -204,17 +202,15 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.web.api.views</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.web.api.views</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

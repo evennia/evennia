@@ -1,7 +1,7 @@
 # Batch Code Processor
 
 
-For an introduction and motivation to using batch processors, see [here](Batch-Processors). This page describes the Batch-*code* processor. The Batch-*command* one is covered [here](Batch-Command-Processor). 
+For an introduction and motivation to using batch processors, see [here](./Batch-Processors). This page describes the Batch-*code* processor. The Batch-*command* one is covered [here](./Batch-Command-Processor). 
 
 ## Basic Usage
 
@@ -89,7 +89,7 @@ The debug mode is intended to be used when you test out a batchscript. Maybe you
 
 ## Interactive mode
 
-Interactive mode works very similar to the [batch-command processor counterpart](Batch-Command-Processor). It allows you more step-wise control over how the batch file is executed. This is useful for debugging or for picking and choosing only particular blocks to run.  Use `@batchcode` with the `/interactive` flag to enter interactive mode. 
+Interactive mode works very similar to the [batch-command processor counterpart](./Batch-Command-Processor). It allows you more step-wise control over how the batch file is executed. This is useful for debugging or for picking and choosing only particular blocks to run.  Use `@batchcode` with the `/interactive` flag to enter interactive mode. 
 
      > @batchcode/interactive tutorial_examples.batch_code
 
@@ -133,7 +133,7 @@ Global variables won't work in code batch files, each block is executed as stand
 
 The main practical issue with this is when building e.g. a room in one code block and later want to connect that room with a room you built in the current block. There are two ways to do this: 
 
-- Perform a database search for the name of the room you created (since you cannot know in advance which dbref it got assigned). The problem is that a name may not be unique (you may have a lot of "A dark forest" rooms). There is an easy way to handle this though - use [Tags](Tags) or *Aliases*. You can assign any number of tags and/or aliases to any object. Make sure that one of those tags or aliases is unique to the room (like "room56") and you will henceforth be able to always uniquely search and find it later.
+- Perform a database search for the name of the room you created (since you cannot know in advance which dbref it got assigned). The problem is that a name may not be unique (you may have a lot of "A dark forest" rooms). There is an easy way to handle this though - use [Tags](./Tags) or *Aliases*. You can assign any number of tags and/or aliases to any object. Make sure that one of those tags or aliases is unique to the room (like "room56") and you will henceforth be able to always uniquely search and find it later.
 - Use the `caller` global property as an inter-block storage. For example, you could have a dictionary of room references in an `ndb`:
     ```python
     #HEADER 

@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.commands.cmdsethandler &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.commands.cmdsethandler</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdsethandler</a></li> 
       </ul>
     </div>  
 
@@ -180,7 +177,7 @@
     <span class="n">mergetype</span> <span class="o">=</span> <span class="s2">&quot;Union&quot;</span>
 
 
-<div class="viewcode-block" id="import_cmdset"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdsethandler.import_cmdset">[docs]</a><span class="k">def</span> <span class="nf">import_cmdset</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">cmdsetobj</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_logging</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="import_cmdset"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.import_cmdset">[docs]</a><span class="k">def</span> <span class="nf">import_cmdset</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">cmdsetobj</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_logging</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This helper function is used by the cmdsethandler to load a cmdset</span>
 <span class="sd">    instance from a python module, given a python_path. It&#39;s usually accessed</span>
@@ -310,7 +307,7 @@
 <span class="c1"># classes</span>
 
 
-<div class="viewcode-block" id="CmdSetHandler"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdsethandler.CmdSetHandler">[docs]</a><span class="k">class</span> <span class="nc">CmdSetHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSetHandler"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler">[docs]</a><span class="k">class</span> <span class="nc">CmdSetHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The CmdSetHandler is always stored on an object, this object is supplied</span>
 <span class="sd">    as an argument.</span>
@@ -322,7 +319,7 @@
 <span class="sd">    will re-calculate the &#39;current&#39; cmdset.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="CmdSetHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdsethandler.CmdSetHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">init_true</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSetHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">init_true</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method is called whenever an object is recreated.</span>
 
@@ -405,7 +402,7 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">string</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
-<div class="viewcode-block" id="CmdSetHandler._import_cmdset"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdsethandler.CmdSetHandler._import_cmdset">[docs]</a>    <span class="k">def</span> <span class="nf">_import_cmdset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset_path</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_import_cmdset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset_path</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method wrapper for import_cmdset; Loads a cmdset from a</span>
 <span class="sd">        module.</span>
@@ -420,9 +417,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">emit_to_obj</span><span class="p">:</span>
             <span class="n">emit_to_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span>
-        <span class="k">return</span> <span class="n">import_cmdset</span><span class="p">(</span><span class="n">cmdset_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">import_cmdset</span><span class="p">(</span><span class="n">cmdset_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="p">)</span>
 
-<div class="viewcode-block" id="CmdSetHandler.update"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdsethandler.CmdSetHandler.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSetHandler.update"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Re-adds all sets in the handler to have an updated current</span>
 <span class="sd">        set.</span>
@@ -478,7 +475,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">mergetype_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_current</span><span class="o">.</span><span class="n">actual_mergetype</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="n">new_current</span></div>
 
-<div class="viewcode-block" id="CmdSetHandler.add"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdsethandler.CmdSetHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_cmdset</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSetHandler.add"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_cmdset</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a cmdset to the handler, on top of the old ones, unless it</span>
 <span class="sd">        is set as the default one (it will then end up at the bottom of the stack)</span>
@@ -529,7 +526,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cmdset</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="CmdSetHandler.add_default"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdsethandler.CmdSetHandler.add_default">[docs]</a>    <span class="k">def</span> <span class="nf">add_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSetHandler.add_default"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.add_default">[docs]</a>    <span class="k">def</span> <span class="nf">add_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shortcut for adding a default cmdset.</span>
 
@@ -541,7 +538,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cmdset</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="n">emit_to_obj</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="n">permanent</span><span class="p">,</span> <span class="n">default_cmdset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CmdSetHandler.remove"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdsethandler.CmdSetHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_cmdset</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSetHandler.remove"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_cmdset</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove a cmdset from the  handler.</span>
 
@@ -620,7 +617,7 @@
     <span class="c1"># legacy alias</span>
     <span class="n">delete</span> <span class="o">=</span> <span class="n">remove</span>
 
-<div class="viewcode-block" id="CmdSetHandler.remove_default"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdsethandler.CmdSetHandler.remove_default">[docs]</a>    <span class="k">def</span> <span class="nf">remove_default</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSetHandler.remove_default"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.remove_default">[docs]</a>    <span class="k">def</span> <span class="nf">remove_default</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This explicitly deletes only the default cmdset.</span>
 
@@ -630,7 +627,7 @@
     <span class="c1"># legacy alias</span>
     <span class="n">delete_default</span> <span class="o">=</span> <span class="n">remove_default</span>
 
-<div class="viewcode-block" id="CmdSetHandler.get"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdsethandler.CmdSetHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSetHandler.get"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all cmdsets.</span>
 
@@ -643,7 +640,7 @@
     <span class="c1"># backwards-compatible alias</span>
     <span class="nb">all</span> <span class="o">=</span> <span class="n">get</span>
 
-<div class="viewcode-block" id="CmdSetHandler.clear"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdsethandler.CmdSetHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSetHandler.clear"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Removes all Command Sets from the handler except the default one</span>
 <span class="sd">        (use `self.remove_default` to remove that).</span>
@@ -656,7 +653,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset_storage</span> <span class="o">=</span> <span class="n">storage</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="CmdSetHandler.has"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdsethandler.CmdSetHandler.has">[docs]</a>    <span class="k">def</span> <span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">must_be_default</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSetHandler.has"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.has">[docs]</a>    <span class="k">def</span> <span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">must_be_default</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        checks so the cmdsethandler contains a given cmdset</span>
 
@@ -694,7 +691,7 @@
     <span class="c1"># backwards-compatability alias</span>
     <span class="n">has_cmdset</span> <span class="o">=</span> <span class="n">has</span>
 
-<div class="viewcode-block" id="CmdSetHandler.reset"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdsethandler.CmdSetHandler.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSetHandler.reset"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Force reload of all cmdsets in handler. This should be called</span>
 <span class="sd">        after _CACHED_CMDSETS have been cleared (normally this is</span>
@@ -711,6 +708,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -748,17 +746,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.commands.cmdsethandler</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdsethandler</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

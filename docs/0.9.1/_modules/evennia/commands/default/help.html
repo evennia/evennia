@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.commands.default.help &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.commands.default.help</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.help</a></li> 
       </ul>
     </div>  
 
@@ -140,7 +137,7 @@
     <span class="p">)</span>
 
 
-<div class="viewcode-block" id="CmdHelp"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.help.CmdHelp">[docs]</a><span class="k">class</span> <span class="nc">CmdHelp</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdHelp"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp">[docs]</a><span class="k">class</span> <span class="nc">CmdHelp</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    View help or a list of topics</span>
 
@@ -173,7 +170,7 @@
     <span class="c1"># number of suggestions (set to 0 to remove suggestions from help)</span>
     <span class="n">suggestion_maxnum</span> <span class="o">=</span> <span class="mi">5</span>
 
-<div class="viewcode-block" id="CmdHelp.msg_help"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.help.CmdHelp.msg_help">[docs]</a>    <span class="k">def</span> <span class="nf">msg_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdHelp.msg_help"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp.msg_help">[docs]</a>    <span class="k">def</span> <span class="nf">msg_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        messages text to the caller, adding an extra oob argument to indicate</span>
 <span class="sd">        that this is a help command result and could be rendered in a separate</span>
@@ -196,7 +193,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;help&quot;</span><span class="p">}))</span></div>
 
-<div class="viewcode-block" id="CmdHelp.format_help_entry"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.help.CmdHelp.format_help_entry">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="CmdHelp.format_help_entry"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp.format_help_entry">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">format_help_entry</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">help_text</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suggested</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This visually formats the help entry.</span>
@@ -226,7 +223,7 @@
         <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">_SEP</span>
         <span class="k">return</span> <span class="n">string</span></div>
 
-<div class="viewcode-block" id="CmdHelp.format_help_list"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.help.CmdHelp.format_help_list">[docs]</a>    <span class="k">def</span> <span class="nf">format_help_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hdict_cmds</span><span class="p">,</span> <span class="n">hdict_db</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdHelp.format_help_list"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp.format_help_list">[docs]</a>    <span class="k">def</span> <span class="nf">format_help_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hdict_cmds</span><span class="p">,</span> <span class="n">hdict_db</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Output a category-ordered list. The input are the</span>
 <span class="sd">        pre-loaded help files for commands and database-helpfiles</span>
@@ -255,7 +252,7 @@
         <span class="n">gridrows</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">gridrows</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">gridrows</span></div>
 
-<div class="viewcode-block" id="CmdHelp.check_show_help"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.help.CmdHelp.check_show_help">[docs]</a>    <span class="k">def</span> <span class="nf">check_show_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdHelp.check_show_help"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp.check_show_help">[docs]</a>    <span class="k">def</span> <span class="nf">check_show_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method. If this return True, the given cmd</span>
 <span class="sd">        auto-help will be viewable in the help listing.</span>
@@ -272,7 +269,7 @@
         <span class="c1"># return only those with auto_help set and passing the cmd: lock</span>
         <span class="k">return</span> <span class="n">cmd</span><span class="o">.</span><span class="n">auto_help</span> <span class="ow">and</span> <span class="n">cmd</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CmdHelp.should_list_cmd"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.help.CmdHelp.should_list_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">should_list_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdHelp.should_list_cmd"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp.should_list_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">should_list_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Should the specified command appear in the help table?</span>
 
@@ -296,14 +293,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="CmdHelp.parse"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.help.CmdHelp.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdHelp.parse"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        input is a string containing the command or topic to match.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">original_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="CmdHelp.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.help.CmdHelp.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdHelp.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run the dynamic help entry creator.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -423,7 +420,7 @@
     <span class="k">del</span> <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_editing_help</span>
 
 
-<div class="viewcode-block" id="CmdSetHelp"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.help.CmdSetHelp">[docs]</a><span class="k">class</span> <span class="nc">CmdSetHelp</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSetHelp"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdSetHelp">[docs]</a><span class="k">class</span> <span class="nc">CmdSetHelp</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Edit the help database.</span>
 
@@ -455,7 +452,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(Helper)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
-<div class="viewcode-block" id="CmdSetHelp.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.help.CmdSetHelp.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSetHelp.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdSetHelp.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Implement the function&quot;&quot;&quot;</span>
 
         <span class="n">switches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span>
@@ -588,6 +585,7 @@
                 <span class="p">)</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -625,17 +623,15 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.commands.default.help</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.help</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

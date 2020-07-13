@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.tutorial_examples.red_button &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.tutorial_examples.red_button</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorial_examples.red_button</a></li> 
       </ul>
     </div>  
 
@@ -64,7 +61,7 @@
 <span class="c1">#</span>
 
 
-<div class="viewcode-block" id="RedButton"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button.RedButton">[docs]</a><span class="k">class</span> <span class="nc">RedButton</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+<div class="viewcode-block" id="RedButton"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.RedButton">[docs]</a><span class="k">class</span> <span class="nc">RedButton</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class describes an evil red button.  It will use the script</span>
 <span class="sd">    definition in contrib/examples/red_button_scripts to blink at regular</span>
@@ -78,7 +75,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="RedButton.at_object_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button.RedButton.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RedButton.at_object_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.RedButton.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This function is called when object is created. Use this</span>
 <span class="sd">        instead of e.g. __init__.</span>
@@ -107,7 +104,7 @@
 
     <span class="c1"># state-changing methods</span>
 
-<div class="viewcode-block" id="RedButton.open_lid"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button.RedButton.open_lid">[docs]</a>    <span class="k">def</span> <span class="nf">open_lid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RedButton.open_lid"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.RedButton.open_lid">[docs]</a>    <span class="k">def</span> <span class="nf">open_lid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Opens the glass lid and start the timer so it will soon close</span>
 <span class="sd">        again.</span>
@@ -132,7 +129,7 @@
         <span class="c1"># (this one cleans itself after being called once)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">scriptexamples</span><span class="o">.</span><span class="n">CloseLidEvent</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RedButton.close_lid"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button.RedButton.close_lid">[docs]</a>    <span class="k">def</span> <span class="nf">close_lid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RedButton.close_lid"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.RedButton.close_lid">[docs]</a>    <span class="k">def</span> <span class="nf">close_lid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Close the glass lid. This validates all scripts on the button,</span>
 <span class="sd">        which means that scripts only being valid when the lid is open</span>
@@ -154,7 +151,7 @@
         <span class="c1"># add scripts related to the closed state</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">scriptexamples</span><span class="o">.</span><span class="n">ClosedLidState</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RedButton.break_lamp"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button.RedButton.break_lamp">[docs]</a>    <span class="k">def</span> <span class="nf">break_lamp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feedback</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="RedButton.break_lamp"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.RedButton.break_lamp">[docs]</a>    <span class="k">def</span> <span class="nf">break_lamp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feedback</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Breaks the lamp in the button, stopping it from blinking.</span>
 
@@ -173,7 +170,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;The lamp flickers, the button going dark.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="RedButton.press_button"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button.RedButton.press_button">[docs]</a>    <span class="k">def</span> <span class="nf">press_button</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pobject</span><span class="p">):</span>
+<div class="viewcode-block" id="RedButton.press_button"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.RedButton.press_button">[docs]</a>    <span class="k">def</span> <span class="nf">press_button</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pobject</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Someone was foolish enough to press the button!</span>
 
@@ -189,7 +186,7 @@
 
     <span class="c1"># script-related methods</span>
 
-<div class="viewcode-block" id="RedButton.blink"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button.RedButton.blink">[docs]</a>    <span class="k">def</span> <span class="nf">blink</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RedButton.blink"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button.html#evennia.contrib.tutorial_examples.red_button.RedButton.blink">[docs]</a>    <span class="k">def</span> <span class="nf">blink</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The script system will regularly call this</span>
 <span class="sd">        function to make the button blink. Now and then</span>
@@ -211,6 +208,7 @@
             <span class="n">loc</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -248,17 +246,15 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.tutorial_examples.red_button</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorial_examples.red_button</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

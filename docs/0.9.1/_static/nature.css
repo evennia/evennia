@@ -217,8 +217,8 @@ div.admonition p.admonition-title + p {
     display: inline;
 }
 
-div.highlight{
-    background-color: white;
+div.highlight {
+    background-color: #f1f1ef;
 }
 
 div.note {
@@ -254,6 +254,21 @@ li > p:first-child {
     margin-top: 0px;
     margin-bottom: 0px;
 }
+
+li > p {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+
+/* The indents of kwarg - lists in api docs */
+dl.field-list.simple > dd.field-odd > ul.simple > li > ul {
+  margin-left: 24px;
+}
+dd.field-odd > ul.simple > li > ul > li > dl.simple {
+  margin-bottom: -8px;
+}
+
 
 .admonition.important {
   background-color: #fbf7c3;
@@ -297,7 +312,7 @@ code {
 }
 
 div.viewcode-block:target {
-    background-color: #f4debf;
+    background-color: #f4e9d9;
     border-top: 1px solid #ac9;
     border-bottom: 1px solid #ac9;
 }
@@ -327,4 +342,55 @@ div.code-block-caption {
 
 .deprecated {
   background-color: #fff3f3;
+}
+
+/* API-docs custom coloring */
+
+
+.class {
+	font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+  font-size: 0.9em;
+  background-color: #f5ffff;
+  padding: 5px;
+}
+
+.method {
+  background-color: #e3ecec;
+  padding: 5px;
+  font-size: 1.0em;
+}
+
+.sig-param {
+	font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+}
+
+.sig-paren {
+  margin-left: 1px;
+}
+
+.property {
+	font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+}
+
+dl.class > dd > p {
+  font-style: italic;
+}
+
+dl.method > dd > p {
+  font-style: italic;
+}
+
+
+code.descname {
+  font-size: 0.9em;
+}
+
+.function {
+  background-color: #eff;
+  padding: 5px;
+}
+
+.exception {
+  background-color: #fff9f9;
+  padding: 5px;
 }

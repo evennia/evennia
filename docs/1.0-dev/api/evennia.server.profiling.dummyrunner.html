@@ -1,0 +1,265 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>evennia.server.profiling.dummyrunner &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.profiling.dummyrunner</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-evennia.server.profiling.dummyrunner">
+<span id="evennia-server-profiling-dummyrunner"></span><h1>evennia.server.profiling.dummyrunner<a class="headerlink" href="#module-evennia.server.profiling.dummyrunner" title="Permalink to this headline">¶</a></h1>
+<p>Dummy client runner</p>
+<p>This module implements a stand-alone launcher for stress-testing
+an Evennia game. It will launch any number of fake clients. These
+clients will log into the server and start doing random operations.
+Customizing and weighing these operations differently depends on
+which type of game is tested. The module contains a testing module
+for plain Evennia.</p>
+<p>Please note that you shouldn’t run this on a production server!
+Launch the program without any arguments or options to see a
+full step-by-step setup help.</p>
+<p>Basically (for testing default Evennia):</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Use an empty/testing database.</p></li>
+<li><p>set PERMISSION_ACCOUNT_DEFAULT = “Builder”</p></li>
+<li><p>start server, eventually with profiling active</p></li>
+<li><p>launch this client runner</p></li>
+</ul>
+</div></blockquote>
+<p>If you want to customize the runner’s client actions
+(because you changed the cmdset or needs to better
+match your use cases or add more actions), you can
+change which actions by adding a path to</p>
+<blockquote>
+<div><p>DUMMYRUNNER_ACTIONS_MODULE = &lt;path.to.your.module&gt;</p>
+</div></blockquote>
+<p>in your settings. See utils.dummyrunner_actions.py
+for instructions on how to define this module.</p>
+<dl class="py function">
+<dt id="evennia.server.profiling.dummyrunner.idcounter">
+<code class="sig-prename descclassname">evennia.server.profiling.dummyrunner.</code><code class="sig-name descname">idcounter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner.html#idcounter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner.idcounter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes unique ids.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>count (int)</em> – A globally unique counter.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.server.profiling.dummyrunner.gidcounter">
+<code class="sig-prename descclassname">evennia.server.profiling.dummyrunner.</code><code class="sig-name descname">gidcounter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner.html#gidcounter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner.gidcounter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes globally unique ids.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>count (int); A globally unique counter.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.server.profiling.dummyrunner.makeiter">
+<code class="sig-prename descclassname">evennia.server.profiling.dummyrunner.</code><code class="sig-name descname">makeiter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner.html#makeiter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner.makeiter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes everything iterable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>obj</strong> (<em>any</em>) – Object to turn iterable.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>iterable (iterable)</em> – An iterable object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.server.profiling.dummyrunner.DummyClient">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.server.profiling.dummyrunner.</code><code class="sig-name descname">DummyClient</code><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner.html#DummyClient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner.DummyClient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.conch.telnet.StatefulTelnetProtocol</span></code></p>
+<p>Handles connection to a running Evennia server,
+mimicking a real account by sending commands on
+a timer.</p>
+<dl class="py method">
+<dt id="evennia.server.profiling.dummyrunner.DummyClient.connectionMade">
+<code class="sig-name descname">connectionMade</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner.html#DummyClient.connectionMade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner.DummyClient.connectionMade" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when connection is first established.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.server.profiling.dummyrunner.DummyClient.dataReceived">
+<code class="sig-name descname">dataReceived</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner.html#DummyClient.dataReceived"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner.DummyClient.dataReceived" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when data comes in over the protocol. We wait to start
+stepping until the server actually responds</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>str</em>) – Incoming data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.server.profiling.dummyrunner.DummyClient.connectionLost">
+<code class="sig-name descname">connectionLost</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reason</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner.html#DummyClient.connectionLost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner.DummyClient.connectionLost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when loosing the connection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>reason</strong> (<em>str</em>) – Reason for loosing connection.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.server.profiling.dummyrunner.DummyClient.error">
+<code class="sig-name descname">error</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">err</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner.html#DummyClient.error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner.DummyClient.error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Error callback.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>err</strong> (<em>Failure</em>) – Error instance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.server.profiling.dummyrunner.DummyClient.counter">
+<code class="sig-name descname">counter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner.html#DummyClient.counter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner.DummyClient.counter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Produces a unique id, also between clients.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>counter (int)</em> – A unique counter.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.server.profiling.dummyrunner.DummyClient.logout">
+<code class="sig-name descname">logout</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner.html#DummyClient.logout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner.DummyClient.logout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Causes the client to log out of the server. Triggered by ctrl-c signal.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.server.profiling.dummyrunner.DummyClient.step">
+<code class="sig-name descname">step</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner.html#DummyClient.step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner.DummyClient.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform a step. This is called repeatedly by the runner and
+causes the client to issue commands to the server.  This holds
+all “intelligence” of the dummy client.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.server.profiling.dummyrunner.DummyFactory">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.server.profiling.dummyrunner.</code><code class="sig-name descname">DummyFactory</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">actions</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner.html#DummyFactory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner.DummyFactory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.internet.protocol.ClientFactory</span></code></p>
+<dl class="py attribute">
+<dt id="evennia.server.profiling.dummyrunner.DummyFactory.protocol">
+<code class="sig-name descname">protocol</code><a class="headerlink" href="#evennia.server.profiling.dummyrunner.DummyFactory.protocol" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#evennia.server.profiling.dummyrunner.DummyClient" title="evennia.server.profiling.dummyrunner.DummyClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">DummyClient</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.server.profiling.dummyrunner.DummyFactory.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">actions</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner.html#DummyFactory.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner.DummyFactory.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setup the factory base (shared by all clients)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.server.profiling.dummyrunner.start_all_dummy_clients">
+<code class="sig-prename descclassname">evennia.server.profiling.dummyrunner.</code><code class="sig-name descname">start_all_dummy_clients</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nclients</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/dummyrunner.html#start_all_dummy_clients"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.dummyrunner.start_all_dummy_clients" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize all clients, connect them and start to step them</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nclients</strong> (<em>int</em>) – Number of dummy clients to connect.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.server.profiling.dummyrunner.rst.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.server.profiling.dummyrunner.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.1/api/evennia.server.profiling.dummyrunner.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.profiling.dummyrunner</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+    </div>
+  </body>
+</html>

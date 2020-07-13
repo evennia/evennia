@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.server.portal.grapevine &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.server.portal.grapevine</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.grapevine</a></li> 
       </ul>
     </div>  
 
@@ -74,7 +71,7 @@
 <span class="n">GRAPEVINE_HEARTBEAT_FAILURE</span> <span class="o">=</span> <span class="mi">4001</span>
 
 
-<div class="viewcode-block" id="RestartingWebsocketServerFactory"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.grapevine.RestartingWebsocketServerFactory">[docs]</a><span class="k">class</span> <span class="nc">RestartingWebsocketServerFactory</span><span class="p">(</span><span class="n">WebSocketClientFactory</span><span class="p">,</span> <span class="n">protocol</span><span class="o">.</span><span class="n">ReconnectingClientFactory</span><span class="p">):</span>
+<div class="viewcode-block" id="RestartingWebsocketServerFactory"><a class="viewcode-back" href="../../../../api/evennia.server.portal.grapevine.html#evennia.server.portal.grapevine.RestartingWebsocketServerFactory">[docs]</a><span class="k">class</span> <span class="nc">RestartingWebsocketServerFactory</span><span class="p">(</span><span class="n">WebSocketClientFactory</span><span class="p">,</span> <span class="n">protocol</span><span class="o">.</span><span class="n">ReconnectingClientFactory</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A variant of the websocket-factory that auto-reconnects.</span>
 
@@ -84,7 +81,7 @@
     <span class="n">factor</span> <span class="o">=</span> <span class="mf">1.5</span>
     <span class="n">maxDelay</span> <span class="o">=</span> <span class="mi">60</span>
 
-<div class="viewcode-block" id="RestartingWebsocketServerFactory.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sessionhandler</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="RestartingWebsocketServerFactory.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.grapevine.html#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sessionhandler</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">uid</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;uid&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;grapevine_channel&quot;</span><span class="p">)</span>
@@ -96,7 +93,7 @@
 
         <span class="n">WebSocketClientFactory</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">GRAPEVINE_URI</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RestartingWebsocketServerFactory.buildProtocol"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.buildProtocol">[docs]</a>    <span class="k">def</span> <span class="nf">buildProtocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+<div class="viewcode-block" id="RestartingWebsocketServerFactory.buildProtocol"><a class="viewcode-back" href="../../../../api/evennia.server.portal.grapevine.html#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.buildProtocol">[docs]</a>    <span class="k">def</span> <span class="nf">buildProtocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Build new instance of protocol</span>
 
@@ -110,7 +107,7 @@
         <span class="n">protocol</span><span class="o">.</span><span class="n">sessionhandler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span>
         <span class="k">return</span> <span class="n">protocol</span></div>
 
-<div class="viewcode-block" id="RestartingWebsocketServerFactory.startedConnecting"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.startedConnecting">[docs]</a>    <span class="k">def</span> <span class="nf">startedConnecting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="p">):</span>
+<div class="viewcode-block" id="RestartingWebsocketServerFactory.startedConnecting"><a class="viewcode-back" href="../../../../api/evennia.server.portal.grapevine.html#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.startedConnecting">[docs]</a>    <span class="k">def</span> <span class="nf">startedConnecting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tracks reconnections for debugging.</span>
 
@@ -120,7 +117,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">log_info</span><span class="p">(</span><span class="s2">&quot;(re)connecting to grapevine channel &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RestartingWebsocketServerFactory.clientConnectionFailed"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.clientConnectionFailed">[docs]</a>    <span class="k">def</span> <span class="nf">clientConnectionFailed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
+<div class="viewcode-block" id="RestartingWebsocketServerFactory.clientConnectionFailed"><a class="viewcode-back" href="../../../../api/evennia.server.portal.grapevine.html#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.clientConnectionFailed">[docs]</a>    <span class="k">def</span> <span class="nf">clientConnectionFailed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when Client failed to connect.</span>
 
@@ -131,7 +128,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">protocol</span><span class="o">.</span><span class="n">ReconnectingClientFactory</span><span class="o">.</span><span class="n">clientConnectionLost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RestartingWebsocketServerFactory.clientConnectionLost"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.clientConnectionLost">[docs]</a>    <span class="k">def</span> <span class="nf">clientConnectionLost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
+<div class="viewcode-block" id="RestartingWebsocketServerFactory.clientConnectionLost"><a class="viewcode-back" href="../../../../api/evennia.server.portal.grapevine.html#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.clientConnectionLost">[docs]</a>    <span class="k">def</span> <span class="nf">clientConnectionLost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connector</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when Client loses connection.</span>
 
@@ -143,7 +140,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bot</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bot</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">stopping</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">retry</span><span class="p">(</span><span class="n">connector</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RestartingWebsocketServerFactory.reconnect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.reconnect">[docs]</a>    <span class="k">def</span> <span class="nf">reconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RestartingWebsocketServerFactory.reconnect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.grapevine.html#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.reconnect">[docs]</a>    <span class="k">def</span> <span class="nf">reconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Force a reconnection of the bot protocol. This requires</span>
 <span class="sd">        de-registering the session and then reattaching a new one,</span>
@@ -156,7 +153,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">server_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bot</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="RestartingWebsocketServerFactory.start"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RestartingWebsocketServerFactory.start"><a class="viewcode-back" href="../../../../api/evennia.server.portal.grapevine.html#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Connect protocol to remote server&quot;</span>
 
         <span class="k">try</span><span class="p">:</span>
@@ -170,20 +167,20 @@
             <span class="c1"># self.sessionhandler.portal.services.addService(service)</span>
 
 
-<div class="viewcode-block" id="GrapevineClient"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.grapevine.GrapevineClient">[docs]</a><span class="k">class</span> <span class="nc">GrapevineClient</span><span class="p">(</span><span class="n">WebSocketClientProtocol</span><span class="p">,</span> <span class="n">Session</span><span class="p">):</span>
+<div class="viewcode-block" id="GrapevineClient"><a class="viewcode-back" href="../../../../api/evennia.server.portal.grapevine.html#evennia.server.portal.grapevine.GrapevineClient">[docs]</a><span class="k">class</span> <span class="nc">GrapevineClient</span><span class="p">(</span><span class="n">WebSocketClientProtocol</span><span class="p">,</span> <span class="n">Session</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implements the grapevine client</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="GrapevineClient.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.grapevine.GrapevineClient.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GrapevineClient.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.grapevine.html#evennia.server.portal.grapevine.GrapevineClient.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">WebSocketClientProtocol</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">Session</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">restart_downtime</span> <span class="o">=</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="GrapevineClient.at_login"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.grapevine.GrapevineClient.at_login">[docs]</a>    <span class="k">def</span> <span class="nf">at_login</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GrapevineClient.at_login"><a class="viewcode-back" href="../../../../api/evennia.server.portal.grapevine.html#evennia.server.portal.grapevine.GrapevineClient.at_login">[docs]</a>    <span class="k">def</span> <span class="nf">at_login</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="GrapevineClient.onOpen"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.grapevine.GrapevineClient.onOpen">[docs]</a>    <span class="k">def</span> <span class="nf">onOpen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GrapevineClient.onOpen"><a class="viewcode-back" href="../../../../api/evennia.server.portal.grapevine.html#evennia.server.portal.grapevine.GrapevineClient.onOpen">[docs]</a>    <span class="k">def</span> <span class="nf">onOpen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when connection is established.</span>
 
@@ -201,7 +198,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">send_authenticate</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="GrapevineClient.onMessage"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.grapevine.GrapevineClient.onMessage">[docs]</a>    <span class="k">def</span> <span class="nf">onMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span> <span class="n">isBinary</span><span class="p">):</span>
+<div class="viewcode-block" id="GrapevineClient.onMessage"><a class="viewcode-back" href="../../../../api/evennia.server.portal.grapevine.html#evennia.server.portal.grapevine.GrapevineClient.onMessage">[docs]</a>    <span class="k">def</span> <span class="nf">onMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span> <span class="n">isBinary</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Callback fired when a complete WebSocket message was received.</span>
 
@@ -216,7 +213,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">retry_task</span> <span class="o">=</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="GrapevineClient.onClose"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.grapevine.GrapevineClient.onClose">[docs]</a>    <span class="k">def</span> <span class="nf">onClose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wasClean</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="GrapevineClient.onClose"><a class="viewcode-back" href="../../../../api/evennia.server.portal.grapevine.html#evennia.server.portal.grapevine.GrapevineClient.onClose">[docs]</a>    <span class="k">def</span> <span class="nf">onClose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wasClean</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is executed when the connection is lost for whatever</span>
 <span class="sd">        reason. it can also be called directly, from the disconnect</span>
@@ -239,7 +236,7 @@
             <span class="c1"># ready to reconnect.</span>
             <span class="n">log_info</span><span class="p">(</span><span class="s2">&quot;Grapevine connection lost (Server restart).&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="GrapevineClient._send_json"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.grapevine.GrapevineClient._send_json">[docs]</a>    <span class="k">def</span> <span class="nf">_send_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_send_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send (json-) data to client.</span>
 
@@ -247,9 +244,9 @@
 <span class="sd">            data (str): Text to send.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
 
-<div class="viewcode-block" id="GrapevineClient.disconnect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.grapevine.GrapevineClient.disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="GrapevineClient.disconnect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.grapevine.html#evennia.server.portal.grapevine.GrapevineClient.disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generic hook for the engine to call in order to</span>
 <span class="sd">        disconnect this protocol.</span>
@@ -267,7 +264,7 @@
 
     <span class="c1"># send_* method are automatically callable through .msg(heartbeat={}) etc</span>
 
-<div class="viewcode-block" id="GrapevineClient.send_authenticate"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.grapevine.GrapevineClient.send_authenticate">[docs]</a>    <span class="k">def</span> <span class="nf">send_authenticate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="GrapevineClient.send_authenticate"><a class="viewcode-back" href="../../../../api/evennia.server.portal.grapevine.html#evennia.server.portal.grapevine.GrapevineClient.send_authenticate">[docs]</a>    <span class="k">def</span> <span class="nf">send_authenticate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send grapevine authentication. This should be send immediately upon connection.</span>
 
@@ -288,7 +285,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_send_json</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="GrapevineClient.send_heartbeat"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.grapevine.GrapevineClient.send_heartbeat">[docs]</a>    <span class="k">def</span> <span class="nf">send_heartbeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="GrapevineClient.send_heartbeat"><a class="viewcode-back" href="../../../../api/evennia.server.portal.grapevine.html#evennia.server.portal.grapevine.GrapevineClient.send_heartbeat">[docs]</a>    <span class="k">def</span> <span class="nf">send_heartbeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send heartbeat to remote grapevine server.</span>
 
@@ -302,7 +299,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_send_json</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="GrapevineClient.send_subscribe"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.grapevine.GrapevineClient.send_subscribe">[docs]</a>    <span class="k">def</span> <span class="nf">send_subscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channelname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="GrapevineClient.send_subscribe"><a class="viewcode-back" href="../../../../api/evennia.server.portal.grapevine.html#evennia.server.portal.grapevine.GrapevineClient.send_subscribe">[docs]</a>    <span class="k">def</span> <span class="nf">send_subscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channelname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Subscribe to new grapevine channel</span>
 
@@ -311,7 +308,7 @@
         <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;event&quot;</span><span class="p">:</span> <span class="s2">&quot;channels/subscribe&quot;</span><span class="p">,</span> <span class="s2">&quot;payload&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;channel&quot;</span><span class="p">:</span> <span class="n">channelname</span><span class="p">}}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_send_json</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="GrapevineClient.send_unsubscribe"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.grapevine.GrapevineClient.send_unsubscribe">[docs]</a>    <span class="k">def</span> <span class="nf">send_unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channelname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="GrapevineClient.send_unsubscribe"><a class="viewcode-back" href="../../../../api/evennia.server.portal.grapevine.html#evennia.server.portal.grapevine.GrapevineClient.send_unsubscribe">[docs]</a>    <span class="k">def</span> <span class="nf">send_unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channelname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Un-subscribe to a grapevine channel</span>
 
@@ -320,7 +317,7 @@
         <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;event&quot;</span><span class="p">:</span> <span class="s2">&quot;channels/unsubscribe&quot;</span><span class="p">,</span> <span class="s2">&quot;payload&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;channel&quot;</span><span class="p">:</span> <span class="n">channelname</span><span class="p">}}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_send_json</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="GrapevineClient.send_channel"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.grapevine.GrapevineClient.send_channel">[docs]</a>    <span class="k">def</span> <span class="nf">send_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">sender</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="GrapevineClient.send_channel"><a class="viewcode-back" href="../../../../api/evennia.server.portal.grapevine.html#evennia.server.portal.grapevine.GrapevineClient.send_channel">[docs]</a>    <span class="k">def</span> <span class="nf">send_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">sender</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send text type Evennia -&gt; grapevine</span>
 
@@ -336,18 +333,18 @@
         <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_send_json</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="GrapevineClient.send_default"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.grapevine.GrapevineClient.send_default">[docs]</a>    <span class="k">def</span> <span class="nf">send_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="GrapevineClient.send_default"><a class="viewcode-back" href="../../../../api/evennia.server.portal.grapevine.html#evennia.server.portal.grapevine.GrapevineClient.send_default">[docs]</a>    <span class="k">def</span> <span class="nf">send_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ignore other outputfuncs</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="GrapevineClient.data_in"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.grapevine.GrapevineClient.data_in">[docs]</a>    <span class="k">def</span> <span class="nf">data_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="GrapevineClient.data_in"><a class="viewcode-back" href="../../../../api/evennia.server.portal.grapevine.html#evennia.server.portal.grapevine.GrapevineClient.data_in">[docs]</a>    <span class="k">def</span> <span class="nf">data_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send data grapevine -&gt; Evennia</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            data (dict): Converted json data.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -403,6 +400,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bot_data_in</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">))</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -440,17 +438,15 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.server.portal.grapevine</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.grapevine</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

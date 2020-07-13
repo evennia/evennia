@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.awsstorage.aws_s3_cdn &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.awsstorage.aws_s3_cdn</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.awsstorage.aws_s3_cdn</a></li> 
       </ul>
     </div>  
 
@@ -138,7 +135,7 @@
 <span class="n">boto3_version_info</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">boto3_version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)])</span>
 
 
-<div class="viewcode-block" id="setting"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.setting">[docs]</a><span class="k">def</span> <span class="nf">setting</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="setting"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.setting">[docs]</a><span class="k">def</span> <span class="nf">setting</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function to get a Django setting by name. If setting doesn&#39;t exist</span>
 <span class="sd">    it will return a default.</span>
@@ -153,7 +150,7 @@
     <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ev_settings</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="safe_join"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.safe_join">[docs]</a><span class="k">def</span> <span class="nf">safe_join</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="o">*</span><span class="n">paths</span><span class="p">):</span>
+<div class="viewcode-block" id="safe_join"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.safe_join">[docs]</a><span class="k">def</span> <span class="nf">safe_join</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="o">*</span><span class="n">paths</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function, a version of django.utils._os.safe_join for S3 paths.</span>
 <span class="sd">    Joins one or more path components to the base path component</span>
@@ -193,7 +190,7 @@
     <span class="k">return</span> <span class="n">final_path</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="check_location"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.check_location">[docs]</a><span class="k">def</span> <span class="nf">check_location</span><span class="p">(</span><span class="n">storage</span><span class="p">):</span>
+<div class="viewcode-block" id="check_location"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.check_location">[docs]</a><span class="k">def</span> <span class="nf">check_location</span><span class="p">(</span><span class="n">storage</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function to make sure that the storage location is configured correctly.</span>
 
@@ -214,7 +211,7 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="lookup_env"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.lookup_env">[docs]</a><span class="k">def</span> <span class="nf">lookup_env</span><span class="p">(</span><span class="n">names</span><span class="p">):</span>
+<div class="viewcode-block" id="lookup_env"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.lookup_env">[docs]</a><span class="k">def</span> <span class="nf">lookup_env</span><span class="p">(</span><span class="n">names</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function for looking up names in env vars. Returns the first element found.</span>
 
@@ -231,7 +228,7 @@
             <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="get_available_overwrite_name"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.get_available_overwrite_name">[docs]</a><span class="k">def</span> <span class="nf">get_available_overwrite_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">max_length</span><span class="p">):</span>
+<div class="viewcode-block" id="get_available_overwrite_name"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.get_available_overwrite_name">[docs]</a><span class="k">def</span> <span class="nf">get_available_overwrite_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">max_length</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function indicating files that will be overwritten during trunc.</span>
 
@@ -260,7 +257,7 @@
     <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_name</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_root</span><span class="p">,</span> <span class="n">file_ext</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="S3Boto3StorageFile"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile">[docs]</a><span class="nd">@deconstructible</span>
+<div class="viewcode-block" id="S3Boto3StorageFile"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile">[docs]</a><span class="nd">@deconstructible</span>
 <span class="k">class</span> <span class="nc">S3Boto3StorageFile</span><span class="p">(</span><span class="n">File</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
@@ -279,7 +276,7 @@
 
     <span class="n">buffer_size</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_S3_FILE_BUFFER_SIZE&quot;</span><span class="p">,</span> <span class="mi">5242880</span><span class="p">)</span>
 
-<div class="viewcode-block" id="S3Boto3StorageFile.__init__"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">storage</span><span class="p">,</span> <span class="n">buffer_size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="S3Boto3StorageFile.__init__"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">storage</span><span class="p">,</span> <span class="n">buffer_size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes the File object.</span>
 
@@ -318,7 +315,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">content_length</span>
 
-<div class="viewcode-block" id="S3Boto3StorageFile._get_file"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile._get_file">[docs]</a>    <span class="k">def</span> <span class="nf">_get_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper function to manage zipping and temporary files</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -334,14 +331,14 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="o">.</span><span class="n">gzip</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">content_encoding</span> <span class="o">==</span> <span class="s2">&quot;gzip&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_file</span> <span class="o">=</span> <span class="n">GzipFile</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">,</span> <span class="n">fileobj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="p">,</span> <span class="n">mtime</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file</span>
 
-<div class="viewcode-block" id="S3Boto3StorageFile._set_file"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile._set_file">[docs]</a>    <span class="k">def</span> <span class="nf">_set_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_file</span> <span class="o">=</span> <span class="n">value</span></div>
+    <span class="k">def</span> <span class="nf">_set_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_file</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="n">file</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_file</span><span class="p">,</span> <span class="n">_set_file</span><span class="p">)</span>
 
-<div class="viewcode-block" id="S3Boto3StorageFile.read"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="S3Boto3StorageFile.read"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks if file is in read mode; then continues to boto3 operation</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -349,7 +346,7 @@
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;File was not opened in read mode.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_force_mode</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="S3Boto3StorageFile.readline"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.readline">[docs]</a>    <span class="k">def</span> <span class="nf">readline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="S3Boto3StorageFile.readline"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.readline">[docs]</a>    <span class="k">def</span> <span class="nf">readline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks if file is in read mode; then continues to boto3 operation</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -357,7 +354,7 @@
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;File was not opened in read mode.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_force_mode</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">readline</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="S3Boto3StorageFile.write"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
+<div class="viewcode-block" id="S3Boto3StorageFile.write"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks if file is in write mode or needs multipart handling,</span>
 <span class="sd">        then continues to boto3 operation.</span>
@@ -383,7 +380,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">length</span>
 
-<div class="viewcode-block" id="S3Boto3StorageFile._flush_write_buffer"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile._flush_write_buffer">[docs]</a>    <span class="k">def</span> <span class="nf">_flush_write_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_flush_write_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Flushes the write buffer.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -393,9 +390,9 @@
             <span class="n">part</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multipart</span><span class="o">.</span><span class="n">Part</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_write_counter</span><span class="p">)</span>
             <span class="n">part</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="n">Body</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">truncate</span><span class="p">()</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">truncate</span><span class="p">()</span>
 
-<div class="viewcode-block" id="S3Boto3StorageFile._create_empty_on_close"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile._create_empty_on_close">[docs]</a>    <span class="k">def</span> <span class="nf">_create_empty_on_close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_create_empty_on_close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Attempt to create an empty file for this key when this File is closed if no bytes</span>
 <span class="sd">        have been written and no object already exists on S3 for this key.</span>
@@ -417,9 +414,9 @@
             <span class="k">if</span> <span class="n">err</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;ResponseMetadata&quot;</span><span class="p">][</span><span class="s2">&quot;HTTPStatusCode&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">Body</span><span class="o">=</span><span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="o">.</span><span class="n">_get_write_parameters</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span></div>
+                <span class="k">raise</span>
 
-<div class="viewcode-block" id="S3Boto3StorageFile.close"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="S3Boto3StorageFile.close"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3StorageFile.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Manages file closing after multipart uploads</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -440,7 +437,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_file</span> <span class="o">=</span> <span class="kc">None</span></div></div>
 
 
-<div class="viewcode-block" id="S3Boto3Storage"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage">[docs]</a><span class="nd">@deconstructible</span>
+<div class="viewcode-block" id="S3Boto3Storage"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage">[docs]</a><span class="nd">@deconstructible</span>
 <span class="k">class</span> <span class="nc">S3Boto3Storage</span><span class="p">(</span><span class="n">Storage</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Amazon Simple Storage Service using Boto3</span>
@@ -496,7 +493,7 @@
     <span class="n">verify</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_S3_VERIFY&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="n">max_memory_size</span> <span class="o">=</span> <span class="n">setting</span><span class="p">(</span><span class="s2">&quot;AWS_S3_MAX_MEMORY_SIZE&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
-<div class="viewcode-block" id="S3Boto3Storage.__init__"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">acl</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bucket</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="p">):</span>
+<div class="viewcode-block" id="S3Boto3Storage.__init__"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">acl</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bucket</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if some of the settings we&#39;ve provided as class attributes</span>
 <span class="sd">        need to be overwritten with values passed in here.</span>
@@ -584,7 +581,7 @@
             <span class="p">}</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entries</span>
 
-<div class="viewcode-block" id="S3Boto3Storage._get_access_keys"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage._get_access_keys">[docs]</a>    <span class="k">def</span> <span class="nf">_get_access_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_access_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets the access keys to use when accessing S3. If none is</span>
 <span class="sd">        provided in the settings then get them from the environment</span>
@@ -592,17 +589,17 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">access_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">access_key</span> <span class="ow">or</span> <span class="n">lookup_env</span><span class="p">(</span><span class="n">S3Boto3Storage</span><span class="o">.</span><span class="n">access_key_names</span><span class="p">)</span>
         <span class="n">secret_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">secret_key</span> <span class="ow">or</span> <span class="n">lookup_env</span><span class="p">(</span><span class="n">S3Boto3Storage</span><span class="o">.</span><span class="n">secret_key_names</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">access_key</span><span class="p">,</span> <span class="n">secret_key</span></div>
+        <span class="k">return</span> <span class="n">access_key</span><span class="p">,</span> <span class="n">secret_key</span>
 
-<div class="viewcode-block" id="S3Boto3Storage._get_security_token"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage._get_security_token">[docs]</a>    <span class="k">def</span> <span class="nf">_get_security_token</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_security_token</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets the security token to use when accessing S3. Get it from</span>
 <span class="sd">        the environment variables.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">security_token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">security_token</span> <span class="ow">or</span> <span class="n">lookup_env</span><span class="p">(</span><span class="n">S3Boto3Storage</span><span class="o">.</span><span class="n">security_token_names</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">security_token</span></div>
+        <span class="k">return</span> <span class="n">security_token</span>
 
-<div class="viewcode-block" id="S3Boto3Storage._get_or_create_bucket"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage._get_or_create_bucket">[docs]</a>    <span class="k">def</span> <span class="nf">_get_or_create_bucket</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_or_create_bucket</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves a bucket if it exists, otherwise creates it.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -646,9 +643,9 @@
                     <span class="n">bucket</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="o">**</span><span class="n">bucket_params</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span>
-        <span class="k">return</span> <span class="n">bucket</span></div>
+        <span class="k">return</span> <span class="n">bucket</span>
 
-<div class="viewcode-block" id="S3Boto3Storage._clean_name"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage._clean_name">[docs]</a>    <span class="k">def</span> <span class="nf">_clean_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_clean_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Cleans the name so that Windows style paths work</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -660,9 +657,9 @@
         <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">clean_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">):</span>
             <span class="c1"># Add a trailing slash as it was stripped.</span>
             <span class="n">clean_name</span> <span class="o">+=</span> <span class="s2">&quot;/&quot;</span>
-        <span class="k">return</span> <span class="n">clean_name</span></div>
+        <span class="k">return</span> <span class="n">clean_name</span>
 
-<div class="viewcode-block" id="S3Boto3Storage._normalize_name"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage._normalize_name">[docs]</a>    <span class="k">def</span> <span class="nf">_normalize_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_normalize_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Normalizes the name so that paths like /path/to/ignored/../something.txt</span>
 <span class="sd">        work. We check to make sure that the path pointed to is not outside</span>
@@ -671,15 +668,15 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">safe_join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">SuspiciousOperation</span><span class="p">(</span><span class="s2">&quot;Attempted access to &#39;</span><span class="si">%s</span><span class="s2">&#39; denied.&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="n">SuspiciousOperation</span><span class="p">(</span><span class="s2">&quot;Attempted access to &#39;</span><span class="si">%s</span><span class="s2">&#39; denied.&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
 
-<div class="viewcode-block" id="S3Boto3Storage._encode_name"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage._encode_name">[docs]</a>    <span class="k">def</span> <span class="nf">_encode_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">smart_text</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_name_charset</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="nf">_encode_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">smart_text</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_name_charset</span><span class="p">)</span>
 
-<div class="viewcode-block" id="S3Boto3Storage._decode_name"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage._decode_name">[docs]</a>    <span class="k">def</span> <span class="nf">_decode_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">force_text</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_name_charset</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="nf">_decode_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">force_text</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_name_charset</span><span class="p">)</span>
 
-<div class="viewcode-block" id="S3Boto3Storage._compress_content"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage._compress_content">[docs]</a>    <span class="k">def</span> <span class="nf">_compress_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_compress_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Gzip a given string content.&quot;&quot;&quot;</span>
         <span class="n">content</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">zbuf</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">()</span>
@@ -696,9 +693,9 @@
         <span class="c1"># Boto 2 returned the InMemoryUploadedFile with the file pointer replaced,</span>
         <span class="c1"># but Boto 3 seems to have issues with that. No need for fp.name in Boto3</span>
         <span class="c1"># so just returning the BytesIO directly</span>
-        <span class="k">return</span> <span class="n">zbuf</span></div>
+        <span class="k">return</span> <span class="n">zbuf</span>
 
-<div class="viewcode-block" id="S3Boto3Storage._open"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage._open">[docs]</a>    <span class="k">def</span> <span class="nf">_open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rb&quot;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rb&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Opens the file, if it exists.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -709,9 +706,9 @@
             <span class="k">if</span> <span class="n">err</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;ResponseMetadata&quot;</span><span class="p">][</span><span class="s2">&quot;HTTPStatusCode&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;File does not exist: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
             <span class="k">raise</span>  <span class="c1"># Let it bubble up if it was some other error</span>
-        <span class="k">return</span> <span class="n">f</span></div>
+        <span class="k">return</span> <span class="n">f</span>
 
-<div class="viewcode-block" id="S3Boto3Storage._save"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage._save">[docs]</a>    <span class="k">def</span> <span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Stitches and cleans multipart uploads; normalizes file paths.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -734,9 +731,9 @@
 
         <span class="n">content</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">SEEK_SET</span><span class="p">)</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">upload_fileobj</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">ExtraArgs</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">cleaned_name</span></div>
+        <span class="k">return</span> <span class="n">cleaned_name</span>
 
-<div class="viewcode-block" id="S3Boto3Storage.delete"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<div class="viewcode-block" id="S3Boto3Storage.delete"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Deletes a file from S3.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -746,7 +743,7 @@
         <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entries</span><span class="p">:</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entries</span><span class="p">[</span><span class="n">name</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="S3Boto3Storage.exists"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.exists">[docs]</a>    <span class="k">def</span> <span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<div class="viewcode-block" id="S3Boto3Storage.exists"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.exists">[docs]</a>    <span class="k">def</span> <span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks if file exists.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -759,7 +756,7 @@
         <span class="k">except</span> <span class="n">ClientError</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="S3Boto3Storage.listdir"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.listdir">[docs]</a>    <span class="k">def</span> <span class="nf">listdir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<div class="viewcode-block" id="S3Boto3Storage.listdir"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.listdir">[docs]</a>    <span class="k">def</span> <span class="nf">listdir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Translational function to go from S3 file paths to the format</span>
 <span class="sd">        Django&#39;s listdir expects.</span>
@@ -781,7 +778,7 @@
                 <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">posixpath</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;Key&quot;</span><span class="p">],</span> <span class="n">path</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">directories</span><span class="p">,</span> <span class="n">files</span></div>
 
-<div class="viewcode-block" id="S3Boto3Storage.size"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.size">[docs]</a>    <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<div class="viewcode-block" id="S3Boto3Storage.size"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.size">[docs]</a>    <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets the filesize of a remote file.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -793,7 +790,7 @@
             <span class="k">return</span> <span class="mi">0</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bucket</span><span class="o">.</span><span class="n">Object</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_encode_name</span><span class="p">(</span><span class="n">name</span><span class="p">))</span><span class="o">.</span><span class="n">content_length</span></div>
 
-<div class="viewcode-block" id="S3Boto3Storage._get_write_parameters"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage._get_write_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">_get_write_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_write_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">encryption</span><span class="p">:</span>
@@ -812,9 +809,9 @@
             <span class="n">params</span><span class="p">[</span><span class="s2">&quot;ContentEncoding&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">encoding</span>
 
         <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_object_parameters</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">params</span></div>
+        <span class="k">return</span> <span class="n">params</span>
 
-<div class="viewcode-block" id="S3Boto3Storage.get_object_parameters"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.get_object_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">get_object_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<div class="viewcode-block" id="S3Boto3Storage.get_object_parameters"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.get_object_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">get_object_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a dictionary that is passed to file upload. Override this</span>
 <span class="sd">        method to adjust this on a per-object basis to set e.g ContentDisposition.</span>
@@ -823,7 +820,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_parameters</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="S3Boto3Storage.get_modified_time"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.get_modified_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_modified_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<div class="viewcode-block" id="S3Boto3Storage.get_modified_time"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.get_modified_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_modified_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns an (aware) datetime object containing the last modified time if</span>
 <span class="sd">        USE_TZ is True, otherwise returns a naive datetime in the local timezone.</span>
@@ -840,7 +837,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">make_naive</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">last_modified</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="S3Boto3Storage.modified_time"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.modified_time">[docs]</a>    <span class="k">def</span> <span class="nf">modified_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<div class="viewcode-block" id="S3Boto3Storage.modified_time"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.modified_time">[docs]</a>    <span class="k">def</span> <span class="nf">modified_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Returns a naive datetime object containing the last modified time.</span>
 <span class="sd">        If USE_TZ=False then get_modified_time will return a naive datetime</span>
 <span class="sd">        so we just return that, else we have to localize and strip the tz</span>
@@ -848,7 +845,7 @@
         <span class="n">mtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_modified_time</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">mtime</span> <span class="k">if</span> <span class="n">is_naive</span><span class="p">(</span><span class="n">mtime</span><span class="p">)</span> <span class="k">else</span> <span class="n">make_naive</span><span class="p">(</span><span class="n">mtime</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="S3Boto3Storage._strip_signing_parameters"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage._strip_signing_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">_strip_signing_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_strip_signing_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Boto3 does not currently support generating URLs that are unsigned. Instead we</span>
 <span class="sd">        take the signed URLs and strip any querystring params related to signing and expiration.</span>
@@ -876,9 +873,9 @@
         <span class="c1"># an &#39;=&#39; sign appended to it, e.g ?foo&amp;bar becomes ?foo=&amp;bar=</span>
         <span class="n">joined_qs</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">keyval</span><span class="p">)</span> <span class="k">for</span> <span class="n">keyval</span> <span class="ow">in</span> <span class="n">filtered_qs</span><span class="p">)</span>
         <span class="n">split_url</span> <span class="o">=</span> <span class="n">split_url</span><span class="o">.</span><span class="n">_replace</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="s2">&quot;&amp;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">joined_qs</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">split_url</span><span class="o">.</span><span class="n">geturl</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="n">split_url</span><span class="o">.</span><span class="n">geturl</span><span class="p">()</span>
 
-<div class="viewcode-block" id="S3Boto3Storage.url"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.url">[docs]</a>    <span class="k">def</span> <span class="nf">url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">expire</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="S3Boto3Storage.url"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.url">[docs]</a>    <span class="k">def</span> <span class="nf">url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">expire</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URL of a remotely-hosted file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -899,7 +896,7 @@
             <span class="k">return</span> <span class="n">url</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strip_signing_parameters</span><span class="p">(</span><span class="n">url</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="S3Boto3Storage.get_available_name"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.get_available_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_available_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="S3Boto3Storage.get_available_name"><a class="viewcode-back" href="../../../../api/evennia.contrib.awsstorage.aws_s3_cdn.html#evennia.contrib.awsstorage.aws_s3_cdn.S3Boto3Storage.get_available_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_available_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Overwrite existing file with the same name.&quot;&quot;&quot;</span>
         <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clean_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_overwrite</span><span class="p">:</span>
@@ -907,6 +904,7 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_available_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">max_length</span><span class="p">)</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -944,17 +942,15 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.awsstorage.aws_s3_cdn</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.awsstorage.aws_s3_cdn</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

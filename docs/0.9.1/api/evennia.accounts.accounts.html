@@ -1,0 +1,1061 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>evennia.accounts.accounts &#8212; Evennia 0.9.1 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.accounts.accounts</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-evennia.accounts.accounts">
+<span id="evennia-accounts-accounts"></span><h1>evennia.accounts.accounts<a class="headerlink" href="#module-evennia.accounts.accounts" title="Permalink to this headline">¶</a></h1>
+<p>Typeclass for Account objects</p>
+<p>Note that this object is primarily intended to
+store OOC information, not game info! This
+object represents the actual user (not their
+character) and has NO actual presence in the
+game world (this is handled by the associated
+character object, so you should customize that
+instead for most things).</p>
+<dl class="py class">
+<dt id="evennia.accounts.accounts.DefaultAccount">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.accounts.accounts.</code><code class="sig-name descname">DefaultAccount</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.accounts.models.html#evennia.accounts.models.AccountDB" title="evennia.accounts.models.AccountDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.accounts.models.AccountDB</span></code></a></p>
+<p>This is the base Typeclass for all Accounts. Accounts represent
+the person playing the game and tracks account info, password
+etc. They are OOC entities without presence in-game. An Account
+can connect to a Character Object in order to “enter” the
+game.</p>
+<p>Account Typeclass API:</p>
+<ul class="simple">
+<li><p>Available properties (only available on initiated typeclass objects)</p></li>
+</ul>
+<blockquote>
+<div><ul class="simple">
+<li><p>key (string) - name of account</p></li>
+<li><p>name (string)- wrapper for user.username</p></li>
+<li><dl class="simple">
+<dt>aliases (list of strings) - aliases to the object. Will be saved to</dt><dd><p>database as AliasDB entries but returned as strings.</p>
+</dd>
+</dl>
+</li>
+<li><p>dbref (int, read-only) - unique #id-number. Also “id” can be used.</p></li>
+<li><p>date_created (string) - time stamp of object creation</p></li>
+<li><p>permissions (list of strings) - list of permission strings</p></li>
+<li><p>user (User, read-only) - django User authorization object</p></li>
+<li><dl class="simple">
+<dt>obj (Object) - game object controlled by account. ‘character’ can also</dt><dd><p>be used.</p>
+</dd>
+</dl>
+</li>
+<li><p>sessions (list of Sessions) - sessions connected to this account</p></li>
+<li><p>is_superuser (bool, read-only) - if the connected user is a superuser</p></li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li><p>Handlers</p></li>
+</ul>
+<blockquote>
+<div><ul class="simple">
+<li><p>locks - lock-handler: use locks.add() to add new lock strings</p></li>
+<li><dl class="simple">
+<dt>db - attribute-handler: store/retrieve database attributes on this</dt><dd><p>self.db.myattr=val, val=self.db.myattr</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>ndb - non-persistent attribute handler: same as db but does not</dt><dd><p>create a database entry when storing data</p>
+</dd>
+</dl>
+</li>
+<li><p>scripts - script-handler. Add new scripts to object with scripts.add()</p></li>
+<li><p>cmdset - cmdset-handler. Use cmdset.add() to add new cmdsets to object</p></li>
+<li><p>nicks - nick-handler. New nicks with nicks.add().</p></li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li><p>Helper methods</p></li>
+</ul>
+<blockquote>
+<div><ul class="simple">
+<li><p>msg(text=None, from_obj=None, session=None, options=None, <a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs)</p></li>
+<li><p>execute_cmd(raw_string)</p></li>
+<li><dl class="simple">
+<dt>search(ostring, global_search=False, attribute_name=None,</dt><dd><p>use_nicks=False, location=None,
+ignore_errors=False, account=False)</p>
+</dd>
+</dl>
+</li>
+<li><p>is_typeclass(typeclass, exact=False)</p></li>
+<li><p>swap_typeclass(new_typeclass, clean_attributes=False, no_default=True)</p></li>
+<li><p>access(accessing_obj, access_type=’read’, default=False, no_superuser_bypass=False)</p></li>
+<li><p>check_permstring(permstring)</p></li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li><p>Hook methods</p></li>
+</ul>
+<blockquote>
+<div><p>basetype_setup()
+at_account_creation()</p>
+<dl class="simple">
+<dt>&gt; note that the following hooks are also found on Objects and are</dt><dd><p>usually handled on the character level:</p>
+</dd>
+</dl>
+<ul class="simple">
+<li><p>at_init()</p></li>
+<li><p>at_access()</p></li>
+<li><p>at_cmdset_get(<a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs)</p></li>
+<li><p>at_first_login()</p></li>
+<li><p>at_post_login(session=None)</p></li>
+<li><p>at_disconnect()</p></li>
+<li><p>at_message_receive()</p></li>
+<li><p>at_message_send()</p></li>
+<li><p>at_server_reload()</p></li>
+<li><p>at_server_shutdown()</p></li>
+</ul>
+</div></blockquote>
+<dl class="py attribute">
+<dt id="evennia.accounts.accounts.DefaultAccount.objects">
+<code class="sig-name descname">objects</code><em class="property"> = &lt;evennia.accounts.manager.AccountManager object&gt;</em><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.accounts.accounts.DefaultAccount.cmdset">
+<code class="sig-name descname">cmdset</code><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.cmdset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.cmdset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.accounts.accounts.DefaultAccount.scripts">
+<code class="sig-name descname">scripts</code><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.scripts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.scripts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.accounts.accounts.DefaultAccount.nicks">
+<code class="sig-name descname">nicks</code><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.nicks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.nicks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.accounts.accounts.DefaultAccount.sessions">
+<code class="sig-name descname">sessions</code><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.sessions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.sessions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.accounts.accounts.DefaultAccount.options">
+<code class="sig-name descname">options</code><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.characters">
+<em class="property">property </em><code class="sig-name descname">characters</code><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.characters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.disconnect_session_from_account">
+<code class="sig-name descname">disconnect_session_from_account</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="n">reason</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.disconnect_session_from_account"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.disconnect_session_from_account" title="Permalink to this definition">¶</a></dt>
+<dd><p>Access method for disconnecting a given session from the
+account (connection happens automatically in the
+sessionhandler)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a>) – Session to disconnect.</p></li>
+<li><p><strong>reason</strong> (<em>str</em><em>, </em><em>optional</em>) – Eventual reason for the disconnect.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.puppet_object">
+<code class="sig-name descname">puppet_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.puppet_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.puppet_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use the given session to control (puppet) the given object (usually
+a Character type).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a>) – session to use for puppeting</p></li>
+<li><p><strong>obj</strong> (<em>Object</em>) – the object to start puppeting</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – If puppeting is not possible, the
+<strong>exception.msg</strong> will contain the reason.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.unpuppet_object">
+<code class="sig-name descname">unpuppet_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.unpuppet_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.unpuppet_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disengage control over an object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em> or </em><em>list</em>) – The session or a list of
+sessions to disengage from their puppets.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>RuntimeError With message about error.</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.unpuppet_all">
+<code class="sig-name descname">unpuppet_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.unpuppet_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.unpuppet_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disconnect all puppets. This is called by server before a
+reset/shutdown.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.get_puppet">
+<code class="sig-name descname">get_puppet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.get_puppet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.get_puppet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get an object puppeted by this session through this account. This is
+the main method for retrieving the puppeted object from the
+account’s end.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a>) – Find puppeted object based on this session</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>puppet (Object)</em> – The matching puppeted object, if any.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.get_all_puppets">
+<code class="sig-name descname">get_all_puppets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.get_all_puppets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.get_all_puppets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all currently puppeted objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>puppets (list)</em> –</p>
+<dl class="simple">
+<dt>All puppeted objects currently controlled</dt><dd><p>by this Account.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.character">
+<em class="property">property </em><code class="sig-name descname">character</code><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.character" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a legacy convenience link for use with <strong>MULTISESSION_MODE</strong>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>puppets (Object or list)</em> –</p>
+<dl class="simple">
+<dt>Users of <strong>MULTISESSION_MODE</strong> 0 or 1 will</dt><dd><p>always get the first puppet back. Users of higher <a href="#id5"><span class="problematic" id="id6">**</span></a>MULTISESSION_MODE**s will
+get a list of all puppeted objects.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.puppet">
+<em class="property">property </em><code class="sig-name descname">puppet</code><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.puppet" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a legacy convenience link for use with <strong>MULTISESSION_MODE</strong>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>puppets (Object or list)</em> –</p>
+<dl class="simple">
+<dt>Users of <strong>MULTISESSION_MODE</strong> 0 or 1 will</dt><dd><p>always get the first puppet back. Users of higher <a href="#id7"><span class="problematic" id="id8">**</span></a>MULTISESSION_MODE**s will
+get a list of all puppeted objects.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.is_banned">
+<em class="property">classmethod </em><code class="sig-name descname">is_banned</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.is_banned"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.is_banned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if a given username or IP is banned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ip</strong> (<em>str</em><em>, </em><em>optional</em>) – IP address.</p></li>
+<li><p><strong>username</strong> (<em>str</em><em>, </em><em>optional</em>) – Username.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>is_banned (bool)</em> – Whether either is banned or not.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.get_username_validators">
+<em class="property">classmethod </em><code class="sig-name descname">get_username_validators</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">validator_config</span><span class="o">=</span><span class="default_value">[{'NAME': 'django.contrib.auth.validators.ASCIIUsernameValidator'}, {'NAME': 'django.core.validators.MinLengthValidator', 'OPTIONS': {'limit_value': 3}}, {'NAME': 'django.core.validators.MaxLengthValidator', 'OPTIONS': {'limit_value': 30}}, {'NAME': 'evennia.server.validators.EvenniaUsernameAvailabilityValidator'}]</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.get_username_validators"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.get_username_validators" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves and instantiates validators for usernames.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>validator_config</strong> (<em>list</em>) – List of dicts comprising the battery of
+validators to apply to a username.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>validators (list)</em> – List of instantiated Validator objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.authenticate">
+<em class="property">classmethod </em><code class="sig-name descname">authenticate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">username</span></em>, <em class="sig-param"><span class="n">password</span></em>, <em class="sig-param"><span class="n">ip</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.authenticate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.authenticate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks the given username/password against the database to see if the
+credentials are valid.</p>
+<p>Note that this simply checks credentials and returns a valid reference
+to the user– it does not log them in!</p>
+<p>To finish the job:
+After calling this from a Command, associate the account with a Session:
+- session.sessionhandler.login(session, account)</p>
+<p>…or after calling this from a View, associate it with an HttpRequest:
+- django.contrib.auth.login(account, request)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>username</strong> (<em>str</em>) – Username of account</p></li>
+<li><p><strong>password</strong> (<em>str</em>) – Password of account</p></li>
+<li><p><strong>ip</strong> (<em>str</em><em>, </em><em>optional</em>) – IP address of client</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em>, </em><em>optional</em>) – Session requesting authentication</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>account (DefaultAccount, None)</em> –</p>
+<dl class="simple">
+<dt>Account whose credentials were</dt><dd><p>provided if not banned.</p>
+</dd>
+</dl>
+<p>errors (list): Error messages of any failures.</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.normalize_username">
+<em class="property">classmethod </em><code class="sig-name descname">normalize_username</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">username</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.normalize_username"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.normalize_username" title="Permalink to this definition">¶</a></dt>
+<dd><p>Django: Applies NFKC Unicode normalization to usernames so that visually
+identical characters with different Unicode code points are considered
+identical.</p>
+<p>(This deals with the Turkish “i” problem and similar
+annoyances. Only relevant if you go out of your way to allow Unicode
+usernames though– Evennia accepts ASCII by default.)</p>
+<p>In this case we’re simply piggybacking on this feature to apply
+additional normalization per Evennia’s standards.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.validate_username">
+<em class="property">classmethod </em><code class="sig-name descname">validate_username</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">username</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.validate_username"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.validate_username" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks the given username against the username validator associated with
+Account objects, and also checks the database to make sure it is unique.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>username</strong> (<em>str</em>) – Username to validate</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>valid (bool)</em> – Whether or not the password passed validation
+errors (list): Error messages of any failures</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.validate_password">
+<em class="property">classmethod </em><code class="sig-name descname">validate_password</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">password</span></em>, <em class="sig-param"><span class="n">account</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.validate_password"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.validate_password" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks the given password against the list of Django validators enabled
+in the server.conf file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>password</strong> (<em>str</em>) – Password to validate</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>account</strong> (<a class="reference internal" href="#evennia.accounts.accounts.DefaultAccount" title="evennia.accounts.accounts.DefaultAccount"><em>DefaultAccount</em></a><em>, </em><em>optional</em>) – Account object to validate the
+password for. Optional, but Django includes some validators to
+do things like making sure users aren’t setting passwords to the
+same value as their username. If left blank, these user-specific
+checks are skipped.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>valid (bool)</em> – Whether or not the password passed validation
+error (ValidationError, None): Any validation error(s) raised. Multiple</p>
+<blockquote>
+<div><p>errors can be nested within a single object.</p>
+</div></blockquote>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.set_password">
+<code class="sig-name descname">set_password</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">password</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.set_password"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.set_password" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies the given password to the account. Logs and triggers the <strong>at_password_change</strong> hook.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>password</strong> (<em>str</em>) – Password to set.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This is called by Django also when logging in; it should not be mixed up with validation, since that
+would mean old passwords in the database (pre validation checks) could get invalidated.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.create">
+<em class="property">classmethod </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates an Account (or Account/Character pair for MULTISESSION_MODE&lt;2)
+with default (or overridden) permissions and having joined them to the
+appropriate default channels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>username</strong> (<em>str</em>) – Username of Account owner</p></li>
+<li><p><strong>password</strong> (<em>str</em>) – Password of Account owner</p></li>
+<li><p><strong>email</strong> (<em>str</em><em>, </em><em>optional</em>) – Email address of Account owner</p></li>
+<li><p><strong>ip</strong> (<em>str</em><em>, </em><em>optional</em>) – IP address of requesting connection</p></li>
+<li><p><strong>guest</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not this is to be a Guest account</p></li>
+<li><p><strong>permissions</strong> (<em>str</em><em>, </em><em>optional</em>) – Default permissions for the Account</p></li>
+<li><p><strong>typeclass</strong> (<em>str</em><em>, </em><em>optional</em>) – Typeclass to use for new Account</p></li>
+<li><p><strong>character_typeclass</strong> (<em>str</em><em>, </em><em>optional</em>) – Typeclass to use for new char
+when applicable.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>account (Account)</em> – Account if successfully created; None if not
+errors (list): List of error messages in string form</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.delete">
+<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes the account permanently.</p>
+<p class="rubric">Notes</p>
+<dl class="simple">
+<dt><strong>*args</strong> and <strong>**kwargs</strong> are passed on to the base delete</dt><dd><p>mechanism (these are usually not used).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.msg">
+<code class="sig-name descname">msg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">from_obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">options</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evennia -&gt; User
+This is the main route for sending data back to the user from the
+server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<em>str</em><em> or </em><em>tuple</em><em>, </em><em>optional</em>) – The message to send. This
+is treated internally like any send-command, so its
+value can be a tuple if sending multiple arguments to
+the <strong>text</strong> oob command.</p></li>
+<li><p><strong>from_obj</strong> (<em>Object</em><em> or </em><em>Account</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – Object sending. If given, its
+at_msg_send() hook will be called. If iterable, call on all entities.</p></li>
+<li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em> or </em><em>list</em><em>, </em><em>optional</em>) – Session object or a list of
+Sessions to receive this send. If given, overrules the
+default send behavior for the current
+MULTISESSION_MODE.</p></li>
+<li><p><strong>options</strong> (<em>list</em>) – Protocol-specific options. Passed on to the protocol.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>any</strong> (<em>dict</em>) – All other keywords are passed on to the protocol.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.execute_cmd">
+<code class="sig-name descname">execute_cmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raw_string</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.execute_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.execute_cmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do something as this account. This method is never called normally,
+but only when the account object itself is supposed to execute the
+command. It takes account nicks into account, but not nicks of
+eventual puppets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>raw_string</strong> (<em>str</em>) – Raw command input coming from the command line.</p></li>
+<li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em>, </em><em>optional</em>) – The session to be responsible
+for the command-send</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>kwargs</strong> (<em>any</em>) – Other keyword arguments will be added to the
+found command object instance as variables before it
+executes. This is unused by default Evennia but may be
+used to set flags and change operating paramaters for
+commands at run-time.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.search">
+<code class="sig-name descname">search</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">searchdata</span></em>, <em class="sig-param"><span class="n">return_puppet</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">search_object</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nofound_string</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">multimatch_string</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">use_nicks</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.search" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is similar to <strong>DefaultObject.search</strong> but defaults to searching
+for Accounts only.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>searchdata</strong> (<em>str</em><em> or </em><em>int</em>) – Search criterion, the Account’s
+key or dbref to search for.</p></li>
+<li><p><strong>return_puppet</strong> (<em>bool</em><em>, </em><em>optional</em>) – Instructs the method to
+return matches as the object the Account controls rather
+than the Account itself (or None) if nothing is puppeted).</p></li>
+<li><p><strong>search_object</strong> (<em>bool</em><em>, </em><em>optional</em>) – Search for Objects instead of
+Accounts. This is used by e.g. the &#64;examine command when
+wanting to examine Objects while OOC.</p></li>
+<li><p><strong>typeclass</strong> (<em>Account typeclass</em><em>, </em><em>optional</em>) – Limit the search
+only to this particular typeclass. This can be used to
+limit to specific account typeclasses or to limit the search
+to a particular Object typeclass if <strong>search_object</strong> is True.</p></li>
+<li><p><strong>nofound_string</strong> (<em>str</em><em>, </em><em>optional</em>) – A one-time error message
+to echo if <strong>searchdata</strong> leads to no matches. If not given,
+will fall back to the default handler.</p></li>
+<li><p><strong>multimatch_string</strong> (<em>str</em><em>, </em><em>optional</em>) – A one-time error
+message to echo if <strong>searchdata</strong> leads to multiple matches.
+If not given, will fall back to the default handler.</p></li>
+<li><p><strong>use_nicks</strong> (<em>bool</em><em>, </em><em>optional</em>) – Use account-level nick replacement.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>match (Account, Object or None)</em> – A single Account or Object match.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Extra keywords are ignored, but are allowed in call in
+order to make API more consistent with
+objects.objects.DefaultObject.search.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.access">
+<code class="sig-name descname">access</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">accessing_obj</span></em>, <em class="sig-param"><span class="n">access_type</span><span class="o">=</span><span class="default_value">'read'</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">no_superuser_bypass</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.access"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.access" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines if another object has permission to access this
+object in whatever way.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>accessing_obj</strong> (<em>Object</em>) – Object trying to access this one.</p></li>
+<li><p><strong>access_type</strong> (<em>str</em><em>, </em><em>optional</em>) – Type of access sought.</p></li>
+<li><p><strong>default</strong> (<em>bool</em><em>, </em><em>optional</em>) – What to return if no lock of
+access_type was found</p></li>
+<li><p><strong>no_superuser_bypass</strong> (<em>bool</em><em>, </em><em>optional</em>) – Turn off superuser
+lock bypassing. Be careful with this one.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>kwargs</strong> (<em>any</em>) – Passed to the at_access hook along with the result.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>result (bool)</em> – Result of access check.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.idle_time">
+<em class="property">property </em><code class="sig-name descname">idle_time</code><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.idle_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the idle time of the least idle session in seconds. If
+no sessions are connected it returns nothing.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.connection_time">
+<em class="property">property </em><code class="sig-name descname">connection_time</code><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.connection_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the maximum connection time of all connected sessions
+in seconds. Returns nothing if there are no sessions.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.basetype_setup">
+<code class="sig-name descname">basetype_setup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.basetype_setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.basetype_setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>This sets up the basic properties for an account. Overload this
+with at_account_creation rather than changing this method.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.at_account_creation">
+<code class="sig-name descname">at_account_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_account_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_account_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is called once, the very first time the account is created
+(i.e. first time they register with the game). It’s a good
+place to store attributes all accounts should have, like
+configuration values etc.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.at_init">
+<code class="sig-name descname">at_init</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_init" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is always called whenever this object is initiated –
+that is, whenever it its typeclass is cached from memory. This
+happens on-demand first time the object is used or activated
+in some way after being created but also after each server
+restart or reload. In the case of account objects, this usually
+happens the moment the account logs in or reconnects after a
+reload.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.at_first_save">
+<code class="sig-name descname">at_first_save</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_first_save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_first_save" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a generic hook called by Evennia when this object is
+saved to the database the very first time.  You generally
+don’t override this method but the hooks called by it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.at_access">
+<code class="sig-name descname">at_access</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">result</span></em>, <em class="sig-param"><span class="n">accessing_obj</span></em>, <em class="sig-param"><span class="n">access_type</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_access"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_access" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>This is triggered after an access-call on this Account has</dt><dd><p>completed.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>result</strong> (<em>bool</em>) – The result of the access check.</p></li>
+<li><p><strong>accessing_obj</strong> (<em>any</em>) – The object requesting the access
+check.</p></li>
+<li><p><strong>access_type</strong> (<em>str</em>) – The type of access checked.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>kwargs</strong> (<em>any</em>) – These are passed on from the access check
+and can be used to relay custom instructions from the
+check mechanism.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method cannot affect the result of the lock check and
+its return value is not used in any way. It can be used
+e.g.  to customize error messages in a central location or
+create other effects based on the access result.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.at_cmdset_get">
+<code class="sig-name descname">at_cmdset_get</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_cmdset_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_cmdset_get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called just <em>before</em> cmdsets on this account are requested by
+the command handler. The cmdsets are available as
+<strong>self.cmdset</strong>. If changes need to be done on the fly to the
+cmdset before passing them on to the cmdhandler, this is the
+place to do it.  This is called also if the account currently
+have no cmdsets. kwargs are usually not used unless the
+cmdset is generated dynamically.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.at_first_login">
+<code class="sig-name descname">at_first_login</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_first_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_first_login" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called the very first time this account logs into the game.
+Note that this is called <em>before</em> at_pre_login, so no session
+is established and usually no character is yet assigned at
+this point. This hook is intended for account-specific setup
+like configurations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+overriding the call (unused by default).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.at_password_change">
+<code class="sig-name descname">at_password_change</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_password_change"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_password_change" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called after a successful password set/modify.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+overriding the call (unused by default).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.at_pre_login">
+<code class="sig-name descname">at_pre_login</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_pre_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_pre_login" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called every time the user logs in, just before the actual
+login-state is set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+overriding the call (unused by default).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.at_post_login">
+<code class="sig-name descname">at_post_login</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_post_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_post_login" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called at the end of the login process, just before letting
+the account loose.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em>, </em><em>optional</em>) – Session logging in, if any.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+overriding the call (unused by default).</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This is called <em>before</em> an eventual Character’s
+<strong>at_post_login</strong> hook. By default it is used to set up
+auto-puppeting based on <strong>MULTISESSION_MODE</strong>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.at_failed_login">
+<code class="sig-name descname">at_failed_login</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_failed_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_failed_login" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called by the login process if a user account is targeted correctly
+but provided with an invalid password. By default it does nothing,
+but exists to be overriden.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session</strong> (<em>session</em>) – Session logging in.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+overriding the call (unused by default).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.at_disconnect">
+<code class="sig-name descname">at_disconnect</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reason</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_disconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called just before user is disconnected.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reason</strong> (<em>str</em><em>, </em><em>optional</em>) – The reason given for the disconnect,
+(echoed to the connection channel by default).</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+overriding the call (unused by default).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.at_post_disconnect">
+<code class="sig-name descname">at_post_disconnect</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_post_disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_post_disconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is called <em>after</em> disconnection is complete. No messages
+can be relayed to the account from here. After this call, the
+account should not be accessed any more, making this a good
+spot for deleting it (in the case of a guest account account,
+for example).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+overriding the call (unused by default).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.at_msg_receive">
+<code class="sig-name descname">at_msg_receive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">from_obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_msg_receive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_msg_receive" title="Permalink to this definition">¶</a></dt>
+<dd><p>This hook is called whenever someone sends a message to this
+object using the <strong>msg</strong> method.</p>
+<p>Note that from_obj may be None if the sender did not include
+itself as an argument to the obj.msg() call - so you have to
+check for this. .</p>
+<p>Consider this a pre-processing method before msg is passed on
+to the user session. If this method returns False, the msg
+will not be passed on.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<em>str</em><em>, </em><em>optional</em>) – The message received.</p></li>
+<li><p><strong>from_obj</strong> (<em>any</em><em>, </em><em>optional</em>) – The object sending the message.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>includes any keywords sent to the msg method.</strong> (<em>This</em>) – </p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>receive (bool)</em> – If this message should be received.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If this method returns False, the <strong>msg</strong> operation
+will abort without sending the message.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.at_msg_send">
+<code class="sig-name descname">at_msg_send</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">to_obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_msg_send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_msg_send" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a hook that is called when <em>this</em> object sends a
+message to another object with <strong>obj.msg(text, to_obj=obj)</strong>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<em>str</em><em>, </em><em>optional</em>) – Text to send.</p></li>
+<li><p><strong>to_obj</strong> (<em>any</em><em>, </em><em>optional</em>) – The object to send to.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>passed from msg</strong><strong>(</strong><strong>)</strong> (<em>Keywords</em>) – </p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Since this method is executed by <strong>from_obj</strong>, if no <strong>from_obj</strong>
+was passed to <strong>DefaultCharacter.msg</strong> this hook will never
+get called.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.at_server_reload">
+<code class="sig-name descname">at_server_reload</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_server_reload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_server_reload" title="Permalink to this definition">¶</a></dt>
+<dd><p>This hook is called whenever the server is shutting down for
+restart/reboot. If you want to, for example, save
+non-persistent properties across a restart, this is the place
+to do it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.at_server_shutdown">
+<code class="sig-name descname">at_server_shutdown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_server_shutdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_server_shutdown" title="Permalink to this definition">¶</a></dt>
+<dd><p>This hook is called whenever the server is shutting down fully
+(i.e. not for a restart).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.at_look">
+<code class="sig-name descname">at_look</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_look"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_look" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when this object executes a look. It allows to customize
+just what this means.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>Object</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – An object or a list
+objects to inspect.</p></li>
+<li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em>, </em><em>optional</em>) – The session doing this look.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+overriding the call (unused by default).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>look_string (str)</em> –</p>
+<dl class="simple">
+<dt>A prepared look string, ready to send</dt><dd><p>off to any recipient (usually to ourselves)</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.accounts.accounts.DefaultAccount.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.accounts.models.html#evennia.accounts.models.AccountDB.DoesNotExist" title="evennia.accounts.models.AccountDB.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.accounts.models.AccountDB.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.accounts.accounts.DefaultAccount.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.accounts.models.html#evennia.accounts.models.AccountDB.MultipleObjectsReturned" title="evennia.accounts.models.AccountDB.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.accounts.models.AccountDB.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.accounts.accounts.DefaultAccount.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.accounts.accounts.DefaultAccount'</em><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.accounts.accounts.DefaultAccount.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'DefaultAccount'</em><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.accounts.accounts.DefaultGuest">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.accounts.accounts.</code><code class="sig-name descname">DefaultGuest</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultGuest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.accounts.accounts.DefaultAccount" title="evennia.accounts.accounts.DefaultAccount"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.accounts.accounts.DefaultAccount</span></code></a></p>
+<p>This class is used for guest logins. Unlike Accounts, Guests and
+their characters are deleted after disconnection.</p>
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultGuest.create">
+<em class="property">classmethod </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultGuest.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Forwards request to cls.authenticate(); returns a DefaultGuest object
+if one is available for use.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultGuest.authenticate">
+<em class="property">classmethod </em><code class="sig-name descname">authenticate</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultGuest.authenticate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest.authenticate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets or creates a Guest account object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><p><strong>ip</strong> (<em>str</em><em>, </em><em>optional</em>) – IP address of requestor; used for ban checking,
+throttling and logging</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>account (Object)</em> – Guest account object, if available
+errors (list): List of error messages accrued during this request.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultGuest.at_post_login">
+<code class="sig-name descname">at_post_login</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultGuest.at_post_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest.at_post_login" title="Permalink to this definition">¶</a></dt>
+<dd><p>In theory, guests only have one character regardless of which
+MULTISESSION_MODE we’re in. They don’t get a choice.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em>, </em><em>optional</em>) – Session connecting.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+overriding the call (unused by default).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultGuest.at_server_shutdown">
+<code class="sig-name descname">at_server_shutdown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultGuest.at_server_shutdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest.at_server_shutdown" title="Permalink to this definition">¶</a></dt>
+<dd><p>We repeat the functionality of <strong>at_disconnect()</strong> here just to
+be on the safe side.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultGuest.at_post_disconnect">
+<code class="sig-name descname">at_post_disconnect</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultGuest.at_post_disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest.at_post_disconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Once having disconnected, destroy the guest’s characters and</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
+overriding the call (unused by default).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.accounts.accounts.DefaultGuest.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.accounts.accounts.DefaultAccount.DoesNotExist" title="evennia.accounts.accounts.DefaultAccount.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.accounts.accounts.DefaultAccount.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.accounts.accounts.DefaultGuest.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.accounts.accounts.DefaultAccount.MultipleObjectsReturned" title="evennia.accounts.accounts.DefaultAccount.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.accounts.accounts.DefaultAccount.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.accounts.accounts.DefaultGuest.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.accounts.accounts.DefaultGuest'</em><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.accounts.accounts.DefaultGuest.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'DefaultGuest'</em><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.accounts.accounts.rst.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../1.0-dev/api/evennia.accounts.accounts.html">1.0-dev (develop branch)</a></li>
+  <li><a href="evennia.accounts.accounts.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.accounts.accounts</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+    </div>
+  </body>
+</html>

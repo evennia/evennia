@@ -1,0 +1,885 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>evennia.web.website.views &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.web.website.views</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-evennia.web.website.views">
+<span id="evennia-web-website-views"></span><h1>evennia.web.website.views<a class="headerlink" href="#module-evennia.web.website.views" title="Permalink to this headline">¶</a></h1>
+<p>This file contains the generic, assorted views that don’t fall under one of the other applications.
+Views are django’s way of processing e.g. html templates on the fly.</p>
+<dl class="py function">
+<dt id="evennia.web.website.views.to_be_implemented">
+<code class="sig-prename descclassname">evennia.web.website.views.</code><code class="sig-name descname">to_be_implemented</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#to_be_implemented"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.to_be_implemented" title="Permalink to this definition">¶</a></dt>
+<dd><p>A notice letting the user know that this particular feature hasn’t been
+implemented yet.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.web.website.views.evennia_admin">
+<code class="sig-prename descclassname">evennia.web.website.views.</code><code class="sig-name descname">evennia_admin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#evennia_admin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.evennia_admin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helpful Evennia-specific admin page.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.web.website.views.admin_wrapper">
+<code class="sig-prename descclassname">evennia.web.website.views.</code><code class="sig-name descname">admin_wrapper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#admin_wrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.admin_wrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper that allows us to properly use the base Django admin site, if needed.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.EvenniaIndexView">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.</code><code class="sig-name descname">EvenniaIndexView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#EvenniaIndexView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.EvenniaIndexView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
+<p>This is a basic example of a Django class-based view, which are functionally
+very similar to Evennia Commands but differ in structure. Commands are used
+to interface with users using a terminal client. Views are used to interface
+with users using a web browser.</p>
+<p>To use a class-based view, you need to have written a template in HTML, and
+then you write a view like this to tell Django what values to display on it.</p>
+<p>While there are simpler ways of writing views using plain functions (and
+Evennia currently contains a few examples of them), just like Commands,
+writing views as classes provides you with more flexibility– you can extend
+classes and change things to suit your needs rather than having to copy and
+paste entire code blocks over and over. Django also comes with many default
+views for displaying things, all of them implemented as classes.</p>
+<p>This particular example displays the index page.</p>
+<dl class="py attribute">
+<dt id="evennia.web.website.views.EvenniaIndexView.template_name">
+<code class="sig-name descname">template_name</code><em class="property"> = 'website/index.html'</em><a class="headerlink" href="#evennia.web.website.views.EvenniaIndexView.template_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.website.views.EvenniaIndexView.get_context_data">
+<code class="sig-name descname">get_context_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#EvenniaIndexView.get_context_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.EvenniaIndexView.get_context_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a common Django method. Think of this as the website
+equivalent of the Evennia Command.func() method.</p>
+<p>If you just want to display a static page with no customization, you
+don’t need to define this method– just create a view, define
+template_name and you’re done.</p>
+<p>The only catch here is that if you extend or overwrite this method,
+you’ll always want to make sure you call the parent method to get a
+context object. It’s just a dict, but it comes prepopulated with all
+sorts of background data intended for display on the page.</p>
+<p>You can do whatever you want to it, but it must be returned at the end
+of this method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><p><strong>any</strong> (<em>any</em>) – Passed through.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>context (dict)</em> – Dictionary of data you want to display on the page.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.TypeclassMixin">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.</code><code class="sig-name descname">TypeclassMixin</code><a class="reference internal" href="../_modules/evennia/web/website/views.html#TypeclassMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.TypeclassMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This is a “mixin”, a modifier of sorts.</p>
+<p>Django views typically work with classes called “models.” Evennia objects
+are an enhancement upon these Django models and are called “typeclasses.”
+But Django itself has no idea what a “typeclass” is.</p>
+<p>For the sake of mitigating confusion, any view class with this in its
+inheritance list will be modified to work with Evennia Typeclass objects or
+Django models interchangeably.</p>
+<dl class="py method">
+<dt id="evennia.web.website.views.TypeclassMixin.typeclass">
+<em class="property">property </em><code class="sig-name descname">typeclass</code><a class="headerlink" href="#evennia.web.website.views.TypeclassMixin.typeclass" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.EvenniaCreateView">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.</code><code class="sig-name descname">EvenniaCreateView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#EvenniaCreateView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.EvenniaCreateView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.edit.CreateView</span></code>, <a class="reference internal" href="#evennia.web.website.views.TypeclassMixin" title="evennia.web.website.views.TypeclassMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.TypeclassMixin</span></code></a></p>
+<p>This view extends Django’s default CreateView.</p>
+<p>CreateView is used for creating new objects, be they Accounts, Characters or
+otherwise.</p>
+<dl class="py method">
+<dt id="evennia.web.website.views.EvenniaCreateView.page_title">
+<em class="property">property </em><code class="sig-name descname">page_title</code><a class="headerlink" href="#evennia.web.website.views.EvenniaCreateView.page_title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.EvenniaDetailView">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.</code><code class="sig-name descname">EvenniaDetailView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#EvenniaDetailView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.EvenniaDetailView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.detail.DetailView</span></code>, <a class="reference internal" href="#evennia.web.website.views.TypeclassMixin" title="evennia.web.website.views.TypeclassMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.TypeclassMixin</span></code></a></p>
+<p>This view extends Django’s default DetailView.</p>
+<p>DetailView is used for displaying objects, be they Accounts, Characters or
+otherwise.</p>
+<dl class="py method">
+<dt id="evennia.web.website.views.EvenniaDetailView.page_title">
+<em class="property">property </em><code class="sig-name descname">page_title</code><a class="headerlink" href="#evennia.web.website.views.EvenniaDetailView.page_title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.EvenniaUpdateView">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.</code><code class="sig-name descname">EvenniaUpdateView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#EvenniaUpdateView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.EvenniaUpdateView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.edit.UpdateView</span></code>, <a class="reference internal" href="#evennia.web.website.views.TypeclassMixin" title="evennia.web.website.views.TypeclassMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.TypeclassMixin</span></code></a></p>
+<p>This view extends Django’s default UpdateView.</p>
+<p>UpdateView is used for updating objects, be they Accounts, Characters or
+otherwise.</p>
+<dl class="py method">
+<dt id="evennia.web.website.views.EvenniaUpdateView.page_title">
+<em class="property">property </em><code class="sig-name descname">page_title</code><a class="headerlink" href="#evennia.web.website.views.EvenniaUpdateView.page_title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.EvenniaDeleteView">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.</code><code class="sig-name descname">EvenniaDeleteView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#EvenniaDeleteView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.EvenniaDeleteView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.edit.DeleteView</span></code>, <a class="reference internal" href="#evennia.web.website.views.TypeclassMixin" title="evennia.web.website.views.TypeclassMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.TypeclassMixin</span></code></a></p>
+<p>This view extends Django’s default DeleteView.</p>
+<p>DeleteView is used for deleting objects, be they Accounts, Characters or
+otherwise.</p>
+<dl class="py method">
+<dt id="evennia.web.website.views.EvenniaDeleteView.page_title">
+<em class="property">property </em><code class="sig-name descname">page_title</code><a class="headerlink" href="#evennia.web.website.views.EvenniaDeleteView.page_title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.ObjectDetailView">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.</code><code class="sig-name descname">ObjectDetailView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#ObjectDetailView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.ObjectDetailView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.views.EvenniaDetailView" title="evennia.web.website.views.EvenniaDetailView"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.EvenniaDetailView</span></code></a></p>
+<p>This is an important view.</p>
+<p>Any view you write that deals with displaying, updating or deleting a
+specific object will want to inherit from this. It provides the mechanisms
+by which to retrieve the object and make sure the user requesting it has
+permissions to actually <em>do</em> things to it.</p>
+<dl class="py attribute">
+<dt id="evennia.web.website.views.ObjectDetailView.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#evennia.web.website.views.ObjectDetailView.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">typeclasses.objects.Object</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.ObjectDetailView.template_name">
+<code class="sig-name descname">template_name</code><em class="property"> = 'website/object_detail.html'</em><a class="headerlink" href="#evennia.web.website.views.ObjectDetailView.template_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.ObjectDetailView.access_type">
+<code class="sig-name descname">access_type</code><em class="property"> = 'view'</em><a class="headerlink" href="#evennia.web.website.views.ObjectDetailView.access_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.ObjectDetailView.attributes">
+<code class="sig-name descname">attributes</code><em class="property"> = ['name', 'desc']</em><a class="headerlink" href="#evennia.web.website.views.ObjectDetailView.attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.website.views.ObjectDetailView.get_context_data">
+<code class="sig-name descname">get_context_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#ObjectDetailView.get_context_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.ObjectDetailView.get_context_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds an ‘attributes’ list to the request context consisting of the
+attributes specified at the class level, and in the order provided.</p>
+<p>Django views do not provide a way to reference dynamic attributes, so
+we have to grab them all before we render the template.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>context (dict)</em> – Django context object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.website.views.ObjectDetailView.get_object">
+<code class="sig-name descname">get_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">queryset</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#ObjectDetailView.get_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.ObjectDetailView.get_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override of Django hook that provides some important Evennia-specific
+functionality.</p>
+<p>Evennia does not natively store slugs, so where a slug is provided,
+calculate the same for the object and make sure it matches.</p>
+<p>This also checks to make sure the user has access to view/edit/delete
+this object!</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.ObjectCreateView">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.</code><code class="sig-name descname">ObjectCreateView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#ObjectCreateView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.ObjectCreateView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.auth.mixins.LoginRequiredMixin</span></code>, <a class="reference internal" href="#evennia.web.website.views.EvenniaCreateView" title="evennia.web.website.views.EvenniaCreateView"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.EvenniaCreateView</span></code></a></p>
+<p>This is an important view.</p>
+<p>Any view you write that deals with creating a specific object will want to
+inherit from this. It provides the mechanisms by which to make sure the user
+requesting creation of an object is authenticated, and provides a sane
+default title for the page.</p>
+<dl class="py attribute">
+<dt id="evennia.web.website.views.ObjectCreateView.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#evennia.web.website.views.ObjectCreateView.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">typeclasses.objects.Object</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.ObjectDeleteView">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.</code><code class="sig-name descname">ObjectDeleteView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#ObjectDeleteView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.ObjectDeleteView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.auth.mixins.LoginRequiredMixin</span></code>, <a class="reference internal" href="#evennia.web.website.views.ObjectDetailView" title="evennia.web.website.views.ObjectDetailView"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.ObjectDetailView</span></code></a>, <a class="reference internal" href="#evennia.web.website.views.EvenniaDeleteView" title="evennia.web.website.views.EvenniaDeleteView"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.EvenniaDeleteView</span></code></a></p>
+<p>This is an important view for obvious reasons!</p>
+<p>Any view you write that deals with deleting a specific object will want to
+inherit from this. It provides the mechanisms by which to make sure the user
+requesting deletion of an object is authenticated, and that they have
+permissions to delete the requested object.</p>
+<dl class="py attribute">
+<dt id="evennia.web.website.views.ObjectDeleteView.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#evennia.web.website.views.ObjectDeleteView.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">typeclasses.objects.Object</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.ObjectDeleteView.template_name">
+<code class="sig-name descname">template_name</code><em class="property"> = 'website/object_confirm_delete.html'</em><a class="headerlink" href="#evennia.web.website.views.ObjectDeleteView.template_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.ObjectDeleteView.access_type">
+<code class="sig-name descname">access_type</code><em class="property"> = 'delete'</em><a class="headerlink" href="#evennia.web.website.views.ObjectDeleteView.access_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.website.views.ObjectDeleteView.delete">
+<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#ObjectDeleteView.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.ObjectDeleteView.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls the delete() method on the fetched object and then
+redirects to the success URL.</p>
+<p>We extend this so we can capture the name for the sake of confirmation.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.ObjectUpdateView">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.</code><code class="sig-name descname">ObjectUpdateView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#ObjectUpdateView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.ObjectUpdateView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.auth.mixins.LoginRequiredMixin</span></code>, <a class="reference internal" href="#evennia.web.website.views.ObjectDetailView" title="evennia.web.website.views.ObjectDetailView"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.ObjectDetailView</span></code></a>, <a class="reference internal" href="#evennia.web.website.views.EvenniaUpdateView" title="evennia.web.website.views.EvenniaUpdateView"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.EvenniaUpdateView</span></code></a></p>
+<p>This is an important view.</p>
+<p>Any view you write that deals with updating a specific object will want to
+inherit from this. It provides the mechanisms by which to make sure the user
+requesting editing of an object is authenticated, and that they have
+permissions to edit the requested object.</p>
+<p>This functions slightly different from default Django UpdateViews in that
+it does not update core model fields, <em>only</em> object attributes!</p>
+<dl class="py attribute">
+<dt id="evennia.web.website.views.ObjectUpdateView.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#evennia.web.website.views.ObjectUpdateView.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">typeclasses.objects.Object</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.ObjectUpdateView.access_type">
+<code class="sig-name descname">access_type</code><em class="property"> = 'edit'</em><a class="headerlink" href="#evennia.web.website.views.ObjectUpdateView.access_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.website.views.ObjectUpdateView.get_success_url">
+<code class="sig-name descname">get_success_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#ObjectUpdateView.get_success_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.ObjectUpdateView.get_success_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Django hook.</p>
+<p>Can be overridden to return any URL you want to redirect the user to
+after the object is successfully updated, but by default it goes to the
+object detail page so the user can see their changes reflected.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.website.views.ObjectUpdateView.get_initial">
+<code class="sig-name descname">get_initial</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#ObjectUpdateView.get_initial"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.ObjectUpdateView.get_initial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Django hook, modified for Evennia.</p>
+<p>Prepopulates the update form field values based on object db attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>data (dict)</em> –</p>
+<dl class="simple">
+<dt>Dictionary of key:value pairs containing initial form</dt><dd><p>data.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.website.views.ObjectUpdateView.form_valid">
+<code class="sig-name descname">form_valid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">form</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#ObjectUpdateView.form_valid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.ObjectUpdateView.form_valid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override of Django hook.</p>
+<p>Updates object attributes based on values submitted.</p>
+<p>This is run when the form is submitted and the data on it is deemed
+valid– all values are within expected ranges, all strings contain
+valid characters and lengths, etc.</p>
+<p>This method is only called if all values for the fields submitted
+passed form validation, so at this point we can assume the data is
+validated and sanitized.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.AccountMixin">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.</code><code class="sig-name descname">AccountMixin</code><a class="reference internal" href="../_modules/evennia/web/website/views.html#AccountMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.AccountMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.views.TypeclassMixin" title="evennia.web.website.views.TypeclassMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.TypeclassMixin</span></code></a></p>
+<p>This is a “mixin”, a modifier of sorts.</p>
+<p>Any view class with this in its inheritance list will be modified to work
+with Account objects instead of generic Objects or otherwise.</p>
+<dl class="py attribute">
+<dt id="evennia.web.website.views.AccountMixin.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#evennia.web.website.views.AccountMixin.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">typeclasses.accounts.Account</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.AccountMixin.form_class">
+<code class="sig-name descname">form_class</code><a class="headerlink" href="#evennia.web.website.views.AccountMixin.form_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.web.website.forms.html#evennia.web.website.forms.AccountForm" title="evennia.web.website.forms.AccountForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.forms.AccountForm</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.AccountCreateView">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.</code><code class="sig-name descname">AccountCreateView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#AccountCreateView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.AccountCreateView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.views.AccountMixin" title="evennia.web.website.views.AccountMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.AccountMixin</span></code></a>, <a class="reference internal" href="#evennia.web.website.views.EvenniaCreateView" title="evennia.web.website.views.EvenniaCreateView"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.EvenniaCreateView</span></code></a></p>
+<p>Account creation view.</p>
+<dl class="py attribute">
+<dt id="evennia.web.website.views.AccountCreateView.template_name">
+<code class="sig-name descname">template_name</code><em class="property"> = 'website/registration/register.html'</em><a class="headerlink" href="#evennia.web.website.views.AccountCreateView.template_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.AccountCreateView.success_url">
+<code class="sig-name descname">success_url</code><em class="property"> = '/auth/login/'</em><a class="headerlink" href="#evennia.web.website.views.AccountCreateView.success_url" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.website.views.AccountCreateView.form_valid">
+<code class="sig-name descname">form_valid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">form</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#AccountCreateView.form_valid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.AccountCreateView.form_valid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Django hook, modified for Evennia.</p>
+<p>This hook is called after a valid form is submitted.</p>
+<p>When an account creation form is submitted and the data is deemed valid,
+proceeds with creating the Account object.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.CharacterMixin">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.</code><code class="sig-name descname">CharacterMixin</code><a class="reference internal" href="../_modules/evennia/web/website/views.html#CharacterMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.CharacterMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.views.TypeclassMixin" title="evennia.web.website.views.TypeclassMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.TypeclassMixin</span></code></a></p>
+<p>This is a “mixin”, a modifier of sorts.</p>
+<p>Any view class with this in its inheritance list will be modified to work
+with Character objects instead of generic Objects or otherwise.</p>
+<dl class="py attribute">
+<dt id="evennia.web.website.views.CharacterMixin.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#evennia.web.website.views.CharacterMixin.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">typeclasses.characters.Character</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.CharacterMixin.form_class">
+<code class="sig-name descname">form_class</code><a class="headerlink" href="#evennia.web.website.views.CharacterMixin.form_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.web.website.forms.html#evennia.web.website.forms.CharacterForm" title="evennia.web.website.forms.CharacterForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.forms.CharacterForm</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.CharacterMixin.success_url">
+<code class="sig-name descname">success_url</code><em class="property"> = '/characters/manage/'</em><a class="headerlink" href="#evennia.web.website.views.CharacterMixin.success_url" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.website.views.CharacterMixin.get_queryset">
+<code class="sig-name descname">get_queryset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#CharacterMixin.get_queryset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.CharacterMixin.get_queryset" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will override the Django get_queryset method to only
+return a list of characters associated with the current authenticated
+user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>queryset (QuerySet)</em> – Django queryset for use in the given view.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.CharacterListView">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.</code><code class="sig-name descname">CharacterListView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#CharacterListView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.CharacterListView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.auth.mixins.LoginRequiredMixin</span></code>, <a class="reference internal" href="#evennia.web.website.views.CharacterMixin" title="evennia.web.website.views.CharacterMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.CharacterMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.list.ListView</span></code></p>
+<p>This view provides a mechanism by which a logged-in player can view a list
+of all other characters.</p>
+<p>This view requires authentication by default as a nominal effort to prevent
+human stalkers and automated bots/scrapers from harvesting data on your users.</p>
+<dl class="py attribute">
+<dt id="evennia.web.website.views.CharacterListView.template_name">
+<code class="sig-name descname">template_name</code><em class="property"> = 'website/character_list.html'</em><a class="headerlink" href="#evennia.web.website.views.CharacterListView.template_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.CharacterListView.paginate_by">
+<code class="sig-name descname">paginate_by</code><em class="property"> = 100</em><a class="headerlink" href="#evennia.web.website.views.CharacterListView.paginate_by" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.CharacterListView.page_title">
+<code class="sig-name descname">page_title</code><em class="property"> = 'Character List'</em><a class="headerlink" href="#evennia.web.website.views.CharacterListView.page_title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.CharacterListView.access_type">
+<code class="sig-name descname">access_type</code><em class="property"> = 'view'</em><a class="headerlink" href="#evennia.web.website.views.CharacterListView.access_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.website.views.CharacterListView.get_queryset">
+<code class="sig-name descname">get_queryset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#CharacterListView.get_queryset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.CharacterListView.get_queryset" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will override the Django get_queryset method to return a
+list of all characters (filtered/sorted) instead of just those limited
+to the account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>queryset (QuerySet)</em> – Django queryset for use in the given view.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.CharacterPuppetView">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.</code><code class="sig-name descname">CharacterPuppetView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#CharacterPuppetView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.CharacterPuppetView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.auth.mixins.LoginRequiredMixin</span></code>, <a class="reference internal" href="#evennia.web.website.views.CharacterMixin" title="evennia.web.website.views.CharacterMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.CharacterMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.RedirectView</span></code>, <a class="reference internal" href="#evennia.web.website.views.ObjectDetailView" title="evennia.web.website.views.ObjectDetailView"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.ObjectDetailView</span></code></a></p>
+<p>This view provides a mechanism by which a logged-in player can “puppet” one
+of their characters within the context of the website.</p>
+<p>It also ensures that any user attempting to puppet something is logged in,
+and that their intended puppet is one that they own.</p>
+<dl class="py method">
+<dt id="evennia.web.website.views.CharacterPuppetView.get_redirect_url">
+<code class="sig-name descname">get_redirect_url</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#CharacterPuppetView.get_redirect_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.CharacterPuppetView.get_redirect_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Django hook.</p>
+<p>This view returns the URL to which the user should be redirected after
+a passed or failed puppet attempt.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>url (str)</em> – Path to post-puppet destination.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.CharacterManageView">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.</code><code class="sig-name descname">CharacterManageView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#CharacterManageView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.CharacterManageView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.auth.mixins.LoginRequiredMixin</span></code>, <a class="reference internal" href="#evennia.web.website.views.CharacterMixin" title="evennia.web.website.views.CharacterMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.CharacterMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.list.ListView</span></code></p>
+<p>This view provides a mechanism by which a logged-in player can browse,
+edit, or delete their own characters.</p>
+<dl class="py attribute">
+<dt id="evennia.web.website.views.CharacterManageView.paginate_by">
+<code class="sig-name descname">paginate_by</code><em class="property"> = 10</em><a class="headerlink" href="#evennia.web.website.views.CharacterManageView.paginate_by" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.CharacterManageView.template_name">
+<code class="sig-name descname">template_name</code><em class="property"> = 'website/character_manage_list.html'</em><a class="headerlink" href="#evennia.web.website.views.CharacterManageView.template_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.CharacterManageView.page_title">
+<code class="sig-name descname">page_title</code><em class="property"> = 'Manage Characters'</em><a class="headerlink" href="#evennia.web.website.views.CharacterManageView.page_title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.CharacterUpdateView">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.</code><code class="sig-name descname">CharacterUpdateView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#CharacterUpdateView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.CharacterUpdateView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.views.CharacterMixin" title="evennia.web.website.views.CharacterMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.CharacterMixin</span></code></a>, <a class="reference internal" href="#evennia.web.website.views.ObjectUpdateView" title="evennia.web.website.views.ObjectUpdateView"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.ObjectUpdateView</span></code></a></p>
+<p>This view provides a mechanism by which a logged-in player (enforced by
+ObjectUpdateView) can edit the attributes of a character they own.</p>
+<dl class="py attribute">
+<dt id="evennia.web.website.views.CharacterUpdateView.form_class">
+<code class="sig-name descname">form_class</code><a class="headerlink" href="#evennia.web.website.views.CharacterUpdateView.form_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.web.website.forms.html#evennia.web.website.forms.CharacterUpdateForm" title="evennia.web.website.forms.CharacterUpdateForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.forms.CharacterUpdateForm</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.CharacterUpdateView.template_name">
+<code class="sig-name descname">template_name</code><em class="property"> = 'website/character_form.html'</em><a class="headerlink" href="#evennia.web.website.views.CharacterUpdateView.template_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.CharacterDetailView">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.</code><code class="sig-name descname">CharacterDetailView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#CharacterDetailView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.CharacterDetailView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.views.CharacterMixin" title="evennia.web.website.views.CharacterMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.CharacterMixin</span></code></a>, <a class="reference internal" href="#evennia.web.website.views.ObjectDetailView" title="evennia.web.website.views.ObjectDetailView"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.ObjectDetailView</span></code></a></p>
+<p>This view provides a mechanism by which a user can view the attributes of
+a character, owned by them or not.</p>
+<dl class="py attribute">
+<dt id="evennia.web.website.views.CharacterDetailView.template_name">
+<code class="sig-name descname">template_name</code><em class="property"> = 'website/object_detail.html'</em><a class="headerlink" href="#evennia.web.website.views.CharacterDetailView.template_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.CharacterDetailView.attributes">
+<code class="sig-name descname">attributes</code><em class="property"> = ['name', 'desc']</em><a class="headerlink" href="#evennia.web.website.views.CharacterDetailView.attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.CharacterDetailView.access_type">
+<code class="sig-name descname">access_type</code><em class="property"> = 'view'</em><a class="headerlink" href="#evennia.web.website.views.CharacterDetailView.access_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.website.views.CharacterDetailView.get_queryset">
+<code class="sig-name descname">get_queryset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#CharacterDetailView.get_queryset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.CharacterDetailView.get_queryset" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will override the Django get_queryset method to return a
+list of all characters the user may access.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>queryset (QuerySet)</em> – Django queryset for use in the given view.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.CharacterDeleteView">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.</code><code class="sig-name descname">CharacterDeleteView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#CharacterDeleteView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.CharacterDeleteView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.views.CharacterMixin" title="evennia.web.website.views.CharacterMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.CharacterMixin</span></code></a>, <a class="reference internal" href="#evennia.web.website.views.ObjectDeleteView" title="evennia.web.website.views.ObjectDeleteView"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.ObjectDeleteView</span></code></a></p>
+<p>This view provides a mechanism by which a logged-in player (enforced by
+ObjectDeleteView) can delete a character they own.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.CharacterCreateView">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.</code><code class="sig-name descname">CharacterCreateView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#CharacterCreateView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.CharacterCreateView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.views.CharacterMixin" title="evennia.web.website.views.CharacterMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.CharacterMixin</span></code></a>, <a class="reference internal" href="#evennia.web.website.views.ObjectCreateView" title="evennia.web.website.views.ObjectCreateView"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.ObjectCreateView</span></code></a></p>
+<p>This view provides a mechanism by which a logged-in player (enforced by
+ObjectCreateView) can create a new character.</p>
+<dl class="py attribute">
+<dt id="evennia.web.website.views.CharacterCreateView.template_name">
+<code class="sig-name descname">template_name</code><em class="property"> = 'website/character_form.html'</em><a class="headerlink" href="#evennia.web.website.views.CharacterCreateView.template_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.website.views.CharacterCreateView.form_valid">
+<code class="sig-name descname">form_valid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">form</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#CharacterCreateView.form_valid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.CharacterCreateView.form_valid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Django hook, modified for Evennia.</p>
+<p>This hook is called after a valid form is submitted.</p>
+<p>When an character creation form is submitted and the data is deemed valid,
+proceeds with creating the Character object.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.ChannelMixin">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.</code><code class="sig-name descname">ChannelMixin</code><a class="reference internal" href="../_modules/evennia/web/website/views.html#ChannelMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.ChannelMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.views.TypeclassMixin" title="evennia.web.website.views.TypeclassMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.TypeclassMixin</span></code></a></p>
+<p>This is a “mixin”, a modifier of sorts.</p>
+<p>Any view class with this in its inheritance list will be modified to work
+with HelpEntry objects instead of generic Objects or otherwise.</p>
+<dl class="py attribute">
+<dt id="evennia.web.website.views.ChannelMixin.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#evennia.web.website.views.ChannelMixin.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">typeclasses.channels.Channel</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.ChannelMixin.page_title">
+<code class="sig-name descname">page_title</code><em class="property"> = 'Channels'</em><a class="headerlink" href="#evennia.web.website.views.ChannelMixin.page_title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.ChannelMixin.access_type">
+<code class="sig-name descname">access_type</code><em class="property"> = 'listen'</em><a class="headerlink" href="#evennia.web.website.views.ChannelMixin.access_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.website.views.ChannelMixin.get_queryset">
+<code class="sig-name descname">get_queryset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#ChannelMixin.get_queryset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.ChannelMixin.get_queryset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Django hook; here we want to return a list of only those Channels
+and other documentation that the current user is allowed to see.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>queryset (QuerySet)</em> – List of Channels available to the user.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.ChannelListView">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.</code><code class="sig-name descname">ChannelListView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#ChannelListView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.ChannelListView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.views.ChannelMixin" title="evennia.web.website.views.ChannelMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.ChannelMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.list.ListView</span></code></p>
+<p>Returns a list of channels that can be viewed by a user, authenticated
+or not.</p>
+<dl class="py attribute">
+<dt id="evennia.web.website.views.ChannelListView.paginate_by">
+<code class="sig-name descname">paginate_by</code><em class="property"> = 100</em><a class="headerlink" href="#evennia.web.website.views.ChannelListView.paginate_by" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.ChannelListView.template_name">
+<code class="sig-name descname">template_name</code><em class="property"> = 'website/channel_list.html'</em><a class="headerlink" href="#evennia.web.website.views.ChannelListView.template_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.ChannelListView.page_title">
+<code class="sig-name descname">page_title</code><em class="property"> = 'Channel Index'</em><a class="headerlink" href="#evennia.web.website.views.ChannelListView.page_title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.ChannelListView.max_popular">
+<code class="sig-name descname">max_popular</code><em class="property"> = 10</em><a class="headerlink" href="#evennia.web.website.views.ChannelListView.max_popular" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.website.views.ChannelListView.get_context_data">
+<code class="sig-name descname">get_context_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#ChannelListView.get_context_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.ChannelListView.get_context_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Django hook; we override it to calculate the most popular channels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>context (dict)</em> – Django context object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.ChannelDetailView">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.</code><code class="sig-name descname">ChannelDetailView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#ChannelDetailView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.ChannelDetailView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.views.ChannelMixin" title="evennia.web.website.views.ChannelMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.ChannelMixin</span></code></a>, <a class="reference internal" href="#evennia.web.website.views.ObjectDetailView" title="evennia.web.website.views.ObjectDetailView"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.ObjectDetailView</span></code></a></p>
+<p>Returns the log entries for a given channel.</p>
+<dl class="py attribute">
+<dt id="evennia.web.website.views.ChannelDetailView.template_name">
+<code class="sig-name descname">template_name</code><em class="property"> = 'website/channel_detail.html'</em><a class="headerlink" href="#evennia.web.website.views.ChannelDetailView.template_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.ChannelDetailView.attributes">
+<code class="sig-name descname">attributes</code><em class="property"> = ['name']</em><a class="headerlink" href="#evennia.web.website.views.ChannelDetailView.attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.ChannelDetailView.max_num_lines">
+<code class="sig-name descname">max_num_lines</code><em class="property"> = 10000</em><a class="headerlink" href="#evennia.web.website.views.ChannelDetailView.max_num_lines" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.website.views.ChannelDetailView.get_context_data">
+<code class="sig-name descname">get_context_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#ChannelDetailView.get_context_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.ChannelDetailView.get_context_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Django hook; before we can display the channel logs, we need to recall
+the logfile and read its lines.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>context (dict)</em> – Django context object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.website.views.ChannelDetailView.get_object">
+<code class="sig-name descname">get_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">queryset</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#ChannelDetailView.get_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.ChannelDetailView.get_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override of Django hook that retrieves an object by slugified channel
+name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>channel (Channel)</em> – Channel requested in the URL.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.HelpMixin">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.</code><code class="sig-name descname">HelpMixin</code><a class="reference internal" href="../_modules/evennia/web/website/views.html#HelpMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.HelpMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.views.TypeclassMixin" title="evennia.web.website.views.TypeclassMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.TypeclassMixin</span></code></a></p>
+<p>This is a “mixin”, a modifier of sorts.</p>
+<p>Any view class with this in its inheritance list will be modified to work
+with HelpEntry objects instead of generic Objects or otherwise.</p>
+<dl class="py attribute">
+<dt id="evennia.web.website.views.HelpMixin.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#evennia.web.website.views.HelpMixin.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.help.models.html#evennia.help.models.HelpEntry" title="evennia.help.models.HelpEntry"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.help.models.HelpEntry</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.HelpMixin.page_title">
+<code class="sig-name descname">page_title</code><em class="property"> = 'Help'</em><a class="headerlink" href="#evennia.web.website.views.HelpMixin.page_title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.website.views.HelpMixin.get_queryset">
+<code class="sig-name descname">get_queryset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#HelpMixin.get_queryset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.HelpMixin.get_queryset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Django hook; here we want to return a list of only those HelpEntries
+and other documentation that the current user is allowed to see.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>queryset (QuerySet)</em> – List of Help entries available to the user.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.HelpListView">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.</code><code class="sig-name descname">HelpListView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#HelpListView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.HelpListView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.views.HelpMixin" title="evennia.web.website.views.HelpMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.HelpMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.list.ListView</span></code></p>
+<p>Returns a list of help entries that can be viewed by a user, authenticated
+or not.</p>
+<dl class="py attribute">
+<dt id="evennia.web.website.views.HelpListView.paginate_by">
+<code class="sig-name descname">paginate_by</code><em class="property"> = 500</em><a class="headerlink" href="#evennia.web.website.views.HelpListView.paginate_by" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.HelpListView.template_name">
+<code class="sig-name descname">template_name</code><em class="property"> = 'website/help_list.html'</em><a class="headerlink" href="#evennia.web.website.views.HelpListView.template_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.web.website.views.HelpListView.page_title">
+<code class="sig-name descname">page_title</code><em class="property"> = 'Help Index'</em><a class="headerlink" href="#evennia.web.website.views.HelpListView.page_title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.web.website.views.HelpDetailView">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.</code><code class="sig-name descname">HelpDetailView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#HelpDetailView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.HelpDetailView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.views.HelpMixin" title="evennia.web.website.views.HelpMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.HelpMixin</span></code></a>, <a class="reference internal" href="#evennia.web.website.views.EvenniaDetailView" title="evennia.web.website.views.EvenniaDetailView"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.web.website.views.EvenniaDetailView</span></code></a></p>
+<p>Returns the detail page for a given help entry.</p>
+<dl class="py attribute">
+<dt id="evennia.web.website.views.HelpDetailView.template_name">
+<code class="sig-name descname">template_name</code><em class="property"> = 'website/help_detail.html'</em><a class="headerlink" href="#evennia.web.website.views.HelpDetailView.template_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.website.views.HelpDetailView.get_context_data">
+<code class="sig-name descname">get_context_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#HelpDetailView.get_context_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.HelpDetailView.get_context_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds navigational data to the template to let browsers go to the next
+or previous entry in the help list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>context (dict)</em> – Django context object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.website.views.HelpDetailView.get_object">
+<code class="sig-name descname">get_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">queryset</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views.html#HelpDetailView.get_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.HelpDetailView.get_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override of Django hook that retrieves an object by category and topic
+instead of pk and slug.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>entry (HelpEntry)</em> – HelpEntry requested in the URL.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.web.website.views.rst.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.web.website.views.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.1/api/evennia.web.website.views.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.web.website.views</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+    </div>
+  </body>
+</html>

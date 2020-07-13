@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.web.utils.general_context &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.web.utils.general_context</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.web.utils.general_context</a></li> 
       </ul>
     </div>  
 
@@ -55,7 +52,7 @@
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">get_evennia_version</span>
 
 <span class="c1"># Determine the site name and server version</span>
-<div class="viewcode-block" id="set_game_name_and_slogan"><a class="viewcode-back" href="../../../../api/evennia.web.utils.html#evennia.web.utils.general_context.set_game_name_and_slogan">[docs]</a><span class="k">def</span> <span class="nf">set_game_name_and_slogan</span><span class="p">():</span>
+<div class="viewcode-block" id="set_game_name_and_slogan"><a class="viewcode-back" href="../../../../api/evennia.web.utils.general_context.html#evennia.web.utils.general_context.set_game_name_and_slogan">[docs]</a><span class="k">def</span> <span class="nf">set_game_name_and_slogan</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sets global variables GAME_NAME and GAME_SLOGAN which are used by</span>
 <span class="sd">    general_context.</span>
@@ -87,7 +84,7 @@
 <span class="n">WEBSITE</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Flatpages&quot;</span><span class="p">,</span> <span class="s2">&quot;News&quot;</span><span class="p">,</span> <span class="s2">&quot;Sites&quot;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="set_webclient_settings"><a class="viewcode-back" href="../../../../api/evennia.web.utils.html#evennia.web.utils.general_context.set_webclient_settings">[docs]</a><span class="k">def</span> <span class="nf">set_webclient_settings</span><span class="p">():</span>
+<div class="viewcode-block" id="set_webclient_settings"><a class="viewcode-back" href="../../../../api/evennia.web.utils.general_context.html#evennia.web.utils.general_context.set_webclient_settings">[docs]</a><span class="k">def</span> <span class="nf">set_webclient_settings</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    As with set_game_name_and_slogan above, this sets global variables pertaining</span>
 <span class="sd">    to webclient settings.</span>
@@ -111,7 +108,7 @@
 <span class="n">set_webclient_settings</span><span class="p">()</span>
 
 <span class="c1"># The main context processor function</span>
-<div class="viewcode-block" id="general_context"><a class="viewcode-back" href="../../../../api/evennia.web.utils.html#evennia.web.utils.general_context.general_context">[docs]</a><span class="k">def</span> <span class="nf">general_context</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<div class="viewcode-block" id="general_context"><a class="viewcode-back" href="../../../../api/evennia.web.utils.general_context.html#evennia.web.utils.general_context.general_context">[docs]</a><span class="k">def</span> <span class="nf">general_context</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns common Evennia-related context stuff, which</span>
 <span class="sd">    is automatically added to context of all views.</span>
@@ -142,6 +139,7 @@
     <span class="p">}</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -179,17 +177,15 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.web.utils.general_context</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.web.utils.general_context</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

@@ -1,0 +1,223 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Communications &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Communications</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="communications">
+<h1>Communications<a class="headerlink" href="#communications" title="Permalink to this headline">¶</a></h1>
+<p>Apart from moving around in the game world and talking, players might need other forms of
+communication. This is offered by Evennia’s <code class="docutils literal notranslate"><span class="pre">Comm</span></code> system. Stock evennia implements a ‘MUX-like’
+system of channels, but there is nothing stopping you from changing things to better suit your
+taste.</p>
+<p>Comms rely on two main database objects - <code class="docutils literal notranslate"><span class="pre">Msg</span></code> and <code class="docutils literal notranslate"><span class="pre">Channel</span></code>. There is also the <code class="docutils literal notranslate"><span class="pre">TempMsg</span></code> which
+mimics the API of a <code class="docutils literal notranslate"><span class="pre">Msg</span></code> but has no connection to the database.</p>
+<div class="section" id="msg">
+<h2>Msg<a class="headerlink" href="#msg" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">Msg</span></code> object is the basic unit of communication in Evennia. A message works a little like an
+e-mail; it always has a sender (a <a class="reference internal" href="Accounts.html"><span class="doc">Account</span></a>) and one or more recipients. The recipients
+may be either other Accounts, or a <em>Channel</em> (see below). You can mix recipients to send the message
+to both Channels and Accounts if you like.</p>
+<p>Once created, a <code class="docutils literal notranslate"><span class="pre">Msg</span></code> is normally not changed. It is peristently saved in the database. This allows
+for comprehensive logging of communications. This could be useful for allowing senders/receivers to
+have ‘mailboxes’ with the messages they want to keep.</p>
+<div class="section" id="properties-defined-on-msg">
+<h3>Properties defined on <code class="docutils literal notranslate"><span class="pre">Msg</span></code><a class="headerlink" href="#properties-defined-on-msg" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">senders</span></code> - this is a reference to one or many <a class="reference internal" href="Accounts.html"><span class="doc">Account</span></a> or <a class="reference internal" href="Objects.html"><span class="doc">Objects</span></a> (normally
+<em>Characters</em>) sending the message.  This could also be an <em>External Connection</em> such as a message
+coming in over IRC/IMC2 (see below). There is usually only one sender, but the types can also be
+mixed in any combination.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">receivers</span></code> - a list of target <a class="reference internal" href="Accounts.html"><span class="doc">Accounts</span></a>, <a class="reference internal" href="Objects.html"><span class="doc">Objects</span></a> (usually <em>Characters</em>) or
+<em>Channels</em> to send the message to. The types of receivers can be mixed in any combination.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">header</span></code> - this is a text field for storing a title or header for the message.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">message</span></code> - the actual text being sent.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">date_sent</span></code> - when message was sent (auto-created).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">locks</span></code> - a <a class="reference internal" href="Locks.html"><span class="doc">lock definition</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hide_from</span></code> - this can optionally hold a list of objects, accounts or channels to hide this <code class="docutils literal notranslate"><span class="pre">Msg</span></code>
+from. This relationship is stored in the database primarily for optimization reasons, allowing for
+quickly post-filter out messages not intended for a given target.  There is no in-game methods for
+setting this, it’s intended to be done in code.</p></li>
+</ul>
+<p>You create new messages in code using <code class="docutils literal notranslate"><span class="pre">evennia.create_message</span></code> (or
+<code class="docutils literal notranslate"><span class="pre">evennia.utils.create.create_message.</span></code>)</p>
+</div>
+</div>
+<div class="section" id="tempmsg">
+<h2>TempMsg<a class="headerlink" href="#tempmsg" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">evennia.comms.models</span></code> also has <code class="docutils literal notranslate"><span class="pre">TempMsg</span></code> which mimics the API of <code class="docutils literal notranslate"><span class="pre">Msg</span></code> but is not connected to the
+database. TempMsgs are used by Evennia for channel messages by default. They can be used for any
+system expecting a <code class="docutils literal notranslate"><span class="pre">Msg</span></code> but when you don’t actually want to save anything.</p>
+</div>
+<div class="section" id="channels">
+<h2>Channels<a class="headerlink" href="#channels" title="Permalink to this headline">¶</a></h2>
+<p>Channels are <a class="reference internal" href="Typeclasses.html"><span class="doc">Typeclassed</span></a> entities, which mean they can be easily extended and their
+functionality modified. To change which channel typeclass Evennia uses, change
+settings.BASE_CHANNEL_TYPECLASS.</p>
+<p>Channels act as generic distributors of messages. Think of them as “switch boards” redistributing
+<code class="docutils literal notranslate"><span class="pre">Msg</span></code> or <code class="docutils literal notranslate"><span class="pre">TempMsg</span></code> objects. Internally they hold a list of “listening” objects and any <code class="docutils literal notranslate"><span class="pre">Msg</span></code> (or
+<code class="docutils literal notranslate"><span class="pre">TempMsg</span></code>) sent to the channel will be distributed out to all channel listeners. Channels have
+<a class="reference internal" href="Locks.html"><span class="doc">Locks</span></a> to limit who may listen and/or send messages through them.</p>
+<p>The <em>sending</em> of text to a channel is handled by a dynamically created <a class="reference internal" href="Commands.html"><span class="doc">Command</span></a> that
+always have the same name as the channel. This is created for each channel by the global
+<code class="docutils literal notranslate"><span class="pre">ChannelHandler</span></code>. The Channel command is added to the Account’s cmdset and normal command locks are
+used to determine which channels are possible to write to. When subscribing to a channel, you can
+then just write the channel name and the text to send.</p>
+<p>The default ChannelCommand (which can be customized by pointing <code class="docutils literal notranslate"><span class="pre">settings.CHANNEL_COMMAND_CLASS</span></code> to
+your own command), implements a few convenient features:</p>
+<ul>
+<li><p>It only sends <code class="docutils literal notranslate"><span class="pre">TempMsg</span></code> objects. Instead of storing individual entries in the database it instead
+dumps channel output a file log in <code class="docutils literal notranslate"><span class="pre">server/logs/channel_&lt;channelname&gt;.log</span></code>. This is mainly for
+practical reasons - we find one rarely need to query individual Msg objects at a later date. Just
+stupidly dumping the log to a file also means a lot less database overhead.</p></li>
+<li><p>It adds a <code class="docutils literal notranslate"><span class="pre">/history</span></code> switch to view the 20 last messages in the channel. These are read from the
+end of the log file. One can also supply a line number to start further back in the file (but always
+20 entries at a time). It’s used like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="o">&gt;</span> <span class="n">public</span><span class="o">/</span><span class="n">history</span> 
+ <span class="o">&gt;</span> <span class="n">public</span><span class="o">/</span><span class="n">history</span> <span class="mi">35</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>There are two default channels created in stock Evennia - <code class="docutils literal notranslate"><span class="pre">MudInfo</span></code> and <code class="docutils literal notranslate"><span class="pre">Public</span></code>.  <code class="docutils literal notranslate"><span class="pre">MudInfo</span></code>
+receives server-related messages meant for Admins whereas <code class="docutils literal notranslate"><span class="pre">Public</span></code>  is open to everyone to chat on
+(all new accounts are automatically joined to it when logging in, it is useful for asking
+questions). The default channels are defined by the <code class="docutils literal notranslate"><span class="pre">DEFAULT_CHANNELS</span></code> list (see
+<code class="docutils literal notranslate"><span class="pre">evennia/settings_default.py</span></code> for more details).</p>
+<p>You create new channels with <code class="docutils literal notranslate"><span class="pre">evennia.create_channel</span></code> (or <code class="docutils literal notranslate"><span class="pre">evennia.utils.create.create_channel</span></code>).</p>
+<p>In code, messages are sent to a channel using the <code class="docutils literal notranslate"><span class="pre">msg</span></code> or <code class="docutils literal notranslate"><span class="pre">tempmsg</span></code> methods of channels:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">channel</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">msgobj</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">senders</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The argument <code class="docutils literal notranslate"><span class="pre">msgobj</span></code> can be either a string, a previously constructed <code class="docutils literal notranslate"><span class="pre">Msg</span></code> or a <code class="docutils literal notranslate"><span class="pre">TempMsg</span></code> - in the
+latter cases all the following keywords are ignored since the message objects already contains all
+this information. If <code class="docutils literal notranslate"><span class="pre">msgobj</span></code> is a string, the other keywords are used for creating a new <code class="docutils literal notranslate"><span class="pre">Msg</span></code> or
+<code class="docutils literal notranslate"><span class="pre">TempMsg</span></code> on the fly, depending on if <code class="docutils literal notranslate"><span class="pre">persistent</span></code> is set or not. By default, a <code class="docutils literal notranslate"><span class="pre">TempMsg</span></code> is emitted
+for channel communication (since the default ChannelCommand instead logs to a file).</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1"># assume we have a &#39;sender&#39; object and a channel named &#39;mychan&#39;</span>
+
+    <span class="c1"># manually sending a message to a channel</span>
+    <span class="n">mychan</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Hello!&quot;</span><span class="p">,</span> <span class="n">senders</span><span class="o">=</span><span class="p">[</span><span class="n">sender</span><span class="p">])</span>
+</pre></div>
+</td></tr></table></div>
+<div class="section" id="properties-defined-on-channel">
+<h3>Properties defined on <code class="docutils literal notranslate"><span class="pre">Channel</span></code><a class="headerlink" href="#properties-defined-on-channel" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code> - main name for channel</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">aliases</span></code> - alternative native names for channels</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">desc</span></code> - optional description of channel (seen in listings)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">keep_log</span></code> (bool) - if the channel should store messages (default)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">locks</span></code> - A <a class="reference internal" href="Locks.html"><span class="doc">lock definition</span></a>. Channels normally use the access_types <code class="docutils literal notranslate"><span class="pre">send,</span> <span class="pre">control</span></code> and
+<code class="docutils literal notranslate"><span class="pre">listen</span></code>.</p></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Communications</a><ul>
+<li><a class="reference internal" href="#msg">Msg</a><ul>
+<li><a class="reference internal" href="#properties-defined-on-msg">Properties defined on <code class="docutils literal notranslate"><span class="pre">Msg</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tempmsg">TempMsg</a></li>
+<li><a class="reference internal" href="#channels">Channels</a><ul>
+<li><a class="reference internal" href="#properties-defined-on-channel">Properties defined on <code class="docutils literal notranslate"><span class="pre">Channel</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Components/Communications.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Communications.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Communications</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+    </div>
+  </body>
+</html>

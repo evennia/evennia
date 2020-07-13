@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.random_string_generator &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.random_string_generator</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.random_string_generator</a></li> 
       </ul>
     </div>  
 
@@ -102,7 +99,7 @@
 <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="k">import</span> <span class="n">create_script</span>
 
 
-<div class="viewcode-block" id="RejectedRegex"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.random_string_generator.RejectedRegex">[docs]</a><span class="k">class</span> <span class="nc">RejectedRegex</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+<div class="viewcode-block" id="RejectedRegex"><a class="viewcode-back" href="../../../api/evennia.contrib.random_string_generator.html#evennia.contrib.random_string_generator.RejectedRegex">[docs]</a><span class="k">class</span> <span class="nc">RejectedRegex</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;The provided regular expression has been rejected.</span>
 
@@ -115,14 +112,14 @@
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="ExhaustedGenerator"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.random_string_generator.ExhaustedGenerator">[docs]</a><span class="k">class</span> <span class="nc">ExhaustedGenerator</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+<div class="viewcode-block" id="ExhaustedGenerator"><a class="viewcode-back" href="../../../api/evennia.contrib.random_string_generator.html#evennia.contrib.random_string_generator.ExhaustedGenerator">[docs]</a><span class="k">class</span> <span class="nc">ExhaustedGenerator</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;The generator hasn&#39;t any available strings to generate anymore.&quot;&quot;&quot;</span>
 
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="RandomStringGeneratorScript"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.random_string_generator.RandomStringGeneratorScript">[docs]</a><span class="k">class</span> <span class="nc">RandomStringGeneratorScript</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomStringGeneratorScript"><a class="viewcode-back" href="../../../api/evennia.contrib.random_string_generator.html#evennia.contrib.random_string_generator.RandomStringGeneratorScript">[docs]</a><span class="k">class</span> <span class="nc">RandomStringGeneratorScript</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The global script to hold all generators.</span>
@@ -132,7 +129,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="RandomStringGeneratorScript.at_script_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.random_string_generator.RandomStringGeneratorScript.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomStringGeneratorScript.at_script_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.random_string_generator.html#evennia.contrib.random_string_generator.RandomStringGeneratorScript.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Hook called when the script is created.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;generator_script&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;Global generator script&quot;</span>
@@ -142,7 +139,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">generated</span> <span class="o">=</span> <span class="p">{}</span></div></div>
 
 
-<div class="viewcode-block" id="RandomStringGenerator"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.random_string_generator.RandomStringGenerator">[docs]</a><span class="k">class</span> <span class="nc">RandomStringGenerator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomStringGenerator"><a class="viewcode-back" href="../../../api/evennia.contrib.random_string_generator.html#evennia.contrib.random_string_generator.RandomStringGenerator">[docs]</a><span class="k">class</span> <span class="nc">RandomStringGenerator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A generator class to generate pseudo-random strings with a rule.</span>
@@ -166,7 +163,7 @@
     <span class="c1"># with multiple instandces</span>
     <span class="n">script</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="RandomStringGenerator.__init__"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.random_string_generator.RandomStringGenerator.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">regex</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomStringGenerator.__init__"><a class="viewcode-back" href="../../../api/evennia.contrib.random_string_generator.html#evennia.contrib.random_string_generator.RandomStringGenerator.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">regex</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a new generator.</span>
 
@@ -204,7 +201,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="RandomStringGenerator._get_script"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.random_string_generator.RandomStringGenerator._get_script">[docs]</a>    <span class="k">def</span> <span class="nf">_get_script</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_script</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get or create the script.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">script</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">script</span>
@@ -215,9 +212,9 @@
             <span class="n">script</span> <span class="o">=</span> <span class="n">create_script</span><span class="p">(</span><span class="s2">&quot;contrib.random_string_generator.RandomStringGeneratorScript&quot;</span><span class="p">)</span>
 
         <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">script</span> <span class="o">=</span> <span class="n">script</span>
-        <span class="k">return</span> <span class="n">script</span></div>
+        <span class="k">return</span> <span class="n">script</span>
 
-<div class="viewcode-block" id="RandomStringGenerator._find_elements"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.random_string_generator.RandomStringGenerator._find_elements">[docs]</a>    <span class="k">def</span> <span class="nf">_find_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">regex</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_find_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">regex</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find the elements described in the regular expression.  This will</span>
 <span class="sd">        analyze the provided regular expression and try to find elements.</span>
@@ -257,9 +254,9 @@
                 <span class="k">raise</span> <span class="n">RejectedRegex</span><span class="p">(</span><span class="s2">&quot;unhandled regex syntax:: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">name</span><span class="p">)))</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">desc</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">total</span> <span class="o">*=</span> <span class="nb">len</span><span class="p">(</span><span class="n">desc</span><span class="p">[</span><span class="s2">&quot;chars&quot;</span><span class="p">])</span> <span class="o">**</span> <span class="n">desc</span><span class="p">[</span><span class="s2">&quot;max&quot;</span><span class="p">]</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">total</span> <span class="o">*=</span> <span class="nb">len</span><span class="p">(</span><span class="n">desc</span><span class="p">[</span><span class="s2">&quot;chars&quot;</span><span class="p">])</span> <span class="o">**</span> <span class="n">desc</span><span class="p">[</span><span class="s2">&quot;max&quot;</span><span class="p">]</span>
 
-<div class="viewcode-block" id="RandomStringGenerator._find_literal"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.random_string_generator.RandomStringGenerator._find_literal">[docs]</a>    <span class="k">def</span> <span class="nf">_find_literal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_find_literal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Find the literal corresponding to a piece of regular expression.&quot;&quot;&quot;</span>
         <span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">element</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="n">chars</span> <span class="o">=</span> <span class="p">[]</span>
@@ -295,9 +292,9 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">RejectedRegex</span><span class="p">(</span><span class="s2">&quot;cannot find the literal: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">element</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
 
-        <span class="k">return</span> <span class="n">chars</span></div>
+        <span class="k">return</span> <span class="n">chars</span>
 
-<div class="viewcode-block" id="RandomStringGenerator.all"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.random_string_generator.RandomStringGenerator.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomStringGenerator.all"><a class="viewcode-back" href="../../../api/evennia.contrib.random_string_generator.html#evennia.contrib.random_string_generator.RandomStringGenerator.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return all generated strings for this generator.</span>
 
@@ -310,7 +307,7 @@
         <span class="n">generated</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">script</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">generated</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="p">[]))</span>
         <span class="k">return</span> <span class="n">generated</span></div>
 
-<div class="viewcode-block" id="RandomStringGenerator.get"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.random_string_generator.RandomStringGenerator.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">store</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomStringGenerator.get"><a class="viewcode-back" href="../../../api/evennia.contrib.random_string_generator.html#evennia.contrib.random_string_generator.RandomStringGenerator.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">store</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a pseudo-random string according to the regular expression.</span>
 
@@ -360,7 +357,7 @@
 
         <span class="k">return</span> <span class="n">result</span></div>
 
-<div class="viewcode-block" id="RandomStringGenerator.remove"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.random_string_generator.RandomStringGenerator.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomStringGenerator.remove"><a class="viewcode-back" href="../../../api/evennia.contrib.random_string_generator.html#evennia.contrib.random_string_generator.RandomStringGenerator.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove a generated string from the list of stored strings.</span>
 
@@ -388,7 +385,7 @@
 
         <span class="n">generated</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">element</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RandomStringGenerator.clear"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.random_string_generator.RandomStringGenerator.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RandomStringGenerator.clear"><a class="viewcode-back" href="../../../api/evennia.contrib.random_string_generator.html#evennia.contrib.random_string_generator.RandomStringGenerator.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clear the generator of all generated strings.</span>
 
@@ -398,6 +395,7 @@
         <span class="n">generated</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[]</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -435,17 +433,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.random_string_generator</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.random_string_generator</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

@@ -1,0 +1,312 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>evennia.utils.create &#8212; Evennia 0.9.1 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.create</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-evennia.utils.create">
+<span id="evennia-utils-create"></span><h1>evennia.utils.create<a class="headerlink" href="#module-evennia.utils.create" title="Permalink to this headline">¶</a></h1>
+<p>This module gathers all the essential database-creation functions for the game
+engine’s various object types.</p>
+<p>Only objects created ‘stand-alone’ are in here. E.g. object Attributes are
+always created through their respective objects handlers.</p>
+<p>Each <strong>creation_*</strong> function also has an alias named for the entity being created,
+such as create_object() and object(). This is for consistency with the
+utils.search module and allows you to do the shorter <strong>create.object()</strong>.</p>
+<p>The respective object managers hold more methods for manipulating and searching
+objects already existing in the database.</p>
+<dl class="py function">
+<dt id="evennia.utils.create.create_object">
+<code class="sig-prename descclassname">evennia.utils.create.</code><code class="sig-name descname">create_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">location</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">home</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">permissions</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">aliases</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">destination</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">report_to</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nohome</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">attributes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nattributes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/create.html#create_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.create.create_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new in-game object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>typeclass</strong> (<em>class</em><em> or </em><em>str</em>) – Class or python path to a typeclass.</p></li>
+<li><p><strong>key</strong> (<em>str</em>) – Name of the new object. If not set, a name of
+<strong>#dbref</strong> will be set.</p></li>
+<li><p><strong>home</strong> (<em>Object</em><em> or </em><em>str</em>) – Obj or #dbref to use as the object’s
+home location.</p></li>
+<li><p><strong>permissions</strong> (<a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – A list of permission strings or tuples (permstring, category).</p></li>
+<li><p><strong>locks</strong> (<em>str</em>) – one or more lockstrings, separated by semicolons.</p></li>
+<li><p><strong>aliases</strong> (<a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – A list of alternative keys or tuples (aliasstring, category).</p></li>
+<li><p><strong>tags</strong> (<a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – List of tag keys or tuples (tagkey, category) or (tagkey, category, data).</p></li>
+<li><p><strong>destination</strong> (<em>Object</em><em> or </em><em>str</em>) – Obj or #dbref to use as an Exit’s target.</p></li>
+<li><p><strong>report_to</strong> (<em>Object</em>) – The object to return error messages to.</p></li>
+<li><p><strong>nohome</strong> (<em>bool</em>) – This allows the creation of objects without a
+default home location; only used when creating the default
+location itself or during unittests.</p></li>
+<li><p><strong>attributes</strong> (<a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – Tuples on the form (key, value) or (key, value, category),
+(key, value, lockstring) or (key, value, lockstring, default_access).
+to set as Attributes on the new object.</p></li>
+<li><p><strong>nattributes</strong> (<a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – Non-persistent tuples on the form (key, value). Note that
+adding this rarely makes sense since this data will not survive a reload.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>object (Object)</em> – A newly created object of the given typeclass.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.DoesNotExist" title="evennia.objects.models.ObjectDB.DoesNotExist"><strong>ObjectDB.DoesNotExist</strong></a> – If trying to create an Object with
+<strong>location</strong> or <strong>home</strong> that can’t be found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.create.create_script">
+<code class="sig-prename descclassname">evennia.utils.create.</code><code class="sig-name descname">create_script</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">account</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">interval</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">start_delay</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">repeats</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">persistent</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">autostart</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">report_to</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">desc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">attributes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/create.html#create_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.create.create_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new script. All scripts are a combination of a database
+object that communicates with the database, and an typeclass that
+‘decorates’ the database object into being different types of
+scripts.  It’s behaviour is similar to the game objects except
+scripts has a time component and are more limited in scope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>typeclass</strong> (<em>class</em><em> or </em><em>str</em>) – Class or python path to a typeclass.</p></li>
+<li><p><strong>key</strong> (<em>str</em>) – Name of the new object. If not set, a name of
+#dbref will be set.</p></li>
+<li><p><strong>obj</strong> (<em>Object</em>) – The entity on which this Script sits. If this
+is <strong>None</strong>, we are creating a “global” script.</p></li>
+<li><p><strong>account</strong> (<em>Account</em>) – The account on which this Script sits. It is
+exclusiv to <strong>obj</strong>.</p></li>
+<li><p><strong>locks</strong> (<em>str</em>) – one or more lockstrings, separated by semicolons.</p></li>
+<li><p><strong>interval</strong> (<em>int</em>) – The triggering interval for this Script, in
+seconds. If unset, the Script will not have a timing
+component.</p></li>
+<li><p><strong>start_delay</strong> (<em>bool</em>) – If <strong>True</strong>, will wait <strong>interval</strong> seconds
+before triggering the first time.</p></li>
+<li><p><strong>repeats</strong> (<em>int</em>) – The number of times to trigger before stopping.
+If unset, will repeat indefinitely.</p></li>
+<li><p><strong>persistent</strong> (<em>bool</em>) – If this Script survives a server shutdown
+or not (all Scripts will survive a reload).</p></li>
+<li><p><strong>autostart</strong> (<em>bool</em>) – If this Script will start immediately when
+created or if the <strong>start</strong> method must be called explicitly.</p></li>
+<li><p><strong>report_to</strong> (<em>Object</em>) – The object to return error messages to.</p></li>
+<li><p><strong>desc</strong> (<em>str</em>) – Optional description of script</p></li>
+<li><p><strong>tags</strong> (<a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – List of tags or tuples (tag, category).</p></li>
+<li><p><strong>attributes</strong> (<a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – List if tuples (key, value) or (key, value, category)
+(key, value, lockstring) or (key, value, lockstring, default_access).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>script (obj)</em> – An instance of the script created</p>
+</dd>
+</dl>
+<p>See evennia.scripts.manager for methods to manipulate existing
+scripts in the database.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.create.create_help_entry">
+<code class="sig-prename descclassname">evennia.utils.create.</code><code class="sig-name descname">create_help_entry</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">entrytext</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">'General'</span></em>, <em class="sig-param"><span class="n">locks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">aliases</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/create.html#create_help_entry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.create.create_help_entry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a static help entry in the help database. Note that Command
+help entries are dynamic and directly taken from the __doc__
+entries of the command. The database-stored help entries are
+intended for more general help on the game, more extensive info,
+in-game setting information and so on.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – The name of the help entry.</p></li>
+<li><p><strong>entrytext</strong> (<em>str</em>) – The body of te help entry</p></li>
+<li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – The help category of the entry.</p></li>
+<li><p><strong>locks</strong> (<em>str</em><em>, </em><em>optional</em>) – A lockstring to restrict access.</p></li>
+<li><p><strong>aliases</strong> (<em>list of str</em>) – List of alternative (likely shorter) keynames.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>help (HelpEntry)</em> – A newly created help entry.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.create.create_message">
+<code class="sig-prename descclassname">evennia.utils.create.</code><code class="sig-name descname">create_message</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">senderobj</span></em>, <em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="n">channels</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">receivers</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">header</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/create.html#create_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.create.create_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new communication Msg. Msgs represent a unit of
+database-persistent communication between entites.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>senderobj</strong> (<em>Object</em><em> or </em><em>Account</em>) – The entity sending the Msg.</p></li>
+<li><p><strong>message</strong> (<em>str</em>) – Text with the message. Eventual headers, titles
+etc should all be included in this text string. Formatting
+will be retained.</p></li>
+<li><p><strong>channels</strong> (<em>Channel</em><em>, </em><em>key</em><em> or </em><em>list</em>) – A channel or a list of channels to
+send to. The channels may be actual channel objects or their
+unique key strings.</p></li>
+<li><p><strong>receivers</strong> (<em>Object</em><em>, </em><em>Account</em><em>, </em><em>str</em><em> or </em><em>list</em>) – An Account/Object to send
+to, or a list of them. May be Account objects or accountnames.</p></li>
+<li><p><strong>locks</strong> (<em>str</em>) – Lock definition string.</p></li>
+<li><p><strong>header</strong> (<em>str</em>) – Mime-type or other optional information for the message</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The Comm system is created very open-ended, so it’s fully possible
+to let a message both go to several channels and to several
+receivers at the same time, it’s up to the command definitions to
+limit this as desired.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.create.create_channel">
+<code class="sig-prename descclassname">evennia.utils.create.</code><code class="sig-name descname">create_channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">aliases</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">desc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keep_log</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/create.html#create_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.create.create_channel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create A communication Channel. A Channel serves as a central hub
+for distributing Msgs to groups of people without specifying the
+receivers explicitly. Instead accounts may ‘connect’ to the channel
+and follow the flow of messages. By default the channel allows
+access to all old messages, but this can be turned off with the
+keep_log switch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – This must be unique.</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>aliases</strong> (<em>list of str</em>) – List of alternative (likely shorter) keynames.</p></li>
+<li><p><strong>desc</strong> (<em>str</em>) – A description of the channel, for use in listings.</p></li>
+<li><p><strong>locks</strong> (<em>str</em>) – Lockstring.</p></li>
+<li><p><strong>keep_log</strong> (<em>bool</em>) – Log channel throughput.</p></li>
+<li><p><strong>typeclass</strong> (<em>str</em><em> or </em><em>class</em>) – The typeclass of the Channel (not
+often used).</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>channel (Channel)</em> – A newly created channel.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.create.create_account">
+<code class="sig-prename descclassname">evennia.utils.create.</code><code class="sig-name descname">create_account</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">email</span></em>, <em class="sig-param"><span class="n">password</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">is_superuser</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">locks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">permissions</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">attributes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">report_to</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/create.html#create_account"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.create.create_account" title="Permalink to this definition">¶</a></dt>
+<dd><p>This creates a new account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – The account’s name. This should be unique.</p></li>
+<li><p><strong>email</strong> (<em>str</em><em> or </em><em>None</em>) – Email on valid <a class="reference external" href="mailto:addr&#37;&#52;&#48;addr&#46;domain">addr<span>&#64;</span>addr<span>&#46;</span>domain</a> form. If
+the empty string, will be set to None.</p></li>
+<li><p><strong>password</strong> (<em>str</em>) – Password in cleartext.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>typeclass</strong> (<em>str</em>) – The typeclass to use for the account.</p></li>
+<li><p><strong>is_superuser</strong> (<em>bool</em>) – Wether or not this account is to be a superuser</p></li>
+<li><p><strong>locks</strong> (<em>str</em>) – Lockstring.</p></li>
+<li><p><strong>permission</strong> (<a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – List of permission strings.</p></li>
+<li><p><strong>tags</strong> (<a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – List of Tags on form <strong>(key, category[, data])</strong></p></li>
+<li><p><strong>attributes</strong> (<a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – List of Attributes on form
+<strong>(key, value [, category, [,lockstring [, default_pass]]])</strong></p></li>
+<li><p><strong>report_to</strong> (<em>Object</em>) – An object with a msg() method to report
+errors to. If not given, errors will be logged.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>Account</em> – The newly created Account.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If <strong>key</strong> already exists in database.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Usually only the server admin should need to be superuser, all
+other access levels can be handled with more fine-grained
+permissions or groups. A superuser bypasses all lock checking
+operations and is thus not suitable for play-testing the game.</p>
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.utils.create.rst.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../1.0-dev/api/evennia.utils.create.html">1.0-dev (develop branch)</a></li>
+  <li><a href="evennia.utils.create.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.create</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+    </div>
+  </body>
+</html>

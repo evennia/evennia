@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.server.portal.webclient &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.server.portal.webclient</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.webclient</a></li> 
       </ul>
     </div>  
 
@@ -84,7 +81,7 @@
 <span class="n">_BASE_SESSION_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_SESSION_CLASS</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="WebSocketClient"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.webclient.WebSocketClient">[docs]</a><span class="k">class</span> <span class="nc">WebSocketClient</span><span class="p">(</span><span class="n">WebSocketServerProtocol</span><span class="p">,</span> <span class="n">_BASE_SESSION_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="WebSocketClient"><a class="viewcode-back" href="../../../../api/evennia.server.portal.webclient.html#evennia.server.portal.webclient.WebSocketClient">[docs]</a><span class="k">class</span> <span class="nc">WebSocketClient</span><span class="p">(</span><span class="n">WebSocketServerProtocol</span><span class="p">,</span> <span class="n">_BASE_SESSION_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implements the server-side of the Websocket connection.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -93,11 +90,11 @@
     <span class="c1"># webclient_authenticated_uid value of csession on disconnect</span>
     <span class="n">nonce</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="WebSocketClient.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.webclient.WebSocketClient.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="WebSocketClient.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.webclient.html#evennia.server.portal.webclient.WebSocketClient.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol_key</span> <span class="o">=</span> <span class="s2">&quot;webclient/websocket&quot;</span></div>
 
-<div class="viewcode-block" id="WebSocketClient.get_client_session"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.webclient.WebSocketClient.get_client_session">[docs]</a>    <span class="k">def</span> <span class="nf">get_client_session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="WebSocketClient.get_client_session"><a class="viewcode-back" href="../../../../api/evennia.server.portal.webclient.html#evennia.server.portal.webclient.WebSocketClient.get_client_session">[docs]</a>    <span class="k">def</span> <span class="nf">get_client_session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the Client browser session (used for auto-login based on browser session)</span>
 
@@ -122,7 +119,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">csessid</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_CLIENT_SESSIONS</span><span class="p">(</span><span class="n">session_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">csessid</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="WebSocketClient.onOpen"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.webclient.WebSocketClient.onOpen">[docs]</a>    <span class="k">def</span> <span class="nf">onOpen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="WebSocketClient.onOpen"><a class="viewcode-back" href="../../../../api/evennia.server.portal.webclient.html#evennia.server.portal.webclient.WebSocketClient.onOpen">[docs]</a>    <span class="k">def</span> <span class="nf">onOpen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called when the WebSocket connection is fully established.</span>
 
@@ -165,7 +162,7 @@
         <span class="c1"># actually do the connection</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="WebSocketClient.disconnect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.webclient.WebSocketClient.disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="WebSocketClient.disconnect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.webclient.html#evennia.server.portal.webclient.WebSocketClient.disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generic hook for the engine to call in order to</span>
 <span class="sd">        disconnect this protocol.</span>
@@ -196,7 +193,7 @@
         <span class="c1"># sendClose() under autobahn/websocket/interfaces.py</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sendClose</span><span class="p">(</span><span class="n">CLOSE_NORMAL</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="WebSocketClient.onClose"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.webclient.WebSocketClient.onClose">[docs]</a>    <span class="k">def</span> <span class="nf">onClose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wasClean</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="WebSocketClient.onClose"><a class="viewcode-back" href="../../../../api/evennia.server.portal.webclient.html#evennia.server.portal.webclient.WebSocketClient.onClose">[docs]</a>    <span class="k">def</span> <span class="nf">onClose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wasClean</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is executed when the connection is lost for whatever</span>
 <span class="sd">        reason. it can also be called directly, from the disconnect</span>
@@ -213,7 +210,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">websocket_close_code</span> <span class="o">=</span> <span class="n">code</span></div>
 
-<div class="viewcode-block" id="WebSocketClient.onMessage"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.webclient.WebSocketClient.onMessage">[docs]</a>    <span class="k">def</span> <span class="nf">onMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span> <span class="n">isBinary</span><span class="p">):</span>
+<div class="viewcode-block" id="WebSocketClient.onMessage"><a class="viewcode-back" href="../../../../api/evennia.server.portal.webclient.html#evennia.server.portal.webclient.WebSocketClient.onMessage">[docs]</a>    <span class="k">def</span> <span class="nf">onMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span> <span class="n">isBinary</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Callback fired when a complete WebSocket message was received.</span>
 
@@ -227,7 +224,7 @@
         <span class="k">if</span> <span class="n">cmdarray</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">cmdarray</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="p">[</span><span class="n">cmdarray</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">cmdarray</span><span class="p">[</span><span class="mi">2</span><span class="p">]]})</span></div>
 
-<div class="viewcode-block" id="WebSocketClient.sendLine"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.webclient.WebSocketClient.sendLine">[docs]</a>    <span class="k">def</span> <span class="nf">sendLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+<div class="viewcode-block" id="WebSocketClient.sendLine"><a class="viewcode-back" href="../../../../api/evennia.server.portal.webclient.html#evennia.server.portal.webclient.WebSocketClient.sendLine">[docs]</a>    <span class="k">def</span> <span class="nf">sendLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send data to client.</span>
 
@@ -237,13 +234,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="WebSocketClient.at_login"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.webclient.WebSocketClient.at_login">[docs]</a>    <span class="k">def</span> <span class="nf">at_login</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="WebSocketClient.at_login"><a class="viewcode-back" href="../../../../api/evennia.server.portal.webclient.html#evennia.server.portal.webclient.WebSocketClient.at_login">[docs]</a>    <span class="k">def</span> <span class="nf">at_login</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">csession</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_client_session</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">csession</span><span class="p">:</span>
             <span class="n">csession</span><span class="p">[</span><span class="s2">&quot;webclient_authenticated_uid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">uid</span>
             <span class="n">csession</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="WebSocketClient.data_in"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.webclient.WebSocketClient.data_in">[docs]</a>    <span class="k">def</span> <span class="nf">data_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="WebSocketClient.data_in"><a class="viewcode-back" href="../../../../api/evennia.server.portal.webclient.html#evennia.server.portal.webclient.WebSocketClient.data_in">[docs]</a>    <span class="k">def</span> <span class="nf">data_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Data User &gt; Evennia.</span>
 
@@ -270,7 +267,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="WebSocketClient.send_text"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.webclient.WebSocketClient.send_text">[docs]</a>    <span class="k">def</span> <span class="nf">send_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="WebSocketClient.send_text"><a class="viewcode-back" href="../../../../api/evennia.server.portal.webclient.html#evennia.server.portal.webclient.WebSocketClient.send_text">[docs]</a>    <span class="k">def</span> <span class="nf">send_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send text data. This will pre-process the text for</span>
 <span class="sd">        color-replacement, conversion to html etc.</span>
@@ -278,7 +275,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            text (str): Text to send.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            options (dict): Options-dict with the following keys understood:</span>
 <span class="sd">                - raw (bool): No parsing at all (leave ansi-to-html markers unparsed).</span>
 <span class="sd">                - nocolor (bool): Clean out all color.</span>
@@ -319,11 +316,11 @@
         <span class="c1"># send to client on required form [cmdname, args, kwargs]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sendLine</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">([</span><span class="n">cmd</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">]))</span></div>
 
-<div class="viewcode-block" id="WebSocketClient.send_prompt"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.webclient.WebSocketClient.send_prompt">[docs]</a>    <span class="k">def</span> <span class="nf">send_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="WebSocketClient.send_prompt"><a class="viewcode-back" href="../../../../api/evennia.server.portal.webclient.html#evennia.server.portal.webclient.WebSocketClient.send_prompt">[docs]</a>    <span class="k">def</span> <span class="nf">send_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;options&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;send_prompt&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">send_text</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="WebSocketClient.send_default"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.webclient.WebSocketClient.send_default">[docs]</a>    <span class="k">def</span> <span class="nf">send_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="WebSocketClient.send_default"><a class="viewcode-back" href="../../../../api/evennia.server.portal.webclient.html#evennia.server.portal.webclient.WebSocketClient.send_default">[docs]</a>    <span class="k">def</span> <span class="nf">send_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Data Evennia -&gt; User.</span>
 
@@ -331,7 +328,7 @@
 <span class="sd">            cmdname (str): The first argument will always be the oob cmd name.</span>
 <span class="sd">            *args (any): Remaining args will be arguments for `cmd`.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            options (dict): These are ignored for oob commands. Use command</span>
 <span class="sd">                arguments (which can hold dicts) to send instructions to the</span>
 <span class="sd">                client instead.</span>
@@ -341,6 +338,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">sendLine</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">([</span><span class="n">cmdname</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">]))</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -378,17 +376,15 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.server.portal.webclient</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.webclient</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

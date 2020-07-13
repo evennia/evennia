@@ -1,0 +1,244 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Features &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Web Features</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="web-features">
+<h1>Web Features<a class="headerlink" href="#web-features" title="Permalink to this headline">¶</a></h1>
+<p>Evennia is its own webserver and hosts a default website and browser webclient.</p>
+<div class="section" id="web-site">
+<h2>Web site<a class="headerlink" href="#web-site" title="Permalink to this headline">¶</a></h2>
+<p>The Evennia website is a Django application that ties in with the MUD database. Since the website
+shares this database you could, for example, tell website visitors how many accounts are logged into
+the game at the moment, how long the server has been up and any other database information you may
+want. During development you can access the website by pointing your browser to
+<code class="docutils literal notranslate"><span class="pre">http://localhost:4001</span></code>.</p>
+<blockquote>
+<div><p>You may also want to set <code class="docutils literal notranslate"><span class="pre">DEBUG</span> <span class="pre">=</span> <span class="pre">True</span></code> in your settings file for debugging the website. You will
+then see proper tracebacks in the browser rather than just error codes. Note however that this will
+<em>leak memory a lot</em> (it stores everything all the time) and is <em>not to be used in production</em>. It’s
+recommended to only use <code class="docutils literal notranslate"><span class="pre">DEBUG</span></code> for active web development and to turn it off otherwise.</p>
+</div></blockquote>
+<p>A Django (and thus Evennia) website basically consists of three parts, a
+<a class="reference external" href="https://docs.djangoproject.com/en/1.9/topics/http/views/">view</a> an associated
+<a class="reference external" href="https://docs.djangoproject.com/en/1.9/topics/templates/">template</a> and an <code class="docutils literal notranslate"><span class="pre">urls.py</span></code> file. Think of
+the view as the Python back-end and the template as the HTML files you are served, optionally filled
+with data from the back-end. The urls file is a sort of mapping that tells Django that if a specific
+URL is given in the browser, a particular view should be triggered. You are wise to review the
+Django documentation for details on how to use these components.</p>
+<p>Evennia’s default website is located in
+<a class="reference external" href="https://github.com/evennia/evennia/tree/master/evennia/web/website">evennia/web/website</a>. In this
+folder you’ll find the simple default view as well as subfolders <code class="docutils literal notranslate"><span class="pre">templates</span></code> and <code class="docutils literal notranslate"><span class="pre">static</span></code>. Static
+files are things like images, CSS files and Javascript.</p>
+<div class="section" id="customizing-the-website">
+<h3>Customizing the Website<a class="headerlink" href="#customizing-the-website" title="Permalink to this headline">¶</a></h3>
+<p>You customize your website from your game directory. In the folder <code class="docutils literal notranslate"><span class="pre">web</span></code> you’ll find folders
+<code class="docutils literal notranslate"><span class="pre">static</span></code>, <code class="docutils literal notranslate"><span class="pre">templates</span></code>, <code class="docutils literal notranslate"><span class="pre">static_overrides</span></code> and <code class="docutils literal notranslate"><span class="pre">templates_overrides</span></code>. The first two of those are
+populated automatically by Django and used to serve the website. You should not edit anything in
+them - the change will be lost. To customize the website you’ll need to copy the file you want to
+change from the <code class="docutils literal notranslate"><span class="pre">web/website/template/</span></code> or <code class="docutils literal notranslate"><span class="pre">web/website/static/</span> <span class="pre">path</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">corresponding</span> <span class="pre">place</span> <span class="pre">under</span> <span class="pre">one</span> <span class="pre">of</span> </code>_overrides` directories.</p>
+<p>Example: To override or modify <code class="docutils literal notranslate"><span class="pre">evennia/web/website/template/website/index.html</span></code> you need to
+add/modify <code class="docutils literal notranslate"><span class="pre">mygame/web/template_overrides/website/index.html</span></code>.</p>
+<p>The detailed description on how to customize the website is best described in tutorial form. See the
+<a class="reference internal" href="../Howto/Starting/Part5/Web-Tutorial.html"><span class="doc">Web Tutorial</span></a> for more information.</p>
+</div>
+<div class="section" id="overloading-django-views">
+<h3>Overloading Django views<a class="headerlink" href="#overloading-django-views" title="Permalink to this headline">¶</a></h3>
+<p>The Python backend for every HTML page is called a <a class="reference external" href="https://docs.djangoproject.com/en/1.9/topics/http/views/">Django
+view</a>. A view can do all sorts of
+functions, but the main one is to update variables data that the page can display, like how your
+out-of-the-box website will display statistics about number of users and database objects.</p>
+<p>To re-point a given page to a <code class="docutils literal notranslate"><span class="pre">view.py</span></code> of your own, you need to modify <code class="docutils literal notranslate"><span class="pre">mygame/web/urls.py</span></code>. An
+<a class="reference external" href="https://docs.djangoproject.com/en/1.9/topics/http/urls/">URL pattern</a> is a <a class="reference external" href="https://en.wikipedia.org/wiki/Regular_expression">regular
+expression</a> that you need to enter in the address
+field of your web browser to get to the page in question. If you put your own URL pattern <em>before</em>
+the default ones, your own view will be used instead. The file <code class="docutils literal notranslate"><span class="pre">urls.py</span></code> even marks where you should
+put your change.</p>
+<p>Here’s an example:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/web/urls.py</span>
+
+<span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span><span class="p">,</span> <span class="n">include</span>
+<span class="c1"># default patterns</span>
+<span class="kn">from</span> <span class="nn">evennia.web.urls</span> <span class="kn">import</span> <span class="n">urlpatterns</span>
+
+<span class="c1"># our own view to use as a replacement</span>
+<span class="kn">from</span> <span class="nn">web.myviews</span> <span class="kn">import</span> <span class="n">myview</span>
+
+<span class="c1"># custom patterns to add</span>
+<span class="n">patterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c1"># overload the main page view</span>
+    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^&#39;</span><span class="p">,</span> <span class="n">myview</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;mycustomview&#39;</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">patterns</span> <span class="o">+</span> <span class="n">urlpatterns</span>
+</pre></div>
+</td></tr></table></div>
+<p>Django will always look for a list named <code class="docutils literal notranslate"><span class="pre">urlpatterns</span></code> which consists of the results of <code class="docutils literal notranslate"><span class="pre">url()</span></code>
+calls. It will use the <em>first</em> match it finds in this list. Above, we add a new URL redirect from
+the root of the website. It will now our own function <code class="docutils literal notranslate"><span class="pre">myview</span></code> from a new module
+<code class="docutils literal notranslate"><span class="pre">mygame/web/myviews.py</span></code>.</p>
+<blockquote>
+<div><p>If our game is found on <code class="docutils literal notranslate"><span class="pre">http://mygame.com</span></code>, the regular expression <code class="docutils literal notranslate"><span class="pre">&quot;^&quot;</span></code> means we just entered
+<code class="docutils literal notranslate"><span class="pre">mygame.com</span></code> in the address bar. If we had wanted to add a view for <code class="docutils literal notranslate"><span class="pre">http://mygame.com/awesome</span></code>, the
+regular expression would have been <code class="docutils literal notranslate"><span class="pre">^/awesome</span></code>.</p>
+</div></blockquote>
+<p>Look at
+<a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/web/website/views.py#L82">evennia/web/website/views.py</a>
+to see the inputs and outputs you must have to define a view. Easiest may be to copy the default
+file to <code class="docutils literal notranslate"><span class="pre">mygame/web</span></code> to have something to modify and expand on.</p>
+<p>Restart the server and reload the page in the browser - the website will now use your custom view.
+If there are errors, consider turning on <code class="docutils literal notranslate"><span class="pre">settings.DEBUG</span></code> to see the full tracebacks - in debug mode
+you will also log all requests in <code class="docutils literal notranslate"><span class="pre">mygame/server/logs/http_requests.log</span></code>.</p>
+</div>
+</div>
+<div class="section" id="web-client">
+<h2>Web client<a class="headerlink" href="#web-client" title="Permalink to this headline">¶</a></h2>
+<p>Evennia comes with a MUD client accessible from a normal web browser. During
+development you can try it at <code class="docutils literal notranslate"><span class="pre">http://localhost:4001/webclient</span></code>.
+<a class="reference internal" href="../Components/Webclient.html"><span class="doc">See the Webclient page</span></a> for more details.</p>
+</div>
+<div class="section" id="the-django-admin-page">
+<h2>The Django ‘Admin’ Page<a class="headerlink" href="#the-django-admin-page" title="Permalink to this headline">¶</a></h2>
+<p>Django comes with a built-in <a class="reference external" href="https://docs.djangoproject.com/en/1.10/ref/contrib/admin/">admin
+website</a>. This is accessible by clicking
+the ‘admin’ button from your game website. The admin site allows you to see, edit and create objects
+in your database from a graphical interface.</p>
+<p>The behavior of default Evennia models are controlled by files <code class="docutils literal notranslate"><span class="pre">admin.py</span></code> in the Evennia package.
+New database models you choose to add yourself (such as in the Web Character View Tutorial) can/will
+also have <code class="docutils literal notranslate"><span class="pre">admin.py</span></code> files. New models are registered to the admin website by a call of
+<code class="docutils literal notranslate"><span class="pre">admin.site.register(model</span> <span class="pre">class,</span> <span class="pre">admin</span> <span class="pre">class)</span></code> inside an admin.py file. It is an error to attempt
+to register a model that has already been registered.</p>
+<p>To overload Evennia’s admin files you don’t need to modify Evennia itself. To customize you can call
+<code class="docutils literal notranslate"><span class="pre">admin.site.unregister(model</span> <span class="pre">class)</span></code>, then follow that with <code class="docutils literal notranslate"><span class="pre">admin.site.register</span></code> in one of your own
+admin.py files in a new app that you add.</p>
+</div>
+<div class="section" id="more-reading">
+<h2>More reading<a class="headerlink" href="#more-reading" title="Permalink to this headline">¶</a></h2>
+<p>Evennia relies on Django for its web features. For details on expanding your web experience, the
+<a class="reference external" href="https://docs.djangoproject.com/en">Django documentation</a> or the <a class="reference external" href="http://www.djangobook.com/en/2.0/index.html">Django
+Book</a> are the main resources to look into. In Django
+lingo, the Evennia is a django “project” that consists of Django “applications”. For the sake of web
+implementation, the relevant django “applications” in default Evennia are <code class="docutils literal notranslate"><span class="pre">web/website</span></code> or
+<code class="docutils literal notranslate"><span class="pre">web/webclient</span></code>.</p>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Web Features</a><ul>
+<li><a class="reference internal" href="#web-site">Web site</a><ul>
+<li><a class="reference internal" href="#customizing-the-website">Customizing the Website</a></li>
+<li><a class="reference internal" href="#overloading-django-views">Overloading Django views</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#web-client">Web client</a></li>
+<li><a class="reference internal" href="#the-django-admin-page">The Django ‘Admin’ Page</a></li>
+<li><a class="reference internal" href="#more-reading">More reading</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Concepts/Web-Features.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Web-Features.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Web Features</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+    </div>
+  </body>
+</html>

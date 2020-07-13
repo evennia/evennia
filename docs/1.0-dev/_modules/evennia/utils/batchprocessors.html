@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.utils.batchprocessors &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.utils.batchprocessors</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.batchprocessors</a></li> 
       </ul>
     </div>  
 
@@ -44,24 +41,22 @@
   <h1>Source code for evennia.utils.batchprocessors</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">This module contains the core methods for the Batch-command- and</span>
-<span class="sd">Batch-code-processors respectively. In short, these are two different</span>
-<span class="sd">ways to build a game world using a normal text-editor without having</span>
-<span class="sd">to do so &#39;on the fly&#39; in-game. They also serve as an automatic backup</span>
-<span class="sd">so you can quickly recreate a world also after a server reset. The</span>
-<span class="sd">functions in this module is meant to form the backbone of a system</span>
-<span class="sd">called and accessed through game commands.</span>
+<span class="sd">Batch-code-processors respectively. In short, these are two different ways to</span>
+<span class="sd">build a game world using a normal text-editor without having to do so &#39;on the</span>
+<span class="sd">fly&#39; in-game. They also serve as an automatic backup so you can quickly</span>
+<span class="sd">recreate a world also after a server reset. The functions in this module is</span>
+<span class="sd">meant to form the backbone of a system called and accessed through game</span>
+<span class="sd">commands.</span>
 
-<span class="sd">The Batch-command processor is the simplest. It simply runs a list of</span>
-<span class="sd">in-game commands in sequence by reading them from a text file. The</span>
-<span class="sd">advantage of this is that the builder only need to remember the normal</span>
-<span class="sd">in-game commands. They are also executing with full permission checks</span>
-<span class="sd">etc, making it relatively safe for builders to use. The drawback is</span>
-<span class="sd">that in-game there is really a builder-character walking around</span>
-<span class="sd">building things, and it can be important to create rooms and objects</span>
-<span class="sd">in the right order, so the character can move between them. Also</span>
-<span class="sd">objects that affects players (such as mobs, dark rooms etc) will</span>
-<span class="sd">affect the building character too, requiring extra care to turn</span>
-<span class="sd">off/on.</span>
+<span class="sd">The Batch-command processor is the simplest. It simply runs a list of in-game</span>
+<span class="sd">commands in sequence by reading them from a text file. The advantage of this is</span>
+<span class="sd">that the builder only need to remember the normal in-game commands. They are</span>
+<span class="sd">also executing with full permission checks etc, making it relatively safe for</span>
+<span class="sd">builders to use. The drawback is that in-game there is really a</span>
+<span class="sd">builder-character walking around building things, and it can be important to</span>
+<span class="sd">create rooms and objects in the right order, so the character can move between</span>
+<span class="sd">them. Also objects that affects players (such as mobs, dark rooms etc) will</span>
+<span class="sd">affect the building character too, requiring extra care to turn off/on.</span>
 
 <span class="sd">The Batch-code processor is a more advanced system that accepts full</span>
 <span class="sd">Python code, executing in chunks. The advantage of this is much more</span>
@@ -75,7 +70,7 @@
 <span class="sd">recommended that the batch-code processor is limited only to</span>
 <span class="sd">superusers or highly trusted staff.</span>
 
-<span class="sd">Batch-command processor file syntax</span>
+<span class="sd"># Batch-command processor file syntax</span>
 
 <span class="sd">The batch-command processor accepts &#39;batchcommand files&#39; e.g</span>
 <span class="sd">`batch.ev`, containing a sequence of valid Evennia commands in a</span>
@@ -85,64 +80,64 @@
 <span class="sd">Each Evennia command must be delimited by a line comment to mark its</span>
 <span class="sd">end.</span>
 
-<span class="sd">```</span>
-<span class="sd">#INSERT path.batchcmdfile - this as the first entry on a line will</span>
-<span class="sd">      import and run a batch.ev file in this position, as if it was</span>
-<span class="sd">      written in this file.</span>
-<span class="sd">```</span>
+<span class="sd">::</span>
+
+<span class="sd">    look</span>
+<span class="sd">    # delimiting comment</span>
+<span class="sd">    create/drop box</span>
+<span class="sd">    # another required comment</span>
+
+<span class="sd">One can also inject another batchcmdfile:</span>
+
+<span class="sd">::</span>
+
+<span class="sd">    #INSERT path.batchcmdfile</span>
 
 <span class="sd">This way entire game worlds can be created and planned offline; it is</span>
 <span class="sd">especially useful in order to create long room descriptions where a</span>
 <span class="sd">real offline text editor is often much better than any online text</span>
 <span class="sd">editor or prompt.</span>
 
-<span class="sd">Example of batch.ev file:</span>
-<span class="sd">----------------------------</span>
+<span class="sd">## Example of batch.ev file:</span>
 
-<span class="sd">```</span>
-<span class="sd"># batch file</span>
-<span class="sd"># all lines starting with # are comments; they also indicate</span>
-<span class="sd"># that a command definition is over.</span>
+<span class="sd">::</span>
 
-<span class="sd">@create box</span>
+<span class="sd">    # batch file</span>
+<span class="sd">    # all lines starting with # are comments; they also indicate</span>
+<span class="sd">    # that a command definition is over.</span>
 
-<span class="sd"># this comment ends the @create command.</span>
+<span class="sd">    create box</span>
 
-<span class="sd">@set box/desc = A large box.</span>
+<span class="sd">    # this comment ends the @create command.</span>
 
-<span class="sd">Inside are some scattered piles of clothing.</span>
+<span class="sd">    set box/desc = A large box.</span>
+
+<span class="sd">    Inside are some scattered piles of clothing.</span>
 
 
-<span class="sd">It seems the bottom of the box is a bit loose.</span>
+<span class="sd">    It seems the bottom of the box is a bit loose.</span>
 
-<span class="sd"># Again, this comment indicates the @set command is over. Note how</span>
-<span class="sd"># the description could be freely added. Excess whitespace on a line</span>
-<span class="sd"># is ignored.  An empty line in the command definition is parsed as a \n</span>
-<span class="sd"># (so two empty lines becomes a new paragraph).</span>
+<span class="sd">    # Again, this comment indicates the @set command is over. Note how</span>
+<span class="sd">    # the description could be freely added. Excess whitespace on a line</span>
+<span class="sd">    # is ignored.  An empty line in the command definition is parsed as a \n</span>
+<span class="sd">    # (so two empty lines becomes a new paragraph).</span>
 
-<span class="sd">@teleport #221</span>
+<span class="sd">    teleport #221</span>
 
-<span class="sd"># (Assuming #221 is a warehouse or something.)</span>
-<span class="sd"># (remember, this comment ends the @teleport command! Don&#39;f forget it)</span>
+<span class="sd">    # (Assuming #221 is a warehouse or something.)</span>
+<span class="sd">    # (remember, this comment ends the @teleport command! Don&#39;f forget it)</span>
 
-<span class="sd"># Example of importing another file at this point.</span>
-<span class="sd">#IMPORT examples.batch</span>
+<span class="sd">    # Example of importing another file at this point.</span>
+<span class="sd">    #IMPORT examples.batch</span>
 
-<span class="sd">@drop box</span>
+<span class="sd">    drop box</span>
 
-<span class="sd"># Done, the box is in the warehouse! (this last comment is not necessary to</span>
-<span class="sd"># close the @drop command since it&#39;s the end of the file)</span>
-<span class="sd">```</span>
-
-<span class="sd">-------------------------</span>
+<span class="sd">    # Done, the box is in the warehouse! (this last comment is not necessary to</span>
+<span class="sd">    # close the drop command since it&#39;s the end of the file)</span>
 
 <span class="sd">An example batch file is `contrib/examples/batch_example.ev`.</span>
 
-
-<span class="sd">==========================================================================</span>
-
-
-<span class="sd">Batch-code processor file syntax</span>
+<span class="sd"># Batch-code processor file syntax</span>
 
 <span class="sd">The Batch-code processor accepts full python modules (e.g. `batch.py`)</span>
 <span class="sd">that looks identical to normal Python files. The difference from</span>
@@ -157,62 +152,61 @@
 
 <span class="sd">Code blocks are marked by commented tokens alone on a line:</span>
 
-<span class="sd">#HEADER - This denotes code that should be pasted at the top of all</span>
-<span class="sd">         other code. Multiple HEADER statements - regardless of where</span>
-<span class="sd">         it exists in the file - is the same as one big block.</span>
-<span class="sd">         Observe that changes to variables made in one block is not</span>
-<span class="sd">         preserved between blocks!</span>
-<span class="sd">#CODE - This designates a code block that will be executed like a</span>
-<span class="sd">       stand-alone piece of code together with any HEADER(s)</span>
-<span class="sd">       defined. It is mainly used as a way to mark stop points for</span>
-<span class="sd">       the interactive mode of the batchprocessor. If no CODE block</span>
-<span class="sd">       is defined in the module, the entire module (including HEADERS)</span>
-<span class="sd">       is assumed to be a CODE block.</span>
-<span class="sd">#INSERT path.filename - This imports another batch_code.py file and</span>
-<span class="sd">      runs it in the given position. The inserted file will retain</span>
-<span class="sd">      its own HEADERs which will not be mixed with the headers of</span>
-<span class="sd">      this file.</span>
+<span class="sd">- `#HEADER` - This denotes code that should be pasted at the top of all</span>
+<span class="sd">  other code. Multiple HEADER statements - regardless of where</span>
+<span class="sd">  it exists in the file - is the same as one big block.</span>
+<span class="sd">  Observe that changes to variables made in one block is not</span>
+<span class="sd">  preserved between blocks!</span>
+<span class="sd">- `#CODE` - This designates a code block that will be executed like a</span>
+<span class="sd">  stand-alone piece of code together with any HEADER(s)</span>
+<span class="sd">  defined. It is mainly used as a way to mark stop points for</span>
+<span class="sd">  the interactive mode of the batchprocessor. If no CODE block</span>
+<span class="sd">  is defined in the module, the entire module (including HEADERS)</span>
+<span class="sd">  is assumed to be a CODE block.</span>
+<span class="sd">- `#INSERT path.filename` - This imports another batch_code.py file and</span>
+<span class="sd">  runs it in the given position. The inserted file will retain</span>
+<span class="sd">  its own HEADERs which will not be mixed with the headers of</span>
+<span class="sd">  this file.</span>
 
 <span class="sd">Importing works as normal. The following variables are automatically</span>
 <span class="sd">made available in the script namespace.</span>
 
-<span class="sd">- `caller` -  The object executing the batchscript</span>
+<span class="sd">- `caller` - The object executing the batchscript</span>
 <span class="sd">- `DEBUG` - This is a boolean marking if the batchprocessor is running</span>
 <span class="sd">            in debug mode. It can be checked to e.g. delete created objects</span>
 <span class="sd">            when running a CODE block multiple times during testing.</span>
 <span class="sd">            (avoids creating a slew of same-named db objects)</span>
 
+<span class="sd">## Example batch.py file</span>
 
-<span class="sd">Example batch.py file</span>
-<span class="sd">-----------------------------------</span>
+<span class="sd">::</span>
 
-<span class="sd">```</span>
-<span class="sd">#HEADER</span>
+<span class="sd">    #HEADER</span>
 
-<span class="sd">from django.conf import settings</span>
-<span class="sd">from evennia.utils import create</span>
-<span class="sd">from types import basetypes</span>
+<span class="sd">    from django.conf import settings</span>
+<span class="sd">    from evennia.utils import create</span>
+<span class="sd">    from types import basetypes</span>
 
-<span class="sd">GOLD = 10</span>
+<span class="sd">    GOLD = 10</span>
 
-<span class="sd">#CODE</span>
+<span class="sd">    #CODE</span>
 
-<span class="sd">obj = create.create_object(basetypes.Object)</span>
-<span class="sd">obj2 = create.create_object(basetypes.Object)</span>
-<span class="sd">obj.location = caller.location</span>
-<span class="sd">obj.db.gold = GOLD</span>
-<span class="sd">caller.msg(&quot;The object was created!&quot;)</span>
+<span class="sd">    obj = create.create_object(basetypes.Object)</span>
+<span class="sd">    obj2 = create.create_object(basetypes.Object)</span>
+<span class="sd">    obj.location = caller.location</span>
+<span class="sd">    obj.db.gold = GOLD</span>
+<span class="sd">    caller.msg(&quot;The object was created!&quot;)</span>
 
-<span class="sd">if DEBUG:</span>
-<span class="sd">    obj.delete()</span>
-<span class="sd">    obj2.delete()</span>
+<span class="sd">    if DEBUG:</span>
+<span class="sd">        obj.delete()</span>
+<span class="sd">        obj2.delete()</span>
 
-<span class="sd">#INSERT another_batch_file</span>
+<span class="sd">    #INSERT another_batch_file</span>
 
-<span class="sd">#CODE</span>
+<span class="sd">    #CODE</span>
 
-<span class="sd">script = create.create_script()</span>
-<span class="sd">```</span>
+<span class="sd">    script = create.create_script()</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">codecs</span>
@@ -236,7 +230,7 @@
 <span class="c1"># -------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="read_batchfile"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.batchprocessors.read_batchfile">[docs]</a><span class="k">def</span> <span class="nf">read_batchfile</span><span class="p">(</span><span class="n">pythonpath</span><span class="p">,</span> <span class="n">file_ending</span><span class="o">=</span><span class="s2">&quot;.py&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="read_batchfile"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.read_batchfile">[docs]</a><span class="k">def</span> <span class="nf">read_batchfile</span><span class="p">(</span><span class="n">pythonpath</span><span class="p">,</span> <span class="n">file_ending</span><span class="o">=</span><span class="s2">&quot;.py&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This reads the contents of a batch-file.  Filename is considered</span>
 <span class="sd">    to be a python path to a batch file relative the directory</span>
@@ -289,29 +283,38 @@
 <span class="c1"># -------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="BatchCommandProcessor"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.batchprocessors.BatchCommandProcessor">[docs]</a><span class="k">class</span> <span class="nc">BatchCommandProcessor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="BatchCommandProcessor"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.BatchCommandProcessor">[docs]</a><span class="k">class</span> <span class="nc">BatchCommandProcessor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class implements a batch-command processor.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="BatchCommandProcessor.parse_file"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.batchprocessors.BatchCommandProcessor.parse_file">[docs]</a>    <span class="k">def</span> <span class="nf">parse_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pythonpath</span><span class="p">):</span>
+<div class="viewcode-block" id="BatchCommandProcessor.parse_file"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.BatchCommandProcessor.parse_file">[docs]</a>    <span class="k">def</span> <span class="nf">parse_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pythonpath</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This parses the lines of a batchfile according to the following</span>
-<span class="sd">        rules:</span>
-<span class="sd">          1) # at the beginning of a line marks the end of the command before</span>
+<span class="sd">        This parses the lines of a batch-command-file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pythonpath (str): The dot-python path to the file.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A list of all parsed commands with arguments, as strings.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            Parsing follows the following rules:</span>
+
+<span class="sd">            1. A `#` at the beginning of a line marks the end of the command before</span>
 <span class="sd">               it. It is also a comment and any number of # can exist on</span>
 <span class="sd">               subsequent lines (but not inside comments).</span>
-<span class="sd">          2) #INSERT at the beginning of a line imports another</span>
-<span class="sd">             batch-cmd file file and pastes it into the batch file as if</span>
-<span class="sd">             it was written there.</span>
-<span class="sd">          3) Commands are placed alone at the beginning of a line and their</span>
-<span class="sd">             arguments are considered to be everything following (on any</span>
-<span class="sd">             number of lines) until the next comment line beginning with #.</span>
-<span class="sd">          4) Newlines are ignored in command definitions</span>
-<span class="sd">          5) A completely empty line in a command line definition is condered</span>
-<span class="sd">             a newline (so two empty lines is a paragraph).</span>
-<span class="sd">          6) Excess spaces and indents inside arguments are stripped.</span>
+<span class="sd">            2. #INSERT at the beginning of a line imports another</span>
+<span class="sd">               batch-cmd file file and pastes it into the batch file as if</span>
+<span class="sd">               it was written there.</span>
+<span class="sd">            3. Commands are placed alone at the beginning of a line and their</span>
+<span class="sd">               arguments are considered to be everything following (on any</span>
+<span class="sd">               number of lines) until the next comment line beginning with #.</span>
+<span class="sd">            4. Newlines are ignored in command definitions</span>
+<span class="sd">            5. A completely empty line in a command line definition is condered</span>
+<span class="sd">               a newline (so two empty lines is a paragraph).</span>
+<span class="sd">            6. Excess spaces and indents inside arguments are stripped.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -340,41 +343,43 @@
 <span class="c1"># -------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="tb_filename"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.batchprocessors.tb_filename">[docs]</a><span class="k">def</span> <span class="nf">tb_filename</span><span class="p">(</span><span class="n">tb</span><span class="p">):</span>
+<div class="viewcode-block" id="tb_filename"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.tb_filename">[docs]</a><span class="k">def</span> <span class="nf">tb_filename</span><span class="p">(</span><span class="n">tb</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Helper to get filename from traceback&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">tb</span><span class="o">.</span><span class="n">tb_frame</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_filename</span></div>
 
 
-<div class="viewcode-block" id="tb_iter"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.batchprocessors.tb_iter">[docs]</a><span class="k">def</span> <span class="nf">tb_iter</span><span class="p">(</span><span class="n">tb</span><span class="p">):</span>
+<div class="viewcode-block" id="tb_iter"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.tb_iter">[docs]</a><span class="k">def</span> <span class="nf">tb_iter</span><span class="p">(</span><span class="n">tb</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Traceback iterator.&quot;&quot;&quot;</span>
     <span class="k">while</span> <span class="n">tb</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">yield</span> <span class="n">tb</span>
         <span class="n">tb</span> <span class="o">=</span> <span class="n">tb</span><span class="o">.</span><span class="n">tb_next</span></div>
 
 
-<div class="viewcode-block" id="BatchCodeProcessor"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.batchprocessors.BatchCodeProcessor">[docs]</a><span class="k">class</span> <span class="nc">BatchCodeProcessor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="BatchCodeProcessor"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.BatchCodeProcessor">[docs]</a><span class="k">class</span> <span class="nc">BatchCodeProcessor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This implements a batch-code processor</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="BatchCodeProcessor.parse_file"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.batchprocessors.BatchCodeProcessor.parse_file">[docs]</a>    <span class="k">def</span> <span class="nf">parse_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pythonpath</span><span class="p">):</span>
+<div class="viewcode-block" id="BatchCodeProcessor.parse_file"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.BatchCodeProcessor.parse_file">[docs]</a>    <span class="k">def</span> <span class="nf">parse_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pythonpath</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This parses the lines of a batchfile according to the following</span>
-<span class="sd">        rules:</span>
+<span class="sd">        This parses the lines of a batch-code file</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            pythonpath (str): The dot-python path to the file.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            codeblocks (list): A list of all #CODE blocks, each with</span>
-<span class="sd">                prepended #HEADER data. If no #CODE blocks were found,</span>
-<span class="sd">                this will be a list of one element.</span>
+<span class="sd">            list: A list of all `#CODE` blocks, each with</span>
+<span class="sd">                prepended `#HEADER` block data. If no `#CODE`</span>
+<span class="sd">                blocks were found, this will be a list of one element</span>
+<span class="sd">                containing all code in the file (so a normal Python file).</span>
 
 <span class="sd">        Notes:</span>
+<span class="sd">            Parsing is done according to the following rules:</span>
+
 <span class="sd">            1. Code before a #CODE/HEADER block are considered part of</span>
-<span class="sd">                the first code/header block or is the ONLY block if no</span>
-<span class="sd">                #CODE/HEADER blocks are defined.</span>
+<span class="sd">               the first code/header block or is the ONLY block if no</span>
+<span class="sd">               `#CODE/HEADER` blocks are defined.</span>
 <span class="sd">            2. Lines starting with #HEADER starts a header block (ends other blocks)</span>
 <span class="sd">            3. Lines starting with #CODE begins a code block (ends other blocks)</span>
 <span class="sd">            4. Lines starting with #INSERT are on form #INSERT filename. Code from</span>
@@ -382,6 +387,7 @@
 <span class="sd">               being inserted at the point of the #INSERT.</span>
 <span class="sd">            5. Code after the last block is considered part of the last header/code</span>
 <span class="sd">               block</span>
+
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -419,7 +425,7 @@
         <span class="n">codes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"># batchcode code:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span> <span class="k">for</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">codes</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">codes</span></div>
 
-<div class="viewcode-block" id="BatchCodeProcessor.code_exec"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.batchprocessors.BatchCodeProcessor.code_exec">[docs]</a>    <span class="k">def</span> <span class="nf">code_exec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">extra_environ</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="BatchCodeProcessor.code_exec"><a class="viewcode-back" href="../../../api/evennia.utils.batchprocessors.html#evennia.utils.batchprocessors.BatchCodeProcessor.code_exec">[docs]</a>    <span class="k">def</span> <span class="nf">code_exec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">extra_environ</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Execute a single code block, including imports and appending</span>
 <span class="sd">        global vars.</span>
@@ -474,6 +480,7 @@
 <span class="n">BATCHCODE</span> <span class="o">=</span> <span class="n">BatchCodeProcessor</span><span class="p">()</span>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -511,17 +518,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.utils.batchprocessors</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.batchprocessors</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

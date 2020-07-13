@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.server.portal.naws &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.server.portal.naws</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.naws</a></li> 
       </ul>
     </div>  
 
@@ -66,14 +63,14 @@
 <span class="c1"># try to get the customized mssp info, if it exists.</span>
 
 
-<div class="viewcode-block" id="Naws"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.naws.Naws">[docs]</a><span class="k">class</span> <span class="nc">Naws</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Naws"><a class="viewcode-back" href="../../../../api/evennia.server.portal.naws.html#evennia.server.portal.naws.Naws">[docs]</a><span class="k">class</span> <span class="nc">Naws</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implements the NAWS protocol. Add this to a variable on the telnet</span>
 <span class="sd">    protocol to set it up.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Naws.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.naws.Naws.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">):</span>
+<div class="viewcode-block" id="Naws.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.naws.html#evennia.server.portal.naws.Naws.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize NAWS by storing protocol on ourselves and calling</span>
 <span class="sd">        the client to see if it supports NAWS.</span>
@@ -91,7 +88,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">negotiationMap</span><span class="p">[</span><span class="n">NAWS</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">negotiate_sizes</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">do</span><span class="p">(</span><span class="n">NAWS</span><span class="p">)</span><span class="o">.</span><span class="n">addCallbacks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_naws</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_naws</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Naws.no_naws"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.naws.Naws.no_naws">[docs]</a>    <span class="k">def</span> <span class="nf">no_naws</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
+<div class="viewcode-block" id="Naws.no_naws"><a class="viewcode-back" href="../../../../api/evennia.server.portal.naws.html#evennia.server.portal.naws.Naws.no_naws">[docs]</a>    <span class="k">def</span> <span class="nf">no_naws</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when client is not reporting NAWS. This is the normal</span>
 <span class="sd">        operation.</span>
@@ -102,7 +99,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">handshake_done</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Naws.do_naws"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.naws.Naws.do_naws">[docs]</a>    <span class="k">def</span> <span class="nf">do_naws</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
+<div class="viewcode-block" id="Naws.do_naws"><a class="viewcode-back" href="../../../../api/evennia.server.portal.naws.html#evennia.server.portal.naws.Naws.do_naws">[docs]</a>    <span class="k">def</span> <span class="nf">do_naws</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Client wants to negotiate all the NAWS information.</span>
 
@@ -112,7 +109,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">handshake_done</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Naws.negotiate_sizes"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.naws.Naws.negotiate_sizes">[docs]</a>    <span class="k">def</span> <span class="nf">negotiate_sizes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+<div class="viewcode-block" id="Naws.negotiate_sizes"><a class="viewcode-back" href="../../../../api/evennia.server.portal.naws.html#evennia.server.portal.naws.Naws.negotiate_sizes">[docs]</a>    <span class="k">def</span> <span class="nf">negotiate_sizes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Step through the NAWS handshake.</span>
 
@@ -128,6 +125,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;SCREENHEIGHT&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">codecs_encode</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="s2">&quot;hex&quot;</span><span class="p">),</span> <span class="mi">16</span><span class="p">)</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -165,17 +163,15 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.server.portal.naws</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.naws</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

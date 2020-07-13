@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.locks.lockhandler &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.locks.lockhandler</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.locks.lockhandler</a></li> 
       </ul>
     </div>  
 
@@ -165,7 +162,7 @@
 <span class="c1">#</span>
 
 
-<div class="viewcode-block" id="LockException"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockhandler.LockException">[docs]</a><span class="k">class</span> <span class="nc">LockException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="LockException"><a class="viewcode-back" href="../../../api/evennia.locks.lockhandler.html#evennia.locks.lockhandler.LockException">[docs]</a><span class="k">class</span> <span class="nc">LockException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Raised during an error in a lock.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -207,14 +204,14 @@
 <span class="c1">#</span>
 
 
-<div class="viewcode-block" id="LockHandler"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockhandler.LockHandler">[docs]</a><span class="k">class</span> <span class="nc">LockHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="LockHandler"><a class="viewcode-back" href="../../../api/evennia.locks.lockhandler.html#evennia.locks.lockhandler.LockHandler">[docs]</a><span class="k">class</span> <span class="nc">LockHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This handler should be attached to all objects implementing</span>
 <span class="sd">    permission checks, under the property &#39;lockhandler&#39;.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="LockHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockhandler.LockHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="LockHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.locks.lockhandler.html#evennia.locks.lockhandler.LockHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads and pre-caches all relevant locks and their functions.</span>
 
@@ -235,11 +232,11 @@
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="p">))</span>
 
-<div class="viewcode-block" id="LockHandler._log_error"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockhandler.LockHandler._log_error">[docs]</a>    <span class="k">def</span> <span class="nf">_log_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_log_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
         <span class="s2">&quot;Try to log errors back to object&quot;</span>
-        <span class="k">raise</span> <span class="n">LockException</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="n">LockException</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 
-<div class="viewcode-block" id="LockHandler._parse_lockstring"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockhandler.LockHandler._parse_lockstring">[docs]</a>    <span class="k">def</span> <span class="nf">_parse_lockstring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage_lockstring</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_parse_lockstring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage_lockstring</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper function. This is normally only called when the</span>
 <span class="sd">        lockstring is cached and does preliminary checking.  locks are</span>
@@ -317,21 +314,21 @@
             <span class="c1"># an error text was set, raise exception.</span>
             <span class="k">raise</span> <span class="n">LockException</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">elist</span><span class="p">))</span>
         <span class="c1"># return the gathered locks in an easily executable form</span>
-        <span class="k">return</span> <span class="n">locks</span></div>
+        <span class="k">return</span> <span class="n">locks</span>
 
-<div class="viewcode-block" id="LockHandler._cache_locks"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockhandler.LockHandler._cache_locks">[docs]</a>    <span class="k">def</span> <span class="nf">_cache_locks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage_lockstring</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_cache_locks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage_lockstring</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Store data</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">locks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_lockstring</span><span class="p">(</span><span class="n">storage_lockstring</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">locks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_lockstring</span><span class="p">(</span><span class="n">storage_lockstring</span><span class="p">)</span>
 
-<div class="viewcode-block" id="LockHandler._save_locks"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockhandler.LockHandler._save_locks">[docs]</a>    <span class="k">def</span> <span class="nf">_save_locks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_save_locks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Store locks to obj</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">lock_storage</span> <span class="o">=</span> <span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">tup</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">lock_storage</span> <span class="o">=</span> <span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">tup</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
 
-<div class="viewcode-block" id="LockHandler.cache_lock_bypass"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockhandler.LockHandler.cache_lock_bypass">[docs]</a>    <span class="k">def</span> <span class="nf">cache_lock_bypass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="LockHandler.cache_lock_bypass"><a class="viewcode-back" href="../../../api/evennia.locks.lockhandler.html#evennia.locks.lockhandler.LockHandler.cache_lock_bypass">[docs]</a>    <span class="k">def</span> <span class="nf">cache_lock_bypass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        We cache superuser bypass checks here for efficiency. This</span>
 <span class="sd">        needs to be re-run when an account is assigned to a character.</span>
@@ -347,7 +344,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lock_bypass</span> <span class="o">=</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;is_superuser&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">is_superuser</span></div>
 
-<div class="viewcode-block" id="LockHandler.add"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockhandler.LockHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">,</span> <span class="n">validate_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="LockHandler.add"><a class="viewcode-back" href="../../../api/evennia.locks.lockhandler.html#evennia.locks.lockhandler.LockHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">,</span> <span class="n">validate_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a new lockstring to handler.</span>
 
@@ -417,7 +414,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_save_locks</span><span class="p">()</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="LockHandler.validate"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockhandler.LockHandler.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">):</span>
+<div class="viewcode-block" id="LockHandler.validate"><a class="viewcode-back" href="../../../api/evennia.locks.lockhandler.html#evennia.locks.lockhandler.LockHandler.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Validate lockstring syntactically, without saving it.</span>
 
@@ -429,7 +426,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">lockstring</span><span class="p">,</span> <span class="n">validate_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="LockHandler.replace"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockhandler.LockHandler.replace">[docs]</a>    <span class="k">def</span> <span class="nf">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">):</span>
+<div class="viewcode-block" id="LockHandler.replace"><a class="viewcode-back" href="../../../api/evennia.locks.lockhandler.html#evennia.locks.lockhandler.LockHandler.replace">[docs]</a>    <span class="k">def</span> <span class="nf">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Replaces the lockstring entirely.</span>
 
@@ -452,7 +449,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">old_lockstring</span><span class="p">)</span>
             <span class="k">raise</span></div>
 
-<div class="viewcode-block" id="LockHandler.get"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockhandler.LockHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="LockHandler.get"><a class="viewcode-back" href="../../../api/evennia.locks.lockhandler.html#evennia.locks.lockhandler.LockHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the full lockstring or the lockstring of a particular</span>
 <span class="sd">        access type.</span>
@@ -469,7 +466,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">access_type</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">])[</span><span class="mi">2</span><span class="p">]</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="LockHandler.all"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockhandler.LockHandler.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="LockHandler.all"><a class="viewcode-back" href="../../../api/evennia.locks.lockhandler.html#evennia.locks.lockhandler.LockHandler.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return all lockstrings</span>
 
@@ -479,7 +476,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="LockHandler.remove"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockhandler.LockHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">access_type</span><span class="p">):</span>
+<div class="viewcode-block" id="LockHandler.remove"><a class="viewcode-back" href="../../../api/evennia.locks.lockhandler.html#evennia.locks.lockhandler.LockHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">access_type</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove a particular lock from the handler</span>
 
@@ -499,7 +496,7 @@
 
     <span class="n">delete</span> <span class="o">=</span> <span class="n">remove</span>  <span class="c1"># alias for historical reasons</span>
 
-<div class="viewcode-block" id="LockHandler.clear"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockhandler.LockHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="LockHandler.clear"><a class="viewcode-back" href="../../../api/evennia.locks.lockhandler.html#evennia.locks.lockhandler.LockHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove all locks in the handler.</span>
 
@@ -508,7 +505,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">lock_storage</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_save_locks</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="LockHandler.reset"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockhandler.LockHandler.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="LockHandler.reset"><a class="viewcode-back" href="../../../api/evennia.locks.lockhandler.html#evennia.locks.lockhandler.LockHandler.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the reset flag, so the the lock will be re-cached at next</span>
 <span class="sd">        checking.  This is usually called by @reload.</span>
@@ -517,7 +514,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache_locks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">lock_storage</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache_lock_bypass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="LockHandler.append"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockhandler.LockHandler.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">access_type</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="s2">&quot;or&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="LockHandler.append"><a class="viewcode-back" href="../../../api/evennia.locks.lockhandler.html#evennia.locks.lockhandler.LockHandler.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">access_type</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="s2">&quot;or&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Append a lock definition to access_type if it doesn&#39;t already exist.</span>
 
@@ -540,7 +537,7 @@
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">lockstring</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="LockHandler.check"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockhandler.LockHandler.check">[docs]</a>    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="p">,</span> <span class="n">access_type</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">no_superuser_bypass</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="LockHandler.check"><a class="viewcode-back" href="../../../api/evennia.locks.lockhandler.html#evennia.locks.lockhandler.LockHandler.check">[docs]</a>    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="p">,</span> <span class="n">access_type</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">no_superuser_bypass</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks a lock of the correct type by passing execution off to</span>
 <span class="sd">        the lock function(s).</span>
@@ -608,7 +605,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">default</span></div>
 
-<div class="viewcode-block" id="LockHandler._eval_access_type"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockhandler.LockHandler._eval_access_type">[docs]</a>    <span class="k">def</span> <span class="nf">_eval_access_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="p">,</span> <span class="n">locks</span><span class="p">,</span> <span class="n">access_type</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_eval_access_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="p">,</span> <span class="n">locks</span><span class="p">,</span> <span class="n">access_type</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for evaluating the access type using eval().</span>
 
@@ -620,9 +617,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">evalstring</span><span class="p">,</span> <span class="n">func_tup</span><span class="p">,</span> <span class="n">raw_string</span> <span class="o">=</span> <span class="n">locks</span><span class="p">[</span><span class="n">access_type</span><span class="p">]</span>
         <span class="n">true_false</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="o">*</span><span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">**</span><span class="n">tup</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">func_tup</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">eval</span><span class="p">(</span><span class="n">evalstring</span> <span class="o">%</span> <span class="n">true_false</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="nb">eval</span><span class="p">(</span><span class="n">evalstring</span> <span class="o">%</span> <span class="n">true_false</span><span class="p">)</span>
 
-<div class="viewcode-block" id="LockHandler.check_lockstring"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockhandler.LockHandler.check_lockstring">[docs]</a>    <span class="k">def</span> <span class="nf">check_lockstring</span><span class="p">(</span>
+<div class="viewcode-block" id="LockHandler.check_lockstring"><a class="viewcode-back" href="../../../api/evennia.locks.lockhandler.html#evennia.locks.lockhandler.LockHandler.check_lockstring">[docs]</a>    <span class="k">def</span> <span class="nf">check_lockstring</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">,</span> <span class="n">no_superuser_bypass</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -795,6 +792,7 @@
     <span class="nb">print</span><span class="p">(</span><span class="n">obj1</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">obj2</span><span class="p">,</span> <span class="s2">&quot;listen&quot;</span><span class="p">))</span>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -832,17 +830,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.locks.lockhandler</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.locks.lockhandler</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

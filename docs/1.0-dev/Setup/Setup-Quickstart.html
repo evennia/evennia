@@ -1,0 +1,193 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup quickstart &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Setup quickstart</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="setup-quickstart">
+<h1>Setup quickstart<a class="headerlink" href="#setup-quickstart" title="Permalink to this headline">¶</a></h1>
+<p>The Evennia server is installed, run and maintained from the terminal (console/CMD on Windows). Starting the
+server doesn’t make anything visible online. Once you download everything you can in fact develop your game
+in complete isolation if you want, without needing any access to the internet.</p>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Evennia requires Python3.7+. As with most Python packages, using a
+<a class="reference external" href="Glossary.html#virtualenv">virtualenv</a> is recommended in order to keep your
+installation independent from the system libraries. It’s <em>not</em> recommended
+to install Evennia as superuser.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">evennia</span>
+</pre></div>
+</div>
+<p>Make sure the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command works. Use <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">-h</span></code> for usage help (or read on).</p>
+<p>If you are having trouble, want to install in some other way (like with Docker) or want to contribute to
+Evennia itself, check out the <a class="reference internal" href="Extended-Installation.html"><span class="doc">Extended Installation instructions</span></a>.
+It also has a <a class="reference external" href="Setup/Extended-Installation.html#Troubleshooting">troubleshooting section</a> for different operating
+systems.</p>
+</div>
+<div class="section" id="initialize-a-new-game">
+<h2>Initialize a new game<a class="headerlink" href="#initialize-a-new-game" title="Permalink to this headline">¶</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">cd</span></code> to enter a folder where you want to do your game development. Here (and in
+the rest of the Evennia documentation) we call this folder <code class="docutils literal notranslate"><span class="pre">mygame</span></code>, but you should of course
+name your game whatever you like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="o">--</span><span class="n">init</span> <span class="n">mygame</span>
+</pre></div>
+</div>
+<p>This will create a new folder <code class="docutils literal notranslate"><span class="pre">mygame</span></code> (or whatever you chose) in your current location. This
+contains empty templates and all the default settings needed to start the server.</p>
+</div>
+<div class="section" id="start-the-new-game">
+<h2>Start the new game<a class="headerlink" href="#start-the-new-game" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">cd</span></code> into your game folder (<code class="docutils literal notranslate"><span class="pre">mygame</span></code> in our case). Next, run</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">migrate</span>
+</pre></div>
+</div>
+<p>This will create the default database (Sqlite3). The database file ends up as <code class="docutils literal notranslate"><span class="pre">mygame/server/evennia.db3</span></code>. If you
+ever want to start from a fresh database, just delete this file and re-run <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">migrate</span></code> again.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">start</span> 
+</pre></div>
+</div>
+<p>Set your user-name and password when prompted. This will be the “god user” or “superuser” in-game. The email is optional.</p>
+<p>If all went well, the server is now up and running. Point a legacy MUD/telnet client to <code class="docutils literal notranslate"><span class="pre">localhost:4000</span></code> or
+a web browser at <a class="reference external" href="http://localhost:4001">http://localhost:4001</a> to play your new (if empty) game!</p>
+<blockquote>
+<div><p>If <code class="docutils literal notranslate"><span class="pre">localhost</span></code> doesn’t work on your computer, use <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code>, which is the same thing.</p>
+</div></blockquote>
+</div>
+<div class="section" id="see-server-logs">
+<h2>See server logs<a class="headerlink" href="#see-server-logs" title="Permalink to this headline">¶</a></h2>
+<p>This will echol the server logs to the terminal as they come in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="o">--</span><span class="n">log</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="o">-</span><span class="n">l</span> 
+</pre></div>
+</div>
+<p>You can also start logging immediately when running <code class="docutils literal notranslate"><span class="pre">evennia</span></code> commands, such as</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">start</span> <span class="o">-</span><span class="n">l</span> 
+</pre></div>
+</div>
+<p>To exit the log view, enter <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code> (<code class="docutils literal notranslate"><span class="pre">Cmd-C</span></code> for Mac). This will not affect the server.</p>
+</div>
+<div class="section" id="restarting-and-stopping">
+<h2>Restarting and stopping<a class="headerlink" href="#restarting-and-stopping" title="Permalink to this headline">¶</a></h2>
+<p>You can restart the server without disconnecting any connected players:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">restart</span> 
+</pre></div>
+</div>
+<p>To do a full stop and restart (will disconnect everyone):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">reboot</span> 
+</pre></div>
+</div>
+<p>Full stop of the server (will need to use <code class="docutils literal notranslate"><span class="pre">start</span></code> to activate it again):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">stop</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="the-next-step">
+<h2>The Next step<a class="headerlink" href="#the-next-step" title="Permalink to this headline">¶</a></h2>
+<p>Why not head into the <a class="reference internal" href="../Howto/Starting/Starting-Part1.html"><span class="doc">Starting Tutorial</span></a> to learn how to start making your new game!</p>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Setup quickstart</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#initialize-a-new-game">Initialize a new game</a></li>
+<li><a class="reference internal" href="#start-the-new-game">Start the new game</a></li>
+<li><a class="reference internal" href="#see-server-logs">See server logs</a></li>
+<li><a class="reference internal" href="#restarting-and-stopping">Restarting and stopping</a></li>
+<li><a class="reference internal" href="#the-next-step">The Next step</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Setup/Setup-Quickstart.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Setup-Quickstart.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Setup quickstart</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+    </div>
+  </body>
+</html>

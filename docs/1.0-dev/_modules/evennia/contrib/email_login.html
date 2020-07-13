@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.email_login &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.email_login</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.email_login</a></li> 
       </ul>
     </div>  
 
@@ -111,7 +108,7 @@
     <span class="p">)</span>
 
 
-<div class="viewcode-block" id="CmdUnconnectedConnect"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.email_login.CmdUnconnectedConnect">[docs]</a><span class="k">class</span> <span class="nc">CmdUnconnectedConnect</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdUnconnectedConnect"><a class="viewcode-back" href="../../../api/evennia.contrib.email_login.html#evennia.contrib.email_login.CmdUnconnectedConnect">[docs]</a><span class="k">class</span> <span class="nc">CmdUnconnectedConnect</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Connect to the game.</span>
 
@@ -125,7 +122,7 @@
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;conn&quot;</span><span class="p">,</span> <span class="s2">&quot;con&quot;</span><span class="p">,</span> <span class="s2">&quot;co&quot;</span><span class="p">]</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>  <span class="c1"># not really needed</span>
 
-<div class="viewcode-block" id="CmdUnconnectedConnect.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.email_login.CmdUnconnectedConnect.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdUnconnectedConnect.func"><a class="viewcode-back" href="../../../api/evennia.contrib.email_login.html#evennia.contrib.email_login.CmdUnconnectedConnect.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Uses the Django admin api. Note that unlogged-in commands</span>
 <span class="sd">        have a unique position in that their `func()` receives</span>
@@ -174,7 +171,7 @@
         <span class="n">session</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">account</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdUnconnectedCreate"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.email_login.CmdUnconnectedCreate">[docs]</a><span class="k">class</span> <span class="nc">CmdUnconnectedCreate</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdUnconnectedCreate"><a class="viewcode-back" href="../../../api/evennia.contrib.email_login.html#evennia.contrib.email_login.CmdUnconnectedCreate">[docs]</a><span class="k">class</span> <span class="nc">CmdUnconnectedCreate</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a new account.</span>
 
@@ -189,7 +186,7 @@
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;cre&quot;</span><span class="p">,</span> <span class="s2">&quot;cr&quot;</span><span class="p">]</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
 
-<div class="viewcode-block" id="CmdUnconnectedCreate.parse"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.email_login.CmdUnconnectedCreate.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdUnconnectedCreate.parse"><a class="viewcode-back" href="../../../api/evennia.contrib.email_login.html#evennia.contrib.email_login.CmdUnconnectedCreate.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The parser must handle the multiple-word account</span>
 <span class="sd">        name enclosed in quotes:</span>
@@ -213,7 +210,7 @@
         <span class="n">accountname</span> <span class="o">=</span> <span class="n">accountname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">accountinfo</span> <span class="o">=</span> <span class="p">(</span><span class="n">accountname</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CmdUnconnectedCreate.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.email_login.CmdUnconnectedCreate.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdUnconnectedCreate.func"><a class="viewcode-back" href="../../../api/evennia.contrib.email_login.html#evennia.contrib.email_login.CmdUnconnectedCreate.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Do checks and create account&quot;&quot;&quot;</span>
 
         <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
@@ -311,7 +308,7 @@
             <span class="k">raise</span></div></div>
 
 
-<div class="viewcode-block" id="CmdUnconnectedQuit"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.email_login.CmdUnconnectedQuit">[docs]</a><span class="k">class</span> <span class="nc">CmdUnconnectedQuit</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdUnconnectedQuit"><a class="viewcode-back" href="../../../api/evennia.contrib.email_login.html#evennia.contrib.email_login.CmdUnconnectedQuit">[docs]</a><span class="k">class</span> <span class="nc">CmdUnconnectedQuit</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    We maintain a different version of the `quit` command</span>
 <span class="sd">    here for unconnected accounts for the sake of simplicity. The logged in</span>
@@ -322,13 +319,13 @@
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="s2">&quot;qu&quot;</span><span class="p">]</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
 
-<div class="viewcode-block" id="CmdUnconnectedQuit.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.email_login.CmdUnconnectedQuit.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdUnconnectedQuit.func"><a class="viewcode-back" href="../../../api/evennia.contrib.email_login.html#evennia.contrib.email_login.CmdUnconnectedQuit.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Simply close the connection.&quot;&quot;&quot;</span>
         <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="n">session</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="s2">&quot;Good bye! Disconnecting.&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdUnconnectedLook"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.email_login.CmdUnconnectedLook">[docs]</a><span class="k">class</span> <span class="nc">CmdUnconnectedLook</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdUnconnectedLook"><a class="viewcode-back" href="../../../api/evennia.contrib.email_login.html#evennia.contrib.email_login.CmdUnconnectedLook">[docs]</a><span class="k">class</span> <span class="nc">CmdUnconnectedLook</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is an unconnected version of the `look` command for simplicity.</span>
 
@@ -340,12 +337,12 @@
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;look&quot;</span><span class="p">,</span> <span class="s2">&quot;l&quot;</span><span class="p">]</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
 
-<div class="viewcode-block" id="CmdUnconnectedLook.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.email_login.CmdUnconnectedLook.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdUnconnectedLook.func"><a class="viewcode-back" href="../../../api/evennia.contrib.email_login.html#evennia.contrib.email_login.CmdUnconnectedLook.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Show the connect screen.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">CONNECTION_SCREEN</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdUnconnectedHelp"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.email_login.CmdUnconnectedHelp">[docs]</a><span class="k">class</span> <span class="nc">CmdUnconnectedHelp</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdUnconnectedHelp"><a class="viewcode-back" href="../../../api/evennia.contrib.email_login.html#evennia.contrib.email_login.CmdUnconnectedHelp">[docs]</a><span class="k">class</span> <span class="nc">CmdUnconnectedHelp</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is an unconnected version of the help command,</span>
 <span class="sd">    for simplicity. It shows a pane of info.</span>
@@ -355,7 +352,7 @@
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;h&quot;</span><span class="p">,</span> <span class="s2">&quot;?&quot;</span><span class="p">]</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
 
-<div class="viewcode-block" id="CmdUnconnectedHelp.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.email_login.CmdUnconnectedHelp.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdUnconnectedHelp.func"><a class="viewcode-back" href="../../../api/evennia.contrib.email_login.html#evennia.contrib.email_login.CmdUnconnectedHelp.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Shows help&quot;&quot;&quot;</span>
 
         <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -407,6 +404,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdUnconnectedHelp</span><span class="p">())</span>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -444,17 +442,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.email_login</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.email_login</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

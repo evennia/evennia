@@ -41,9 +41,9 @@ Now this is just an object that doesn't do much yet... but we can already force 
 
 ## Entering and leaving the train
 
-Using the `@tel`command like shown above is obviously not what we want. `@tel` is an admin command and normal players will thus never be able to enter the train! It is also not really a good idea to use [Exits](Objects#exits) to get in and out of the train - Exits are (at least by default) objects too. They point to a specific destination. If we put an Exit in this room leading inside the train it would stay here when the train moved away (still leading into the train like a magic portal!). In the same way, if we put an Exit object inside the train, it would always point back to this room, regardless of where the Train has moved. Now, one *could* define custom Exit types that move with the train or change their destination in the right way - but this seems to be a pretty cumbersome solution.
+Using the `@tel`command like shown above is obviously not what we want. `@tel` is an admin command and normal players will thus never be able to enter the train! It is also not really a good idea to use [Exits](./Objects#exits) to get in and out of the train - Exits are (at least by default) objects too. They point to a specific destination. If we put an Exit in this room leading inside the train it would stay here when the train moved away (still leading into the train like a magic portal!). In the same way, if we put an Exit object inside the train, it would always point back to this room, regardless of where the Train has moved. Now, one *could* define custom Exit types that move with the train or change their destination in the right way - but this seems to be a pretty cumbersome solution.
 
-What we will do instead is to create some new [commands](Commands): one for entering the train and another for leaving it again. These will be stored *on the train object* and will thus be made available to whomever is either inside it or in the same room as the train. 
+What we will do instead is to create some new [commands](./Commands): one for entering the train and another for leaving it again. These will be stored *on the train object* and will thus be made available to whomever is either inside it or in the same room as the train. 
 
 Let's create a new command module as `mygame/commands/train.py`:
 
@@ -101,7 +101,7 @@ class CmdSetTrain(CmdSet):
 ```
 Note that while this seems like a lot of text, the majority of lines here are taken up by documentation.
 
-These commands are work in a pretty straightforward way: `CmdEnterTrain` moves the location of the player to inside the train and `CmdLeaveTrain` does the opposite: it moves the player back to the current location of the train (back outside to its current location). We stacked them in a [cmdset](Command-Sets) `CmdSetTrain` so they can be used.
+These commands are work in a pretty straightforward way: `CmdEnterTrain` moves the location of the player to inside the train and `CmdLeaveTrain` does the opposite: it moves the player back to the current location of the train (back outside to its current location). We stacked them in a [cmdset](./Command-Sets) `CmdSetTrain` so they can be used.
 
 To make the commands work we need to add this cmdset to our train typeclass:
 
@@ -131,7 +131,7 @@ Note the switches used with the `@typeclass` command: The `/force` switch is nec
 
 ## Locking down the commands
 
-If you have played around a bit, you've probably figured out that you can use `leave train` when outside the train and `enter train` when inside. This doesn't make any sense ... so let's go ahead and fix that.  We need to tell Evennia that you can not enter the train when you're already inside or leave the train when you're outside. One solution to this is [locks](Locks): we will lock down the commands so that they can only be called if the player is at the correct location.
+If you have played around a bit, you've probably figured out that you can use `leave train` when outside the train and `enter train` when inside. This doesn't make any sense ... so let's go ahead and fix that.  We need to tell Evennia that you can not enter the train when you're already inside or leave the train when you're outside. One solution to this is [locks](./Locks): we will lock down the commands so that they can only be called if the player is at the correct location.
 
 Right now commands defaults to the lock `cmd:all()`. The `cmd` lock type in combination with the `all()` lock function means that everyone can run those commands as long as they are in the same room as the train *or* inside the train. We're going to change this to check the location of the player and *only* allow access if they are inside the train.
 
@@ -266,7 +266,7 @@ You should see the train moving forward one step along the rail road.
 
 If we wanted full control of the train we could now just add a command to step it along the track when desired. We want the train to move on its own though, without us having to force it by manually calling the `goto_next_room` method.
 
-To do this we will create two [scripts](Scripts): one script that runs when the train has stopped at a station and is responsible for starting the train again after a while. The other script will take care of the driving.
+To do this we will create two [scripts](./Scripts): one script that runs when the train has stopped at a station and is responsible for starting the train again after a while. The other script will take care of the driving.
 
 Let's make a new file in `mygame/typeclasses/trainscript.py`
 
@@ -353,5 +353,5 @@ This train is very basic and still has some flaws. Some more things to do:
 * Make it impossible to exit and enter the train mid-ride. This could be made by having the enter/exit commands check so the train is not moving before allowing the caller to proceed.
 * Have train conductor commands that can override the automatic start/stop.
 * Allow for in-between stops between the start- and end station
-* Have a rail road track instead of hard-coding the rooms in the train object. This could for example be a custom [Exit](Objects#exits) only traversable by trains. The train will follow the track. Some track segments can split to lead to two different rooms and a player can switch the direction to which room it goes.
+* Have a rail road track instead of hard-coding the rooms in the train object. This could for example be a custom [Exit](./Objects#exits) only traversable by trains. The train will follow the track. Some track segments can split to lead to two different rooms and a player can switch the direction to which room it goes.
 * Create another kind of vehicle!

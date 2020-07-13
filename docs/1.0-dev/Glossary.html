@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Glossary &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -27,10 +26,8 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">Glossary</a></li>
-
-
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Glossary</a></li> 
       </ul>
     </div>  
 
@@ -85,7 +82,7 @@ configuration etc.</p>
 representation in the game world. Through their Account they can instead choose to
 <a class="reference external" href="Glossary.html#puppet">puppet</a> one (or more, depending on game mode) <a class="reference external" href="Glossary.html#character">Characters</a> in
 the game.</p>
-<p>In the default <a class="reference external" href="Sessions.html#multisession-mode">multisession mode</a> of Evennia, you immediately start
+<p>In the default <a class="reference external" href="Components/Sessions.html#multisession-mode">multisession mode</a> of Evennia, you immediately start
 puppeting a Character with the same name as your Account when you log in - mimicking how older
 servers used to work.</p>
 </div>
@@ -101,8 +98,8 @@ reachable from the <code class="docutils literal notranslate"><span class="pre">
 <p>The term <em>Attribute</em> should not be confused with (<a class="reference external" href="Glossary.html#property">properties</a> or
 <a class="reference external" href="Glossary.html#field">fields</a>. The <code class="docutils literal notranslate"><span class="pre">Attribute</span></code> represents arbitrary pieces of data that can be attached
 to any <a class="reference external" href="Glossary.html#typeclass">typeclassed</a> entity in Evennia. Attributes allows storing new persistent
-data on typeclasses without changing their underlying database schemas. <a class="reference internal" href="Attributes.html"><span class="doc">Read more about Attributes
-here</span></a>.</p>
+data on typeclasses without changing their underlying database schemas.
+<a class="reference internal" href="Components/Attributes.html"><span class="doc">Read more about Attributes here</span></a>.</p>
 </div>
 <div class="section" id="channel">
 <h2><em>channel</em><a class="headerlink" href="#channel" title="Permalink to this headline">¶</a></h2>
@@ -110,7 +107,7 @@ here</span></a>.</p>
 which re-distributes messages between all subscribers. Such subscribers default to being
 <a class="reference external" href="Glossary.html#account">Accounts</a>, for out-of-game communication but could also be <a class="reference external" href="Glossary.html#character">Objects (usually
 Characters)</a> if one wanted to adopt Channels for things like in-game walkie-
-talkies or phone systems. It is represented by the <code class="docutils literal notranslate"><span class="pre">Channel</span></code> typeclass. <a class="reference external" href="Communications.html#channels">You can read more about the
+talkies or phone systems. It is represented by the <code class="docutils literal notranslate"><span class="pre">Channel</span></code> typeclass. <a class="reference external" href="Communications#channels">You can read more about the
 comm system here</a>.</p>
 </div>
 <div class="section" id="character">
@@ -118,7 +115,7 @@ comm system here</a>.</p>
 <p>The <em>Character</em> is the term we use for the default avatar being <a class="reference external" href="Glossary.html#puppet">puppeted</a> by the
 <a class="reference external" href="Glossary.html#account">account</a> in the game world. It is represented by the <code class="docutils literal notranslate"><span class="pre">Character</span></code> typeclass (which
 is a child of <a class="reference external" href="Glossary.html#object">Object</a>). Many developers use children of this class to represent
-monsters and other NPCs. You can <a class="reference external" href="Objects.html#subclasses-of-object">read more about it here</a>.</p>
+monsters and other NPCs. You can <a class="reference external" href="Components/Objects.html#subclasses-of-object">read more about it here</a>.</p>
 </div>
 <div class="section" id="django">
 <h2><em>django</em><a class="headerlink" href="#django" title="Permalink to this headline">¶</a></h2>
@@ -133,7 +130,7 @@ Python instead of database-specific SQL: A database table is represented in Djan
 it will handle most of the complexity for you under the hood using what we call
 <a class="reference external" href="Glossary.html#typeclass">typeclasses</a>. But should you need the power of Django you can always get it.
 Most commonly people want to use “raw” Django when doing more advanced/custom database queries than
-offered by Evennia’s <a class="reference internal" href="Tutorial-Searching-For-Objects.html"><span class="doc">default search functions</span></a>. One will then need
+offered by Evennia’s <a class="reference internal" href="Howto/Starting/Part1/Searching-Things.html"><span class="doc">default search functions</span></a>. One will then need
 to read about Django’s <em>querysets</em>. Querysets are Python method calls on a special form that lets
 you build complex queries. They get converted into optimized SQL queries under the hood, suitable
 for your current database. [Here is our tutorial/explanation of Django queries](Tutorial-Searching-
@@ -168,7 +165,7 @@ core. Better make it a contrib.</p>
 properties per typeclass are database fields but they are often tied to the core functionality of
 that base typeclass (for example <a class="reference external" href="Glossary.html#object">Objects</a> store its location as a field). In all
 other cases, <a class="reference external" href="Glossary.html#attribute">attributes</a> are used to add new persistent data to the typeclass.
-<a class="reference external" href="Typeclasses.html#about-typeclass-properties">Read more about typeclass properties here</a>.</p>
+<a class="reference external" href="Components/Typeclasses.html#about-typeclass-properties">Read more about typeclass properties here</a>.</p>
 </div>
 <div class="section" id="git">
 <h2><em>git</em><a class="headerlink" href="#git" title="Permalink to this headline">¶</a></h2>
@@ -200,8 +197,8 @@ you ‘download’ Evennia. You only need to do this once.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">pull</span></code> (inside local copy of repository) - sync your local repository with what is online.</p></li>
 </ul>
 <blockquote>
-<div><p>Full usage of Git is way beyond the scope of this glossary. See <a class="reference internal" href="Version-Control.html"><span class="doc">Tutorial - version
-control</span></a> for more info and links to the Git documentation.</p>
+<div><p>Full usage of Git is way beyond the scope of this glossary. See
+<a class="reference internal" href="Coding/Version-Control.html"><span class="doc">Tutorial - version control</span></a> for more info and links to the Git documentation.</p>
 </div></blockquote>
 </div>
 <div class="section" id="migrate">
@@ -214,7 +211,7 @@ latest changes, just <code class="docutils literal notranslate"><span class="pre
 </pre></div>
 </div>
 <p>That should be it (see <a class="reference external" href="Glossary.html#virtualenv">virtualenv</a> if you get a warning that the <code class="docutils literal notranslate"><span class="pre">evennia</span></code>
-command is not available). See also <a class="reference internal" href="Updating-Your-Game.html"><span class="doc">Updating your game</span></a> for more details.</p>
+command is not available). See also <a class="reference internal" href="Coding/Updating-Your-Game.html"><span class="doc">Updating your game</span></a> for more details.</p>
 <blockquote>
 <div><p>Technically, migrations are shipped as little Python snippets of code that explains which database
 actions must be taken to upgrade from one version of the schema to the next. When you run the
@@ -225,7 +222,7 @@ command above, those snippets are run in sequence.</p>
 <h2><em>multisession mode</em><a class="headerlink" href="#multisession-mode" title="Permalink to this headline">¶</a></h2>
 <p>This term refers to the <code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE</span></code> setting, which has a value of 0 to 3. The mode alters
 how players can connect to the game, such as how many Sessions a player can start with one account
-and how many Characters they can control at the same time. It is <a class="reference external" href="Sessions.html#multisession-mode">described in detail
+and how many Characters they can control at the same time. It is <a class="reference external" href="Sessions#multisession-mode">described in detail
 here</a>.</p>
 </div>
 <div class="section" id="github">
@@ -245,8 +242,7 @@ core <a class="reference external" href="Glossary.html#typeclasss">typeclasses</
 try to use <code class="docutils literal notranslate"><span class="pre">object</span></code> to refer to the general term and capitalized <code class="docutils literal notranslate"><span class="pre">Object</span></code> when we refer to the
 typeclass.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">Object</span></code> is a typeclass that represents all <em>in-game</em> entities, including
-<a class="reference external" href="Glossary.html#character">Characters</a>, rooms, trees, weapons etc. <a class="reference internal" href="Objects.html"><span class="doc">Read more about Objects
-here</span></a>.</p>
+<a class="reference external" href="Glossary.html#character">Characters</a>, rooms, trees, weapons etc. <a class="reference internal" href="Components/Objects.html"><span class="doc">Read more about Objects here</span></a>.</p>
 </div>
 <div class="section" id="pip">
 <h2><em>pip</em><a class="headerlink" href="#pip" title="Permalink to this headline">¶</a></h2>
@@ -298,16 +294,16 @@ well.</p>
 </div>
 <div class="section" id="script">
 <h2><em>script</em><a class="headerlink" href="#script" title="Permalink to this headline">¶</a></h2>
-<p>When we refer to <em>Scripts</em>, we generally refer to the <code class="docutils literal notranslate"><span class="pre">Script</span></code> <a class="reference internal" href="Typeclasses.html"><span class="doc">typeclass</span></a>. Scripts are
+<p>When we refer to <em>Scripts</em>, we generally refer to the <code class="docutils literal notranslate"><span class="pre">Script</span></code> <a class="reference internal" href="Components/Typeclasses.html"><span class="doc">typeclass</span></a>. Scripts are
 the mavericks of Evennia - they are like <a class="reference external" href="Glossary.html#object">Objects</a> but without any in-game
 existence. They are useful as custom places to store data but also as building blocks in persistent
 game systems. Since the can be initialized with timing capabilities they can also be used for long-
-time persistent time keeping (for fast updates other types of timers may be better though). <a class="reference internal" href="Scripts.html"><span class="doc">Read
-more about Scripts here</span></a></p>
+time persistent time keeping (for fast updates other types of timers may be better though).
+<a class="reference internal" href="Components/Scripts.html"><span class="doc">Read more about Scripts here</span></a></p>
 </div>
 <div class="section" id="session">
 <h2><em>session</em><a class="headerlink" href="#session" title="Permalink to this headline">¶</a></h2>
-<p>A <a class="reference internal" href="Sessions.html"><span class="doc">Session</span></a> is a Python object representing a single client connection to the server. A
+<p>A <a class="reference internal" href="Components/Sessions.html"><span class="doc">Session</span></a> is a Python object representing a single client connection to the server. A
 given human player could connect to the game from different clients and each would get a Session
 (even if you did not allow them to actually log in and get access to an
 <a class="reference external" href="Glossary.html#account">account</a>).</p>
@@ -317,7 +313,7 @@ can be useful for certain game states.</p>
 </div>
 <div class="section" id="ticker">
 <h2><em>ticker</em><a class="headerlink" href="#ticker" title="Permalink to this headline">¶</a></h2>
-<p>The <a class="reference internal" href="TickerHandler.html"><span class="doc">Ticker handler</span></a> runs Evennia’s optional ‘ticker’ system. In other engines, such
+<p>The <a class="reference internal" href="Components/TickerHandler.html"><span class="doc">Ticker handler</span></a> runs Evennia’s optional ‘ticker’ system. In other engines, such
 as <a class="reference external" href="https://en.wikipedia.org/wiki/DikuMUD">DIKU</a>, all game events are processed only at specific
 intervals called ‘ticks’. Evennia has no such technical limitation (events are processed whenever
 needed) but using a fixed tick can still be useful for certain types of game systems, like combat.
@@ -326,7 +322,7 @@ to be called when those ticks come around.</p>
 </div>
 <div class="section" id="typeclass">
 <h2><em>typeclass</em><a class="headerlink" href="#typeclass" title="Permalink to this headline">¶</a></h2>
-<p>The <a class="reference internal" href="Typeclasses.html"><span class="doc">typeclass</span></a> is an Evennia-specific term. A typeclass allows developers to work with
+<p>The <a class="reference internal" href="Components/Typeclasses.html"><span class="doc">typeclass</span></a> is an Evennia-specific term. A typeclass allows developers to work with
 database-persistent objects as if they were normal Python objects. It makes use of specific
 <a class="reference external" href="Glossary.html#django">Django</a> features to link a Python class to a database table. Sometimes we refer to
 such code entities as <em>being typeclassed</em>.</p>
@@ -404,6 +400,7 @@ activated whenever you want to use the <code class="docutils literal notranslate
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -478,15 +475,13 @@ activated whenever you want to use the <code class="docutils literal notranslate
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">Glossary</a></li>
-
-
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Glossary</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

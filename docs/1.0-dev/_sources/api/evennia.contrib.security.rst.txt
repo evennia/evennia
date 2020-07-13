@@ -1,4 +1,4 @@
-evennia.contrib.security package
+evennia.contrib.security 
 ================================
 
 .. automodule:: evennia.contrib.security
@@ -6,9 +6,10 @@ evennia.contrib.security package
    :undoc-members:
    :show-inheritance:
 
-Subpackages
------------
+Packages/folders
+----------------
 
 .. toctree::
+   :maxdepth: 6
 
    evennia.contrib.security.auditing

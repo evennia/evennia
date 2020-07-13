@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.commands.default.system &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.commands.default.system</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.system</a></li> 
       </ul>
     </div>  
 
@@ -91,7 +88,7 @@
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="CmdReload"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.system.CmdReload">[docs]</a><span class="k">class</span> <span class="nc">CmdReload</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdReload"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdReload">[docs]</a><span class="k">class</span> <span class="nc">CmdReload</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    reload the server</span>
 
@@ -108,7 +105,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(reload) or perm(Developer)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;System&quot;</span>
 
-<div class="viewcode-block" id="CmdReload.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.system.CmdReload.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdReload.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdReload.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reload the system.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -119,7 +116,7 @@
         <span class="n">SESSIONS</span><span class="o">.</span><span class="n">portal_restart_server</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="CmdReset"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.system.CmdReset">[docs]</a><span class="k">class</span> <span class="nc">CmdReset</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdReset"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdReset">[docs]</a><span class="k">class</span> <span class="nc">CmdReset</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    reset and reboot the server</span>
 
@@ -145,7 +142,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(reload) or perm(Developer)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;System&quot;</span>
 
-<div class="viewcode-block" id="CmdReset.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.system.CmdReset.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdReset.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdReset.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reload the system.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -153,7 +150,7 @@
         <span class="n">SESSIONS</span><span class="o">.</span><span class="n">portal_reset_server</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="CmdShutdown"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.system.CmdShutdown">[docs]</a><span class="k">class</span> <span class="nc">CmdShutdown</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdShutdown"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdShutdown">[docs]</a><span class="k">class</span> <span class="nc">CmdShutdown</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    stop the server completely</span>
@@ -168,7 +165,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(shutdown) or perm(Developer)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;System&quot;</span>
 
-<div class="viewcode-block" id="CmdShutdown.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.system.CmdShutdown.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdShutdown.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdShutdown.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Define function&quot;&quot;&quot;</span>
         <span class="c1"># Only allow shutdown if caller has session</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">get</span><span class="p">():</span>
@@ -339,7 +336,7 @@
         <span class="k">return</span> <span class="n">result</span>
 
 
-<div class="viewcode-block" id="CmdPy"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.system.CmdPy">[docs]</a><span class="k">class</span> <span class="nc">CmdPy</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdPy"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdPy">[docs]</a><span class="k">class</span> <span class="nc">CmdPy</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    execute a snippet of python code</span>
 
@@ -393,7 +390,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(py) or perm(Developer)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;System&quot;</span>
 
-<div class="viewcode-block" id="CmdPy.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.system.CmdPy.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdPy.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdPy.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;hook function&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
@@ -436,7 +433,9 @@
                     <span class="k">if</span> <span class="n">noecho</span><span class="p">:</span>
                         <span class="n">prompt</span> <span class="o">=</span> <span class="s2">&quot;...&quot;</span> <span class="k">if</span> <span class="n">console</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">else</span> <span class="n">main_prompt</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">prompt</span> <span class="o">=</span> <span class="n">line</span> <span class="k">if</span> <span class="n">console</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">else</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{line}</span><span class="se">\n</span><span class="si">{main_prompt}</span><span class="s2">&quot;</span>
+                        <span class="k">if</span> <span class="n">line</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;&gt;&gt;&gt; </span><span class="si">{line}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="n">prompt</span> <span class="o">=</span> <span class="n">line</span> <span class="k">if</span> <span class="n">console</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">else</span> <span class="n">main_prompt</span>
                 <span class="k">except</span> <span class="ne">SystemExit</span><span class="p">:</span>
                     <span class="k">break</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|gClosing the Python console.|n&quot;</span><span class="p">)</span>
@@ -503,7 +502,7 @@
     <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">table</span>
 
 
-<div class="viewcode-block" id="CmdScripts"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.system.CmdScripts">[docs]</a><span class="k">class</span> <span class="nc">CmdScripts</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdScripts"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdScripts">[docs]</a><span class="k">class</span> <span class="nc">CmdScripts</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    list and manage all running scripts</span>
 
@@ -533,7 +532,7 @@
 
     <span class="n">excluded_typeclass_paths</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;evennia.prototypes.prototypes.DbPrototype&quot;</span><span class="p">]</span>
 
-<div class="viewcode-block" id="CmdScripts.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.system.CmdScripts.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdScripts.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdScripts.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;implement method&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
@@ -602,7 +601,7 @@
             <span class="n">EvMore</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">scripts</span><span class="p">,</span> <span class="n">page_formatter</span><span class="o">=</span><span class="n">format_script_list</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdObjects"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.system.CmdObjects">[docs]</a><span class="k">class</span> <span class="nc">CmdObjects</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdObjects"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdObjects">[docs]</a><span class="k">class</span> <span class="nc">CmdObjects</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    statistics on objects in the database</span>
 
@@ -619,7 +618,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(listobjects) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;System&quot;</span>
 
-<div class="viewcode-block" id="CmdObjects.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.system.CmdObjects.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdObjects.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdObjects.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Implement the command&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
@@ -799,7 +798,7 @@
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="CmdService"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.system.CmdService">[docs]</a><span class="k">class</span> <span class="nc">CmdService</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdService"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdService">[docs]</a><span class="k">class</span> <span class="nc">CmdService</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    manage system services</span>
 
@@ -825,7 +824,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(service) or perm(Developer)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;System&quot;</span>
 
-<div class="viewcode-block" id="CmdService.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.system.CmdService.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdService.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdService.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Implement command&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
@@ -895,7 +894,7 @@
             <span class="n">service</span><span class="o">.</span><span class="n">startService</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="CmdAbout"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.system.CmdAbout">[docs]</a><span class="k">class</span> <span class="nc">CmdAbout</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdAbout"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdAbout">[docs]</a><span class="k">class</span> <span class="nc">CmdAbout</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    show Evennia info</span>
 
@@ -910,7 +909,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;System&quot;</span>
 
-<div class="viewcode-block" id="CmdAbout.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.system.CmdAbout.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdAbout.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdAbout.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Display information about server or target&quot;&quot;&quot;</span>
 
         <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -939,7 +938,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdTime"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.system.CmdTime">[docs]</a><span class="k">class</span> <span class="nc">CmdTime</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdTime"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdTime">[docs]</a><span class="k">class</span> <span class="nc">CmdTime</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    show server time statistics</span>
 
@@ -955,7 +954,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(time) or perm(Player)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;System&quot;</span>
 
-<div class="viewcode-block" id="CmdTime.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.system.CmdTime.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdTime.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdTime.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Show server time data in a table.&quot;&quot;&quot;</span>
         <span class="n">table1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">styled_table</span><span class="p">(</span><span class="s2">&quot;|wServer time&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;l&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">78</span><span class="p">)</span>
         <span class="n">table1</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s2">&quot;Current uptime&quot;</span><span class="p">,</span> <span class="n">utils</span><span class="o">.</span><span class="n">time_format</span><span class="p">(</span><span class="n">gametime</span><span class="o">.</span><span class="n">uptime</span><span class="p">(),</span> <span class="mi">3</span><span class="p">))</span>
@@ -981,7 +980,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">table1</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">table2</span><span class="p">))</span></div></div>
 
 
-<div class="viewcode-block" id="CmdServerLoad"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.system.CmdServerLoad">[docs]</a><span class="k">class</span> <span class="nc">CmdServerLoad</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdServerLoad"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdServerLoad">[docs]</a><span class="k">class</span> <span class="nc">CmdServerLoad</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    show server load and memory statistics</span>
 
@@ -1024,7 +1023,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(list) or perm(Developer)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;System&quot;</span>
 
-<div class="viewcode-block" id="CmdServerLoad.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.system.CmdServerLoad.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdServerLoad.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdServerLoad.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Show list.&quot;&quot;&quot;</span>
 
         <span class="k">global</span> <span class="n">_IDMAPPER</span>
@@ -1194,6 +1193,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|wActive tickers|n:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">table</span><span class="p">))</span>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -1231,17 +1231,15 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.commands.default.system</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.system</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

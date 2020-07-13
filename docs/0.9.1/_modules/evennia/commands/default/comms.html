@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.commands.default.comms &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.commands.default.comms</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.comms</a></li> 
       </ul>
     </div>  
 
@@ -112,7 +109,7 @@
     <span class="k">return</span> <span class="n">channels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="CmdAddCom"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.comms.CmdAddCom">[docs]</a><span class="k">class</span> <span class="nc">CmdAddCom</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdAddCom"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdAddCom">[docs]</a><span class="k">class</span> <span class="nc">CmdAddCom</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    add a channel alias and/or subscribe to a channel</span>
 
@@ -133,7 +130,7 @@
     <span class="c1"># this is used by the COMMAND_DEFAULT_CLASS parent</span>
     <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="CmdAddCom.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.comms.CmdAddCom.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdAddCom.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdAddCom.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Implement the command&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
@@ -187,7 +184,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdDelCom"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.comms.CmdDelCom">[docs]</a><span class="k">class</span> <span class="nc">CmdDelCom</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdDelCom"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdDelCom">[docs]</a><span class="k">class</span> <span class="nc">CmdDelCom</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    remove a channel alias and/or unsubscribe from channel</span>
 
@@ -209,7 +206,7 @@
     <span class="c1"># this is used by the COMMAND_DEFAULT_CLASS parent</span>
     <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="CmdDelCom.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.comms.CmdDelCom.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdDelCom.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdDelCom.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Implementing the command. &quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
@@ -255,7 +252,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You had no such alias defined for this channel.&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdAllCom"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.comms.CmdAllCom">[docs]</a><span class="k">class</span> <span class="nc">CmdAllCom</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdAllCom"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdAllCom">[docs]</a><span class="k">class</span> <span class="nc">CmdAllCom</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    perform admin operations on all channels</span>
 
@@ -276,7 +273,7 @@
     <span class="c1"># this is used by the COMMAND_DEFAULT_CLASS parent</span>
     <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="CmdAllCom.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.comms.CmdAllCom.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdAllCom.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdAllCom.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Runs the function&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
@@ -328,7 +325,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: allcom on | off | who | clear&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdChannels"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.comms.CmdChannels">[docs]</a><span class="k">class</span> <span class="nc">CmdChannels</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdChannels"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannels">[docs]</a><span class="k">class</span> <span class="nc">CmdChannels</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    list all channels available to you</span>
 
@@ -350,7 +347,7 @@
     <span class="c1"># this is used by the COMMAND_DEFAULT_CLASS parent</span>
     <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="CmdChannels.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.comms.CmdChannels.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdChannels.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannels.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Implement function&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
@@ -445,7 +442,7 @@
             <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdCdestroy"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.comms.CmdCdestroy">[docs]</a><span class="k">class</span> <span class="nc">CmdCdestroy</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdCdestroy"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdCdestroy">[docs]</a><span class="k">class</span> <span class="nc">CmdCdestroy</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    destroy a channel you created</span>
 
@@ -462,7 +459,7 @@
     <span class="c1"># this is used by the COMMAND_DEFAULT_CLASS parent</span>
     <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="CmdCdestroy.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.comms.CmdCdestroy.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdCdestroy.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdCdestroy.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Destroy objects cleanly.&quot;&quot;&quot;</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
 
@@ -489,7 +486,7 @@
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdCBoot"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.comms.CmdCBoot">[docs]</a><span class="k">class</span> <span class="nc">CmdCBoot</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdCBoot"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdCBoot">[docs]</a><span class="k">class</span> <span class="nc">CmdCBoot</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    kick an account from a channel you control</span>
 
@@ -511,7 +508,7 @@
     <span class="c1"># this is used by the COMMAND_DEFAULT_CLASS parent</span>
     <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="CmdCBoot.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.comms.CmdCBoot.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdCBoot.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdCBoot.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;implement the function&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
@@ -560,7 +557,7 @@
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdCemit"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.comms.CmdCemit">[docs]</a><span class="k">class</span> <span class="nc">CmdCemit</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdCemit"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdCemit">[docs]</a><span class="k">class</span> <span class="nc">CmdCemit</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    send an admin message to a channel you control</span>
 
@@ -586,7 +583,7 @@
     <span class="c1"># this is used by the COMMAND_DEFAULT_CLASS parent</span>
     <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="CmdCemit.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.comms.CmdCemit.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdCemit.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdCemit.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Implement function&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
@@ -609,7 +606,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdCWho"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.comms.CmdCWho">[docs]</a><span class="k">class</span> <span class="nc">CmdCWho</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdCWho"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdCWho">[docs]</a><span class="k">class</span> <span class="nc">CmdCWho</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    show who is listening to a channel</span>
 
@@ -626,7 +623,7 @@
     <span class="c1"># this is used by the COMMAND_DEFAULT_CLASS parent</span>
     <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="CmdCWho.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.comms.CmdCWho.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdCWho.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdCWho.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;implement function&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
@@ -646,7 +643,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span></div></div>
 
 
-<div class="viewcode-block" id="CmdChannelCreate"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.comms.CmdChannelCreate">[docs]</a><span class="k">class</span> <span class="nc">CmdChannelCreate</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdChannelCreate"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannelCreate">[docs]</a><span class="k">class</span> <span class="nc">CmdChannelCreate</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    create a new channel</span>
 
@@ -664,7 +661,7 @@
     <span class="c1"># this is used by the COMMAND_DEFAULT_CLASS parent</span>
     <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="CmdChannelCreate.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.comms.CmdChannelCreate.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdChannelCreate.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannelCreate.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Implement the command&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
@@ -695,7 +692,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Created channel </span><span class="si">%s</span><span class="s2"> and connected to it.&quot;</span> <span class="o">%</span> <span class="n">new_chan</span><span class="o">.</span><span class="n">key</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdClock"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.comms.CmdClock">[docs]</a><span class="k">class</span> <span class="nc">CmdClock</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdClock"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdClock">[docs]</a><span class="k">class</span> <span class="nc">CmdClock</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    change channel locks of a channel you control</span>
 
@@ -714,7 +711,7 @@
     <span class="c1"># this is used by the COMMAND_DEFAULT_CLASS parent</span>
     <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="CmdClock.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.comms.CmdClock.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdClock.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdClock.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;run the function&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
@@ -748,7 +745,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdCdesc"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.comms.CmdCdesc">[docs]</a><span class="k">class</span> <span class="nc">CmdCdesc</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdCdesc"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdCdesc">[docs]</a><span class="k">class</span> <span class="nc">CmdCdesc</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    describe a channel you control</span>
 
@@ -766,7 +763,7 @@
     <span class="c1"># this is used by the COMMAND_DEFAULT_CLASS parent</span>
     <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="CmdCdesc.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.comms.CmdCdesc.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdCdesc.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdCdesc.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Implement command&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
@@ -788,7 +785,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Description of channel &#39;</span><span class="si">%s</span><span class="s2">&#39; set to &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">))</span></div></div>
 
 
-<div class="viewcode-block" id="CmdPage"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.comms.CmdPage">[docs]</a><span class="k">class</span> <span class="nc">CmdPage</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdPage"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdPage">[docs]</a><span class="k">class</span> <span class="nc">CmdPage</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    send a private message to another account</span>
 
@@ -814,7 +811,7 @@
     <span class="c1"># this is used by the COMMAND_DEFAULT_CLASS parent</span>
     <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="CmdPage.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.comms.CmdPage.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdPage.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdPage.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Implement function using the Msg methods&quot;&quot;&quot;</span>
 
         <span class="c1"># Since account_caller is set above, this will be an Account.</span>
@@ -968,7 +965,7 @@
         <span class="k">return</span> <span class="s2">&quot;No irc bots found.&quot;</span>
 
 
-<div class="viewcode-block" id="CmdIRC2Chan"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.comms.CmdIRC2Chan">[docs]</a><span class="k">class</span> <span class="nc">CmdIRC2Chan</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdIRC2Chan"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdIRC2Chan">[docs]</a><span class="k">class</span> <span class="nc">CmdIRC2Chan</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Link an evennia channel to an external IRC channel</span>
 
@@ -1004,7 +1001,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:serversetting(IRC_ENABLED) and pperm(Developer)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Comms&quot;</span>
 
-<div class="viewcode-block" id="CmdIRC2Chan.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.comms.CmdIRC2Chan.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdIRC2Chan.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdIRC2Chan.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Setup the irc-channel mapping&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">settings</span><span class="o">.</span><span class="n">IRC_ENABLED</span><span class="p">:</span>
@@ -1160,7 +1157,7 @@
 
 
 <span class="c1"># RSS connection</span>
-<div class="viewcode-block" id="CmdRSS2Chan"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.comms.CmdRSS2Chan">[docs]</a><span class="k">class</span> <span class="nc">CmdRSS2Chan</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdRSS2Chan"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdRSS2Chan">[docs]</a><span class="k">class</span> <span class="nc">CmdRSS2Chan</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    link an evennia channel to an external RSS feed</span>
 
@@ -1190,7 +1187,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:serversetting(RSS_ENABLED) and pperm(Developer)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Comms&quot;</span>
 
-<div class="viewcode-block" id="CmdRSS2Chan.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.comms.CmdRSS2Chan.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdRSS2Chan.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdRSS2Chan.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Setup the rss-channel mapping&quot;&quot;&quot;</span>
 
         <span class="c1"># checking we have all we need</span>
@@ -1367,6 +1364,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Grapevine connection created </span><span class="si">{channel}</span><span class="s2"> &lt;-&gt; </span><span class="si">{grapevine_channel}</span><span class="s2">.&quot;</span><span class="p">)</span>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -1404,17 +1402,15 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.commands.default.comms</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.comms</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

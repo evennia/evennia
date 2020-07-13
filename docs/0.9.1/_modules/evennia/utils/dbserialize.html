@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.utils.dbserialize &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.utils.dbserialize</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.dbserialize</a></li> 
       </ul>
     </div>  
 
@@ -574,7 +571,7 @@
 <span class="c1"># Access methods</span>
 
 
-<div class="viewcode-block" id="to_pickle"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.dbserialize.to_pickle">[docs]</a><span class="k">def</span> <span class="nf">to_pickle</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<div class="viewcode-block" id="to_pickle"><a class="viewcode-back" href="../../../api/evennia.utils.dbserialize.html#evennia.utils.dbserialize.to_pickle">[docs]</a><span class="k">def</span> <span class="nf">to_pickle</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This prepares data on arbitrary form to be pickled. It handles any</span>
 <span class="sd">    nested structure and returns data on a form that is safe to pickle</span>
@@ -628,14 +625,14 @@
 
 
 <span class="c1"># @transaction.autocommit</span>
-<div class="viewcode-block" id="from_pickle"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.dbserialize.from_pickle">[docs]</a><span class="k">def</span> <span class="nf">from_pickle</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">db_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="from_pickle"><a class="viewcode-back" href="../../../api/evennia.utils.dbserialize.html#evennia.utils.dbserialize.from_pickle">[docs]</a><span class="k">def</span> <span class="nf">from_pickle</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">db_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This should be fed a just de-pickled data object. It will be converted back</span>
 <span class="sd">    to a form that may contain database objects again. Note that if a database</span>
 <span class="sd">    object was removed (or changed in-place) in the database, None will be</span>
 <span class="sd">    returned.</span>
 
-<span class="sd">    Args_</span>
+<span class="sd">    Args:</span>
 <span class="sd">        data (any): Pickled data to unpickle.</span>
 <span class="sd">        db_obj (Atribute, any): This is the model instance (normally</span>
 <span class="sd">            an Attribute) that _Saver*-type iterables (_SaverList etc)</span>
@@ -755,7 +752,7 @@
     <span class="k">return</span> <span class="n">process_item</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="do_pickle"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.dbserialize.do_pickle">[docs]</a><span class="k">def</span> <span class="nf">do_pickle</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<div class="viewcode-block" id="do_pickle"><a class="viewcode-back" href="../../../api/evennia.utils.dbserialize.html#evennia.utils.dbserialize.do_pickle">[docs]</a><span class="k">def</span> <span class="nf">do_pickle</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Perform pickle to string&quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">PICKLE_PROTOCOL</span><span class="p">)</span>
@@ -764,7 +761,7 @@
         <span class="k">raise</span></div>
 
 
-<div class="viewcode-block" id="do_unpickle"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.dbserialize.do_unpickle">[docs]</a><span class="k">def</span> <span class="nf">do_unpickle</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<div class="viewcode-block" id="do_unpickle"><a class="viewcode-back" href="../../../api/evennia.utils.dbserialize.html#evennia.utils.dbserialize.do_unpickle">[docs]</a><span class="k">def</span> <span class="nf">do_unpickle</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Retrieve pickle from pickled string&quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">loads</span><span class="p">(</span><span class="n">to_bytes</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
@@ -773,16 +770,17 @@
         <span class="k">raise</span></div>
 
 
-<div class="viewcode-block" id="dbserialize"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.dbserialize.dbserialize">[docs]</a><span class="k">def</span> <span class="nf">dbserialize</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<div class="viewcode-block" id="dbserialize"><a class="viewcode-back" href="../../../api/evennia.utils.dbserialize.html#evennia.utils.dbserialize.dbserialize">[docs]</a><span class="k">def</span> <span class="nf">dbserialize</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Serialize to pickled form in one step&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">do_pickle</span><span class="p">(</span><span class="n">to_pickle</span><span class="p">(</span><span class="n">data</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="dbunserialize"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.dbserialize.dbunserialize">[docs]</a><span class="k">def</span> <span class="nf">dbunserialize</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">db_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="dbunserialize"><a class="viewcode-back" href="../../../api/evennia.utils.dbserialize.html#evennia.utils.dbserialize.dbunserialize">[docs]</a><span class="k">def</span> <span class="nf">dbunserialize</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">db_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Un-serialize in one step. See from_pickle for help db_obj.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">from_pickle</span><span class="p">(</span><span class="n">do_unpickle</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">db_obj</span><span class="o">=</span><span class="n">db_obj</span><span class="p">)</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -820,17 +818,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.utils.dbserialize</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.dbserialize</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

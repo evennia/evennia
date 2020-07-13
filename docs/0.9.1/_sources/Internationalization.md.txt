@@ -27,7 +27,7 @@ Here `'en'` should be changed to the abbreviation for one of the supported langu
 
 If you cannot find your language in `evennia/locale/` it's because noone has translated it yet. Alternatively you might have the language but find the translation bad ... You are welcome to help improve the situation!
 
-To start a new translation you need to first have cloned the Evennia repositry with GIT and activated a python virtualenv as described on the [Getting Started](Getting-Started) page. You now need to `cd` to the `evennia/` directory. This is *not* your created game folder but the main Evennia library folder. If you see a folder `locale/` then you are in the right place. From here you run:
+To start a new translation you need to first have cloned the Evennia repositry with GIT and activated a python virtualenv as described on the [Getting Started](./Getting-Started) page. You now need to `cd` to the `evennia/` directory. This is *not* your created game folder but the main Evennia library folder. If you see a folder `locale/` then you are in the right place. From here you run:
 
      evennia makemessages <language-code>
 

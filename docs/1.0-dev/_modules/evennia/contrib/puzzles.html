@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.puzzles &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.puzzles</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.puzzles</a></li> 
       </ul>
     </div>  
 
@@ -137,7 +134,7 @@
 <span class="c1"># ----------- UTILITY FUNCTIONS ------------</span>
 
 
-<div class="viewcode-block" id="proto_def"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.puzzles.proto_def">[docs]</a><span class="k">def</span> <span class="nf">proto_def</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">with_tags</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="proto_def"><a class="viewcode-back" href="../../../api/evennia.contrib.puzzles.html#evennia.contrib.puzzles.proto_def">[docs]</a><span class="k">def</span> <span class="nf">proto_def</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">with_tags</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Basic properties needed to spawn</span>
 <span class="sd">    and compare recipe with candidate part</span>
@@ -161,7 +158,7 @@
     <span class="k">return</span> <span class="n">protodef</span></div>
 
 
-<div class="viewcode-block" id="maskout_protodef"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.puzzles.maskout_protodef">[docs]</a><span class="k">def</span> <span class="nf">maskout_protodef</span><span class="p">(</span><span class="n">protodef</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
+<div class="viewcode-block" id="maskout_protodef"><a class="viewcode-back" href="../../../api/evennia.contrib.puzzles.html#evennia.contrib.puzzles.maskout_protodef">[docs]</a><span class="k">def</span> <span class="nf">maskout_protodef</span><span class="p">(</span><span class="n">protodef</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a new protodef after removing protodef values based on mask</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -173,7 +170,7 @@
 
 
 <span class="c1"># Colorize the default success message</span>
-<div class="viewcode-block" id="_colorize_message"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.puzzles._colorize_message">[docs]</a><span class="k">def</span> <span class="nf">_colorize_message</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_colorize_message</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
     <span class="n">_i</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">_colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;|r&quot;</span><span class="p">,</span> <span class="s2">&quot;|g&quot;</span><span class="p">,</span> <span class="s2">&quot;|y&quot;</span><span class="p">]</span>
     <span class="n">_msg</span> <span class="o">=</span> <span class="p">[]</span>
@@ -181,7 +178,7 @@
         <span class="n">_msg</span> <span class="o">+=</span> <span class="n">_colors</span><span class="p">[</span><span class="n">_i</span><span class="p">]</span> <span class="o">+</span> <span class="n">l</span>
         <span class="n">_i</span> <span class="o">=</span> <span class="p">(</span><span class="n">_i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">_colors</span><span class="p">)</span>
     <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_msg</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;|n&quot;</span>
-    <span class="k">return</span> <span class="n">msg</span></div>
+    <span class="k">return</span> <span class="n">msg</span>
 
 
 <span class="n">_PUZZLE_DEFAULT_SUCCESS_USE_MESSAGE</span> <span class="o">=</span> <span class="n">_colorize_message</span><span class="p">(</span><span class="n">_PUZZLE_DEFAULT_SUCCESS_USE_MESSAGE</span><span class="p">)</span>
@@ -189,12 +186,12 @@
 <span class="c1"># ------------------------------------------</span>
 
 
-<div class="viewcode-block" id="PuzzleRecipe"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.puzzles.PuzzleRecipe">[docs]</a><span class="k">class</span> <span class="nc">PuzzleRecipe</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<div class="viewcode-block" id="PuzzleRecipe"><a class="viewcode-back" href="../../../api/evennia.contrib.puzzles.html#evennia.contrib.puzzles.PuzzleRecipe">[docs]</a><span class="k">class</span> <span class="nc">PuzzleRecipe</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Definition of a Puzzle Recipe</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="PuzzleRecipe.save_recipe"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.puzzles.PuzzleRecipe.save_recipe">[docs]</a>    <span class="k">def</span> <span class="nf">save_recipe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">puzzle_name</span><span class="p">,</span> <span class="n">parts</span><span class="p">,</span> <span class="n">results</span><span class="p">):</span>
+<div class="viewcode-block" id="PuzzleRecipe.save_recipe"><a class="viewcode-back" href="../../../api/evennia.contrib.puzzles.html#evennia.contrib.puzzles.PuzzleRecipe.save_recipe">[docs]</a>    <span class="k">def</span> <span class="nf">save_recipe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">puzzle_name</span><span class="p">,</span> <span class="n">parts</span><span class="p">,</span> <span class="n">results</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">puzzle_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">puzzle_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">parts</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
@@ -204,7 +201,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">use_success_location_message</span> <span class="o">=</span> <span class="n">_PUZZLE_DEFAULT_SUCCESS_USE_LOCATION_MESSAGE</span></div></div>
 
 
-<div class="viewcode-block" id="CmdCreatePuzzleRecipe"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.puzzles.CmdCreatePuzzleRecipe">[docs]</a><span class="k">class</span> <span class="nc">CmdCreatePuzzleRecipe</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdCreatePuzzleRecipe"><a class="viewcode-back" href="../../../api/evennia.contrib.puzzles.html#evennia.contrib.puzzles.CmdCreatePuzzleRecipe">[docs]</a><span class="k">class</span> <span class="nc">CmdCreatePuzzleRecipe</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates a puzzle recipe. A puzzle consists of puzzle-parts that</span>
 <span class="sd">    the player can &#39;use&#39; together to create a specified result.</span>
@@ -236,7 +233,7 @@
     <span class="n">confirm</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">default_confirm</span> <span class="o">=</span> <span class="s2">&quot;no&quot;</span>
 
-<div class="viewcode-block" id="CmdCreatePuzzleRecipe.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.puzzles.CmdCreatePuzzleRecipe.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdCreatePuzzleRecipe.func"><a class="viewcode-back" href="../../../api/evennia.contrib.puzzles.html#evennia.contrib.puzzles.CmdCreatePuzzleRecipe.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lhslist</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
@@ -349,7 +346,7 @@
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdEditPuzzle"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.puzzles.CmdEditPuzzle">[docs]</a><span class="k">class</span> <span class="nc">CmdEditPuzzle</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdEditPuzzle"><a class="viewcode-back" href="../../../api/evennia.contrib.puzzles.html#evennia.contrib.puzzles.CmdEditPuzzle">[docs]</a><span class="k">class</span> <span class="nc">CmdEditPuzzle</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Edits puzzle properties</span>
 
@@ -382,7 +379,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(puzzleedit) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Puzzles&quot;</span>
 
-<div class="viewcode-block" id="CmdEditPuzzle.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.puzzles.CmdEditPuzzle.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdEditPuzzle.func"><a class="viewcode-back" href="../../../api/evennia.contrib.puzzles.html#evennia.contrib.puzzles.CmdEditPuzzle.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_USAGE</span> <span class="o">=</span> <span class="s2">&quot;Usage: @puzzleedit[/switches] &lt;dbref&gt;[/attribute = &lt;value&gt;]&quot;</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
 
@@ -470,7 +467,7 @@
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> mask = </span><span class="si">%r</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">puzzle_name_id</span><span class="p">,</span> <span class="n">puzzle</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">mask</span><span class="p">))</span>
                 <span class="k">return</span></div>
 
-<div class="viewcode-block" id="CmdEditPuzzle._get_objs"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.puzzles.CmdEditPuzzle._get_objs">[docs]</a>    <span class="k">def</span> <span class="nf">_get_objs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_objs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhslist</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_USAGE</span><span class="p">)</span>
             <span class="k">return</span>
@@ -479,9 +476,9 @@
             <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">obj</span><span class="p">:</span>
                 <span class="n">objs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">objs</span></div>
+        <span class="k">return</span> <span class="n">objs</span>
 
-<div class="viewcode-block" id="CmdEditPuzzle._add_objs_to"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.puzzles.CmdEditPuzzle._add_objs_to">[docs]</a>    <span class="k">def</span> <span class="nf">_add_objs_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">,</span> <span class="n">to</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_add_objs_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">,</span> <span class="n">to</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Adds propto objs to the given set (parts or results)&quot;&quot;&quot;</span>
         <span class="n">added</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">toobjs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">to</span><span class="p">[:])</span>
@@ -489,9 +486,9 @@
             <span class="n">protoobj</span> <span class="o">=</span> <span class="n">proto_def</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
             <span class="n">toobjs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">protoobj</span><span class="p">)</span>
             <span class="n">added</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">added</span><span class="p">,</span> <span class="n">toobjs</span></div>
+        <span class="k">return</span> <span class="n">added</span><span class="p">,</span> <span class="n">toobjs</span>
 
-<div class="viewcode-block" id="CmdEditPuzzle._remove_objs_from"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.puzzles.CmdEditPuzzle._remove_objs_from">[docs]</a>    <span class="k">def</span> <span class="nf">_remove_objs_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">,</span> <span class="n">frm</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_remove_objs_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">,</span> <span class="n">frm</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Removes propto objs from the given set (parts or results)&quot;&quot;&quot;</span>
         <span class="n">removed</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">fromobjs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">frm</span><span class="p">[:])</span>
@@ -500,30 +497,30 @@
             <span class="k">if</span> <span class="n">protoobj</span> <span class="ow">in</span> <span class="n">fromobjs</span><span class="p">:</span>
                 <span class="n">fromobjs</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">protoobj</span><span class="p">)</span>
                 <span class="n">removed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">removed</span><span class="p">,</span> <span class="n">fromobjs</span></div>
+        <span class="k">return</span> <span class="n">removed</span><span class="p">,</span> <span class="n">fromobjs</span>
 
-<div class="viewcode-block" id="CmdEditPuzzle._add_parts"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.puzzles.CmdEditPuzzle._add_parts">[docs]</a>    <span class="k">def</span> <span class="nf">_add_parts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">,</span> <span class="n">puzzle</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_add_parts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">,</span> <span class="n">puzzle</span><span class="p">):</span>
         <span class="n">added</span><span class="p">,</span> <span class="n">toobjs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_objs_to</span><span class="p">(</span><span class="n">objs</span><span class="p">,</span> <span class="n">puzzle</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">parts</span><span class="p">)</span>
         <span class="n">puzzle</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">parts</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">toobjs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">added</span></div>
+        <span class="k">return</span> <span class="n">added</span>
 
-<div class="viewcode-block" id="CmdEditPuzzle._remove_parts"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.puzzles.CmdEditPuzzle._remove_parts">[docs]</a>    <span class="k">def</span> <span class="nf">_remove_parts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">,</span> <span class="n">puzzle</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_remove_parts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">,</span> <span class="n">puzzle</span><span class="p">):</span>
         <span class="n">removed</span><span class="p">,</span> <span class="n">fromobjs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remove_objs_from</span><span class="p">(</span><span class="n">objs</span><span class="p">,</span> <span class="n">puzzle</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">parts</span><span class="p">)</span>
         <span class="n">puzzle</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">parts</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">fromobjs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">removed</span></div>
+        <span class="k">return</span> <span class="n">removed</span>
 
-<div class="viewcode-block" id="CmdEditPuzzle._add_results"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.puzzles.CmdEditPuzzle._add_results">[docs]</a>    <span class="k">def</span> <span class="nf">_add_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">,</span> <span class="n">puzzle</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_add_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">,</span> <span class="n">puzzle</span><span class="p">):</span>
         <span class="n">added</span><span class="p">,</span> <span class="n">toobjs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_objs_to</span><span class="p">(</span><span class="n">objs</span><span class="p">,</span> <span class="n">puzzle</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">results</span><span class="p">)</span>
         <span class="n">puzzle</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">toobjs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">added</span></div>
+        <span class="k">return</span> <span class="n">added</span>
 
-<div class="viewcode-block" id="CmdEditPuzzle._remove_results"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.puzzles.CmdEditPuzzle._remove_results">[docs]</a>    <span class="k">def</span> <span class="nf">_remove_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">,</span> <span class="n">puzzle</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_remove_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">,</span> <span class="n">puzzle</span><span class="p">):</span>
         <span class="n">removed</span><span class="p">,</span> <span class="n">fromobjs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remove_objs_from</span><span class="p">(</span><span class="n">objs</span><span class="p">,</span> <span class="n">puzzle</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">results</span><span class="p">)</span>
         <span class="n">puzzle</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">fromobjs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">removed</span></div></div>
+        <span class="k">return</span> <span class="n">removed</span></div>
 
 
-<div class="viewcode-block" id="CmdArmPuzzle"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.puzzles.CmdArmPuzzle">[docs]</a><span class="k">class</span> <span class="nc">CmdArmPuzzle</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdArmPuzzle"><a class="viewcode-back" href="../../../api/evennia.contrib.puzzles.html#evennia.contrib.puzzles.CmdArmPuzzle">[docs]</a><span class="k">class</span> <span class="nc">CmdArmPuzzle</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Arms a puzzle by spawning all its parts.</span>
 
@@ -540,7 +537,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(armpuzzle) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Puzzles&quot;</span>
 
-<div class="viewcode-block" id="CmdArmPuzzle.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.puzzles.CmdArmPuzzle.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdArmPuzzle.func"><a class="viewcode-back" href="../../../api/evennia.contrib.puzzles.html#evennia.contrib.puzzles.CmdArmPuzzle.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">dbref</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">):</span>
@@ -570,7 +567,7 @@
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Puzzle armed |gsuccessfully|n.&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="_lookups_parts_puzzlenames_protodefs"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.puzzles._lookups_parts_puzzlenames_protodefs">[docs]</a><span class="k">def</span> <span class="nf">_lookups_parts_puzzlenames_protodefs</span><span class="p">(</span><span class="n">parts</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_lookups_parts_puzzlenames_protodefs</span><span class="p">(</span><span class="n">parts</span><span class="p">):</span>
     <span class="c1"># Create lookup dicts by part&#39;s dbref and by puzzle_name(tags)</span>
     <span class="n">parts_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
     <span class="n">puzzlename_tags_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -588,10 +585,10 @@
             <span class="k">if</span> <span class="n">tag</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">puzzlename_tags_dict</span><span class="p">:</span>
                 <span class="n">puzzlename_tags_dict</span><span class="p">[</span><span class="n">tag</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">puzzlename_tags_dict</span><span class="p">[</span><span class="n">tag</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">dbref</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">parts_dict</span><span class="p">,</span> <span class="n">puzzlename_tags_dict</span><span class="p">,</span> <span class="n">puzzle_ingredients</span></div>
+    <span class="k">return</span> <span class="n">parts_dict</span><span class="p">,</span> <span class="n">puzzlename_tags_dict</span><span class="p">,</span> <span class="n">puzzle_ingredients</span>
 
 
-<div class="viewcode-block" id="_puzzles_by_names"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.puzzles._puzzles_by_names">[docs]</a><span class="k">def</span> <span class="nf">_puzzles_by_names</span><span class="p">(</span><span class="n">names</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_puzzles_by_names</span><span class="p">(</span><span class="n">names</span><span class="p">):</span>
     <span class="c1"># Find all puzzles by puzzle name (i.e. tag name)</span>
     <span class="n">puzzles</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">puzzle_name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
@@ -601,10 +598,10 @@
             <span class="k">continue</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">puzzles</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_puzzles</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">puzzles</span></div>
+    <span class="k">return</span> <span class="n">puzzles</span>
 
 
-<div class="viewcode-block" id="_matching_puzzles"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.puzzles._matching_puzzles">[docs]</a><span class="k">def</span> <span class="nf">_matching_puzzles</span><span class="p">(</span><span class="n">puzzles</span><span class="p">,</span> <span class="n">puzzlename_tags_dict</span><span class="p">,</span> <span class="n">puzzle_ingredients</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_matching_puzzles</span><span class="p">(</span><span class="n">puzzles</span><span class="p">,</span> <span class="n">puzzlename_tags_dict</span><span class="p">,</span> <span class="n">puzzle_ingredients</span><span class="p">):</span>
     <span class="c1"># Check if parts can be combined to solve a puzzle</span>
     <span class="n">matched_puzzles</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">puzzle</span> <span class="ow">in</span> <span class="n">puzzles</span><span class="p">:</span>
@@ -628,10 +625,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">puzzle_protoparts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">matched_puzzles</span><span class="p">[</span><span class="n">puzzle</span><span class="o">.</span><span class="n">dbref</span><span class="p">]</span> <span class="o">=</span> <span class="n">matched_dbrefparts</span>
-    <span class="k">return</span> <span class="n">matched_puzzles</span></div>
+    <span class="k">return</span> <span class="n">matched_puzzles</span>
 
 
-<div class="viewcode-block" id="CmdUsePuzzleParts"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.puzzles.CmdUsePuzzleParts">[docs]</a><span class="k">class</span> <span class="nc">CmdUsePuzzleParts</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdUsePuzzleParts"><a class="viewcode-back" href="../../../api/evennia.contrib.puzzles.html#evennia.contrib.puzzles.CmdUsePuzzleParts">[docs]</a><span class="k">class</span> <span class="nc">CmdUsePuzzleParts</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Use an object, or a group of objects at once.</span>
 
@@ -660,7 +657,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:pperm(use) or pperm(Player)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Puzzles&quot;</span>
 
-<div class="viewcode-block" id="CmdUsePuzzleParts.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.puzzles.CmdUsePuzzleParts.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdUsePuzzleParts.func"><a class="viewcode-back" href="../../../api/evennia.contrib.puzzles.html#evennia.contrib.puzzles.CmdUsePuzzleParts.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">:</span>
@@ -757,7 +754,7 @@
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdListPuzzleRecipes"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.puzzles.CmdListPuzzleRecipes">[docs]</a><span class="k">class</span> <span class="nc">CmdListPuzzleRecipes</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdListPuzzleRecipes"><a class="viewcode-back" href="../../../api/evennia.contrib.puzzles.html#evennia.contrib.puzzles.CmdListPuzzleRecipes">[docs]</a><span class="k">class</span> <span class="nc">CmdListPuzzleRecipes</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Searches for all puzzle recipes</span>
 
@@ -769,7 +766,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(lspuzzlerecipes) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Puzzles&quot;</span>
 
-<div class="viewcode-block" id="CmdListPuzzleRecipes.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.puzzles.CmdListPuzzleRecipes.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdListPuzzleRecipes.func"><a class="viewcode-back" href="../../../api/evennia.contrib.puzzles.html#evennia.contrib.puzzles.CmdListPuzzleRecipes.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
 
         <span class="n">recipes</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">search_script_tag</span><span class="p">(</span><span class="n">_PUZZLES_TAG_RECIPE</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">_PUZZLES_TAG_CATEGORY</span><span class="p">)</span>
@@ -804,7 +801,7 @@
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">text</span><span class="p">))</span></div></div>
 
 
-<div class="viewcode-block" id="CmdListArmedPuzzles"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.puzzles.CmdListArmedPuzzles">[docs]</a><span class="k">class</span> <span class="nc">CmdListArmedPuzzles</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdListArmedPuzzles"><a class="viewcode-back" href="../../../api/evennia.contrib.puzzles.html#evennia.contrib.puzzles.CmdListArmedPuzzles">[docs]</a><span class="k">class</span> <span class="nc">CmdListArmedPuzzles</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Searches for all armed puzzles</span>
 
@@ -816,7 +813,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(lsarmedpuzzles) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Puzzles&quot;</span>
 
-<div class="viewcode-block" id="CmdListArmedPuzzles.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.puzzles.CmdListArmedPuzzles.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdListArmedPuzzles.func"><a class="viewcode-back" href="../../../api/evennia.contrib.puzzles.html#evennia.contrib.puzzles.CmdListArmedPuzzles.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
 
         <span class="n">armed_puzzles</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">search_tag</span><span class="p">(</span><span class="n">_PUZZLES_TAG_MEMBER</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">_PUZZLES_TAG_CATEGORY</span><span class="p">)</span>
@@ -842,12 +839,12 @@
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">text</span><span class="p">))</span></div></div>
 
 
-<div class="viewcode-block" id="PuzzleSystemCmdSet"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.puzzles.PuzzleSystemCmdSet">[docs]</a><span class="k">class</span> <span class="nc">PuzzleSystemCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<div class="viewcode-block" id="PuzzleSystemCmdSet"><a class="viewcode-back" href="../../../api/evennia.contrib.puzzles.html#evennia.contrib.puzzles.PuzzleSystemCmdSet">[docs]</a><span class="k">class</span> <span class="nc">PuzzleSystemCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    CmdSet to create, arm and resolve Puzzles</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="PuzzleSystemCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.puzzles.PuzzleSystemCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PuzzleSystemCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.puzzles.html#evennia.contrib.puzzles.PuzzleSystemCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">PuzzleSystemCmdSet</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">at_cmdset_creation</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdCreatePuzzleRecipe</span><span class="p">())</span>
@@ -858,6 +855,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdUsePuzzleParts</span><span class="p">())</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -895,17 +893,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.puzzles</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.puzzles</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

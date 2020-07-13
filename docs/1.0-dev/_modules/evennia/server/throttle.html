@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.server.throttle &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.server.throttle</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.server.throttle</a></li> 
       </ul>
     </div>  
 
@@ -47,7 +44,7 @@
 <span class="kn">import</span> <span class="nn">time</span>
 
 
-<div class="viewcode-block" id="Throttle"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.throttle.Throttle">[docs]</a><span class="k">class</span> <span class="nc">Throttle</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Throttle"><a class="viewcode-back" href="../../../api/evennia.server.throttle.html#evennia.server.throttle.Throttle">[docs]</a><span class="k">class</span> <span class="nc">Throttle</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Keeps a running count of failed actions per IP address.</span>
 
@@ -62,11 +59,11 @@
 
     <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;Too many failed attempts; you must wait a few minutes before trying again.&quot;</span>
 
-<div class="viewcode-block" id="Throttle.__init__"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.throttle.Throttle.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Throttle.__init__"><a class="viewcode-back" href="../../../api/evennia.server.throttle.html#evennia.server.throttle.Throttle.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Allows setting of throttle parameters.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            limit (int): Max number of failures before imposing limiter</span>
 <span class="sd">            timeout (int): number of timeout seconds after</span>
 <span class="sd">                max number of tries has been reached.</span>
@@ -78,7 +75,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cache_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;limit&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;timeout&quot;</span><span class="p">,</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Throttle.get"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.throttle.Throttle.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Throttle.get"><a class="viewcode-back" href="../../../api/evennia.server.throttle.html#evennia.server.throttle.Throttle.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convenience function that returns the storage table, or part of.</span>
 
@@ -98,7 +95,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span></div>
 
-<div class="viewcode-block" id="Throttle.update"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.throttle.Throttle.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="p">,</span> <span class="n">failmsg</span><span class="o">=</span><span class="s2">&quot;Exceeded threshold.&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="Throttle.update"><a class="viewcode-back" href="../../../api/evennia.server.throttle.html#evennia.server.throttle.Throttle.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="p">,</span> <span class="n">failmsg</span><span class="o">=</span><span class="s2">&quot;Exceeded threshold.&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Store the time of the latest failure.</span>
 
@@ -130,7 +127,7 @@
                 <span class="o">%</span> <span class="p">(</span><span class="n">failmsg</span><span class="p">,</span> <span class="n">ip</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Throttle.check"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.throttle.Throttle.check">[docs]</a>    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="p">):</span>
+<div class="viewcode-block" id="Throttle.check"><a class="viewcode-back" href="../../../api/evennia.server.throttle.html#evennia.server.throttle.Throttle.check">[docs]</a>    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This will check the session&#39;s address against the</span>
 <span class="sd">        storage dictionary to check they haven&#39;t spammed too many</span>
@@ -162,6 +159,7 @@
             <span class="k">return</span> <span class="kc">False</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -199,17 +197,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.server.throttle</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.server.throttle</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

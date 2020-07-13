@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.scripts.tickerhandler &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.scripts.tickerhandler</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.scripts.tickerhandler</a></li> 
       </ul>
     </div>  
 
@@ -128,14 +125,14 @@
 <span class="s2">Ticker was not added.&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="Ticker"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.tickerhandler.Ticker">[docs]</a><span class="k">class</span> <span class="nc">Ticker</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Ticker"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.Ticker">[docs]</a><span class="k">class</span> <span class="nc">Ticker</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents a repeatedly running task that calls</span>
 <span class="sd">    hooks repeatedly. Overload `_callback` to change the</span>
 <span class="sd">    way it operates.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Ticker._callback"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.tickerhandler.Ticker._callback">[docs]</a>    <span class="nd">@inlineCallbacks</span>
+    <span class="nd">@inlineCallbacks</span>
     <span class="k">def</span> <span class="nf">_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This will be called repeatedly every `self.interval` seconds.</span>
@@ -186,9 +183,9 @@
         <span class="k">for</span> <span class="n">store_key</span><span class="p">,</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_add</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">store_key</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_to_remove</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_to_add</span> <span class="o">=</span> <span class="p">[]</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_to_add</span> <span class="o">=</span> <span class="p">[]</span>
 
-<div class="viewcode-block" id="Ticker.__init__"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.tickerhandler.Ticker.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="p">):</span>
+<div class="viewcode-block" id="Ticker.__init__"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.Ticker.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set up the ticker</span>
 
@@ -204,7 +201,7 @@
         <span class="c1"># set up a twisted asynchronous repeat call</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">=</span> <span class="n">ExtendedLoopingCall</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_callback</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Ticker.validate"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.tickerhandler.Ticker.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Ticker.validate"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.Ticker.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start/stop the task depending on how many subscribers we have</span>
 <span class="sd">        using it.</span>
@@ -220,14 +217,14 @@
         <span class="k">elif</span> <span class="n">subs</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interval</span><span class="p">,</span> <span class="n">now</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="n">start_delay</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Ticker.add"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.tickerhandler.Ticker.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">store_key</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Ticker.add"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.Ticker.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">store_key</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sign up a subscriber to this ticker.</span>
 <span class="sd">        Args:</span>
 <span class="sd">            store_key (str): Unique storage hash for this ticker subscription.</span>
 <span class="sd">            args (any, optional): Arguments to call the hook method with.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            _start_delay (int): If set, this will be</span>
 <span class="sd">                used to delay the start of the trigger instead of</span>
 <span class="sd">                `interval`.</span>
@@ -242,7 +239,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions</span><span class="p">[</span><span class="n">store_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">start_delay</span><span class="o">=</span><span class="n">start_delay</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Ticker.remove"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.tickerhandler.Ticker.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">store_key</span><span class="p">):</span>
+<div class="viewcode-block" id="Ticker.remove"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.Ticker.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">store_key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unsubscribe object from this ticker</span>
 
@@ -258,7 +255,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">store_key</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Ticker.stop"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.tickerhandler.Ticker.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Ticker.stop"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.Ticker.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Kill the Task, regardless of subscriptions.</span>
 
@@ -267,7 +264,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="TickerPool"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.tickerhandler.TickerPool">[docs]</a><span class="k">class</span> <span class="nc">TickerPool</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TickerPool"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerPool">[docs]</a><span class="k">class</span> <span class="nc">TickerPool</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This maintains a pool of</span>
 <span class="sd">    `evennia.scripts.scripts.ExtendedLoopingCall` tasks for calling</span>
@@ -277,14 +274,14 @@
 
     <span class="n">ticker_class</span> <span class="o">=</span> <span class="n">Ticker</span>
 
-<div class="viewcode-block" id="TickerPool.__init__"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.tickerhandler.TickerPool.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TickerPool.__init__"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerPool.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the pool.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tickers</span> <span class="o">=</span> <span class="p">{}</span></div>
 
-<div class="viewcode-block" id="TickerPool.add"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.tickerhandler.TickerPool.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">store_key</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="TickerPool.add"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerPool.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">store_key</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add new ticker subscriber.</span>
 
@@ -302,7 +299,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">tickers</span><span class="p">[</span><span class="n">interval</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ticker_class</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tickers</span><span class="p">[</span><span class="n">interval</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">store_key</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TickerPool.remove"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.tickerhandler.TickerPool.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">store_key</span><span class="p">):</span>
+<div class="viewcode-block" id="TickerPool.remove"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerPool.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">store_key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove subscription from pool.</span>
 
@@ -316,7 +313,7 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">tickers</span><span class="p">[</span><span class="n">interval</span><span class="p">]:</span>
                 <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">tickers</span><span class="p">[</span><span class="n">interval</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="TickerPool.stop"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.tickerhandler.TickerPool.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="TickerPool.stop"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerPool.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Stop all scripts in pool. This is done at server reload since</span>
 <span class="sd">        restoring the pool will automatically re-populate the pool.</span>
@@ -333,7 +330,7 @@
                 <span class="n">ticker</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="TickerHandler"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.tickerhandler.TickerHandler">[docs]</a><span class="k">class</span> <span class="nc">TickerHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TickerHandler"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerHandler">[docs]</a><span class="k">class</span> <span class="nc">TickerHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The Tickerhandler maintains a pool of tasks for subscribing</span>
 <span class="sd">    objects to various tick rates.  The pool maintains creation</span>
@@ -343,7 +340,7 @@
 
     <span class="n">ticker_pool_class</span> <span class="o">=</span> <span class="n">TickerPool</span>
 
-<div class="viewcode-block" id="TickerHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.tickerhandler.TickerHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_name</span><span class="o">=</span><span class="s2">&quot;ticker_storage&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="TickerHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_name</span><span class="o">=</span><span class="s2">&quot;ticker_storage&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize handler</span>
 
@@ -355,7 +352,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">save_name</span> <span class="o">=</span> <span class="n">save_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ticker_pool</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ticker_pool_class</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TickerHandler._get_callback"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.tickerhandler.TickerHandler._get_callback">[docs]</a>    <span class="k">def</span> <span class="nf">_get_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Analyze callback and determine its consituents</span>
 
@@ -383,9 +380,9 @@
                 <span class="n">outcallfunc</span> <span class="o">=</span> <span class="n">callback</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is not a callable function or method.&quot;</span> <span class="o">%</span> <span class="n">callback</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">outobj</span><span class="p">,</span> <span class="n">outpath</span><span class="p">,</span> <span class="n">outcallfunc</span></div>
+        <span class="k">return</span> <span class="n">outobj</span><span class="p">,</span> <span class="n">outpath</span><span class="p">,</span> <span class="n">outcallfunc</span>
 
-<div class="viewcode-block" id="TickerHandler._store_key"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.tickerhandler.TickerHandler._store_key">[docs]</a>    <span class="k">def</span> <span class="nf">_store_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">callfunc</span><span class="p">,</span> <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_store_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">callfunc</span><span class="p">,</span> <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tries to create a store_key for the object.</span>
 
@@ -417,9 +414,9 @@
         <span class="n">packed_obj</span> <span class="o">=</span> <span class="n">pack_dbobj</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
         <span class="n">methodname</span> <span class="o">=</span> <span class="n">callfunc</span> <span class="k">if</span> <span class="n">callfunc</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">callfunc</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="n">outpath</span> <span class="o">=</span> <span class="n">path</span> <span class="k">if</span> <span class="n">path</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">packed_obj</span><span class="p">,</span> <span class="n">methodname</span><span class="p">,</span> <span class="n">outpath</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">idstring</span><span class="p">,</span> <span class="n">persistent</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="p">(</span><span class="n">packed_obj</span><span class="p">,</span> <span class="n">methodname</span><span class="p">,</span> <span class="n">outpath</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">idstring</span><span class="p">,</span> <span class="n">persistent</span><span class="p">)</span>
 
-<div class="viewcode-block" id="TickerHandler.save"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.tickerhandler.TickerHandler.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TickerHandler.save"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerHandler.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save ticker_storage as a serialized string into a temporary</span>
 <span class="sd">        ServerConf field. Whereas saving is done on the fly, if called</span>
@@ -458,7 +455,7 @@
             <span class="c1"># make sure we have nothing lingering in the database</span>
             <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">save_name</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TickerHandler.restore"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.tickerhandler.TickerHandler.restore">[docs]</a>    <span class="k">def</span> <span class="nf">restore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server_reload</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="TickerHandler.restore"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerHandler.restore">[docs]</a>    <span class="k">def</span> <span class="nf">restore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server_reload</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Restore ticker_storage from database and re-initialize the</span>
 <span class="sd">        handler from storage. This is triggered by the server at</span>
@@ -512,7 +509,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">ticker_storage</span><span class="p">[</span><span class="n">store_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">ticker_pool</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">store_key</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TickerHandler.add"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.tickerhandler.TickerHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="TickerHandler.add"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add subscription to tickerhandler</span>
 
@@ -563,7 +560,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">store_key</span></div>
 
-<div class="viewcode-block" id="TickerHandler.remove"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.tickerhandler.TickerHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">store_key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="TickerHandler.remove"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">store_key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove ticker subscription from handler.</span>
 
@@ -599,7 +596,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;No Ticker was found matching the store-key </span><span class="si">{store_key}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TickerHandler.clear"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.tickerhandler.TickerHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="TickerHandler.clear"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Stop/remove tickers from handler.</span>
 
@@ -622,7 +619,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">ticker_storage</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TickerHandler.all"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.tickerhandler.TickerHandler.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="TickerHandler.all"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerHandler.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all subscriptions.</span>
 
@@ -649,7 +646,7 @@
                 <span class="k">return</span> <span class="p">{</span><span class="n">interval</span><span class="p">:</span> <span class="n">ticker</span><span class="o">.</span><span class="n">subscriptions</span><span class="p">}</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="TickerHandler.all_display"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.tickerhandler.TickerHandler.all_display">[docs]</a>    <span class="k">def</span> <span class="nf">all_display</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TickerHandler.all_display"><a class="viewcode-back" href="../../../api/evennia.scripts.tickerhandler.html#evennia.scripts.tickerhandler.TickerHandler.all_display">[docs]</a>    <span class="k">def</span> <span class="nf">all_display</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all tickers on an easily displayable form.</span>
 
@@ -673,6 +670,7 @@
 <span class="n">TICKER_HANDLER</span> <span class="o">=</span> <span class="n">TickerHandler</span><span class="p">()</span>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -710,17 +708,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.scripts.tickerhandler</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.scripts.tickerhandler</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

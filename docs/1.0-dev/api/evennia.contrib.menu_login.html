@@ -1,0 +1,208 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>evennia.contrib.menu_login &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.menu_login</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-evennia.contrib.menu_login">
+<span id="evennia-contrib-menu-login"></span><h1>evennia.contrib.menu_login<a class="headerlink" href="#module-evennia.contrib.menu_login" title="Permalink to this headline">¶</a></h1>
+<p>A login menu using EvMenu.</p>
+<p>Contribution - Vincent-lg 2016, Griatch 2019 (rework for modern EvMenu)</p>
+<p>This changes the Evennia login to ask for the account name and password in
+sequence instead of requiring you to enter both at once.</p>
+<p>To install, add this line to the settings file (<strong>mygame/server/conf/settings.py</strong>):</p>
+<blockquote>
+<div><p>CMDSET_UNLOGGEDIN = “evennia.contrib.menu_login.UnloggedinCmdSet”</p>
+</div></blockquote>
+<p>Reload the server and the new connection method will be active. Note that you must
+independently change the connection screen to match this login style, by editing
+<strong>mygame/server/conf/connection_screens.py</strong>.</p>
+<p>This uses Evennia’s menu system EvMenu and is triggered by a command that is
+called automatically when a new user connects.</p>
+<dl class="py function">
+<dt id="evennia.contrib.menu_login.node_enter_username">
+<code class="sig-prename descclassname">evennia.contrib.menu_login.</code><code class="sig-name descname">node_enter_username</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">raw_text</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/menu_login.html#node_enter_username"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.menu_login.node_enter_username" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start node of menu
+Start login by displaying the connection screen and ask for a user name.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.menu_login.node_enter_password">
+<code class="sig-prename descclassname">evennia.contrib.menu_login.</code><code class="sig-name descname">node_enter_password</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">raw_string</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/menu_login.html#node_enter_password"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.menu_login.node_enter_password" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle password input.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.menu_login.node_quit_or_login">
+<code class="sig-prename descclassname">evennia.contrib.menu_login.</code><code class="sig-name descname">node_quit_or_login</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">raw_text</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/menu_login.html#node_quit_or_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.menu_login.node_quit_or_login" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exit menu, either by disconnecting or logging in.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.menu_login.UnloggedinCmdSet">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.menu_login.</code><code class="sig-name descname">UnloggedinCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/menu_login.html#UnloggedinCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.menu_login.UnloggedinCmdSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
+<p>Cmdset for the unloggedin state</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.menu_login.UnloggedinCmdSet.key">
+<code class="sig-name descname">key</code><em class="property"> = 'DefaultUnloggedin'</em><a class="headerlink" href="#evennia.contrib.menu_login.UnloggedinCmdSet.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.menu_login.UnloggedinCmdSet.priority">
+<code class="sig-name descname">priority</code><em class="property"> = 0</em><a class="headerlink" href="#evennia.contrib.menu_login.UnloggedinCmdSet.priority" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.menu_login.UnloggedinCmdSet.at_cmdset_creation">
+<code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/menu_login.html#UnloggedinCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.menu_login.UnloggedinCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when cmdset is first created.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.menu_login.UnloggedinCmdSet.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.menu_login.UnloggedinCmdSet'</em><a class="headerlink" href="#evennia.contrib.menu_login.UnloggedinCmdSet.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.menu_login.CmdUnloggedinLook">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.menu_login.</code><code class="sig-name descname">CmdUnloggedinLook</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/menu_login.html#CmdUnloggedinLook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.menu_login.CmdUnloggedinLook" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
+<p>An unloggedin version of the look command. This is called by the server
+when the account first connects. It sets up the menu before handing off
+to the menu’s own look command.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.menu_login.CmdUnloggedinLook.key">
+<code class="sig-name descname">key</code><em class="property"> = '__unloggedin_look_command'</em><a class="headerlink" href="#evennia.contrib.menu_login.CmdUnloggedinLook.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.menu_login.CmdUnloggedinLook.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.menu_login.CmdUnloggedinLook.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.menu_login.CmdUnloggedinLook.arg_regex">
+<code class="sig-name descname">arg_regex</code><em class="property"> = re.compile('^$', re.IGNORECASE)</em><a class="headerlink" href="#evennia.contrib.menu_login.CmdUnloggedinLook.arg_regex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.menu_login.CmdUnloggedinLook.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/menu_login.html#CmdUnloggedinLook.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.menu_login.CmdUnloggedinLook.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the menu using the nodes in this module.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.menu_login.CmdUnloggedinLook.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.menu_login.CmdUnloggedinLook.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.menu_login.CmdUnloggedinLook.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.menu_login.CmdUnloggedinLook.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.menu_login.CmdUnloggedinLook.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.menu_login.CmdUnloggedinLook.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.menu_login.CmdUnloggedinLook.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': '__unloggedin_look_command', 'tags': '', 'text': &quot;\n    An unloggedin version of the look command. This is called by the server\n    when the account first connects. It sets up the menu before handing off\n    to the menu's own look command.\n\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.menu_login.CmdUnloggedinLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.menu_login.rst.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.contrib.menu_login.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.1/api/evennia.contrib.menu_login.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.menu_login</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+    </div>
+  </body>
+</html>

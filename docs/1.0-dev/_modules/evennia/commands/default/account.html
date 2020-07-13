@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.commands.default.account &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.commands.default.account</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.account</a></li> 
       </ul>
     </div>  
 
@@ -129,7 +126,7 @@
 
 <span class="c1"># note that this is inheriting from MuxAccountLookCommand,</span>
 <span class="c1"># and has the .playable property.</span>
-<div class="viewcode-block" id="CmdOOCLook"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdOOCLook">[docs]</a><span class="k">class</span> <span class="nc">CmdOOCLook</span><span class="p">(</span><span class="n">MuxAccountLookCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdOOCLook"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdOOCLook">[docs]</a><span class="k">class</span> <span class="nc">CmdOOCLook</span><span class="p">(</span><span class="n">MuxAccountLookCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    look while out-of-character</span>
 
@@ -152,7 +149,7 @@
     <span class="c1"># this is used by the parent</span>
     <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="CmdOOCLook.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdOOCLook.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdOOCLook.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdOOCLook.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;implement the ooc look command&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">_MULTISESSION_MODE</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
@@ -164,7 +161,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">at_look</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">playable</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">))</span></div></div>
 
 
-<div class="viewcode-block" id="CmdCharCreate"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdCharCreate">[docs]</a><span class="k">class</span> <span class="nc">CmdCharCreate</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdCharCreate"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdCharCreate">[docs]</a><span class="k">class</span> <span class="nc">CmdCharCreate</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    create a new character</span>
 
@@ -184,7 +181,7 @@
     <span class="c1"># this is used by the parent</span>
     <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="CmdCharCreate.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdCharCreate.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdCharCreate.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdCharCreate.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;create the new character&quot;&quot;&quot;</span>
         <span class="n">account</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
@@ -238,7 +235,7 @@
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdCharDelete"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdCharDelete">[docs]</a><span class="k">class</span> <span class="nc">CmdCharDelete</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdCharDelete"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdCharDelete">[docs]</a><span class="k">class</span> <span class="nc">CmdCharDelete</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    delete a character - this cannot be undone!</span>
 
@@ -252,7 +249,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:pperm(Player)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;General&quot;</span>
 
-<div class="viewcode-block" id="CmdCharDelete.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdCharDelete.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdCharDelete.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdCharDelete.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;delete the character&quot;&quot;&quot;</span>
         <span class="n">account</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span>
 
@@ -309,7 +306,7 @@
             <span class="n">get_input</span><span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="n">prompt</span> <span class="o">%</span> <span class="n">match</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">_callback</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdIC"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdIC">[docs]</a><span class="k">class</span> <span class="nc">CmdIC</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdIC"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdIC">[docs]</a><span class="k">class</span> <span class="nc">CmdIC</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    control an object you have permission to puppet</span>
 
@@ -336,7 +333,7 @@
     <span class="c1"># this is used by the parent</span>
     <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="CmdIC.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdIC.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdIC.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdIC.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Main puppet method</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -382,7 +379,7 @@
 
 <span class="c1"># note that this is inheriting from MuxAccountLookCommand,</span>
 <span class="c1"># and as such has the .playable property.</span>
-<div class="viewcode-block" id="CmdOOC"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdOOC">[docs]</a><span class="k">class</span> <span class="nc">CmdOOC</span><span class="p">(</span><span class="n">MuxAccountLookCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdOOC"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdOOC">[docs]</a><span class="k">class</span> <span class="nc">CmdOOC</span><span class="p">(</span><span class="n">MuxAccountLookCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    stop puppeting and go ooc</span>
 
@@ -402,7 +399,7 @@
     <span class="c1"># this is used by the parent</span>
     <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="CmdOOC.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdOOC.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdOOC.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdOOC.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Implement function&quot;&quot;&quot;</span>
 
         <span class="n">account</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span>
@@ -432,7 +429,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|rCould not unpuppet from |c</span><span class="si">%s</span><span class="s2">|n: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">old_char</span><span class="p">,</span> <span class="n">exc</span><span class="p">))</span></div></div>
 
 
-<div class="viewcode-block" id="CmdSessions"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdSessions">[docs]</a><span class="k">class</span> <span class="nc">CmdSessions</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSessions"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdSessions">[docs]</a><span class="k">class</span> <span class="nc">CmdSessions</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    check your connected session(s)</span>
 
@@ -450,7 +447,7 @@
     <span class="c1"># this is used by the parent</span>
     <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="CmdSessions.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdSessions.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSessions.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdSessions.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Implement function&quot;&quot;&quot;</span>
         <span class="n">account</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span>
         <span class="n">sessions</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
@@ -469,7 +466,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|wYour current session(s):|n</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">table</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdWho"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdWho">[docs]</a><span class="k">class</span> <span class="nc">CmdWho</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdWho"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdWho">[docs]</a><span class="k">class</span> <span class="nc">CmdWho</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    list who is currently online</span>
 
@@ -488,7 +485,7 @@
     <span class="c1"># this is used by the parent</span>
     <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="CmdWho.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdWho.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdWho.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdWho.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all connected accounts by polling session.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -557,7 +554,7 @@
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdOption"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdOption">[docs]</a><span class="k">class</span> <span class="nc">CmdOption</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdOption"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdOption">[docs]</a><span class="k">class</span> <span class="nc">CmdOption</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set an account option</span>
 
@@ -583,7 +580,7 @@
     <span class="c1"># this is used by the parent</span>
     <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="CmdOption.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdOption.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdOption.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdOption.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements the command</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -724,7 +721,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">update_flags</span><span class="p">(</span><span class="o">**</span><span class="n">optiondict</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdPassword"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdPassword">[docs]</a><span class="k">class</span> <span class="nc">CmdPassword</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdPassword"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdPassword">[docs]</a><span class="k">class</span> <span class="nc">CmdPassword</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    change your password</span>
 
@@ -740,7 +737,7 @@
     <span class="c1"># this is used by the parent</span>
     <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="CmdPassword.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdPassword.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdPassword.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdPassword.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;hook function.&quot;&quot;&quot;</span>
 
         <span class="n">account</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span>
@@ -769,7 +766,7 @@
             <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdQuit"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdQuit">[docs]</a><span class="k">class</span> <span class="nc">CmdQuit</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdQuit"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdQuit">[docs]</a><span class="k">class</span> <span class="nc">CmdQuit</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    quit the game</span>
 
@@ -790,7 +787,7 @@
     <span class="c1"># this is used by the parent</span>
     <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="CmdQuit.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdQuit.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdQuit.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdQuit.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;hook function&quot;&quot;&quot;</span>
         <span class="n">account</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span>
 
@@ -817,7 +814,7 @@
             <span class="n">account</span><span class="o">.</span><span class="n">disconnect_session_from_account</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdColorTest"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdColorTest">[docs]</a><span class="k">class</span> <span class="nc">CmdColorTest</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdColorTest"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdColorTest">[docs]</a><span class="k">class</span> <span class="nc">CmdColorTest</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    testing which colors your client support</span>
 
@@ -846,7 +843,7 @@
     <span class="n">slice_dark_bg</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="o">-</span><span class="mi">8</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># from ANSI_PARSER.ansi_map</span>
     <span class="n">slice_bright_bg</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># from ANSI_PARSER.ansi_xterm256_bright_bg_map</span>
 
-<div class="viewcode-block" id="CmdColorTest.table_format"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdColorTest.table_format">[docs]</a>    <span class="k">def</span> <span class="nf">table_format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdColorTest.table_format"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdColorTest.table_format">[docs]</a>    <span class="k">def</span> <span class="nf">table_format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method to format the ansi/xterm256 tables.</span>
 <span class="sd">        Takes a table of columns [[val,val,...],[val,val,...],...]</span>
@@ -866,7 +863,7 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">ftable</span></div>
 
-<div class="viewcode-block" id="CmdColorTest.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdColorTest.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdColorTest.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdColorTest.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Show color tables&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">):</span>
@@ -946,7 +943,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: color ansi||xterm256&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdQuell"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdQuell">[docs]</a><span class="k">class</span> <span class="nc">CmdQuell</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdQuell"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdQuell">[docs]</a><span class="k">class</span> <span class="nc">CmdQuell</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    use character&#39;s permissions instead of account&#39;s</span>
 
@@ -971,7 +968,7 @@
     <span class="c1"># this is used by the parent</span>
     <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="CmdQuell._recache_locks"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdQuell._recache_locks">[docs]</a>    <span class="k">def</span> <span class="nf">_recache_locks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_recache_locks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Helper method to reset the lockhandler on an already puppeted object&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">:</span>
             <span class="n">char</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">puppet</span>
@@ -980,9 +977,9 @@
                 <span class="c1"># the lock caches (otherwise the superuser status change</span>
                 <span class="c1"># won&#39;t be visible until repuppet)</span>
                 <span class="n">char</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-        <span class="n">account</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span></div>
+        <span class="n">account</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
 
-<div class="viewcode-block" id="CmdQuell.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdQuell.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdQuell.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdQuell.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Perform the command&quot;&quot;&quot;</span>
         <span class="n">account</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span>
         <span class="n">permstr</span> <span class="o">=</span> <span class="p">(</span>
@@ -1016,7 +1013,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_recache_locks</span><span class="p">(</span><span class="n">account</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdStyle"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdStyle">[docs]</a><span class="k">class</span> <span class="nc">CmdStyle</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdStyle"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdStyle">[docs]</a><span class="k">class</span> <span class="nc">CmdStyle</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    In-game style options</span>
 
@@ -1032,13 +1029,13 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;style&quot;</span>
     <span class="n">switch_options</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;clear&quot;</span><span class="p">]</span>
 
-<div class="viewcode-block" id="CmdStyle.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdStyle.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdStyle.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdStyle.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">list_styles</span><span class="p">()</span>
             <span class="k">return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="CmdStyle.list_styles"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdStyle.list_styles">[docs]</a>    <span class="k">def</span> <span class="nf">list_styles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdStyle.list_styles"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdStyle.list_styles">[docs]</a>    <span class="k">def</span> <span class="nf">list_styles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">styled_table</span><span class="p">(</span><span class="s2">&quot;Option&quot;</span><span class="p">,</span> <span class="s2">&quot;Description&quot;</span><span class="p">,</span> <span class="s2">&quot;Type&quot;</span><span class="p">,</span> <span class="s2">&quot;Value&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">78</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">op_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">options_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">op_found</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">op_key</span><span class="p">,</span> <span class="n">return_obj</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1047,7 +1044,7 @@
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">table</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="CmdStyle.set"><a class="viewcode-back" href="../../../../api/evennia.commands.default.html#evennia.commands.default.account.CmdStyle.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdStyle.set"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdStyle.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -1056,6 +1053,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Style </span><span class="si">%s</span><span class="s2"> set to </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">,</span> <span class="n">result</span><span class="p">))</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -1093,17 +1091,15 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.commands.default.account</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.account</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

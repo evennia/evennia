@@ -1,0 +1,905 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>evennia.utils.ansi &#8212; Evennia 0.9.1 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.ansi</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-evennia.utils.ansi">
+<span id="evennia-utils-ansi"></span><h1>evennia.utils.ansi<a class="headerlink" href="#module-evennia.utils.ansi" title="Permalink to this headline">¶</a></h1>
+<p>ANSI - Gives colour to text.</p>
+<p>Use the codes defined in ANSIPARSER in your text
+to apply colour to text according to the ANSI standard.</p>
+<p>Examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;This is |rRed text|n and this is normal again.&quot;</span>
+</pre></div>
+</div>
+<p>Mostly you should not need to call <strong>parse_ansi()</strong> explicitly;
+it is run by Evennia just before returning data to/from the
+user.  Depreciated example forms are available by extending
+the ansi mapping.</p>
+<dl class="py class">
+<dt id="evennia.utils.ansi.ANSIParser">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.ansi.</code><code class="sig-name descname">ANSIParser</code><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIParser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIParser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class that parses ANSI markup
+to ANSI command sequences</p>
+<p>We also allow to escape colour codes
+by prepending with a for xterm256,
+an extra | for Merc-style codes</p>
+<dl class="py attribute">
+<dt id="evennia.utils.ansi.ANSIParser.ansi_map">
+<code class="sig-name descname">ansi_map</code><em class="property"> = [('|n', '\x1b[0m'), ('|/', '\r\n'), ('|-', '\t'), ('|_', ' '), ('|*', '\x1b[7m'), ('|^', '\x1b[5m'), ('|u', '\x1b[4m'), ('|r', '\x1b[1m\x1b[31m'), ('|g', '\x1b[1m\x1b[32m'), ('|y', '\x1b[1m\x1b[33m'), ('|b', '\x1b[1m\x1b[34m'), ('|m', '\x1b[1m\x1b[35m'), ('|c', '\x1b[1m\x1b[36m'), ('|w', '\x1b[1m\x1b[37m'), ('|x', '\x1b[1m\x1b[30m'), ('|R', '\x1b[22m\x1b[31m'), ('|G', '\x1b[22m\x1b[32m'), ('|Y', '\x1b[22m\x1b[33m'), ('|B', '\x1b[22m\x1b[34m'), ('|M', '\x1b[22m\x1b[35m'), ('|C', '\x1b[22m\x1b[36m'), ('|W', '\x1b[22m\x1b[37m'), ('|X', '\x1b[22m\x1b[30m'), ('|h', '\x1b[1m'), ('|H', '\x1b[22m'), ('|!R', '\x1b[31m'), ('|!G', '\x1b[32m'), ('|!Y', '\x1b[33m'), ('|!B', '\x1b[34m'), ('|!M', '\x1b[35m'), ('|!C', '\x1b[36m'), ('|!W', '\x1b[37m'), ('|!X', '\x1b[30m'), ('|[R', '\x1b[41m'), ('|[G', '\x1b[42m'), ('|[Y', '\x1b[43m'), ('|[B', '\x1b[44m'), ('|[M', '\x1b[45m'), ('|[C', '\x1b[46m'), ('|[W', '\x1b[47m'), ('|[X', '\x1b[40m')]</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.ansi_map" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.ansi.ANSIParser.ansi_xterm256_bright_bg_map">
+<code class="sig-name descname">ansi_xterm256_bright_bg_map</code><em class="property"> = [('|[r', '|[500'), ('|[g', '|[050'), ('|[y', '|[550'), ('|[b', '|[005'), ('|[m', '|[505'), ('|[c', '|[055'), ('|[w', '|[555'), ('|[x', '|[222')]</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.ansi_xterm256_bright_bg_map" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.ansi.ANSIParser.xterm256_fg">
+<code class="sig-name descname">xterm256_fg</code><em class="property"> = ['\\|([0-5])([0-5])([0-5])']</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.xterm256_fg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.ansi.ANSIParser.xterm256_bg">
+<code class="sig-name descname">xterm256_bg</code><em class="property"> = ['\\|\\[([0-5])([0-5])([0-5])']</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.xterm256_bg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.ansi.ANSIParser.xterm256_gfg">
+<code class="sig-name descname">xterm256_gfg</code><em class="property"> = ['\\|=([a-z])']</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.xterm256_gfg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.ansi.ANSIParser.xterm256_gbg">
+<code class="sig-name descname">xterm256_gbg</code><em class="property"> = ['\\|\\[=([a-z])']</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.xterm256_gbg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.ansi.ANSIParser.mxp_re">
+<code class="sig-name descname">mxp_re</code><em class="property"> = '\\|lc(.*?)\\|lt(.*?)\\|le'</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.mxp_re" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.ansi.ANSIParser.brightbg_sub">
+<code class="sig-name descname">brightbg_sub</code><em class="property"> = re.compile('(?&lt;!\\|)\\|\\[r|(?&lt;!\\|)\\|\\[g|(?&lt;!\\|)\\|\\[y|(?&lt;!\\|)\\|\\[b|(?&lt;!\\|)\\|\\[m|(?&lt;!\\|)\\|\\[c|(?&lt;!\\|)\\|\\[w|(?&lt;!\\|)\\|\\[x', re.DOTALL)</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.brightbg_sub" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.ansi.ANSIParser.xterm256_fg_sub">
+<code class="sig-name descname">xterm256_fg_sub</code><em class="property"> = re.compile('\\|([0-5])([0-5])([0-5])', re.DOTALL)</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.xterm256_fg_sub" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.ansi.ANSIParser.xterm256_bg_sub">
+<code class="sig-name descname">xterm256_bg_sub</code><em class="property"> = re.compile('\\|\\[([0-5])([0-5])([0-5])', re.DOTALL)</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.xterm256_bg_sub" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.ansi.ANSIParser.xterm256_gfg_sub">
+<code class="sig-name descname">xterm256_gfg_sub</code><em class="property"> = re.compile('\\|=([a-z])', re.DOTALL)</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.xterm256_gfg_sub" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.ansi.ANSIParser.xterm256_gbg_sub">
+<code class="sig-name descname">xterm256_gbg_sub</code><em class="property"> = re.compile('\\|\\[=([a-z])', re.DOTALL)</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.xterm256_gbg_sub" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.ansi.ANSIParser.ansi_sub">
+<code class="sig-name descname">ansi_sub</code><em class="property"> = re.compile('\\|n|\\|/|\\|\\-|\\|_|\\|\\*|\\|\\^|\\|u|\\|r|\\|g|\\|y|\\|b|\\|m|\\|c|\\|w|\\|x|\\|R|\\|G|\\|Y|\\|B|\\|M|\\|C|\\|W|\\|X|\\|h|\\|H|\\|!R|\\|!G|\\|!Y|\\|!B|\\|!M|\\|!C|\\|!W|\\|!X|\\|\\[R|\\|\\[G|\\|\, re.DOTALL)</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.ansi_sub" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.ansi.ANSIParser.mxp_sub">
+<code class="sig-name descname">mxp_sub</code><em class="property"> = re.compile('\\|lc(.*?)\\|lt(.*?)\\|le', re.DOTALL)</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.mxp_sub" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.ansi.ANSIParser.ansi_map_dict">
+<code class="sig-name descname">ansi_map_dict</code><em class="property"> = {'|!B': '\x1b[34m', '|!C': '\x1b[36m', '|!G': '\x1b[32m', '|!M': '\x1b[35m', '|!R': '\x1b[31m', '|!W': '\x1b[37m', '|!X': '\x1b[30m', '|!Y': '\x1b[33m', '|*': '\x1b[7m', '|-': '\t', '|/': '\r\n', '|B': '\x1b[22m\x1b[34m', '|C': '\x1b[22m\x1b[36m', '|G': '\x1b[22m\x1b[32m', '|H': '\x1b[22m', '|M': '\x1b[22m\x1b[35m', '|R': '\x1b[22m\x1b[31m', '|W': '\x1b[22m\x1b[37m', '|X': '\x1b[22m\x1b[30m', '|Y': '\x1b[22m\x1b[33m', '|[B': '\x1b[44m', '|[C': '\x1b[46m', '|[G': '\x1b[42m', '|[M': '\x1b[45m', '|[R': '\x1b[41m', '|[W': '\x1b[47m', '|[X': '\x1b[40m', '|[Y': '\x1b[43m', '|^': '\x1b[5m', '|_': ' ', '|b': '\x1b[1m\x1b[34m', '|c': '\x1b[1m\x1b[36m', '|g': '\x1b[1m\x1b[32m', '|h': '\x1b[1m', '|m': '\x1b[1m\x1b[35m', '|n': '\x1b[0m', '|r': '\x1b[1m\x1b[31m', '|u': '\x1b[4m', '|w': '\x1b[1m\x1b[37m', '|x': '\x1b[1m\x1b[30m', '|y': '\x1b[1m\x1b[33m'}</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.ansi_map_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.ansi.ANSIParser.ansi_xterm256_bright_bg_map_dict">
+<code class="sig-name descname">ansi_xterm256_bright_bg_map_dict</code><em class="property"> = {'|[b': '|[005', '|[c': '|[055', '|[g': '|[050', '|[m': '|[505', '|[r': '|[500', '|[w': '|[555', '|[x': '|[222', '|[y': '|[550'}</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.ansi_xterm256_bright_bg_map_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.ansi.ANSIParser.ansi_re">
+<code class="sig-name descname">ansi_re</code><em class="property"> = '\\033\\[[0-9;]+m'</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.ansi_re" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.ansi.ANSIParser.ansi_regex">
+<code class="sig-name descname">ansi_regex</code><em class="property"> = re.compile('\\033\\[[0-9;]+m')</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.ansi_regex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.ansi.ANSIParser.ansi_escapes">
+<code class="sig-name descname">ansi_escapes</code><em class="property"> = re.compile('({{|\\\\|\\|\\|)', re.DOTALL)</em><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.ansi_escapes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIParser.sub_ansi">
+<code class="sig-name descname">sub_ansi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ansimatch</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIParser.sub_ansi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.sub_ansi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replacer used by <strong>re.sub</strong> to replace ANSI
+markers with correct ANSI sequences</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ansimatch</strong> (<em>re.matchobject</em>) – The match.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>processed (str)</em> – The processed match string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIParser.sub_brightbg">
+<code class="sig-name descname">sub_brightbg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ansimatch</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIParser.sub_brightbg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.sub_brightbg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replacer used by <strong>re.sub</strong> to replace ANSI
+bright background markers with Xterm256 replacement</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ansimatch</strong> (<em>re.matchobject</em>) – The match.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>processed (str)</em> – The processed match string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIParser.sub_xterm256">
+<code class="sig-name descname">sub_xterm256</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rgbmatch</span></em>, <em class="sig-param"><span class="n">use_xterm256</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">color_type</span><span class="o">=</span><span class="default_value">'fg'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIParser.sub_xterm256"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.sub_xterm256" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a replacer method called by <strong>re.sub</strong> with the matched
+tag. It must return the correct ansi sequence.</p>
+<p>It checks <strong>self.do_xterm256</strong> to determine if conversion
+to standard ANSI should be done or not.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rgbmatch</strong> (<em>re.matchobject</em>) – The match.</p></li>
+<li><p><strong>use_xterm256</strong> (<em>bool</em><em>, </em><em>optional</em>) – Don’t convert 256-colors to 16.</p></li>
+<li><p><strong>color_type</strong> (<em>str</em>) – One of ‘fg’, ‘bg’, ‘gfg’, ‘gbg’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>processed (str)</em> – The processed match string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIParser.strip_raw_codes">
+<code class="sig-name descname">strip_raw_codes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIParser.strip_raw_codes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.strip_raw_codes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Strips raw ANSI codes from a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>string</strong> (<em>str</em>) – The string to strip.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>string (str)</em> – The processed string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIParser.strip_mxp">
+<code class="sig-name descname">strip_mxp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIParser.strip_mxp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.strip_mxp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Strips all MXP codes from a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>string</strong> (<em>str</em>) – The string to strip.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>string (str)</em> – The processed string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIParser.parse_ansi">
+<code class="sig-name descname">parse_ansi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em>, <em class="sig-param"><span class="n">strip_ansi</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">xterm256</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">mxp</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIParser.parse_ansi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIParser.parse_ansi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses a string, subbing color codes according to the stored
+mapping.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> (<em>str</em>) – The string to parse.</p></li>
+<li><p><strong>strip_ansi</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Strip all found ansi markup.</p></li>
+<li><p><strong>xterm256</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If actually using xterm256 or if
+these values should be converted to 16-color ANSI.</p></li>
+<li><p><strong>mxp</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Parse MXP commands in string.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>string (str)</em> – The parsed string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.ansi.parse_ansi">
+<code class="sig-prename descclassname">evennia.utils.ansi.</code><code class="sig-name descname">parse_ansi</code><span class="sig-paren">(</span><em class="sig-param">string</em>, <em class="sig-param">strip_ansi=False</em>, <em class="sig-param">parser=&lt;evennia.utils.ansi.ANSIParser object&gt;</em>, <em class="sig-param">xterm256=False</em>, <em class="sig-param">mxp=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#parse_ansi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.parse_ansi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses a string, subbing color codes as needed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> (<em>str</em>) – The string to parse.</p></li>
+<li><p><strong>strip_ansi</strong> (<em>bool</em><em>, </em><em>optional</em>) – Strip all ANSI sequences.</p></li>
+<li><p><strong>parser</strong> (<em>ansi.AnsiParser</em><em>, </em><em>optional</em>) – A parser instance to use.</p></li>
+<li><p><strong>xterm256</strong> (<em>bool</em><em>, </em><em>optional</em>) – Support xterm256 or not.</p></li>
+<li><p><strong>mxp</strong> (<em>bool</em><em>, </em><em>optional</em>) – Support MXP markup or not.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>string (str)</em> – The parsed string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.ansi.strip_ansi">
+<code class="sig-prename descclassname">evennia.utils.ansi.</code><code class="sig-name descname">strip_ansi</code><span class="sig-paren">(</span><em class="sig-param">string</em>, <em class="sig-param">parser=&lt;evennia.utils.ansi.ANSIParser object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#strip_ansi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.strip_ansi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Strip all ansi from the string. This handles the Evennia-specific
+markup.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> (<em>str</em>) – The string to strip.</p></li>
+<li><p><strong>parser</strong> (<em>ansi.AnsiParser</em><em>, </em><em>optional</em>) – The parser to use.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>string (str)</em> – The stripped string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.ansi.strip_raw_ansi">
+<code class="sig-prename descclassname">evennia.utils.ansi.</code><code class="sig-name descname">strip_raw_ansi</code><span class="sig-paren">(</span><em class="sig-param">string</em>, <em class="sig-param">parser=&lt;evennia.utils.ansi.ANSIParser object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#strip_raw_ansi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.strip_raw_ansi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove raw ansi codes from string. This assumes pure
+ANSI-bytecodes in the string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> (<em>str</em>) – The string to parse.</p></li>
+<li><p><strong>parser</strong> (<em>bool</em><em>, </em><em>optional</em>) – The parser to use.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>string (str)</em> – the stripped string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.ansi.raw">
+<code class="sig-prename descclassname">evennia.utils.ansi.</code><code class="sig-name descname">raw</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#raw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Escapes a string into a form which won’t be colorized by the ansi
+parser.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>string (str)</em> – The raw, escaped string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.ansi.ANSIMeta">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.ansi.</code><code class="sig-name descname">ANSIMeta</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIMeta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIMeta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></p>
+<p>Many functions on ANSIString are just light wrappers around the string
+base class. We apply them here, as part of the classes construction.</p>
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIMeta.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIMeta.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIMeta.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.ansi.ANSIString">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.ansi.</code><code class="sig-name descname">ANSIString</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+<p>Unicode-like object that is aware of ANSI codes.</p>
+<p>This class can be used nearly identically to strings, in that it will
+report string length, handle slices, etc, much like a string object
+would. The methods should be used identically as string methods are.</p>
+<p>There is at least one exception to this (and there may be more, though
+they have not come up yet). When using ‘’.join() or u’’.join() on an
+ANSIString, color information will get lost. You must use
+ANSIString(‘’).join() to preserve color information.</p>
+<p>This implementation isn’t perfectly clean, as it doesn’t really have an
+understanding of what the codes mean in order to eliminate
+redundant characters– though cleaning up the strings might end up being
+inefficient and slow without some C code when dealing with larger values.
+Such enhancements could be made as an enhancement to ANSI_PARSER
+if needed, however.</p>
+<p>If one is going to use ANSIString, one should generally avoid converting
+away from it until one is about to send information on the wire. This is
+because escape sequences in the string may otherwise already be decoded,
+and taken literally the second time around.</p>
+<dl class="py attribute">
+<dt id="evennia.utils.ansi.ANSIString.re_format">
+<code class="sig-name descname">re_format</code><em class="property"> = re.compile('(?i)(?P&lt;just&gt;(?P&lt;fill&gt;.)?(?P&lt;align&gt;\\&lt;|\\&gt;|\\=|\\^))?(?P&lt;sign&gt;\\+|\\-| )?(?P&lt;alt&gt;\\#)?(?P&lt;zero&gt;0)?(?P&lt;width&gt;\\d+)?(?P&lt;grouping&gt;\\_|\\,)?(?:\\.(?P&lt;precision&gt;\\d+))?(?P&lt;type&gt;b|c|d|e|E|f|F|g|G|n|o|s|x|X, re.IGNORECASE)</em><a class="headerlink" href="#evennia.utils.ansi.ANSIString.re_format" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">_</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIString.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIString.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>When the ANSIString is first initialized, a few internal variables
+have to be set.</p>
+<p>The first is the parser. It is possible to replace Evennia’s standard
+ANSI parser with one of your own syntax if you wish, so long as it
+implements the same interface.</p>
+<p>The second is the _raw_string. This is the original “dumb” string
+with ansi escapes that ANSIString represents.</p>
+<p>The third thing to set is the _clean_string. This is a string that is
+devoid of all ANSI Escapes.</p>
+<p>Finally, _code_indexes and _char_indexes are defined. These are lookup
+tables for which characters in the raw string are related to ANSI
+escapes, and which are for the readable text.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.clean">
+<code class="sig-name descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIString.clean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIString.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a string object <em>without</em> the ANSI escapes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>clean_string (str)</em> – A unicode object with no ANSI escapes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.raw">
+<code class="sig-name descname">raw</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIString.raw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIString.raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a string object with the ANSI escapes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>raw (str)</em> – A unicode object <em>with</em> the raw ANSI escape sequences.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.partition">
+<code class="sig-name descname">partition</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sep</span></em>, <em class="sig-param"><span class="n">reverse</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIString.partition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIString.partition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Splits once into three sections (with the separator being the middle section)</p>
+<p>We use the same techniques we used in split() to make sure each are
+colored.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sep</strong> (<em>str</em>) – The separator to split the string on.</p></li>
+<li><p><strong>reverse</strong> (<em>boolean</em>) – Whether to split the string on the last
+occurrence of the separator rather than the first.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>ANSIString</em> – The part of the string before the separator
+ANSIString: The separator itself
+ANSIString: The part of the string after the separator.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.split">
+<code class="sig-name descname">split</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">by</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">maxsplit</span><span class="o">=</span><span class="default_value">- 1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIString.split"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIString.split" title="Permalink to this definition">¶</a></dt>
+<dd><p>Splits a string based on a separator.</p>
+<p>Stolen from PyPy’s pure Python string implementation, tweaked for
+ANSIString.</p>
+<p>PyPy is distributed under the MIT licence.
+<a class="reference external" href="http://opensource.org/licenses/MIT">http://opensource.org/licenses/MIT</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>by</strong> (<em>str</em>) – A string to search for which will be used to split
+the string. For instance, ‘,’ for ‘Hello,world’ would
+result in [‘Hello’, ‘world’]</p></li>
+<li><p><strong>maxsplit</strong> (<em>int</em>) – The maximum number of times to split the string.
+For example, a maxsplit of 2 with a by of ‘,’ on the string
+‘Hello,world,test,string’ would result in
+[‘Hello’, ‘world’, ‘test,string’]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>result (list of ANSIStrings)</em> –</p>
+<dl class="simple">
+<dt>A list of ANSIStrings derived from</dt><dd><p>this string.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.rsplit">
+<code class="sig-name descname">rsplit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">by</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">maxsplit</span><span class="o">=</span><span class="default_value">- 1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIString.rsplit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIString.rsplit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Like split, but starts from the end of the string rather than the
+beginning.</p>
+<p>Stolen from PyPy’s pure Python string implementation, tweaked for
+ANSIString.</p>
+<p>PyPy is distributed under the MIT licence.
+<a class="reference external" href="http://opensource.org/licenses/MIT">http://opensource.org/licenses/MIT</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>by</strong> (<em>str</em>) – A string to search for which will be used to split
+the string. For instance, ‘,’ for ‘Hello,world’ would
+result in [‘Hello’, ‘world’]</p></li>
+<li><p><strong>maxsplit</strong> (<em>int</em>) – The maximum number of times to split the string.
+For example, a maxsplit of 2 with a by of ‘,’ on the string
+‘Hello,world,test,string’ would result in
+[‘Hello,world’, ‘test’, ‘string’]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>result (list of ANSIStrings)</em> –</p>
+<dl class="simple">
+<dt>A list of ANSIStrings derived from</dt><dd><p>this string.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.strip">
+<code class="sig-name descname">strip</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">chars</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIString.strip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIString.strip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Strip from both ends, taking ANSI markers into account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>chars</strong> (<em>str</em><em>, </em><em>optional</em>) – A string containing individual characters
+to strip off of both ends of the string. By default, any blank
+spaces are trimmed.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>result (ANSIString)</em> –</p>
+<dl class="simple">
+<dt>A new ANSIString with the ends trimmed of the</dt><dd><p>relevant characters.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.lstrip">
+<code class="sig-name descname">lstrip</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">chars</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIString.lstrip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIString.lstrip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Strip from the left, taking ANSI markers into account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>chars</strong> (<em>str</em><em>, </em><em>optional</em>) – A string containing individual characters
+to strip off of the left end of the string. By default, any
+blank spaces are trimmed.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>result (ANSIString)</em> –</p>
+<dl class="simple">
+<dt>A new ANSIString with the left end trimmed of</dt><dd><p>the relevant characters.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.capitalize">
+<code class="sig-name descname">capitalize</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.ansi.ANSIString.capitalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a capitalized version of the string.</p>
+<p>More specifically, make the first character have upper case and the rest lower
+case.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.count">
+<code class="sig-name descname">count</code><span class="sig-paren">(</span><em class="sig-param">sub</em><span class="optional">[</span>, <em class="sig-param">start</em><span class="optional">[</span>, <em class="sig-param">end</em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#evennia.utils.ansi.ANSIString.count" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of non-overlapping occurrences of substring sub in
+string S[start:end].  Optional arguments start and end are
+interpreted as in slice notation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.decode">
+<code class="sig-name descname">decode</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.ansi.ANSIString.decode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.encode">
+<code class="sig-name descname">encode</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.ansi.ANSIString.encode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encode the string using the codec registered for encoding.</p>
+<dl class="simple">
+<dt>encoding</dt><dd><p>The encoding in which to encode the string.</p>
+</dd>
+<dt>errors</dt><dd><p>The error handling scheme to use for encoding errors.
+The default is ‘strict’ meaning that encoding errors raise a
+UnicodeEncodeError.  Other possible values are ‘ignore’, ‘replace’ and
+‘xmlcharrefreplace’ as well as any other name registered with
+codecs.register_error that can handle UnicodeEncodeErrors.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.endswith">
+<code class="sig-name descname">endswith</code><span class="sig-paren">(</span><em class="sig-param">suffix</em><span class="optional">[</span>, <em class="sig-param">start</em><span class="optional">[</span>, <em class="sig-param">end</em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#evennia.utils.ansi.ANSIString.endswith" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if S ends with the specified suffix, False otherwise.
+With optional start, test S beginning at that position.
+With optional end, stop comparing S at that position.
+suffix can also be a tuple of strings to try.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.expandtabs">
+<code class="sig-name descname">expandtabs</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.ansi.ANSIString.expandtabs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy where all tab characters are expanded using spaces.</p>
+<p>If tabsize is not given, a tab size of 8 characters is assumed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.find">
+<code class="sig-name descname">find</code><span class="sig-paren">(</span><em class="sig-param">sub</em><span class="optional">[</span>, <em class="sig-param">start</em><span class="optional">[</span>, <em class="sig-param">end</em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#evennia.utils.ansi.ANSIString.find" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the lowest index in S where substring sub is found,
+such that sub is contained within S[start:end].  Optional
+arguments start and end are interpreted as in slice notation.</p>
+<p>Return -1 on failure.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.format">
+<code class="sig-name descname">format</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#evennia.utils.ansi.ANSIString.format" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a formatted version of S, using substitutions from args and kwargs.
+The substitutions are identified by braces (‘{‘ and ‘}’).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.index">
+<code class="sig-name descname">index</code><span class="sig-paren">(</span><em class="sig-param">sub</em><span class="optional">[</span>, <em class="sig-param">start</em><span class="optional">[</span>, <em class="sig-param">end</em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#evennia.utils.ansi.ANSIString.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the lowest index in S where substring sub is found,
+such that sub is contained within S[start:end].  Optional
+arguments start and end are interpreted as in slice notation.</p>
+<p>Raises ValueError when the substring is not found.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.isalnum">
+<code class="sig-name descname">isalnum</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.ansi.ANSIString.isalnum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the string is an alpha-numeric string, False otherwise.</p>
+<p>A string is alpha-numeric if all characters in the string are alpha-numeric and
+there is at least one character in the string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.isalpha">
+<code class="sig-name descname">isalpha</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.ansi.ANSIString.isalpha" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the string is an alphabetic string, False otherwise.</p>
+<p>A string is alphabetic if all characters in the string are alphabetic and there
+is at least one character in the string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.isdigit">
+<code class="sig-name descname">isdigit</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.ansi.ANSIString.isdigit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the string is a digit string, False otherwise.</p>
+<p>A string is a digit string if all characters in the string are digits and there
+is at least one character in the string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.islower">
+<code class="sig-name descname">islower</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.ansi.ANSIString.islower" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the string is a lowercase string, False otherwise.</p>
+<p>A string is lowercase if all cased characters in the string are lowercase and
+there is at least one cased character in the string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.isspace">
+<code class="sig-name descname">isspace</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.ansi.ANSIString.isspace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the string is a whitespace string, False otherwise.</p>
+<p>A string is whitespace if all characters in the string are whitespace and there
+is at least one character in the string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.istitle">
+<code class="sig-name descname">istitle</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.ansi.ANSIString.istitle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the string is a title-cased string, False otherwise.</p>
+<p>In a title-cased string, upper- and title-case characters may only
+follow uncased characters and lowercase characters only cased ones.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.isupper">
+<code class="sig-name descname">isupper</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.ansi.ANSIString.isupper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the string is an uppercase string, False otherwise.</p>
+<p>A string is uppercase if all cased characters in the string are uppercase and
+there is at least one cased character in the string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.lower">
+<code class="sig-name descname">lower</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.ansi.ANSIString.lower" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy of the string converted to lowercase.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.replace">
+<code class="sig-name descname">replace</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.ansi.ANSIString.replace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy with all occurrences of substring old replaced by new.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>count</dt><dd><p>Maximum number of occurrences to replace.
+-1 (the default value) means replace all occurrences.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>If the optional argument count is given, only the first count occurrences are
+replaced.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.rfind">
+<code class="sig-name descname">rfind</code><span class="sig-paren">(</span><em class="sig-param">sub</em><span class="optional">[</span>, <em class="sig-param">start</em><span class="optional">[</span>, <em class="sig-param">end</em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#evennia.utils.ansi.ANSIString.rfind" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the highest index in S where substring sub is found,
+such that sub is contained within S[start:end].  Optional
+arguments start and end are interpreted as in slice notation.</p>
+<p>Return -1 on failure.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.rindex">
+<code class="sig-name descname">rindex</code><span class="sig-paren">(</span><em class="sig-param">sub</em><span class="optional">[</span>, <em class="sig-param">start</em><span class="optional">[</span>, <em class="sig-param">end</em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#evennia.utils.ansi.ANSIString.rindex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the highest index in S where substring sub is found,
+such that sub is contained within S[start:end].  Optional
+arguments start and end are interpreted as in slice notation.</p>
+<p>Raises ValueError when the substring is not found.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.rstrip">
+<code class="sig-name descname">rstrip</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">chars</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIString.rstrip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIString.rstrip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Strip from the right, taking ANSI markers into account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>chars</strong> (<em>str</em><em>, </em><em>optional</em>) – A string containing individual characters
+to strip off of the right end of the string. By default, any
+blank spaces are trimmed.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>result (ANSIString)</em> –</p>
+<dl class="simple">
+<dt>A new ANSIString with the right end trimmed of</dt><dd><p>the relevant characters.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.startswith">
+<code class="sig-name descname">startswith</code><span class="sig-paren">(</span><em class="sig-param">prefix</em><span class="optional">[</span>, <em class="sig-param">start</em><span class="optional">[</span>, <em class="sig-param">end</em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#evennia.utils.ansi.ANSIString.startswith" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if S starts with the specified prefix, False otherwise.
+With optional start, test S beginning at that position.
+With optional end, stop comparing S at that position.
+prefix can also be a tuple of strings to try.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.swapcase">
+<code class="sig-name descname">swapcase</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.ansi.ANSIString.swapcase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert uppercase characters to lowercase and lowercase characters to uppercase.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.translate">
+<code class="sig-name descname">translate</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.ansi.ANSIString.translate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace each character in the string using the given translation table.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>table</dt><dd><p>Translation table, which must be a mapping of Unicode ordinals to
+Unicode ordinals, strings, or None.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>The table must implement lookup/indexing via __getitem__, for instance a
+dictionary or list.  If this operation raises LookupError, the character is
+left untouched.  Characters mapped to None are deleted.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.upper">
+<code class="sig-name descname">upper</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.ansi.ANSIString.upper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy of the string converted to uppercase.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.join">
+<code class="sig-name descname">join</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">iterable</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIString.join"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIString.join" title="Permalink to this definition">¶</a></dt>
+<dd><p>Joins together strings in an iterable, using this string between each
+one.</p>
+<p>NOTE: This should always be used for joining strings when ANSIStrings
+are involved. Otherwise color information will be discarded by python,
+due to details in the C implementation of strings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>iterable</strong> (<em>list of strings</em>) – A list of strings to join together</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>ANSIString</em> –</p>
+<dl class="simple">
+<dt>A single string with all of the iterable’s</dt><dd><p>contents concatenated, with this string between each.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ANSIString</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;up&#39;</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;down&#39;</span><span class="p">])</span>
+<span class="go">ANSIString(&#39;up, right, left, down&#39;)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.center">
+<code class="sig-name descname">center</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">78</span></em>, <em class="sig-param"><span class="n">fillchar</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIString.center"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIString.center" title="Permalink to this definition">¶</a></dt>
+<dd><p>Center some text with some spaces padding both sides.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>width</strong> (<em>int</em>) – The target width of the output string.</p></li>
+<li><p><strong>fillchar</strong> (<em>str</em>) – A single character string to pad the output string
+with.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>result (ANSIString)</em> – A string padded on both ends with fillchar.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.ljust">
+<code class="sig-name descname">ljust</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">78</span></em>, <em class="sig-param"><span class="n">fillchar</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIString.ljust"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIString.ljust" title="Permalink to this definition">¶</a></dt>
+<dd><p>Left justify some text.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>width</strong> (<em>int</em>) – The target width of the output string.</p></li>
+<li><p><strong>fillchar</strong> (<em>str</em>) – A single character string to pad the output string
+with.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>result (ANSIString)</em> – A string padded on the right with fillchar.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.ansi.ANSIString.rjust">
+<code class="sig-name descname">rjust</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">78</span></em>, <em class="sig-param"><span class="n">fillchar</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/ansi.html#ANSIString.rjust"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.ansi.ANSIString.rjust" title="Permalink to this definition">¶</a></dt>
+<dd><p>Right justify some text.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>width</strong> (<em>int</em>) – The target width of the output string.</p></li>
+<li><p><strong>fillchar</strong> (<em>str</em>) – A single character string to pad the output string
+with.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>result (ANSIString)</em> – A string padded on the left with fillchar.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.utils.ansi.rst.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../1.0-dev/api/evennia.utils.ansi.html">1.0-dev (develop branch)</a></li>
+  <li><a href="evennia.utils.ansi.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.ansi</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+    </div>
+  </body>
+</html>

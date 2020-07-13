@@ -21,7 +21,7 @@ instance.
 ## Coordinates as tags
 
 The first concept might be the most surprising at first glance: we will create coordinates as
-[tags](Tags).
+[tags](./Tags).
 
 > Why not attributes, wouldn't that be easier?
 

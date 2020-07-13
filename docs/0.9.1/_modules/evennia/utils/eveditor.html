@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.utils.eveditor &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.utils.eveditor</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.eveditor</a></li> 
       </ul>
     </div>  
 
@@ -45,45 +42,42 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">EvEditor (Evennia Line Editor)</span>
 
-<span class="sd">This implements an advanced line editor for editing longer texts</span>
-<span class="sd">in-game. The editor mimics the command mechanisms of the &quot;VI&quot; editor</span>
-<span class="sd">(a famous line-by-line editor) as far as reasonable.</span>
+<span class="sd">This implements an advanced line editor for editing longer texts in-game. The</span>
+<span class="sd">editor mimics the command mechanisms of the &quot;VI&quot; editor (a famous line-by-line</span>
+<span class="sd">editor) as far as reasonable.</span>
 
 <span class="sd">Features of the editor:</span>
 
-<span class="sd"> - undo/redo.</span>
-<span class="sd"> - edit/replace on any line of the buffer.</span>
-<span class="sd"> - search&amp;replace text anywhere in buffer.</span>
-<span class="sd"> - formatting of buffer, or selection, to certain width + indentations.</span>
-<span class="sd"> - allow to echo the input or not, depending on your client.</span>
+<span class="sd">- undo/redo.</span>
+<span class="sd">- edit/replace on any line of the buffer.</span>
+<span class="sd">- search&amp;replace text anywhere in buffer.</span>
+<span class="sd">- formatting of buffer, or selection, to certain width + indentations.</span>
+<span class="sd">- allow to echo the input or not, depending on your client.</span>
+<span class="sd">- in-built help</span>
 
-<span class="sd">To use the editor, just import EvEditor from this module</span>
-<span class="sd">and initialize it:</span>
+<span class="sd">To use the editor, just import EvEditor from this module and initialize it:</span>
 
-<span class="sd">    from evennia.utils.eveditor import EvEditor</span>
+<span class="sd">```python</span>
+<span class="sd">from evennia.utils.eveditor import EvEditor</span>
 
-<span class="sd">    EvEditor(caller, loadfunc=None, savefunc=None, quitfunc=None, key=&quot;&quot;, persistent=True)</span>
+<span class="sd"># set up an editor to edit the caller&#39;s &#39;desc&#39; Attribute</span>
+<span class="sd">def _loadfunc(caller):</span>
+<span class="sd">    return caller.db.desc</span>
 
-<span class="sd"> - caller is the user of the editor, the one to see all feedback.</span>
-<span class="sd"> - loadfunc(caller) is called when the editor is first launched; the</span>
-<span class="sd">   return from this function is loaded as the starting buffer in the</span>
-<span class="sd">   editor.</span>
-<span class="sd"> - safefunc(caller, buffer) is called with the current buffer when</span>
-<span class="sd">   saving in the editor. The function should return True/False depending</span>
-<span class="sd">   on if the saving was successful or not.</span>
-<span class="sd"> - quitfunc(caller) is called when the editor exits. If this is given,</span>
-<span class="sd">   no automatic quit messages will be given.</span>
-<span class="sd"> - key is an optional identifier for the editing session, to be</span>
-<span class="sd">   displayed in the editor.</span>
-<span class="sd"> - persistent means the editor state will be saved to the database making it</span>
-<span class="sd">   survive a server reload. Note that using this mode, the load- save-</span>
-<span class="sd">   and quit-funcs must all be possible to pickle - notable unusable</span>
-<span class="sd">   callables are class methods and functions defined inside other</span>
-<span class="sd">   functions. With persistent=False, no such restriction exists.</span>
-<span class="sd"> - code set to True activates features on the EvEditor to enter Python code.</span>
+<span class="sd">def _savefunc(caller, buffer):</span>
+<span class="sd">    caller.db.desc = buffer.strip()</span>
+<span class="sd">    return True</span>
 
-<span class="sd">In addition, the EvEditor can be used to enter Python source code,</span>
-<span class="sd">and offers basic handling of indentation.</span>
+<span class="sd">def _quitfunc(caller):</span>
+<span class="sd">    caller.msg(&quot;Custom quit message&quot;)</span>
+
+<span class="sd"># start the editor</span>
+<span class="sd">EvEditor(caller, loadfunc=None, savefunc=None, quitfunc=None, key=&quot;&quot;,</span>
+<span class="sd">         persistent=True, code=False)</span>
+<span class="sd">```</span>
+
+<span class="sd">The editor can also be used to format Python code and be made to</span>
+<span class="sd">survive a reload. See the `EvEditor` class for more details.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">re</span>
@@ -213,7 +207,7 @@
 <span class="c1"># -------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="CmdSaveYesNo"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.eveditor.CmdSaveYesNo">[docs]</a><span class="k">class</span> <span class="nc">CmdSaveYesNo</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSaveYesNo"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.CmdSaveYesNo">[docs]</a><span class="k">class</span> <span class="nc">CmdSaveYesNo</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Save the editor state on quit. This catches</span>
 <span class="sd">    nomatches (defaults to Yes), and avoid saves only if</span>
@@ -225,7 +219,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
     <span class="n">help_cateogory</span> <span class="o">=</span> <span class="s2">&quot;LineEditor&quot;</span>
 
-<div class="viewcode-block" id="CmdSaveYesNo.func"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.eveditor.CmdSaveYesNo.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSaveYesNo.func"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.CmdSaveYesNo.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Implement the yes/no choice.&quot;&quot;&quot;</span>
         <span class="c1"># this is only called from inside the lineeditor</span>
         <span class="c1"># so caller.ndb._lineditor must be set.</span>
@@ -240,14 +234,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_eveditor</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="SaveYesNoCmdSet"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.eveditor.SaveYesNoCmdSet">[docs]</a><span class="k">class</span> <span class="nc">SaveYesNoCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<div class="viewcode-block" id="SaveYesNoCmdSet"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.SaveYesNoCmdSet">[docs]</a><span class="k">class</span> <span class="nc">SaveYesNoCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Stores the yesno question&quot;&quot;&quot;</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;quitsave_yesno&quot;</span>
     <span class="n">priority</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">mergetype</span> <span class="o">=</span> <span class="s2">&quot;Replace&quot;</span>
 
-<div class="viewcode-block" id="SaveYesNoCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.eveditor.SaveYesNoCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SaveYesNoCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.SaveYesNoCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;at cmdset creation&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdSaveYesNo</span><span class="p">())</span></div></div>
 
@@ -259,7 +253,7 @@
 <span class="c1"># -------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="CmdEditorBase"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.eveditor.CmdEditorBase">[docs]</a><span class="k">class</span> <span class="nc">CmdEditorBase</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdEditorBase"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.CmdEditorBase">[docs]</a><span class="k">class</span> <span class="nc">CmdEditorBase</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base parent for editor commands</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -269,18 +263,21 @@
 
     <span class="n">editor</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="CmdEditorBase.parse"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.eveditor.CmdEditorBase.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdEditorBase.parse"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.CmdEditorBase.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Handles pre-parsing</span>
+<span class="sd">        Handles pre-parsing. Editor commands are on the form</span>
 
-<span class="sd">        Editor commands are on the form</span>
+<span class="sd">        ::</span>
+
 <span class="sd">            :cmd [li] [w] [txt]</span>
 
 <span class="sd">        Where all arguments are optional.</span>
-<span class="sd">            li  - line number (int), starting from 1. This could also</span>
-<span class="sd">                  be a range given as &lt;l&gt;:&lt;l&gt;.</span>
-<span class="sd">            w   - word(s) (string), could be encased in quotes.</span>
-<span class="sd">            txt - extra text (string), could be encased in quotes.</span>
+
+<span class="sd">        - `li`  - line number (int), starting from 1. This could also</span>
+<span class="sd">              be a range given as &lt;l&gt;:&lt;l&gt;.</span>
+<span class="sd">        - `w`  - word(s) (string), could be encased in quotes.</span>
+<span class="sd">        - `txt` - extra text (string), could be encased in quotes.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">editor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_eveditor</span>
@@ -371,7 +368,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">arg2</span> <span class="o">=</span> <span class="n">arg2</span></div></div>
 
 
-<div class="viewcode-block" id="_load_editor"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.eveditor._load_editor">[docs]</a><span class="k">def</span> <span class="nf">_load_editor</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_load_editor</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load persistent editor from storage.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -393,10 +390,10 @@
             <span class="nb">setattr</span><span class="p">(</span><span class="n">eveditor</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># something went wrong. Cleanup.</span>
-        <span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">EvEditorCmdSet</span><span class="p">)</span></div>
+        <span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">EvEditorCmdSet</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="CmdLineInput"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.eveditor.CmdLineInput">[docs]</a><span class="k">class</span> <span class="nc">CmdLineInput</span><span class="p">(</span><span class="n">CmdEditorBase</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdLineInput"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.CmdLineInput">[docs]</a><span class="k">class</span> <span class="nc">CmdLineInput</span><span class="p">(</span><span class="n">CmdEditorBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    No command match - Inputs line of text into buffer.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -404,7 +401,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="n">_CMD_NOMATCH</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="n">_CMD_NOINPUT</span>
 
-<div class="viewcode-block" id="CmdLineInput.func"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.eveditor.CmdLineInput.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdLineInput.func"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.CmdLineInput.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds the line without any formatting changes.</span>
 
@@ -436,7 +433,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|b</span><span class="si">%02i</span><span class="s2">|||n </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cline</span><span class="p">,</span> <span class="n">raw</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)))</span></div></div>
 
 
-<div class="viewcode-block" id="CmdEditorGroup"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.eveditor.CmdEditorGroup">[docs]</a><span class="k">class</span> <span class="nc">CmdEditorGroup</span><span class="p">(</span><span class="n">CmdEditorBase</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdEditorGroup"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.CmdEditorGroup">[docs]</a><span class="k">class</span> <span class="nc">CmdEditorGroup</span><span class="p">(</span><span class="n">CmdEditorBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Commands for the editor</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -478,7 +475,7 @@
     <span class="p">]</span>
     <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\s.*?|$&quot;</span>
 
-<div class="viewcode-block" id="CmdEditorGroup.func"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.eveditor.CmdEditorGroup.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdEditorGroup.func"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.CmdEditorGroup.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This command handles all the in-editor :-style commands. Since</span>
 <span class="sd">        each command is small and very limited, this makes for a more</span>
@@ -778,13 +775,13 @@
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;This command is only available in code editor mode.&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="EvEditorCmdSet"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.eveditor.EvEditorCmdSet">[docs]</a><span class="k">class</span> <span class="nc">EvEditorCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<div class="viewcode-block" id="EvEditorCmdSet"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.EvEditorCmdSet">[docs]</a><span class="k">class</span> <span class="nc">EvEditorCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;CmdSet for the editor commands&quot;&quot;&quot;</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;editorcmdset&quot;</span>
     <span class="n">mergetype</span> <span class="o">=</span> <span class="s2">&quot;Replace&quot;</span>
 
-<div class="viewcode-block" id="EvEditorCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.eveditor.EvEditorCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvEditorCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.EvEditorCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdLineInput</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdEditorGroup</span><span class="p">())</span></div></div>
 
@@ -796,7 +793,7 @@
 <span class="c1"># -------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="EvEditor"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.eveditor.EvEditor">[docs]</a><span class="k">class</span> <span class="nc">EvEditor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="EvEditor"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.EvEditor">[docs]</a><span class="k">class</span> <span class="nc">EvEditor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This defines a line editor object. It creates all relevant commands</span>
 <span class="sd">    and tracks the current state of the buffer. It also cleans up after</span>
@@ -804,7 +801,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="EvEditor.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.eveditor.EvEditor.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="EvEditor.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.EvEditor.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">caller</span><span class="p">,</span>
         <span class="n">loadfunc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -919,7 +916,7 @@
         <span class="c1"># show the buffer ui</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">display_buffer</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EvEditor.load_buffer"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.eveditor.EvEditor.load_buffer">[docs]</a>    <span class="k">def</span> <span class="nf">load_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvEditor.load_buffer"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.EvEditor.load_buffer">[docs]</a>    <span class="k">def</span> <span class="nf">load_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load the buffer using the load function hook.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -934,7 +931,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_ERROR_LOADFUNC</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="n">e</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="EvEditor.get_buffer"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.eveditor.EvEditor.get_buffer">[docs]</a>    <span class="k">def</span> <span class="nf">get_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvEditor.get_buffer"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.EvEditor.get_buffer">[docs]</a>    <span class="k">def</span> <span class="nf">get_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return:</span>
 <span class="sd">            buffer (str): The current buffer.</span>
@@ -942,7 +939,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span></div>
 
-<div class="viewcode-block" id="EvEditor.update_buffer"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.eveditor.EvEditor.update_buffer">[docs]</a>    <span class="k">def</span> <span class="nf">update_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buf</span><span class="p">):</span>
+<div class="viewcode-block" id="EvEditor.update_buffer"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.EvEditor.update_buffer">[docs]</a>    <span class="k">def</span> <span class="nf">update_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buf</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This should be called when the buffer has been changed</span>
 <span class="sd">        somehow.  It will handle unsaved flag and undo updating.</span>
@@ -965,7 +962,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;_eveditor_unsaved&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;_eveditor_indent&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indent</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvEditor.quit"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.eveditor.EvEditor.quit">[docs]</a>    <span class="k">def</span> <span class="nf">quit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvEditor.quit"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.EvEditor.quit">[docs]</a>    <span class="k">def</span> <span class="nf">quit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Cleanly exit the editor.</span>
 
@@ -981,7 +978,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;_eveditor_indent&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">EvEditorCmdSet</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvEditor.save_buffer"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.eveditor.EvEditor.save_buffer">[docs]</a>    <span class="k">def</span> <span class="nf">save_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvEditor.save_buffer"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.EvEditor.save_buffer">[docs]</a>    <span class="k">def</span> <span class="nf">save_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Saves the content of the buffer.</span>
 
@@ -1000,7 +997,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_MSG_SAVE_NO_CHANGE</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvEditor.update_undo"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.eveditor.EvEditor.update_undo">[docs]</a>    <span class="k">def</span> <span class="nf">update_undo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="EvEditor.update_undo"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.EvEditor.update_undo">[docs]</a>    <span class="k">def</span> <span class="nf">update_undo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This updates the undo position.</span>
 
@@ -1036,7 +1033,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_undo_buffer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_undo_buffer</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_undo_pos</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_undo_pos</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_undo_buffer</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span></div>
 
-<div class="viewcode-block" id="EvEditor.display_buffer"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.eveditor.EvEditor.display_buffer">[docs]</a>    <span class="k">def</span> <span class="nf">display_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">linenums</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;raw&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}):</span>
+<div class="viewcode-block" id="EvEditor.display_buffer"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.EvEditor.display_buffer">[docs]</a>    <span class="k">def</span> <span class="nf">display_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">linenums</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;raw&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This displays the line editor buffer, or selected parts of it.</span>
 
@@ -1085,7 +1082,7 @@
         <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">main</span><span class="p">,</span> <span class="n">footer</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvEditor.display_help"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.eveditor.EvEditor.display_help">[docs]</a>    <span class="k">def</span> <span class="nf">display_help</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvEditor.display_help"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.EvEditor.display_help">[docs]</a>    <span class="k">def</span> <span class="nf">display_help</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shows the help entry for the editor.</span>
 
@@ -1096,7 +1093,7 @@
         <span class="n">string</span> <span class="o">+=</span> <span class="n">_HELP_LEGEND</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sep</span> <span class="o">*</span> <span class="n">_DEFAULT_WIDTH</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvEditor.deduce_indent"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.eveditor.EvEditor.deduce_indent">[docs]</a>    <span class="k">def</span> <span class="nf">deduce_indent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">buffer</span><span class="p">):</span>
+<div class="viewcode-block" id="EvEditor.deduce_indent"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.EvEditor.deduce_indent">[docs]</a>    <span class="k">def</span> <span class="nf">deduce_indent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">buffer</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Try to deduce the level of indentation of the given line.</span>
 
@@ -1132,21 +1129,21 @@
         <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">indent</span> <span class="o">+</span> <span class="n">line</span>
         <span class="k">return</span> <span class="n">line</span></div>
 
-<div class="viewcode-block" id="EvEditor.decrease_indent"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.eveditor.EvEditor.decrease_indent">[docs]</a>    <span class="k">def</span> <span class="nf">decrease_indent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvEditor.decrease_indent"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.EvEditor.decrease_indent">[docs]</a>    <span class="k">def</span> <span class="nf">decrease_indent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Decrease automatic indentation by 1 level.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_codefunc</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indent</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_indent</span> <span class="o">-=</span> <span class="mi">1</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_persistent</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;_eveditor_indent&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indent</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvEditor.increase_indent"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.eveditor.EvEditor.increase_indent">[docs]</a>    <span class="k">def</span> <span class="nf">increase_indent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvEditor.increase_indent"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.EvEditor.increase_indent">[docs]</a>    <span class="k">def</span> <span class="nf">increase_indent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Increase automatic indentation by 1 level.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_codefunc</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indent</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_indent</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_persistent</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;_eveditor_indent&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indent</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EvEditor.swap_autoindent"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.eveditor.EvEditor.swap_autoindent">[docs]</a>    <span class="k">def</span> <span class="nf">swap_autoindent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EvEditor.swap_autoindent"><a class="viewcode-back" href="../../../api/evennia.utils.eveditor.html#evennia.utils.eveditor.EvEditor.swap_autoindent">[docs]</a>    <span class="k">def</span> <span class="nf">swap_autoindent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Swap automatic indentation on or off.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_codefunc</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indent</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
@@ -1158,6 +1155,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;_eveditor_indent&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indent</span><span class="p">)</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -1195,17 +1193,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.utils.eveditor</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.eveditor</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

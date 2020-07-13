@@ -28,7 +28,7 @@
 - [Discord live blog](https://discordapp.com/channels/517176782357528616/517176782781415434) of the _Blackbirds_ Evennia game project.
 - [Unreal Engine Evennia plugin](https://www.unrealengine.com/marketplace/en-US/slug/evennia-plugin) - an in-progress Unreal plugin for integrating Evennia with Epic Games' Unreal Engine.
 - [The dark net/March Hare MUD](https://github.com/thedarknet/evennia) from the 2019 [DEF CON 27](https://www.defcon.org/html/defcon-27/dc-27-index.html) hacker conference in Paris. This is an Evennia game dir with batchcode to build the custom _Hackers_ style cyberspace zone with puzzles and challenges [used during the conference](https://dcdark.net/home#).
-- [Arx sources](https://github.com/Arx-Game/arxcode) - Open-source code release of the very popular [Arx](http://play.arxmush.org/) Evennia game. [Here are instructions for installing](Arxcode-installing-help)
+- [Arx sources](https://github.com/Arx-Game/arxcode) - Open-source code release of the very popular [Arx](http://play.arxmush.org/) Evennia game. [Here are instructions for installing](./Arxcode-installing-help)
 - [Evennia-wiki](https://github.com/vincent-lg/evennia-wiki) - An Evennia-specific Wiki for your website.
 - [Evcolor](https://github.com/taladan/Pegasus/blob/origin/world/utilities/evcolor) - Optional coloration for Evennia unit-test output.
 - [Paxboards](https://github.com/aurorachain/paxboards) - Evennia bulletin board system (both for telnet/web).
@@ -107,4 +107,4 @@
 
 ### Credits
 
- - Wiki [Home](index) Icons made by [Freepik](http://www.freepik.com"-title="Freepik">Freepik) from [flaticon.com](http://www.flaticon.com), licensed under [Creative Commons BY 3.0](http://creativecommons.org/licenses/by/3.0).
+ - Wiki [Home](./index) Icons made by [Freepik](http://www.freepik.com"-title="Freepik">Freepik) from [flaticon.com](http://www.flaticon.com), licensed under [Creative Commons BY 3.0](http://creativecommons.org/licenses/by/3.0).

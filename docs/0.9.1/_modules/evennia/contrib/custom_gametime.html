@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.custom_gametime &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.custom_gametime</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.custom_gametime</a></li> 
       </ul>
     </div>  
 
@@ -106,7 +103,7 @@
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="time_to_tuple"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.custom_gametime.time_to_tuple">[docs]</a><span class="k">def</span> <span class="nf">time_to_tuple</span><span class="p">(</span><span class="n">seconds</span><span class="p">,</span> <span class="o">*</span><span class="n">divisors</span><span class="p">):</span>
+<div class="viewcode-block" id="time_to_tuple"><a class="viewcode-back" href="../../../api/evennia.contrib.custom_gametime.html#evennia.contrib.custom_gametime.time_to_tuple">[docs]</a><span class="k">def</span> <span class="nf">time_to_tuple</span><span class="p">(</span><span class="n">seconds</span><span class="p">,</span> <span class="o">*</span><span class="n">divisors</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function. Creates a tuple of even dividends given a range</span>
 <span class="sd">    of divisors.</span>
@@ -132,14 +129,14 @@
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">results</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="gametime_to_realtime"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.custom_gametime.gametime_to_realtime">[docs]</a><span class="k">def</span> <span class="nf">gametime_to_realtime</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="gametime_to_realtime"><a class="viewcode-back" href="../../../api/evennia.contrib.custom_gametime.html#evennia.contrib.custom_gametime.gametime_to_realtime">[docs]</a><span class="k">def</span> <span class="nf">gametime_to_realtime</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This method helps to figure out the real-world time it will take until an</span>
 <span class="sd">    in-game time has passed. E.g. if an event should take place a month later</span>
 <span class="sd">    in-game, you will be able to find the number of real-world seconds this</span>
 <span class="sd">    corresponds to (hint: Interval events deal with real life seconds).</span>
 
-<span class="sd">    Kwargs:</span>
+<span class="sd">    Keyword args:</span>
 <span class="sd">        format (bool): Formatting the output.</span>
 <span class="sd">        days, month etc (int): These are the names of time units that must</span>
 <span class="sd">            match the `settings.TIME_UNITS` dict keys.</span>
@@ -169,13 +166,13 @@
     <span class="k">return</span> <span class="n">rtime</span></div>
 
 
-<div class="viewcode-block" id="realtime_to_gametime"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.custom_gametime.realtime_to_gametime">[docs]</a><span class="k">def</span> <span class="nf">realtime_to_gametime</span><span class="p">(</span><span class="n">secs</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">mins</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">hrs</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">days</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">weeks</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">months</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">yrs</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="realtime_to_gametime"><a class="viewcode-back" href="../../../api/evennia.contrib.custom_gametime.html#evennia.contrib.custom_gametime.realtime_to_gametime">[docs]</a><span class="k">def</span> <span class="nf">realtime_to_gametime</span><span class="p">(</span><span class="n">secs</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">mins</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">hrs</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">days</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">weeks</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">months</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">yrs</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This method calculates how much in-game time a real-world time</span>
 <span class="sd">    interval would correspond to. This is usually a lot less</span>
 <span class="sd">    interesting than the other way around.</span>
 
-<span class="sd">    Kwargs:</span>
+<span class="sd">    Keyword args:</span>
 <span class="sd">        times (int): The various components of the time.</span>
 <span class="sd">        format (bool): Formatting the output.</span>
 
@@ -205,7 +202,7 @@
     <span class="k">return</span> <span class="n">gtime</span></div>
 
 
-<div class="viewcode-block" id="custom_gametime"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.custom_gametime.custom_gametime">[docs]</a><span class="k">def</span> <span class="nf">custom_gametime</span><span class="p">(</span><span class="n">absolute</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="custom_gametime"><a class="viewcode-back" href="../../../api/evennia.contrib.custom_gametime.html#evennia.contrib.custom_gametime.custom_gametime">[docs]</a><span class="k">def</span> <span class="nf">custom_gametime</span><span class="p">(</span><span class="n">absolute</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the custom game time as a tuple of units, as defined in settings.</span>
 
@@ -225,7 +222,7 @@
     <span class="k">return</span> <span class="n">time_to_tuple</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="o">*</span><span class="n">units</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="real_seconds_until"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.custom_gametime.real_seconds_until">[docs]</a><span class="k">def</span> <span class="nf">real_seconds_until</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="real_seconds_until"><a class="viewcode-back" href="../../../api/evennia.contrib.custom_gametime.html#evennia.contrib.custom_gametime.real_seconds_until">[docs]</a><span class="k">def</span> <span class="nf">real_seconds_until</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the real seconds until game time.</span>
 
@@ -286,7 +283,7 @@
     <span class="k">return</span> <span class="p">(</span><span class="n">projected</span> <span class="o">-</span> <span class="n">current</span><span class="p">)</span> <span class="o">/</span> <span class="n">TIMEFACTOR</span></div>
 
 
-<div class="viewcode-block" id="schedule"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.custom_gametime.schedule">[docs]</a><span class="k">def</span> <span class="nf">schedule</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="schedule"><a class="viewcode-back" href="../../../api/evennia.contrib.custom_gametime.html#evennia.contrib.custom_gametime.schedule">[docs]</a><span class="k">def</span> <span class="nf">schedule</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Call the callback when the game time is up.</span>
 
@@ -329,18 +326,18 @@
 <span class="c1"># Scripts dealing in gametime (use `schedule`  to create it)</span>
 
 
-<div class="viewcode-block" id="GametimeScript"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.custom_gametime.GametimeScript">[docs]</a><span class="k">class</span> <span class="nc">GametimeScript</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<div class="viewcode-block" id="GametimeScript"><a class="viewcode-back" href="../../../api/evennia.contrib.custom_gametime.html#evennia.contrib.custom_gametime.GametimeScript">[docs]</a><span class="k">class</span> <span class="nc">GametimeScript</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;Gametime-sensitive script.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="GametimeScript.at_script_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.custom_gametime.GametimeScript.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GametimeScript.at_script_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.custom_gametime.html#evennia.contrib.custom_gametime.GametimeScript.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;The script is created.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;unknown scr&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="mi">100</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_delay</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">persistent</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="GametimeScript.at_repeat"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.custom_gametime.GametimeScript.at_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GametimeScript.at_repeat"><a class="viewcode-back" href="../../../api/evennia.contrib.custom_gametime.html#evennia.contrib.custom_gametime.GametimeScript.at_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Call the callback and reset interval.&quot;&quot;&quot;</span>
 
         <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">calledby</span>
@@ -353,6 +350,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">restart</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="n">seconds</span><span class="p">)</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -390,17 +388,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.custom_gametime</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.custom_gametime</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

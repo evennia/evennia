@@ -1,0 +1,210 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap Components and Utilities &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Bootstrap Components and Utilities</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="bootstrap-components-and-utilities">
+<h1>Bootstrap Components and Utilities<a class="headerlink" href="#bootstrap-components-and-utilities" title="Permalink to this headline">¶</a></h1>
+<p>Bootstrap provides many utilities and components you can use when customizing Evennia’s web
+presence. We’ll go over a few examples here that you might find useful.</p>
+<blockquote>
+<div><p>Please take a look at either <a class="reference internal" href="../Howto/Starting/Part5/Add-a-simple-new-web-page.html"><span class="doc">the basic web tutorial</span></a> or
+<a class="reference internal" href="../Howto/Web-Character-View-Tutorial.html"><span class="doc">the web character view tutorial</span></a>
+to get a feel for how to add pages to Evennia’s website to test these examples.</p>
+</div></blockquote>
+<div class="section" id="general-styling">
+<h2>General Styling<a class="headerlink" href="#general-styling" title="Permalink to this headline">¶</a></h2>
+<p>Bootstrap provides base styles for your site. These can be customized through CSS, but the default
+styles are intended to provide a consistent, clean look for sites.</p>
+<div class="section" id="color">
+<h3>Color<a class="headerlink" href="#color" title="Permalink to this headline">¶</a></h3>
+<p>Most elements can be styled with default colors. <a class="reference external" href="https://getbootstrap.com/docs/4.0/utilities/colors/">Take a look at the documentation</a> to learn more about these colors</p>
+<ul class="simple">
+<li><p>suffice to say, adding a class of text-* or bg-*, for instance, text-primary, sets the text color
+or background color.</p></li>
+</ul>
+</div>
+<div class="section" id="borders">
+<h3>Borders<a class="headerlink" href="#borders" title="Permalink to this headline">¶</a></h3>
+<p>Simply adding a class of ‘border’ to an element adds a border to the element. For more in-depth
+info, please <a class="reference external" href="https://getbootstrap.com/docs/4.0/utilities/borders/">read the documentation on borders.</a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">span</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;border border-dark&quot;</span><span class="o">&gt;&lt;/</span><span class="n">span</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>You can also easily round corners just by adding a class.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">img</span> <span class="n">src</span><span class="o">=</span><span class="s2">&quot;...&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;rounded&quot;</span> <span class="o">/&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="spacing">
+<h3>Spacing<a class="headerlink" href="#spacing" title="Permalink to this headline">¶</a></h3>
+<p>Bootstrap provides classes to easily add responsive margin and padding. Most of the time, you might
+like to add margins or padding through CSS itself - however these classes are used in the default
+Evennia site. <a class="reference external" href="https://getbootstrap.com/docs/4.0/utilities/spacing/">Take a look at the docs</a> to
+learn more.</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="components">
+<h2>Components<a class="headerlink" href="#components" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="buttons">
+<h3>Buttons<a class="headerlink" href="#buttons" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://getbootstrap.com/docs/4.0/components/buttons/">Buttons</a> in Bootstrap are very easy to use -
+button styling can be added to <code class="docutils literal notranslate"><span class="pre">&lt;button&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;a&gt;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&lt;input&gt;</span></code> elements.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;a class=&quot;btn btn-primary&quot; href=&quot;#&quot; role=&quot;button&quot;&gt;I&#39;m a Button&lt;/a&gt;
+&lt;button class=&quot;btn btn-primary&quot; type=&quot;submit&quot;&gt;Me too!&lt;/button&gt;
+&lt;input class=&quot;btn btn-primary&quot; type=&quot;button&quot; value=&quot;Button&quot;&gt;
+&lt;input class=&quot;btn btn-primary&quot; type=&quot;submit&quot; value=&quot;Also a Button&quot;&gt;
+&lt;input class=&quot;btn btn-primary&quot; type=&quot;reset&quot; value=&quot;Button as Well&quot;&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="cards">
+<h3>Cards<a class="headerlink" href="#cards" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://getbootstrap.com/docs/4.0/components/card/">Cards</a> provide a container for other elements
+that stands out from the rest of the page. The “Accounts”, “Recently Connected”, and “Database
+Stats” on the default webpage are all in cards. Cards provide quite a bit of formatting options -
+the following is a simple example, but read the documentation or look at the site’s source for more.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;card&quot;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;card-body&quot;</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">h4</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;card-title&quot;</span><span class="o">&gt;</span><span class="n">Card</span> <span class="n">title</span><span class="o">&lt;/</span><span class="n">h4</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">h6</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;card-subtitle mb-2 text-muted&quot;</span><span class="o">&gt;</span><span class="n">Card</span> <span class="n">subtitle</span><span class="o">&lt;/</span><span class="n">h6</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">p</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;card-text&quot;</span><span class="o">&gt;</span><span class="n">Fancy</span><span class="p">,</span> <span class="n">isn</span><span class="s1">&#39;t it?&lt;/p&gt;</span>
+    <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;#&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;card-link&quot;</span><span class="o">&gt;</span><span class="n">Card</span> <span class="n">link</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="jumbotron">
+<h3>Jumbotron<a class="headerlink" href="#jumbotron" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://getbootstrap.com/docs/4.0/components/jumbotron/">Jumbotrons</a> are useful for featuring an
+image or tagline for your game. They can flow with the rest of your content or take up the full
+width of the page - Evennia’s base site uses the former.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;jumbotron jumbotron-fluid&quot;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;container&quot;</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">h1</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;display-3&quot;</span><span class="o">&gt;</span><span class="n">Full</span> <span class="n">Width</span> <span class="n">Jumbotron</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">p</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;lead&quot;</span><span class="o">&gt;</span><span class="n">Look</span> <span class="n">at</span> <span class="n">the</span> <span class="n">source</span> <span class="n">of</span> <span class="n">the</span> <span class="n">default</span> <span class="n">Evennia</span> <span class="n">page</span> <span class="k">for</span> <span class="n">a</span> <span class="n">regular</span> <span class="n">Jumbotron</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="forms">
+<h3>Forms<a class="headerlink" href="#forms" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://getbootstrap.com/docs/4.0/components/forms/">Forms</a> are highly customizable with Bootstrap.
+For a more in-depth look at how to use forms and their styles in your own Evennia site, please read
+over <a class="reference internal" href="../Howto/Web-Character-Generation.html"><span class="doc">the web character gen tutorial.</span></a></p>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Bootstrap Components and Utilities</a><ul>
+<li><a class="reference internal" href="#general-styling">General Styling</a><ul>
+<li><a class="reference internal" href="#color">Color</a></li>
+<li><a class="reference internal" href="#borders">Borders</a></li>
+<li><a class="reference internal" href="#spacing">Spacing</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#components">Components</a><ul>
+<li><a class="reference internal" href="#buttons">Buttons</a></li>
+<li><a class="reference internal" href="#cards">Cards</a></li>
+<li><a class="reference internal" href="#jumbotron">Jumbotron</a></li>
+<li><a class="reference internal" href="#forms">Forms</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Components/Bootstrap-Components-and-Utilities.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Bootstrap-Components-and-Utilities.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Bootstrap Components and Utilities</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+    </div>
+  </body>
+</html>

@@ -1,6 +1,6 @@
 # NPC shop Tutorial
 
-This tutorial will describe how to make an NPC-run shop. We will make use of the [EvMenu](EvMenu) system to present shoppers with a menu where they can buy things from the store's stock.
+This tutorial will describe how to make an NPC-run shop. We will make use of the [EvMenu](./EvMenu) system to present shoppers with a menu where they can buy things from the store's stock.
 
 Our shop extends over two rooms - a "front" room open to the shop's customers and a locked "store room" holding the wares the shop should be able to sell. We aim for the following features:
 
@@ -13,7 +13,7 @@ Our shop extends over two rooms - a "front" room open to the shop's customers an
 
 ### The shop menu
 
-We want to show a menu to the customer where they can list, examine and buy items in the store. This menu should change depending on what is currently for sale. Evennia's *EvMenu* utility will manage the menu for us. It's a good idea to [read up on EvMenu](EvMenu) if you are not familiar with it.
+We want to show a menu to the customer where they can list, examine and buy items in the store. This menu should change depending on what is currently for sale. Evennia's *EvMenu* utility will manage the menu for us. It's a good idea to [read up on EvMenu](./EvMenu) if you are not familiar with it.
 
 #### Designing the menu
 
@@ -135,7 +135,7 @@ When the user choose the "buy" option, EvMenu will execute the `exec` instructio
 
 #### The command to start the menu
 
-We could *in principle* launch the shopping menu the moment a customer steps into our shop room, but this would probably be considered pretty annoying. It's better to create a [Command](Commands) for customers to explicitly wanting to shop around.
+We could *in principle* launch the shopping menu the moment a customer steps into our shop room, but this would probably be considered pretty annoying. It's better to create a [Command](./Commands) for customers to explicitly wanting to shop around.
 
 ```python
 # mygame/typeclasses/npcshop.py
@@ -164,7 +164,7 @@ class CmdBuy(Command):
                       startnode="menunode_shopfront")
 ```
 
-This will launch the menu. The `EvMenu` instance is initialized with the path to this very module - since the only global functions available in this module are our menu nodes, this will work fine (you could also have put those in a separate module). We now just need to put this command in a [CmdSet](Command-Sets) so we can add it correctly to the game:
+This will launch the menu. The `EvMenu` instance is initialized with the path to this very module - since the only global functions available in this module are our menu nodes, this will work fine (you could also have put those in a separate module). We now just need to put this command in a [CmdSet](./Command-Sets) so we can add it correctly to the game:
 
 ```python
 from evennia import CmdSet
@@ -181,7 +181,7 @@ There are really only two things that separate our shop from any other Room:
 - The shop has the `storeroom` Attribute set on it, pointing to a second (completely normal) room.
 - It has the `ShopCmdSet` stored on itself. This makes the `buy` command available to users entering the shop.
 
-For testing we could easily add these features manually to a room using `@py` or other admin commands. Just to show how it can be done we'll instead make a custom [Typeclass](Typeclasses) for the shop room and make a small command that builders can use to build both the shop and the storeroom at once.
+For testing we could easily add these features manually to a room using `@py` or other admin commands. Just to show how it can be done we'll instead make a custom [Typeclass](./Typeclasses) for the shop room and make a small command that builders can use to build both the shop and the storeroom at once.
 
 ```python
 # bottom of mygame/typeclasses/npcshop.py
@@ -252,9 +252,9 @@ class CmdBuildShop(Command):
         self.caller.msg("The shop %s was created!" % shop)
 ```
 
-Our typeclass is simple and so is our `buildshop` command. The command (which is for Builders only) just takes the name of the shop and builds the front room and a store room to go with it (always named `"<shopname>-storage"`. It connects the rooms with a two-way exit. You need to add `CmdBuildShop` [to the default cmdset](Adding-Command-Tutorial#step-2-adding-the-command-to-a-default-cmdset) before you can use it. Once having created the shop you can now `@teleport` to it or `@open` a new exit to it. You could also easily expand the above command to automatically create exits to and from the new shop from your current location.
+Our typeclass is simple and so is our `buildshop` command. The command (which is for Builders only) just takes the name of the shop and builds the front room and a store room to go with it (always named `"<shopname>-storage"`. It connects the rooms with a two-way exit. You need to add `CmdBuildShop` [to the default cmdset](./Adding-Command-Tutorial#step-2-adding-the-command-to-a-default-cmdset) before you can use it. Once having created the shop you can now `@teleport` to it or `@open` a new exit to it. You could also easily expand the above command to automatically create exits to and from the new shop from your current location.
 
-To avoid customers walking in and stealing everything, we create a [Lock](Locks) on the storage door. It's a simple lock that requires the one entering to carry an object named `<shopname>-storekey`. We even create such a key object and drop it in the shop for the new shop keeper to pick up.
+To avoid customers walking in and stealing everything, we create a [Lock](./Locks) on the storage door. It's a simple lock that requires the one entering to carry an object named `<shopname>-storekey`. We even create such a key object and drop it in the shop for the new shop keeper to pick up.
 
 > If players are given the right to name their own objects, this simple lock is not very secure and you need to come up with a more robust lock-key solution.
 
@@ -270,4 +270,4 @@ We now have a functioning shop and an easy way for Builders to create it. All yo
 
 Fixing these issues are left as an exercise.
 
-If you want to keep the shop fully NPC-run you could add a [Script](Scripts) to restock the shop's store room regularly. This shop example could also easily be owned by a human Player (run for them by a hired NPC) - the shop owner would get the key to the store room and be responsible for keeping it well stocked.
+If you want to keep the shop fully NPC-run you could add a [Script](./Scripts) to restock the shop's store room regularly. This shop example could also easily be owned by a human Player (run for them by a hired NPC) - the shop owner would get the key to the store room and be responsible for keeping it well stocked.

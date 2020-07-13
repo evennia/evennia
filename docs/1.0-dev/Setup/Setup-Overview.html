@@ -1,0 +1,151 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Setup and Life &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Server Setup and Life</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="server-setup-and-life">
+<h1>Server Setup and Life<a class="headerlink" href="#server-setup-and-life" title="Permalink to this headline">¶</a></h1>
+<p>This documentation covers how to setup and maintain the server, from first install to opening your game to the public.</p>
+<div class="section" id="installation-running">
+<h2>Installation &amp; running<a class="headerlink" href="#installation-running" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="Setup-Quickstart.html"><span class="doc">Installation &amp; Setup quick-start</span></a> - one page to quickly get you going</p></li>
+<li><p><a class="reference internal" href="Extended-Installation.html"><span class="doc">Extended Install instructions</span></a> - if you have trouble or want to contribute to Evennia itself</p></li>
+<li><p><a class="reference internal" href="Running-Evennia-in-Docker.html"><span class="doc">Running through Docker</span></a> - alternative install method, useful for quick deployment on remote servers</p></li>
+<li><p><a class="reference internal" href="Installing-on-Android.html"><span class="doc">Installing Evennia on Android</span></a> - for those craving a mobile life</p></li>
+<li><p><a class="reference internal" href="Start-Stop-Reload.html"><span class="doc">Controlling the server</span></a> - an extended view on how to start/stop/update the server</p></li>
+</ul>
+</div>
+<div class="section" id="installing-custom-game-dirs">
+<h2>Installing custom game dirs<a class="headerlink" href="#installing-custom-game-dirs" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../Contribs/Arxcode-installing-help.html"><span class="doc">Installing Arxcode</span></a> - a custom gamedir based on the popular Evennia game <a class="reference external" href="https://play.arxgame.org/">Arx</a></p></li>
+</ul>
+</div>
+<div class="section" id="configuring">
+<h2>Configuring<a class="headerlink" href="#configuring" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="Settings-File.html"><span class="doc">The settings file</span></a> - how and where to change the main settings of the server</p></li>
+<li><p><a class="reference internal" href="Choosing-An-SQL-Server.html"><span class="doc">Change database engine</span></a> - if you want to use something other than SQLite3</p></li>
+<li><p><a class="reference internal" href="Evennia-Game-Index.html"><span class="doc">Evennia game index</span></a> - register your upcoming game with the index to start the hype going</p></li>
+<li><p><a class="reference internal" href="IRC.html"><span class="doc">Chat on IRC</span></a> - how to link your game’s channels to an external <a class="reference external" href="https://en.wikipedia.org/wiki/Internet_Relay_Chat">IRC</a> channel</p></li>
+<li><p><a class="reference internal" href="Grapevine.html"><span class="doc">Chat on Grapevine</span></a> - how to link your game’s channels the <a class="reference external" href="https://grapevine.haus/">Grapevine</a> mud network/chat</p></li>
+<li><p><a class="reference internal" href="RSS.html"><span class="doc">Messages to RSS</span></a> - have your game notify people through RSS</p></li>
+<li><p><a class="reference internal" href="How-to-connect-Evennia-to-Twitter.html"><span class="doc">Messages to Twitter</span></a> - have Evennia send messages to <a class="reference external" href="https://twitter.com/">Twitter</a> (requires some coding)</p></li>
+</ul>
+</div>
+<div class="section" id="going-public">
+<h2>Going public<a class="headerlink" href="#going-public" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="Security.html"><span class="doc">Notes about security</span></a> - some things to think about to stay safe(r)</p>
+<ul>
+<li><p><a class="reference internal" href="HAProxy-Config.html"><span class="doc">Using HAProxy</span></a> - putting a proxy in front of the game server for security</p></li>
+<li><p><a class="reference internal" href="Apache-Config.html"><span class="doc">Using Apache as a webserver</span></a> - use Apache instead of Evennia’s webserver (limited support)</p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="Online-Setup.html"><span class="doc">Taking your server online</span></a> - decide on where to host and configure your game for production</p></li>
+<li><p><a class="reference internal" href="Client-Support-Grid.html"><span class="doc">Client support grid</span></a> - clients known to work (or not) with Evennia</p></li>
+</ul>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Server Setup and Life</a><ul>
+<li><a class="reference internal" href="#installation-running">Installation &amp; running</a></li>
+<li><a class="reference internal" href="#installing-custom-game-dirs">Installing custom game dirs</a></li>
+<li><a class="reference internal" href="#configuring">Configuring</a></li>
+<li><a class="reference internal" href="#going-public">Going public</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Setup/Setup-Overview.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Setup-Overview.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Server Setup and Life</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+    </div>
+  </body>
+</html>

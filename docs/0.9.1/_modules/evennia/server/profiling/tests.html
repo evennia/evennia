@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.server.profiling.tests &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.server.profiling.tests</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.server.profiling.tests</a></li> 
       </ul>
     </div>  
 
@@ -67,8 +64,8 @@
     <span class="n">memplot</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="TestDummyrunnerSettings"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.tests.TestDummyrunnerSettings">[docs]</a><span class="k">class</span> <span class="nc">TestDummyrunnerSettings</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
-<div class="viewcode-block" id="TestDummyrunnerSettings.setUp"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.tests.TestDummyrunnerSettings.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestDummyrunnerSettings"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestDummyrunnerSettings">[docs]</a><span class="k">class</span> <span class="nc">TestDummyrunnerSettings</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestDummyrunnerSettings.setUp"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestDummyrunnerSettings.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">cid</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">counter</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -79,11 +76,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">objs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">exits</span> <span class="o">=</span> <span class="p">[]</span></div>
 
-<div class="viewcode-block" id="TestDummyrunnerSettings.clear_client_lists"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.tests.TestDummyrunnerSettings.clear_client_lists">[docs]</a>    <span class="k">def</span> <span class="nf">clear_client_lists</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestDummyrunnerSettings.clear_client_lists"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestDummyrunnerSettings.clear_client_lists">[docs]</a>    <span class="k">def</span> <span class="nf">clear_client_lists</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">objs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">exits</span> <span class="o">=</span> <span class="p">[]</span></div>
 
-<div class="viewcode-block" id="TestDummyrunnerSettings.test_c_login"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_login">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_login</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestDummyrunnerSettings.test_c_login"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_login">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_login</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="n">c_login</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span>
             <span class="p">(</span>
@@ -95,7 +92,7 @@
             <span class="p">),</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestDummyrunnerSettings.test_c_login_no_dig"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_login_no_dig">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_login_no_dig</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestDummyrunnerSettings.test_c_login_no_dig"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_login_no_dig">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_login_no_dig</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="n">c_login_nodig</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span>
             <span class="p">(</span>
@@ -104,10 +101,10 @@
             <span class="p">),</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestDummyrunnerSettings.test_c_logout"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_logout">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_logout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestDummyrunnerSettings.test_c_logout"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_logout">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_logout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">c_logout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span> <span class="s2">&quot;@quit&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestDummyrunnerSettings.perception_method_tests"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.tests.TestDummyrunnerSettings.perception_method_tests">[docs]</a>    <span class="k">def</span> <span class="nf">perception_method_tests</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">alone_suffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="TestDummyrunnerSettings.perception_method_tests"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestDummyrunnerSettings.perception_method_tests">[docs]</a>    <span class="k">def</span> <span class="nf">perception_method_tests</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">alone_suffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span> <span class="s2">&quot;</span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">alone_suffix</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">exits</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;exit1&quot;</span><span class="p">,</span> <span class="s2">&quot;exit2&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> exit1&quot;</span> <span class="o">%</span> <span class="n">verb</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> exit2&quot;</span> <span class="o">%</span> <span class="n">verb</span><span class="p">])</span>
@@ -115,27 +112,27 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> foo&quot;</span> <span class="o">%</span> <span class="n">verb</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> bar&quot;</span> <span class="o">%</span> <span class="n">verb</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clear_client_lists</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TestDummyrunnerSettings.test_c_looks"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_looks">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_looks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestDummyrunnerSettings.test_c_looks"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_looks">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_looks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">perception_method_tests</span><span class="p">(</span><span class="n">c_looks</span><span class="p">,</span> <span class="s2">&quot;look&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestDummyrunnerSettings.test_c_examines"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_examines">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_examines</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestDummyrunnerSettings.test_c_examines"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_examines">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_examines</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">perception_method_tests</span><span class="p">(</span><span class="n">c_examines</span><span class="p">,</span> <span class="s2">&quot;examine&quot;</span><span class="p">,</span> <span class="s2">&quot; me&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestDummyrunnerSettings.test_idles"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_idles">[docs]</a>    <span class="k">def</span> <span class="nf">test_idles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestDummyrunnerSettings.test_idles"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_idles">[docs]</a>    <span class="k">def</span> <span class="nf">test_idles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">c_idles</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;idle&quot;</span><span class="p">,</span> <span class="s2">&quot;idle&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestDummyrunnerSettings.test_c_help"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_help">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_help</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestDummyrunnerSettings.test_c_help"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_help">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_help</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="n">c_help</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;help&quot;</span><span class="p">,</span> <span class="s2">&quot;help @teleport&quot;</span><span class="p">,</span> <span class="s2">&quot;help look&quot;</span><span class="p">,</span> <span class="s2">&quot;help @tunnel&quot;</span><span class="p">,</span> <span class="s2">&quot;help @dig&quot;</span><span class="p">),</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestDummyrunnerSettings.test_c_digs"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_digs">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_digs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestDummyrunnerSettings.test_c_digs"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_digs">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_digs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">c_digs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;@dig/tel testing_room_1 = exit_1, exit_1&quot;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">exits</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;exit_1&quot;</span><span class="p">,</span> <span class="s2">&quot;exit_1&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clear_client_lists</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TestDummyrunnerSettings.test_c_creates_obj"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_creates_obj">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_creates_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestDummyrunnerSettings.test_c_creates_obj"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_creates_obj">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_creates_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">objname</span> <span class="o">=</span> <span class="s2">&quot;testing_obj_1&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="n">c_creates_obj</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span>
@@ -149,7 +146,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">objs</span><span class="p">,</span> <span class="p">[</span><span class="n">objname</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clear_client_lists</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TestDummyrunnerSettings.test_c_creates_button"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_creates_button">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_creates_button</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestDummyrunnerSettings.test_c_creates_button"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_creates_button">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_creates_button</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">objname</span> <span class="o">=</span> <span class="s2">&quot;testing_button_1&quot;</span>
         <span class="n">typeclass_name</span> <span class="o">=</span> <span class="s2">&quot;contrib.tutorial_examples.red_button.RedButton&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
@@ -159,7 +156,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">objs</span><span class="p">,</span> <span class="p">[</span><span class="n">objname</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clear_client_lists</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TestDummyrunnerSettings.test_c_socialize"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_socialize">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_socialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestDummyrunnerSettings.test_c_socialize"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_socialize">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_socialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="n">c_socialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span>
             <span class="p">(</span>
@@ -171,21 +168,21 @@
             <span class="p">),</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestDummyrunnerSettings.test_c_moves"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_moves">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_moves</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestDummyrunnerSettings.test_c_moves"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_moves">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_moves</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">c_moves</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span> <span class="s2">&quot;look&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">exits</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;south&quot;</span><span class="p">,</span> <span class="s2">&quot;north&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">c_moves</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span> <span class="p">[</span><span class="s2">&quot;south&quot;</span><span class="p">,</span> <span class="s2">&quot;north&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clear_client_lists</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TestDummyrunnerSettings.test_c_move_n"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_move_n">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_move_n</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestDummyrunnerSettings.test_c_move_n"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_move_n">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_move_n</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">c_moves_n</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span> <span class="s2">&quot;north&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestDummyrunnerSettings.test_c_move_s"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_move_s">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_move_s</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestDummyrunnerSettings.test_c_move_s"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_move_s">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_move_s</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">c_moves_s</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span> <span class="s2">&quot;south&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="TestMemPlot"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.tests.TestMemPlot">[docs]</a><span class="k">class</span> <span class="nc">TestMemPlot</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
-<div class="viewcode-block" id="TestMemPlot.test_memplot"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.tests.TestMemPlot.test_memplot">[docs]</a>    <span class="nd">@patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">memplot</span><span class="p">,</span> <span class="s2">&quot;_idmapper&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="TestMemPlot"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestMemPlot">[docs]</a><span class="k">class</span> <span class="nc">TestMemPlot</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestMemPlot.test_memplot"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestMemPlot.test_memplot">[docs]</a>    <span class="nd">@patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">memplot</span><span class="p">,</span> <span class="s2">&quot;_idmapper&quot;</span><span class="p">)</span>
     <span class="nd">@patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">memplot</span><span class="p">,</span> <span class="s2">&quot;os&quot;</span><span class="p">)</span>
     <span class="nd">@patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">memplot</span><span class="p">,</span> <span class="s2">&quot;open&quot;</span><span class="p">,</span> <span class="n">new_callable</span><span class="o">=</span><span class="n">mock_open</span><span class="p">,</span> <span class="n">create</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="nd">@patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">memplot</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">)</span>
@@ -206,6 +203,7 @@
         <span class="n">script</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -243,17 +241,15 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.server.profiling.tests</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.server.profiling.tests</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

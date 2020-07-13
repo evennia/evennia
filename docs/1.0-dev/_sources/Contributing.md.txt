@@ -90,9 +90,9 @@ a new `README.md` file within that directory.
 amount of game-style-specific code. Assume your code will be applied to a very different game than
 you had in mind when creating it.
 * To make the licensing situation clear we assume all contributions are released with the same
-[license as Evennia](Licensing). If this is not possible for some reason, talk to us and we'll
+[license as Evennia](./Licensing). If this is not possible for some reason, talk to us and we'll
 handle it on a case-by-case basis.
-* Your contribution must be covered by [unit tests](Unit-Testing). Having unit tests will both help
+* Your contribution must be covered by [unit tests](Coding/Unit-Testing). Having unit tests will both help
 make your code more stable and make sure small changes does not break it without it being noticed,
 it will also help us test its functionality and merge it quicker. If your contribution is a single
 module, you can add your unit tests to `evennia/contribs/tests.py`. If your contribution is bigger
@@ -105,14 +105,14 @@ beyond our manpower. However, if your code were to *not* be accepted for merger 
 will instead add a link to your online repository so people can still find and use your work if they
 want.
 
-[ohloh]: http://www.ohloh.net/p/evennia
-[patron]: https://www.patreon.com/griatch
-[donate]: https://www.paypal.com/en/cgi-bin/webscr?cmd=_flow&SESSION=TWy_epDPSWqNr4UJCOtVWxl-
+[ohloh](http://www.ohloh.net/p/evennia)
+[patron](https://www.patreon.com/griatch)
+[donate](https://www.paypal.com/en/cgi-bin/webscr?cmd=_flow&SESSION=TWy_epDPSWqNr4UJCOtVWxl-)
 pO1X1jbKiv_-
 UBBFWIuVDEZxC0M_2pM6ywO&dispatch=5885d80a13c0db1f8e263663d3faee8d66f31424b43e9a70645c907a6cbd8fb4
-[forking]: https://github.com/evennia/evennia/wiki/Version-Control#wiki-forking-from-evennia
-[pullrequest]: https://github.com/evennia/evennia/pulls
-[issues]: https://github.com/evennia/evennia/issues
-[patch]: https://secure.wikimedia.org/wikipedia/en/wiki/Patch_%28computing%29 
-[codestyle]: https://github.com/evennia/evennia/blob/master/CODING_STYLE.md
-[tutorials]: https://github.com/evennia/evennia/wiki/Tutorials
+[forking](https://github.com/evennia/evennia/wiki/Version-Control#wiki-forking-from-evennia)
+[pullrequest](https://github.com/evennia/evennia/pulls)
+[issues](https://github.com/evennia/evennia/issues)
+[patch](https://secure.wikimedia.org/wikipedia/en/wiki/Patch_%28computing%29 )
+[codestyle](https://github.com/evennia/evennia/blob/master/CODING_STYLE.md)
+[tutorials](https://github.com/evennia/evennia/wiki/Tutorials)

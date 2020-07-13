@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.prototypes.menus &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.prototypes.menus</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.prototypes.menus</a></li> 
       </ul>
     </div>  
 
@@ -79,7 +76,7 @@
 <span class="c1"># Helper functions</span>
 
 
-<div class="viewcode-block" id="_get_menu_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._get_menu_prototype">[docs]</a><span class="k">def</span> <span class="nf">_get_menu_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_get_menu_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return currently active menu prototype.&quot;&quot;&quot;</span>
     <span class="n">prototype</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="p">,</span> <span class="s2">&quot;olc_prototype&quot;</span><span class="p">):</span>
@@ -87,10 +84,10 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">prototype</span><span class="p">:</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">olc_prototype</span> <span class="o">=</span> <span class="n">prototype</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">olc_new</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="k">return</span> <span class="n">prototype</span></div>
+    <span class="k">return</span> <span class="n">prototype</span>
 
 
-<div class="viewcode-block" id="_get_flat_menu_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._get_flat_menu_prototype">[docs]</a><span class="k">def</span> <span class="nf">_get_flat_menu_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">refresh</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_get_flat_menu_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">refresh</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return prototype where parent values are included&quot;&quot;&quot;</span>
     <span class="n">flat_prototype</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">refresh</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="p">,</span> <span class="s2">&quot;olc_flat_prototype&quot;</span><span class="p">):</span>
@@ -100,10 +97,10 @@
         <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">olc_flat_prototype</span> <span class="o">=</span> <span class="n">flat_prototype</span> <span class="o">=</span> <span class="n">spawner</span><span class="o">.</span><span class="n">flatten_prototype</span><span class="p">(</span>
             <span class="n">prot</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="n">validate</span>
         <span class="p">)</span>
-    <span class="k">return</span> <span class="n">flat_prototype</span></div>
+    <span class="k">return</span> <span class="n">flat_prototype</span>
 
 
-<div class="viewcode-block" id="_get_unchanged_inherited"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._get_unchanged_inherited">[docs]</a><span class="k">def</span> <span class="nf">_get_unchanged_inherited</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">protname</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_get_unchanged_inherited</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">protname</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return prototype values inherited from parent(s), which are not replaced in child&quot;&quot;&quot;</span>
     <span class="n">prototype</span> <span class="o">=</span> <span class="n">_get_menu_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">protname</span> <span class="ow">in</span> <span class="n">prototype</span><span class="p">:</span>
@@ -112,22 +109,22 @@
         <span class="n">flattened</span> <span class="o">=</span> <span class="n">_get_flat_menu_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">protname</span> <span class="ow">in</span> <span class="n">flattened</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">protname</span><span class="p">[</span><span class="n">protname</span><span class="p">],</span> <span class="kc">True</span>
-    <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span></div>
+    <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span>
 
 
-<div class="viewcode-block" id="_set_menu_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._set_menu_prototype">[docs]</a><span class="k">def</span> <span class="nf">_set_menu_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">prototype</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_set_menu_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">prototype</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Set the prototype with existing one&quot;&quot;&quot;</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">olc_prototype</span> <span class="o">=</span> <span class="n">prototype</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">olc_new</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="k">return</span> <span class="n">prototype</span></div>
+    <span class="k">return</span> <span class="n">prototype</span>
 
 
-<div class="viewcode-block" id="_is_new_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._is_new_prototype">[docs]</a><span class="k">def</span> <span class="nf">_is_new_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_is_new_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Check if prototype is marked as new or was loaded from a saved one.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="p">,</span> <span class="s2">&quot;olc_new&quot;</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="p">,</span> <span class="s2">&quot;olc_new&quot;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="_format_option_value"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._format_option_value">[docs]</a><span class="k">def</span> <span class="nf">_format_option_value</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">prototype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cropper</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_format_option_value</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">prototype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cropper</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Format wizard option values.</span>
 
@@ -155,18 +152,18 @@
         <span class="n">out</span> <span class="o">=</span> <span class="s2">&quot;|runset&quot;</span>
     <span class="k">if</span> <span class="n">out</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot; (</span><span class="si">{}</span><span class="s2">|n)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cropper</span><span class="p">(</span><span class="n">out</span><span class="p">)</span> <span class="k">if</span> <span class="n">cropper</span> <span class="k">else</span> <span class="n">utils</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">_MENU_CROP_WIDTH</span><span class="p">))</span>
-    <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="_set_prototype_value"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._set_prototype_value">[docs]</a><span class="k">def</span> <span class="nf">_set_prototype_value</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">parse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_set_prototype_value</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">parse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Set prototype&#39;s field in a safe way.&quot;&quot;&quot;</span>
     <span class="n">prototype</span> <span class="o">=</span> <span class="n">_get_menu_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
     <span class="n">prototype</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">olc_prototype</span> <span class="o">=</span> <span class="n">prototype</span>
-    <span class="k">return</span> <span class="n">prototype</span></div>
+    <span class="k">return</span> <span class="n">prototype</span>
 
 
-<div class="viewcode-block" id="_set_property"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._set_property">[docs]</a><span class="k">def</span> <span class="nf">_set_property</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_set_property</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add or update a property. To be called by the &#39;goto&#39; option variable.</span>
 
@@ -174,7 +171,7 @@
 <span class="sd">        caller (Object, Account): The user of the wizard.</span>
 <span class="sd">        raw_string (str): Input from user on given node - the new value to set.</span>
 
-<span class="sd">    Kwargs:</span>
+<span class="sd">    Keyword args:</span>
 <span class="sd">        test_parse (bool): If set (default True), parse raw_string for protfuncs and obj-refs and</span>
 <span class="sd">            try to run result through literal_eval. The parser will be run in &#39;testing&#39; mode and any</span>
 <span class="sd">            parsing errors will shown to the user. Note that this is just for testing, the original</span>
@@ -233,10 +230,10 @@
 
     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out</span><span class="p">))</span>
 
-    <span class="k">return</span> <span class="n">next_node</span></div>
+    <span class="k">return</span> <span class="n">next_node</span>
 
 
-<div class="viewcode-block" id="_wizard_options"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._wizard_options">[docs]</a><span class="k">def</span> <span class="nf">_wizard_options</span><span class="p">(</span><span class="n">curr_node</span><span class="p">,</span> <span class="n">prev_node</span><span class="p">,</span> <span class="n">next_node</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;|W&quot;</span><span class="p">,</span> <span class="n">search</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_wizard_options</span><span class="p">(</span><span class="n">curr_node</span><span class="p">,</span> <span class="n">prev_node</span><span class="p">,</span> <span class="n">next_node</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;|W&quot;</span><span class="p">,</span> <span class="n">search</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Creates default navigation options available in the wizard.&quot;&quot;&quot;</span>
     <span class="n">options</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">prev_node</span><span class="p">:</span>
@@ -273,19 +270,19 @@
                 <span class="p">}</span>
             <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">options</span></div>
+    <span class="k">return</span> <span class="n">options</span>
 
 
-<div class="viewcode-block" id="_set_actioninfo"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._set_actioninfo">[docs]</a><span class="k">def</span> <span class="nf">_set_actioninfo</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
-    <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">actioninfo</span> <span class="o">=</span> <span class="n">string</span></div>
+<span class="k">def</span> <span class="nf">_set_actioninfo</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+    <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">actioninfo</span> <span class="o">=</span> <span class="n">string</span>
 
 
-<div class="viewcode-block" id="_path_cropper"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._path_cropper">[docs]</a><span class="k">def</span> <span class="nf">_path_cropper</span><span class="p">(</span><span class="n">pythonpath</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_path_cropper</span><span class="p">(</span><span class="n">pythonpath</span><span class="p">):</span>
     <span class="s2">&quot;Crop path to only the last component&quot;</span>
-    <span class="k">return</span> <span class="n">pythonpath</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+    <span class="k">return</span> <span class="n">pythonpath</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="_validate_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._validate_prototype">[docs]</a><span class="k">def</span> <span class="nf">_validate_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_validate_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Run validation on prototype&quot;&quot;&quot;</span>
 
     <span class="n">txt</span> <span class="o">=</span> <span class="n">protlib</span><span class="o">.</span><span class="n">prototype_to_str</span><span class="p">(</span><span class="n">prototype</span><span class="p">)</span>
@@ -302,10 +299,10 @@
         <span class="n">err</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="n">text</span> <span class="o">=</span> <span class="n">txt</span> <span class="o">+</span> <span class="n">errors</span>
-    <span class="k">return</span> <span class="n">err</span><span class="p">,</span> <span class="n">text</span></div>
+    <span class="k">return</span> <span class="n">err</span><span class="p">,</span> <span class="n">text</span>
 
 
-<div class="viewcode-block" id="_format_protfuncs"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._format_protfuncs">[docs]</a><span class="k">def</span> <span class="nf">_format_protfuncs</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">_format_protfuncs</span><span class="p">():</span>
     <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">sorted_funcs</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">func</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">protlib</span><span class="o">.</span><span class="n">PROT_FUNCS</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">tup</span><span class="p">:</span> <span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -317,10 +314,10 @@
                 <span class="n">docs</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">justify</span><span class="p">(</span><span class="n">protfunc</span><span class="o">.</span><span class="vm">__doc__</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;l&quot;</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
             <span class="p">)</span>
         <span class="p">)</span>
-    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">       &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">       &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="_format_lockfuncs"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._format_lockfuncs">[docs]</a><span class="k">def</span> <span class="nf">_format_lockfuncs</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">_format_lockfuncs</span><span class="p">():</span>
     <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">sorted_funcs</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">func</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">get_all_lockfuncs</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">tup</span><span class="p">:</span> <span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -332,16 +329,16 @@
                 <span class="n">name</span><span class="o">=</span><span class="n">lockfunc_name</span><span class="p">,</span> <span class="n">docs</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">justify</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;l&quot;</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
             <span class="p">)</span>
         <span class="p">)</span>
-    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="_format_list_actions"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._format_list_actions">[docs]</a><span class="k">def</span> <span class="nf">_format_list_actions</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_format_list_actions</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create footer text for nodes with extra list actions</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        actions (str): Available actions. The first letter of the action name will be assumed</span>
 <span class="sd">            to be a shortcut.</span>
-<span class="sd">    Kwargs:</span>
+<span class="sd">    Keyword args:</span>
 <span class="sd">        prefix (str): Default prefix to use.</span>
 <span class="sd">    Returns:</span>
 <span class="sd">        string (str): Formatted footer for adding to the node text.</span>
@@ -351,10 +348,10 @@
     <span class="n">prefix</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prefix&quot;</span><span class="p">,</span> <span class="s2">&quot;|WSelect with |w&lt;num&gt;|W. Other actions:|n &quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
         <span class="n">actions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;|w</span><span class="si">{}</span><span class="s2">|n|W</span><span class="si">{}</span><span class="s2"> |w&lt;num&gt;|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">action</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">action</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
-    <span class="k">return</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot; |W|||n &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot; |W|||n &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="_get_current_value"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._get_current_value">[docs]</a><span class="k">def</span> <span class="nf">_get_current_value</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">keyname</span><span class="p">,</span> <span class="n">comparer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">formatter</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">only_inherit</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_get_current_value</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">keyname</span><span class="p">,</span> <span class="n">comparer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">formatter</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">only_inherit</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return current value, marking if value comes from parent or set in this prototype.</span>
 
@@ -410,10 +407,10 @@
     <span class="k">elif</span> <span class="n">only_inherit</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;&quot;</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;|W[No </span><span class="si">{}</span><span class="s2"> set]|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">keyname</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="s2">&quot;|W[No </span><span class="si">{}</span><span class="s2"> set]|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">keyname</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="_default_parse"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._default_parse">[docs]</a><span class="k">def</span> <span class="nf">_default_parse</span><span class="p">(</span><span class="n">raw_inp</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_default_parse</span><span class="p">(</span><span class="n">raw_inp</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper to parse default input to a node decorated with the node_list decorator on</span>
 <span class="sd">    the form l1, l 2, look 1, etc. Spaces are ignored, as is case.</span>
@@ -436,7 +433,7 @@
         <span class="n">num</span> <span class="o">=</span> <span class="n">num</span> <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">num</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">choices</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">action</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">num</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">choices</span><span class="p">[</span><span class="n">num</span><span class="p">],</span> <span class="n">action</span>
-    <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>
+    <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
 
 
 <span class="c1"># Menu nodes ------------------------------</span>
@@ -446,7 +443,7 @@
 <span class="c1"># validate prototype (available as option from all nodes)</span>
 
 
-<div class="viewcode-block" id="node_validate_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus.node_validate_prototype">[docs]</a><span class="k">def</span> <span class="nf">node_validate_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="node_validate_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.node_validate_prototype">[docs]</a><span class="k">def</span> <span class="nf">node_validate_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;General node to view and validate a protototype&quot;&quot;&quot;</span>
     <span class="n">prototype</span> <span class="o">=</span> <span class="n">_get_flat_menu_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">refresh</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">prev_node</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;back&quot;</span><span class="p">,</span> <span class="s2">&quot;index&quot;</span><span class="p">)</span>
@@ -470,7 +467,7 @@
 <span class="c1"># node examine_entity</span>
 
 
-<div class="viewcode-block" id="node_examine_entity"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus.node_examine_entity">[docs]</a><span class="k">def</span> <span class="nf">node_examine_entity</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="node_examine_entity"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.node_examine_entity">[docs]</a><span class="k">def</span> <span class="nf">node_examine_entity</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    General node to view a text and then return to previous node.  Kwargs should contain &quot;text&quot; for</span>
 <span class="sd">    the text to show and &#39;back&quot; pointing to the node to return to.</span>
@@ -490,7 +487,7 @@
 <span class="c1"># node object_search</span>
 
 
-<div class="viewcode-block" id="_search_object"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._search_object">[docs]</a><span class="k">def</span> <span class="nf">_search_object</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_search_object</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="s2">&quot;update search term based on query stored on menu; store match too&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">searchstring</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">olc_search_object_term</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
@@ -523,10 +520,10 @@
 
     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Searching for &#39;</span><span class="si">{}</span><span class="s2">&#39; ...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">searchstring</span><span class="p">))</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">olc_search_object_matches</span> <span class="o">=</span> <span class="n">results</span>
-    <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(#</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">results</span><span class="p">]</span></div>
+    <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(#</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">results</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="_object_search_select"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._object_search_select">[docs]</a><span class="k">def</span> <span class="nf">_object_search_select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">obj_entry</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_object_search_select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">obj_entry</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">choices</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;available_choices&quot;</span><span class="p">]</span>
     <span class="n">num</span> <span class="o">=</span> <span class="n">choices</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">obj_entry</span><span class="p">)</span>
     <span class="n">matches</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">olc_search_object_matches</span>
@@ -539,10 +536,10 @@
 
     <span class="n">prot</span> <span class="o">=</span> <span class="n">spawner</span><span class="o">.</span><span class="n">prototype_from_object</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
     <span class="n">txt</span> <span class="o">=</span> <span class="n">protlib</span><span class="o">.</span><span class="n">prototype_to_str</span><span class="p">(</span><span class="n">prot</span><span class="p">)</span>
-    <span class="k">return</span> <span class="s2">&quot;node_examine_entity&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">txt</span><span class="p">,</span> <span class="s2">&quot;back&quot;</span><span class="p">:</span> <span class="s2">&quot;search_object&quot;</span><span class="p">}</span></div>
+    <span class="k">return</span> <span class="s2">&quot;node_examine_entity&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">txt</span><span class="p">,</span> <span class="s2">&quot;back&quot;</span><span class="p">:</span> <span class="s2">&quot;search_object&quot;</span><span class="p">}</span>
 
 
-<div class="viewcode-block" id="_object_search_actions"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._object_search_actions">[docs]</a><span class="k">def</span> <span class="nf">_object_search_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_object_search_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="s2">&quot;All this does is to queue a search query&quot;</span>
     <span class="n">choices</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;available_choices&quot;</span><span class="p">]</span>
     <span class="n">obj_entry</span><span class="p">,</span> <span class="n">action</span> <span class="o">=</span> <span class="n">_default_parse</span><span class="p">(</span>
@@ -584,7 +581,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># empty input - exit back to previous node</span>
         <span class="n">prev_node</span> <span class="o">=</span> <span class="s2">&quot;node_&quot;</span> <span class="o">+</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;back&quot;</span><span class="p">,</span> <span class="s2">&quot;index&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">prev_node</span></div>
+        <span class="k">return</span> <span class="n">prev_node</span>
 
 
 <span class="nd">@list_node</span><span class="p">(</span><span class="n">_search_object</span><span class="p">,</span> <span class="n">_object_search_select</span><span class="p">)</span>
@@ -634,7 +631,7 @@
 <span class="c1"># main index (start page) node</span>
 
 
-<div class="viewcode-block" id="node_index"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus.node_index">[docs]</a><span class="k">def</span> <span class="nf">node_index</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<div class="viewcode-block" id="node_index"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.node_index">[docs]</a><span class="k">def</span> <span class="nf">node_index</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="n">prototype</span> <span class="o">=</span> <span class="n">_get_menu_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
 
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -755,7 +752,7 @@
 <span class="c1"># prototype_key node</span>
 
 
-<div class="viewcode-block" id="_check_prototype_key"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._check_prototype_key">[docs]</a><span class="k">def</span> <span class="nf">_check_prototype_key</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_check_prototype_key</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
     <span class="n">old_prototype</span> <span class="o">=</span> <span class="n">protlib</span><span class="o">.</span><span class="n">search_prototype</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
     <span class="n">olc_new</span> <span class="o">=</span> <span class="n">_is_new_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
     <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
@@ -778,10 +775,10 @@
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Prototype already exists. Reloading.&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="s2">&quot;node_index&quot;</span>
 
-    <span class="k">return</span> <span class="n">_set_property</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_set_property</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="node_prototype_key"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus.node_prototype_key">[docs]</a><span class="k">def</span> <span class="nf">node_prototype_key</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<div class="viewcode-block" id="node_prototype_key"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.node_prototype_key">[docs]</a><span class="k">def</span> <span class="nf">node_prototype_key</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
 
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        The |cPrototype-Key|n uniquely identifies the prototype and is |wmandatory|n. It is used to</span>
@@ -810,16 +807,16 @@
 <span class="c1"># prototype_parents node</span>
 
 
-<div class="viewcode-block" id="_all_prototype_parents"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._all_prototype_parents">[docs]</a><span class="k">def</span> <span class="nf">_all_prototype_parents</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_all_prototype_parents</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return prototype_key of all available prototypes for listing in menu&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">[</span>
         <span class="n">prototype</span><span class="p">[</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">prototype</span> <span class="ow">in</span> <span class="n">protlib</span><span class="o">.</span><span class="n">search_prototype</span><span class="p">()</span>
         <span class="k">if</span> <span class="s2">&quot;prototype_key&quot;</span> <span class="ow">in</span> <span class="n">prototype</span>
-    <span class="p">]</span></div>
+    <span class="p">]</span>
 
 
-<div class="viewcode-block" id="_prototype_parent_actions"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._prototype_parent_actions">[docs]</a><span class="k">def</span> <span class="nf">_prototype_parent_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_prototype_parent_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Parse the default Convert prototype to a string representation for closer inspection&quot;&quot;&quot;</span>
     <span class="n">choices</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;available_choices&quot;</span><span class="p">,</span> <span class="p">[])</span>
     <span class="n">prototype_parent</span><span class="p">,</span> <span class="n">action</span> <span class="o">=</span> <span class="n">_default_parse</span><span class="p">(</span>
@@ -880,10 +877,10 @@
                     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
                         <span class="s2">&quot;|rPrototype-parent </span><span class="si">{}</span><span class="s2"> could not be removed.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prototype_parent_key</span><span class="p">)</span>
                     <span class="p">)</span>
-        <span class="k">return</span> <span class="s2">&quot;node_prototype_parent&quot;</span></div>
+        <span class="k">return</span> <span class="s2">&quot;node_prototype_parent&quot;</span>
 
 
-<div class="viewcode-block" id="_prototype_parent_select"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._prototype_parent_select">[docs]</a><span class="k">def</span> <span class="nf">_prototype_parent_select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">new_parent</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_prototype_parent_select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">new_parent</span><span class="p">):</span>
 
     <span class="n">ret</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">prototype_parent</span> <span class="o">=</span> <span class="n">protlib</span><span class="o">.</span><span class="n">search_prototype</span><span class="p">(</span><span class="n">new_parent</span><span class="p">)</span>
@@ -906,7 +903,7 @@
         <span class="p">)</span>
         <span class="n">_get_flat_menu_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">refresh</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Selected prototype parent |c</span><span class="si">{}</span><span class="s2">|n.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">new_parent</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">ret</span></div>
+    <span class="k">return</span> <span class="n">ret</span>
 
 
 <span class="nd">@list_node</span><span class="p">(</span><span class="n">_all_prototype_parents</span><span class="p">,</span> <span class="n">_prototype_parent_select</span><span class="p">)</span>
@@ -963,16 +960,16 @@
 <span class="c1"># typeclasses node</span>
 
 
-<div class="viewcode-block" id="_all_typeclasses"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._all_typeclasses">[docs]</a><span class="k">def</span> <span class="nf">_all_typeclasses</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_all_typeclasses</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Get name of available typeclasses.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span>
         <span class="n">name</span>
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">get_all_typeclasses</span><span class="p">(</span><span class="s2">&quot;evennia.objects.models.ObjectDB&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="s2">&quot;evennia.objects.models.ObjectDB&quot;</span>
-    <span class="p">)</span></div>
+    <span class="p">)</span>
 
 
-<div class="viewcode-block" id="_typeclass_actions"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._typeclass_actions">[docs]</a><span class="k">def</span> <span class="nf">_typeclass_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_typeclass_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Parse actions for typeclass listing&quot;&quot;&quot;</span>
 
     <span class="n">choices</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;available_choices&quot;</span><span class="p">,</span> <span class="p">[])</span>
@@ -1008,14 +1005,14 @@
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Cleared typeclass </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">old_typeclass</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;No typeclass to remove.&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s2">&quot;node_typeclass&quot;</span></div>
+        <span class="k">return</span> <span class="s2">&quot;node_typeclass&quot;</span>
 
 
-<div class="viewcode-block" id="_typeclass_select"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._typeclass_select">[docs]</a><span class="k">def</span> <span class="nf">_typeclass_select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">typeclass</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_typeclass_select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">typeclass</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Select typeclass from list and add it to prototype. Return next node to go to.&quot;&quot;&quot;</span>
     <span class="n">ret</span> <span class="o">=</span> <span class="n">_set_property</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">typeclass</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="s2">&quot;typeclass&quot;</span><span class="p">,</span> <span class="n">processor</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Selected typeclass |c</span><span class="si">{}</span><span class="s2">|n.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">typeclass</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">ret</span></div>
+    <span class="k">return</span> <span class="n">ret</span>
 
 
 <span class="nd">@list_node</span><span class="p">(</span><span class="n">_all_typeclasses</span><span class="p">,</span> <span class="n">_typeclass_select</span><span class="p">)</span>
@@ -1051,7 +1048,7 @@
 <span class="c1"># key node</span>
 
 
-<div class="viewcode-block" id="node_key"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus.node_key">[docs]</a><span class="k">def</span> <span class="nf">node_key</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<div class="viewcode-block" id="node_key"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.node_key">[docs]</a><span class="k">def</span> <span class="nf">node_key</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        The |cKey|n is the given name of the object to spawn. This will retain the given case.</span>
 
@@ -1086,13 +1083,13 @@
 <span class="c1"># aliases node</span>
 
 
-<div class="viewcode-block" id="_all_aliases"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._all_aliases">[docs]</a><span class="k">def</span> <span class="nf">_all_aliases</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_all_aliases</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="s2">&quot;Get aliases in prototype&quot;</span>
     <span class="n">prototype</span> <span class="o">=</span> <span class="n">_get_menu_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;aliases&quot;</span><span class="p">,</span> <span class="p">[])</span></div>
+    <span class="k">return</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;aliases&quot;</span><span class="p">,</span> <span class="p">[])</span>
 
 
-<div class="viewcode-block" id="_aliases_select"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._aliases_select">[docs]</a><span class="k">def</span> <span class="nf">_aliases_select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">alias</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_aliases_select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">alias</span><span class="p">):</span>
     <span class="s2">&quot;Add numbers as aliases&quot;</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="n">_all_aliases</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
@@ -1104,10 +1101,10 @@
     <span class="k">except</span> <span class="p">(</span><span class="ne">IndexError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Error: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
 
-    <span class="k">return</span> <span class="s2">&quot;node_aliases&quot;</span></div>
+    <span class="k">return</span> <span class="s2">&quot;node_aliases&quot;</span>
 
 
-<div class="viewcode-block" id="_aliases_actions"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._aliases_actions">[docs]</a><span class="k">def</span> <span class="nf">_aliases_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_aliases_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Parse actions for aliases listing&quot;&quot;&quot;</span>
     <span class="n">choices</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;available_choices&quot;</span><span class="p">,</span> <span class="p">[])</span>
     <span class="n">alias</span><span class="p">,</span> <span class="n">action</span> <span class="o">=</span> <span class="n">_default_parse</span><span class="p">(</span><span class="n">raw_inp</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;remove&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">))</span>
@@ -1129,7 +1126,7 @@
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Added alias &#39;</span><span class="si">{}</span><span class="s2">&#39;.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">alias</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Alias &#39;</span><span class="si">{}</span><span class="s2">&#39; was already set.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">alias</span><span class="p">))</span>
-    <span class="k">return</span> <span class="s2">&quot;node_aliases&quot;</span></div>
+    <span class="k">return</span> <span class="s2">&quot;node_aliases&quot;</span>
 
 
 <span class="nd">@list_node</span><span class="p">(</span><span class="n">_all_aliases</span><span class="p">,</span> <span class="n">_aliases_select</span><span class="p">)</span>
@@ -1173,26 +1170,26 @@
 <span class="c1"># attributes node</span>
 
 
-<div class="viewcode-block" id="_caller_attrs"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._caller_attrs">[docs]</a><span class="k">def</span> <span class="nf">_caller_attrs</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_caller_attrs</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="n">prototype</span> <span class="o">=</span> <span class="n">_get_menu_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
     <span class="n">attrs</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">utils</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">to_str</span><span class="p">(</span><span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">width</span><span class="o">=</span><span class="mi">10</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;attrs&quot;</span><span class="p">,</span> <span class="p">[])</span>
     <span class="p">]</span>
-    <span class="k">return</span> <span class="n">attrs</span></div>
+    <span class="k">return</span> <span class="n">attrs</span>
 
 
-<div class="viewcode-block" id="_get_tup_by_attrname"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._get_tup_by_attrname">[docs]</a><span class="k">def</span> <span class="nf">_get_tup_by_attrname</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">attrname</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_get_tup_by_attrname</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">attrname</span><span class="p">):</span>
     <span class="n">prototype</span> <span class="o">=</span> <span class="n">_get_menu_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
     <span class="n">attrs</span> <span class="o">=</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;attrs&quot;</span><span class="p">,</span> <span class="p">[])</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">inp</span> <span class="o">=</span> <span class="p">[</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">attrname</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">attrs</span><span class="p">[</span><span class="n">inp</span><span class="p">]</span>
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">None</span></div>
+        <span class="k">return</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="_display_attribute"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._display_attribute">[docs]</a><span class="k">def</span> <span class="nf">_display_attribute</span><span class="p">(</span><span class="n">attr_tuple</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_display_attribute</span><span class="p">(</span><span class="n">attr_tuple</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Pretty-print attribute tuple&quot;&quot;&quot;</span>
     <span class="n">attrkey</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">locks</span> <span class="o">=</span> <span class="n">attr_tuple</span>
     <span class="n">value</span> <span class="o">=</span> <span class="n">protlib</span><span class="o">.</span><span class="n">protfunc_parser</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
@@ -1205,10 +1202,10 @@
         <span class="n">locks</span><span class="o">=</span><span class="s2">&quot;, locks=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">locks</span><span class="p">))</span> <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">locks</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">out</span></div>
+    <span class="k">return</span> <span class="n">out</span>
 
 
-<div class="viewcode-block" id="_add_attr"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._add_attr">[docs]</a><span class="k">def</span> <span class="nf">_add_attr</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">attr_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_add_attr</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">attr_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add new attribute, parsing input.</span>
 
@@ -1219,7 +1216,7 @@
 <span class="sd">                attr = value</span>
 <span class="sd">                attr;category = value</span>
 <span class="sd">                attr;category;lockstring = value</span>
-<span class="sd">    Kwargs:</span>
+<span class="sd">    Keyword args:</span>
 <span class="sd">        delete (str): If this is set, attr_string is</span>
 <span class="sd">            considered the name of the attribute to delete and</span>
 <span class="sd">            no further parsing happens.</span>
@@ -1270,10 +1267,10 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Attribute must be given as &#39;attrname[;category;locks] = &lt;value&gt;&#39;.&quot;</span>
 
-    <span class="k">return</span> <span class="n">text</span></div>
+    <span class="k">return</span> <span class="n">text</span>
 
 
-<div class="viewcode-block" id="_attr_select"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._attr_select">[docs]</a><span class="k">def</span> <span class="nf">_attr_select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">attrstr</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_attr_select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">attrstr</span><span class="p">):</span>
     <span class="n">attrname</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">attrstr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">attrname</span> <span class="o">=</span> <span class="n">attrname</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
@@ -1282,10 +1279,10 @@
         <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;node_examine_entity&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">_display_attribute</span><span class="p">(</span><span class="n">attr_tup</span><span class="p">),</span> <span class="s2">&quot;back&quot;</span><span class="p">:</span> <span class="s2">&quot;attrs&quot;</span><span class="p">})</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Attribute not found.&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s2">&quot;node_attrs&quot;</span></div>
+        <span class="k">return</span> <span class="s2">&quot;node_attrs&quot;</span>
 
 
-<div class="viewcode-block" id="_attrs_actions"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._attrs_actions">[docs]</a><span class="k">def</span> <span class="nf">_attrs_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_attrs_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Parse actions for attribute listing&quot;&quot;&quot;</span>
     <span class="n">choices</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;available_choices&quot;</span><span class="p">,</span> <span class="p">[])</span>
     <span class="n">attrstr</span><span class="p">,</span> <span class="n">action</span> <span class="o">=</span> <span class="n">_default_parse</span><span class="p">(</span>
@@ -1311,7 +1308,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">_add_attr</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">)</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
-    <span class="k">return</span> <span class="s2">&quot;node_attrs&quot;</span></div>
+    <span class="k">return</span> <span class="s2">&quot;node_attrs&quot;</span>
 
 
 <span class="nd">@list_node</span><span class="p">(</span><span class="n">_caller_attrs</span><span class="p">,</span> <span class="n">_attr_select</span><span class="p">)</span>
@@ -1370,32 +1367,32 @@
 <span class="c1"># tags node</span>
 
 
-<div class="viewcode-block" id="_caller_tags"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._caller_tags">[docs]</a><span class="k">def</span> <span class="nf">_caller_tags</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_caller_tags</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="n">prototype</span> <span class="o">=</span> <span class="n">_get_menu_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
     <span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">,</span> <span class="p">[])]</span>
-    <span class="k">return</span> <span class="n">tags</span></div>
+    <span class="k">return</span> <span class="n">tags</span>
 
 
-<div class="viewcode-block" id="_get_tup_by_tagname"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._get_tup_by_tagname">[docs]</a><span class="k">def</span> <span class="nf">_get_tup_by_tagname</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">tagname</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_get_tup_by_tagname</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">tagname</span><span class="p">):</span>
     <span class="n">prototype</span> <span class="o">=</span> <span class="n">_get_menu_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
     <span class="n">tags</span> <span class="o">=</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">,</span> <span class="p">[])</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">inp</span> <span class="o">=</span> <span class="p">[</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">tagname</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">tags</span><span class="p">[</span><span class="n">inp</span><span class="p">]</span>
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">None</span></div>
+        <span class="k">return</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="_display_tag"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._display_tag">[docs]</a><span class="k">def</span> <span class="nf">_display_tag</span><span class="p">(</span><span class="n">tag_tuple</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_display_tag</span><span class="p">(</span><span class="n">tag_tuple</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Pretty-print tag tuple&quot;&quot;&quot;</span>
     <span class="n">tagkey</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">tag_tuple</span>
     <span class="n">out</span> <span class="o">=</span> <span class="s2">&quot;Tag: &#39;</span><span class="si">{tagkey}</span><span class="s2">&#39; (category: </span><span class="si">{category}{dat}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">tagkey</span><span class="o">=</span><span class="n">tagkey</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">dat</span><span class="o">=</span><span class="s2">&quot;, data: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="k">if</span> <span class="n">data</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">out</span></div>
+    <span class="k">return</span> <span class="n">out</span>
 
 
-<div class="viewcode-block" id="_add_tag"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._add_tag">[docs]</a><span class="k">def</span> <span class="nf">_add_tag</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">tag_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_add_tag</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">tag_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add tags to the system, parsing input</span>
 
@@ -1406,7 +1403,7 @@
 <span class="sd">            tagname;category</span>
 <span class="sd">            tagname;category;data</span>
 
-<span class="sd">    Kwargs:</span>
+<span class="sd">    Keyword args:</span>
 <span class="sd">        delete (str): If this is set, tag_string is considered</span>
 <span class="sd">            the name of the tag to delete.</span>
 
@@ -1457,19 +1454,19 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Tag must be given as &#39;tag[;category;data]&#39;.&quot;</span>
 
-    <span class="k">return</span> <span class="n">text</span></div>
+    <span class="k">return</span> <span class="n">text</span>
 
 
-<div class="viewcode-block" id="_tag_select"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._tag_select">[docs]</a><span class="k">def</span> <span class="nf">_tag_select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">tagname</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_tag_select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">tagname</span><span class="p">):</span>
     <span class="n">tag_tup</span> <span class="o">=</span> <span class="n">_get_tup_by_tagname</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">tagname</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">tag_tup</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;node_examine_entity&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">_display_tag</span><span class="p">(</span><span class="n">tag_tup</span><span class="p">),</span> <span class="s2">&quot;back&quot;</span><span class="p">:</span> <span class="s2">&quot;attrs&quot;</span><span class="p">}</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Tag not found.&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s2">&quot;node_attrs&quot;</span></div>
+        <span class="k">return</span> <span class="s2">&quot;node_attrs&quot;</span>
 
 
-<div class="viewcode-block" id="_tags_actions"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._tags_actions">[docs]</a><span class="k">def</span> <span class="nf">_tags_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_tags_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Parse actions for tags listing&quot;&quot;&quot;</span>
     <span class="n">choices</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;available_choices&quot;</span><span class="p">,</span> <span class="p">[])</span>
     <span class="n">tagname</span><span class="p">,</span> <span class="n">action</span> <span class="o">=</span> <span class="n">_default_parse</span><span class="p">(</span>
@@ -1490,7 +1487,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">_add_tag</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">)</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
-    <span class="k">return</span> <span class="s2">&quot;node_tags&quot;</span></div>
+    <span class="k">return</span> <span class="s2">&quot;node_tags&quot;</span>
 
 
 <span class="nd">@list_node</span><span class="p">(</span><span class="n">_caller_tags</span><span class="p">,</span> <span class="n">_tag_select</span><span class="p">)</span>
@@ -1544,20 +1541,20 @@
 <span class="c1"># locks node</span>
 
 
-<div class="viewcode-block" id="_caller_locks"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._caller_locks">[docs]</a><span class="k">def</span> <span class="nf">_caller_locks</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_caller_locks</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="n">_get_menu_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;locks&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">lck</span> <span class="k">for</span> <span class="n">lck</span> <span class="ow">in</span> <span class="n">locks</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">lck</span><span class="p">]</span></div>
+    <span class="k">return</span> <span class="p">[</span><span class="n">lck</span> <span class="k">for</span> <span class="n">lck</span> <span class="ow">in</span> <span class="n">locks</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">lck</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="_locks_display"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._locks_display">[docs]</a><span class="k">def</span> <span class="nf">_locks_display</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">lock</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">lock</span></div>
+<span class="k">def</span> <span class="nf">_locks_display</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">lock</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">lock</span>
 
 
-<div class="viewcode-block" id="_lock_select"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._lock_select">[docs]</a><span class="k">def</span> <span class="nf">_lock_select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">lockstr</span><span class="p">):</span>
-    <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;node_examine_entity&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">_locks_display</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">lockstr</span><span class="p">),</span> <span class="s2">&quot;back&quot;</span><span class="p">:</span> <span class="s2">&quot;locks&quot;</span><span class="p">})</span></div>
+<span class="k">def</span> <span class="nf">_lock_select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">lockstr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;node_examine_entity&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">_locks_display</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">lockstr</span><span class="p">),</span> <span class="s2">&quot;back&quot;</span><span class="p">:</span> <span class="s2">&quot;locks&quot;</span><span class="p">})</span>
 
 
-<div class="viewcode-block" id="_lock_add"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._lock_add">[docs]</a><span class="k">def</span> <span class="nf">_lock_add</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">lock</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_lock_add</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">lock</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="n">_caller_locks</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
@@ -1585,10 +1582,10 @@
         <span class="n">locks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lock</span><span class="p">)</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="s2">&quot;Added lock &#39;</span><span class="si">{}</span><span class="s2">&#39;.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lock</span><span class="p">)</span>
     <span class="n">_set_prototype_value</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;locks&quot;</span><span class="p">,</span> <span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">locks</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">ret</span></div>
+    <span class="k">return</span> <span class="n">ret</span>
 
 
-<div class="viewcode-block" id="_locks_actions"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._locks_actions">[docs]</a><span class="k">def</span> <span class="nf">_locks_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_locks_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">choices</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;available_choices&quot;</span><span class="p">,</span> <span class="p">[])</span>
     <span class="n">lock</span><span class="p">,</span> <span class="n">action</span> <span class="o">=</span> <span class="n">_default_parse</span><span class="p">(</span>
         <span class="n">raw_inp</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;examine&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;remove&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">)</span>
@@ -1604,7 +1601,7 @@
         <span class="n">ret</span> <span class="o">=</span> <span class="n">_lock_add</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">)</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="s2">&quot;node_locks&quot;</span></div>
+    <span class="k">return</span> <span class="s2">&quot;node_locks&quot;</span>
 
 
 <span class="nd">@list_node</span><span class="p">(</span><span class="n">_caller_locks</span><span class="p">,</span> <span class="n">_lock_select</span><span class="p">)</span>
@@ -1664,13 +1661,13 @@
 <span class="c1"># permissions node</span>
 
 
-<div class="viewcode-block" id="_caller_permissions"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._caller_permissions">[docs]</a><span class="k">def</span> <span class="nf">_caller_permissions</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_caller_permissions</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="n">prototype</span> <span class="o">=</span> <span class="n">_get_menu_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
     <span class="n">perms</span> <span class="o">=</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;permissions&quot;</span><span class="p">,</span> <span class="p">[])</span>
-    <span class="k">return</span> <span class="n">perms</span></div>
+    <span class="k">return</span> <span class="n">perms</span>
 
 
-<div class="viewcode-block" id="_display_perm"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._display_perm">[docs]</a><span class="k">def</span> <span class="nf">_display_perm</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">permission</span><span class="p">,</span> <span class="n">only_hierarchy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_display_perm</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">permission</span><span class="p">,</span> <span class="n">only_hierarchy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="n">hierarchy</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">PERMISSION_HIERARCHY</span>
     <span class="n">perm_low</span> <span class="o">=</span> <span class="n">permission</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
     <span class="n">txt</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -1685,17 +1682,17 @@
         <span class="p">)</span>
     <span class="k">elif</span> <span class="ow">not</span> <span class="n">only_hierarchy</span><span class="p">:</span>
         <span class="n">txt</span> <span class="o">=</span> <span class="s2">&quot;Permission: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">permission</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">txt</span></div>
+    <span class="k">return</span> <span class="n">txt</span>
 
 
-<div class="viewcode-block" id="_permission_select"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._permission_select">[docs]</a><span class="k">def</span> <span class="nf">_permission_select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">permission</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_permission_select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">permission</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="s2">&quot;node_examine_entity&quot;</span><span class="p">,</span>
         <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">_display_perm</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">permission</span><span class="p">),</span> <span class="s2">&quot;back&quot;</span><span class="p">:</span> <span class="s2">&quot;permissions&quot;</span><span class="p">},</span>
-    <span class="p">)</span></div>
+    <span class="p">)</span>
 
 
-<div class="viewcode-block" id="_add_perm"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._add_perm">[docs]</a><span class="k">def</span> <span class="nf">_add_perm</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">perm</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_add_perm</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">perm</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">perm</span><span class="p">:</span>
         <span class="n">perm_low</span> <span class="o">=</span> <span class="n">perm</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="n">perms</span> <span class="o">=</span> <span class="n">_caller_permissions</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
@@ -1714,10 +1711,10 @@
                 <span class="n">perms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">perm</span><span class="p">)</span>
                 <span class="n">_set_prototype_value</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;permissions&quot;</span><span class="p">,</span> <span class="n">perms</span><span class="p">)</span>
                 <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Added Permission &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">perm</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">text</span></div>
+        <span class="k">return</span> <span class="n">text</span>
 
 
-<div class="viewcode-block" id="_permissions_actions"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._permissions_actions">[docs]</a><span class="k">def</span> <span class="nf">_permissions_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_permissions_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Parse actions for permission listing&quot;&quot;&quot;</span>
     <span class="n">choices</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;available_choices&quot;</span><span class="p">,</span> <span class="p">[])</span>
     <span class="n">perm</span><span class="p">,</span> <span class="n">action</span> <span class="o">=</span> <span class="n">_default_parse</span><span class="p">(</span>
@@ -1736,7 +1733,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">_add_perm</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
-    <span class="k">return</span> <span class="s2">&quot;node_permissions&quot;</span></div>
+    <span class="k">return</span> <span class="s2">&quot;node_permissions&quot;</span>
 
 
 <span class="nd">@list_node</span><span class="p">(</span><span class="n">_caller_permissions</span><span class="p">,</span> <span class="n">_permission_select</span><span class="p">)</span>
@@ -1788,7 +1785,7 @@
 <span class="c1"># location node</span>
 
 
-<div class="viewcode-block" id="node_location"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus.node_location">[docs]</a><span class="k">def</span> <span class="nf">node_location</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<div class="viewcode-block" id="node_location"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.node_location">[docs]</a><span class="k">def</span> <span class="nf">node_location</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
 
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        The |cLocation|n of this object in the world. If not given, the object will spawn in the</span>
@@ -1825,7 +1822,7 @@
 <span class="c1"># home node</span>
 
 
-<div class="viewcode-block" id="node_home"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus.node_home">[docs]</a><span class="k">def</span> <span class="nf">node_home</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<div class="viewcode-block" id="node_home"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.node_home">[docs]</a><span class="k">def</span> <span class="nf">node_home</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
 
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        The |cHome|n location of an object is often only used as a backup - this is where the object</span>
@@ -1866,7 +1863,7 @@
 <span class="c1"># destination node</span>
 
 
-<div class="viewcode-block" id="node_destination"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus.node_destination">[docs]</a><span class="k">def</span> <span class="nf">node_destination</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<div class="viewcode-block" id="node_destination"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.node_destination">[docs]</a><span class="k">def</span> <span class="nf">node_destination</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
 
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        The object&#39;s |cDestination|n is generally only used by Exit-like objects to designate where</span>
@@ -1902,7 +1899,7 @@
 <span class="c1"># prototype_desc node</span>
 
 
-<div class="viewcode-block" id="node_prototype_desc"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus.node_prototype_desc">[docs]</a><span class="k">def</span> <span class="nf">node_prototype_desc</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<div class="viewcode-block" id="node_prototype_desc"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.node_prototype_desc">[docs]</a><span class="k">def</span> <span class="nf">node_prototype_desc</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
 
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        The |cPrototype-Description|n briefly describes the prototype when it&#39;s viewed in listings.</span>
@@ -1939,14 +1936,14 @@
 <span class="c1"># prototype_tags node</span>
 
 
-<div class="viewcode-block" id="_caller_prototype_tags"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._caller_prototype_tags">[docs]</a><span class="k">def</span> <span class="nf">_caller_prototype_tags</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_caller_prototype_tags</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="n">prototype</span> <span class="o">=</span> <span class="n">_get_menu_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
     <span class="n">tags</span> <span class="o">=</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_tags&quot;</span><span class="p">,</span> <span class="p">[])</span>
     <span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">tag</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">tag</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">tags</span></div>
+    <span class="k">return</span> <span class="n">tags</span>
 
 
-<div class="viewcode-block" id="_add_prototype_tag"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._add_prototype_tag">[docs]</a><span class="k">def</span> <span class="nf">_add_prototype_tag</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">tag_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_add_prototype_tag</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">tag_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add prototype_tags to the system. We only support straight tags, no</span>
 <span class="sd">    categories (category is assigned automatically).</span>
@@ -1955,7 +1952,7 @@
 <span class="sd">        caller (Object): Caller of menu.</span>
 <span class="sd">        tag_string (str): Input from user - only tagname</span>
 
-<span class="sd">    Kwargs:</span>
+<span class="sd">    Keyword args:</span>
 <span class="sd">        delete (str): If this is set, tag_string is considered</span>
 <span class="sd">            the name of the tag to delete.</span>
 
@@ -1986,15 +1983,15 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;No Prototype-Tag specified.&quot;</span>
 
-    <span class="k">return</span> <span class="n">text</span></div>
+    <span class="k">return</span> <span class="n">text</span>
 
 
-<div class="viewcode-block" id="_prototype_tag_select"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._prototype_tag_select">[docs]</a><span class="k">def</span> <span class="nf">_prototype_tag_select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">tagname</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_prototype_tag_select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">tagname</span><span class="p">):</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Prototype-Tag: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tagname</span><span class="p">))</span>
-    <span class="k">return</span> <span class="s2">&quot;node_prototype_tags&quot;</span></div>
+    <span class="k">return</span> <span class="s2">&quot;node_prototype_tags&quot;</span>
 
 
-<div class="viewcode-block" id="_prototype_tags_actions"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._prototype_tags_actions">[docs]</a><span class="k">def</span> <span class="nf">_prototype_tags_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_prototype_tags_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Parse actions for tags listing&quot;&quot;&quot;</span>
     <span class="n">choices</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;available_choices&quot;</span><span class="p">,</span> <span class="p">[])</span>
     <span class="n">tagname</span><span class="p">,</span> <span class="n">action</span> <span class="o">=</span> <span class="n">_default_parse</span><span class="p">(</span><span class="n">raw_inp</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;remove&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">))</span>
@@ -2006,7 +2003,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">_add_prototype_tag</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
-    <span class="k">return</span> <span class="s2">&quot;node_prototype_tags&quot;</span></div>
+    <span class="k">return</span> <span class="s2">&quot;node_prototype_tags&quot;</span>
 
 
 <span class="nd">@list_node</span><span class="p">(</span><span class="n">_caller_prototype_tags</span><span class="p">,</span> <span class="n">_prototype_tag_select</span><span class="p">)</span>
@@ -2047,19 +2044,19 @@
 <span class="c1"># prototype_locks node</span>
 
 
-<div class="viewcode-block" id="_caller_prototype_locks"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._caller_prototype_locks">[docs]</a><span class="k">def</span> <span class="nf">_caller_prototype_locks</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_caller_prototype_locks</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="n">_get_menu_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_locks&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">lck</span> <span class="k">for</span> <span class="n">lck</span> <span class="ow">in</span> <span class="n">locks</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">lck</span><span class="p">]</span></div>
+    <span class="k">return</span> <span class="p">[</span><span class="n">lck</span> <span class="k">for</span> <span class="n">lck</span> <span class="ow">in</span> <span class="n">locks</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">lck</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="_prototype_lock_select"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._prototype_lock_select">[docs]</a><span class="k">def</span> <span class="nf">_prototype_lock_select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">lockstr</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_prototype_lock_select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">lockstr</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="s2">&quot;node_examine_entity&quot;</span><span class="p">,</span>
         <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">_locks_display</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">lockstr</span><span class="p">),</span> <span class="s2">&quot;back&quot;</span><span class="p">:</span> <span class="s2">&quot;prototype_locks&quot;</span><span class="p">},</span>
-    <span class="p">)</span></div>
+    <span class="p">)</span>
 
 
-<div class="viewcode-block" id="_prototype_lock_add"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._prototype_lock_add">[docs]</a><span class="k">def</span> <span class="nf">_prototype_lock_add</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">lock</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_prototype_lock_add</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">lock</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="n">_caller_prototype_locks</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
@@ -2087,10 +2084,10 @@
         <span class="n">locks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lock</span><span class="p">)</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="s2">&quot;Added Prototype-lock &#39;</span><span class="si">{}</span><span class="s2">&#39;.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lock</span><span class="p">)</span>
     <span class="n">_set_prototype_value</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;prototype_locks&quot;</span><span class="p">,</span> <span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">locks</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">ret</span></div>
+    <span class="k">return</span> <span class="n">ret</span>
 
 
-<div class="viewcode-block" id="_prototype_locks_actions"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._prototype_locks_actions">[docs]</a><span class="k">def</span> <span class="nf">_prototype_locks_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_prototype_locks_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">choices</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;available_choices&quot;</span><span class="p">,</span> <span class="p">[])</span>
     <span class="n">lock</span><span class="p">,</span> <span class="n">action</span> <span class="o">=</span> <span class="n">_default_parse</span><span class="p">(</span>
         <span class="n">raw_inp</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;examine&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;remove&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">)</span>
@@ -2106,7 +2103,7 @@
         <span class="n">ret</span> <span class="o">=</span> <span class="n">_prototype_lock_add</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="s2">&quot;node_prototype_locks&quot;</span></div>
+    <span class="k">return</span> <span class="s2">&quot;node_prototype_locks&quot;</span>
 
 
 <span class="nd">@list_node</span><span class="p">(</span><span class="n">_caller_prototype_locks</span><span class="p">,</span> <span class="n">_prototype_lock_select</span><span class="p">)</span>
@@ -2153,7 +2150,7 @@
 <span class="c1"># update existing objects node</span>
 
 
-<div class="viewcode-block" id="_apply_diff"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._apply_diff">[docs]</a><span class="k">def</span> <span class="nf">_apply_diff</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_apply_diff</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;update existing objects&quot;&quot;&quot;</span>
     <span class="n">prototype</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;prototype&quot;</span><span class="p">]</span>
     <span class="n">objects</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;objects&quot;</span><span class="p">]</span>
@@ -2161,10 +2158,10 @@
     <span class="n">diff</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;diff&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="n">num_changed</span> <span class="o">=</span> <span class="n">spawner</span><span class="o">.</span><span class="n">batch_update_objects_with_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">diff</span><span class="o">=</span><span class="n">diff</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="n">objects</span><span class="p">)</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|g</span><span class="si">{num}</span><span class="s2"> objects were updated successfully.|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="n">num_changed</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">back_node</span></div>
+    <span class="k">return</span> <span class="n">back_node</span>
 
 
-<div class="viewcode-block" id="_keep_diff"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._keep_diff">[docs]</a><span class="k">def</span> <span class="nf">_keep_diff</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_keep_diff</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Change to KEEP setting for a given section of a diff&quot;&quot;&quot;</span>
     <span class="c1"># from evennia import set_trace;set_trace(term_size=(182, 50))</span>
     <span class="n">path</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span>
@@ -2172,10 +2169,10 @@
     <span class="n">tmp</span> <span class="o">=</span> <span class="n">diff</span>
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">path</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
         <span class="n">tmp</span> <span class="o">=</span> <span class="n">tmp</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-    <span class="n">tmp</span><span class="p">[</span><span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">tmp</span><span class="p">[</span><span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]][:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;KEEP&quot;</span><span class="p">])</span></div>
+    <span class="n">tmp</span><span class="p">[</span><span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">tmp</span><span class="p">[</span><span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]][:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;KEEP&quot;</span><span class="p">])</span>
 
 
-<div class="viewcode-block" id="_format_diff_text_and_options"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._format_diff_text_and_options">[docs]</a><span class="k">def</span> <span class="nf">_format_diff_text_and_options</span><span class="p">(</span><span class="n">diff</span><span class="p">,</span> <span class="n">minimal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_format_diff_text_and_options</span><span class="p">(</span><span class="n">diff</span><span class="p">,</span> <span class="n">minimal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reformat the diff in a way suitable for the olc menu.</span>
 
@@ -2183,7 +2180,7 @@
 <span class="sd">        diff (dict): A diff as produced by `prototype_diff`.</span>
 <span class="sd">        minimal (bool, optional): Don&#39;t show KEEPs.</span>
 
-<span class="sd">    Kwargs:</span>
+<span class="sd">    Keyword args:</span>
 <span class="sd">        any (any): Forwarded into the generated options as arguments to the callable.</span>
 
 <span class="sd">    Returns:</span>
@@ -2282,10 +2279,10 @@
         <span class="n">texts</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
         <span class="n">options</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">option</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">texts</span><span class="p">,</span> <span class="n">options</span></div>
+    <span class="k">return</span> <span class="n">texts</span><span class="p">,</span> <span class="n">options</span>
 
 
-<div class="viewcode-block" id="node_apply_diff"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus.node_apply_diff">[docs]</a><span class="k">def</span> <span class="nf">node_apply_diff</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="node_apply_diff"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.node_apply_diff">[docs]</a><span class="k">def</span> <span class="nf">node_apply_diff</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Offer options for updating objects&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">_keep_option</span><span class="p">(</span><span class="n">keyname</span><span class="p">,</span> <span class="n">prototype</span><span class="p">,</span> <span class="n">base_obj</span><span class="p">,</span> <span class="n">obj_prototype</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span> <span class="n">objects</span><span class="p">,</span> <span class="n">back_node</span><span class="p">):</span>
@@ -2398,7 +2395,7 @@
 <span class="c1"># prototype save node</span>
 
 
-<div class="viewcode-block" id="node_prototype_save"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus.node_prototype_save">[docs]</a><span class="k">def</span> <span class="nf">node_prototype_save</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="node_prototype_save"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.node_prototype_save">[docs]</a><span class="k">def</span> <span class="nf">node_prototype_save</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Save prototype to disk &quot;&quot;&quot;</span>
     <span class="c1"># these are only set if we selected &#39;yes&#39; to save on a previous pass</span>
     <span class="n">prototype</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -2518,7 +2515,7 @@
 <span class="c1"># spawning node</span>
 
 
-<div class="viewcode-block" id="_spawn"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._spawn">[docs]</a><span class="k">def</span> <span class="nf">_spawn</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_spawn</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Spawn prototype&quot;&quot;&quot;</span>
     <span class="n">prototype</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;prototype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">new_location</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;location&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -2535,10 +2532,10 @@
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;|rError: Spawner did not return a new instance.|n&quot;</span>
-    <span class="k">return</span> <span class="s2">&quot;node_examine_entity&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">text</span><span class="p">,</span> <span class="s2">&quot;back&quot;</span><span class="p">:</span> <span class="s2">&quot;prototype_spawn&quot;</span><span class="p">}</span></div>
+    <span class="k">return</span> <span class="s2">&quot;node_examine_entity&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">text</span><span class="p">,</span> <span class="s2">&quot;back&quot;</span><span class="p">:</span> <span class="s2">&quot;prototype_spawn&quot;</span><span class="p">}</span>
 
 
-<div class="viewcode-block" id="node_prototype_spawn"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus.node_prototype_spawn">[docs]</a><span class="k">def</span> <span class="nf">node_prototype_spawn</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="node_prototype_spawn"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.node_prototype_spawn">[docs]</a><span class="k">def</span> <span class="nf">node_prototype_spawn</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Submenu for spawning the prototype&quot;&quot;&quot;</span>
 
     <span class="n">prototype</span> <span class="o">=</span> <span class="n">_get_menu_prototype</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
@@ -2625,7 +2622,7 @@
 <span class="c1"># prototype load node</span>
 
 
-<div class="viewcode-block" id="_prototype_load_select"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._prototype_load_select">[docs]</a><span class="k">def</span> <span class="nf">_prototype_load_select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">prototype_key</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_prototype_load_select</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">prototype_key</span><span class="p">):</span>
     <span class="n">matches</span> <span class="o">=</span> <span class="n">protlib</span><span class="o">.</span><span class="n">search_prototype</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">prototype_key</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">matches</span><span class="p">:</span>
         <span class="n">prototype</span> <span class="o">=</span> <span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -2639,10 +2636,10 @@
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|rFailed to load prototype &#39;</span><span class="si">{}</span><span class="s2">&#39;.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prototype_key</span><span class="p">))</span>
-        <span class="k">return</span> <span class="kc">None</span></div>
+        <span class="k">return</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="_prototype_load_actions"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus._prototype_load_actions">[docs]</a><span class="k">def</span> <span class="nf">_prototype_load_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_prototype_load_actions</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_inp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Parse the default Convert prototype to a string representation for closer inspection&quot;&quot;&quot;</span>
     <span class="n">choices</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;available_choices&quot;</span><span class="p">,</span> <span class="p">[])</span>
     <span class="n">prototype</span><span class="p">,</span> <span class="n">action</span> <span class="o">=</span> <span class="n">_default_parse</span><span class="p">(</span>
@@ -2667,7 +2664,7 @@
                 <span class="n">txt</span> <span class="o">=</span> <span class="s2">&quot;|gPrototype </span><span class="si">{}</span><span class="s2"> was deleted.|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prototype</span><span class="p">)</span>
             <span class="k">return</span> <span class="s2">&quot;node_examine_entity&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">txt</span><span class="p">,</span> <span class="s2">&quot;back&quot;</span><span class="p">:</span> <span class="s2">&quot;prototype_load&quot;</span><span class="p">}</span>
 
-    <span class="k">return</span> <span class="s2">&quot;node_prototype_load&quot;</span></div>
+    <span class="k">return</span> <span class="s2">&quot;node_prototype_load&quot;</span>
 
 
 <span class="nd">@list_node</span><span class="p">(</span><span class="n">_all_prototype_parents</span><span class="p">,</span> <span class="n">_prototype_load_select</span><span class="p">)</span>
@@ -2695,20 +2692,20 @@
 <span class="c1"># EvMenu definition, formatting and access functions</span>
 
 
-<div class="viewcode-block" id="OLCMenu"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus.OLCMenu">[docs]</a><span class="k">class</span> <span class="nc">OLCMenu</span><span class="p">(</span><span class="n">EvMenu</span><span class="p">):</span>
+<div class="viewcode-block" id="OLCMenu"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.OLCMenu">[docs]</a><span class="k">class</span> <span class="nc">OLCMenu</span><span class="p">(</span><span class="n">EvMenu</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A custom EvMenu with a different formatting for the options.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="OLCMenu.nodetext_formatter"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus.OLCMenu.nodetext_formatter">[docs]</a>    <span class="k">def</span> <span class="nf">nodetext_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodetext</span><span class="p">):</span>
+<div class="viewcode-block" id="OLCMenu.nodetext_formatter"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.OLCMenu.nodetext_formatter">[docs]</a>    <span class="k">def</span> <span class="nf">nodetext_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodetext</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Format the node text itself.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">OLCMenu</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">nodetext_formatter</span><span class="p">(</span><span class="n">nodetext</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="OLCMenu.options_formatter"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus.OLCMenu.options_formatter">[docs]</a>    <span class="k">def</span> <span class="nf">options_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optionlist</span><span class="p">):</span>
+<div class="viewcode-block" id="OLCMenu.options_formatter"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.OLCMenu.options_formatter">[docs]</a>    <span class="k">def</span> <span class="nf">options_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optionlist</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Split the options into two blocks - olc options and normal options</span>
 
@@ -2747,17 +2744,17 @@
 
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">olc_options</span><span class="p">,</span> <span class="n">sep</span><span class="p">,</span> <span class="n">other_options</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="OLCMenu.helptext_formatter"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus.OLCMenu.helptext_formatter">[docs]</a>    <span class="k">def</span> <span class="nf">helptext_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">helptext</span><span class="p">):</span>
+<div class="viewcode-block" id="OLCMenu.helptext_formatter"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.OLCMenu.helptext_formatter">[docs]</a>    <span class="k">def</span> <span class="nf">helptext_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">helptext</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Show help text</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;|c --- Help ---|n</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">utils</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="n">helptext</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="OLCMenu.display_helptext"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus.OLCMenu.display_helptext">[docs]</a>    <span class="k">def</span> <span class="nf">display_helptext</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="OLCMenu.display_helptext"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.OLCMenu.display_helptext">[docs]</a>    <span class="k">def</span> <span class="nf">display_helptext</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">evmore</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">helptext</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">,</span> <span class="n">exit_cmd</span><span class="o">=</span><span class="s2">&quot;look&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="start_olc"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.menus.start_olc">[docs]</a><span class="k">def</span> <span class="nf">start_olc</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prototype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="start_olc"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.start_olc">[docs]</a><span class="k">def</span> <span class="nf">start_olc</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prototype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Start menu-driven olc system for prototypes.</span>
 
@@ -2803,6 +2800,7 @@
     <span class="p">)</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -2840,17 +2838,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.prototypes.menus</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.prototypes.menus</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

@@ -1,0 +1,276 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>evennia.utils.evform &#8212; Evennia 0.9.1 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.evform</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-evennia.utils.evform">
+<span id="evennia-utils-evform"></span><h1>evennia.utils.evform<a class="headerlink" href="#module-evennia.utils.evform" title="Permalink to this headline">¶</a></h1>
+<p>EvForm - a way to create advanced ASCII forms</p>
+<p>This is intended for creating advanced ASCII game forms, such as a
+large pretty character sheet or info document.</p>
+<p>The system works on the basis of a readin template that is given in a
+separate Python file imported into the handler. This file contains
+some optional settings and a string mapping out the form. The template
+has markers in it to denounce fields to fill. The markers map the
+absolute size of the field and will be filled with an <strong>evtable.EvCell</strong>
+object when displaying the form.</p>
+<p>Example of input file <strong>testform.py</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FORMCHAR</span> <span class="o">=</span> <span class="s2">&quot;x&quot;</span>
+<span class="n">TABLECHAR</span> <span class="o">=</span> <span class="s2">&quot;c&quot;</span>
+
+<span class="n">FORM</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">.------------------------------------------------.</span>
+<span class="s1">|                                                |</span>
+<span class="s1">|  Name: xxxxx1xxxxx    Player: xxxxxxx2xxxxxxx  |</span>
+<span class="s1">|        xxxxxxxxxxx                             |</span>
+<span class="s1">|                                                |</span>
+<span class="s1"> &gt;----------------------------------------------&lt;</span>
+<span class="s1">|                                                |</span>
+<span class="s1">| Desc:  xxxxxxxxxxx    STR: x4x    DEX: x5x     |</span>
+<span class="s1">|        xxxxx3xxxxx    INT: x6x    STA: x7x     |</span>
+<span class="s1">|        xxxxxxxxxxx    LUC: x8x    MAG: x9x     |</span>
+<span class="s1">|                                                |</span>
+<span class="s1"> &gt;----------------------------------------------&lt;</span>
+<span class="s1">|          |                                     |</span>
+<span class="s1">| cccccccc | ccccccccccccccccccccccccccccccccccc |</span>
+<span class="s1">| cccccccc | ccccccccccccccccccccccccccccccccccc |</span>
+<span class="s1">| cccAcccc | ccccccccccccccccccccccccccccccccccc |</span>
+<span class="s1">| cccccccc | ccccccccccccccccccccccccccccccccccc |</span>
+<span class="s1">| cccccccc | cccccccccccccccccBccccccccccccccccc |</span>
+<span class="s1">|          |                                     |</span>
+<span class="s1">-------------------------------------------------</span>
+<span class="s1">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<p>The first line of the <strong>FORM</strong> string is ignored. The forms and table
+markers must mark out complete, unbroken rectangles, each containing
+one embedded single-character identifier (so the smallest element
+possible is a 3-character wide form). The identifier can be any
+character except for the <strong>FORM_CHAR</strong> and <strong>TABLE_CHAR</strong> and some of the
+common ASCII-art elements, like space, <strong>_</strong> <strong>|</strong> <strong>*</strong> etc (see
+<strong>INVALID_FORMCHARS</strong> in this module). Form Rectangles can have any size,
+but must be separated from each other by at least one other
+character’s width.</p>
+<p>Use as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">EvForm</span><span class="p">,</span> <span class="n">EvTable</span>
+
+<span class="c1"># create a new form from the template</span>
+<span class="n">form</span> <span class="o">=</span> <span class="n">EvForm</span><span class="p">(</span><span class="s2">&quot;path/to/testform.py&quot;</span><span class="p">)</span>
+
+<span class="p">(</span><span class="n">MudForm</span> <span class="n">can</span> <span class="n">also</span> <span class="n">take</span> <span class="n">a</span> <span class="n">dictionary</span> <span class="n">holding</span>
+ <span class="n">the</span> <span class="n">required</span> <span class="n">keys</span> <span class="n">FORMCHAR</span><span class="p">,</span> <span class="n">TABLECHAR</span> <span class="ow">and</span> <span class="n">FORM</span><span class="p">)</span>
+
+<span class="c1"># add data to each tagged form cell</span>
+<span class="n">form</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">cells</span><span class="o">=</span><span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;Tom the Bouncer&quot;</span><span class="p">,</span>
+                <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;Griatch&quot;</span><span class="p">,</span>
+                <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;A sturdy fellow&quot;</span><span class="p">,</span>
+                <span class="mi">4</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+                <span class="mi">5</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+                <span class="mi">6</span><span class="p">:</span>  <span class="mi">5</span><span class="p">,</span>
+                <span class="mi">7</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span>
+                <span class="mi">8</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+                <span class="mi">9</span><span class="p">:</span>  <span class="mi">3</span><span class="p">})</span>
+<span class="c1"># create the EvTables</span>
+<span class="n">tableA</span> <span class="o">=</span> <span class="n">EvTable</span><span class="p">(</span><span class="s2">&quot;HP&quot;</span><span class="p">,</span><span class="s2">&quot;MV&quot;</span><span class="p">,</span><span class="s2">&quot;MP&quot;</span><span class="p">,</span>
+                           <span class="n">table</span><span class="o">=</span><span class="p">[[</span><span class="s2">&quot;**&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;*****&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;***&quot;</span><span class="p">]],</span>
+                           <span class="n">border</span><span class="o">=</span><span class="s2">&quot;incols&quot;</span><span class="p">)</span>
+<span class="n">tableB</span> <span class="o">=</span> <span class="n">EvTable</span><span class="p">(</span><span class="s2">&quot;Skill&quot;</span><span class="p">,</span> <span class="s2">&quot;Value&quot;</span><span class="p">,</span> <span class="s2">&quot;Exp&quot;</span><span class="p">,</span>
+                           <span class="n">table</span><span class="o">=</span><span class="p">[[</span><span class="s2">&quot;Shooting&quot;</span><span class="p">,</span> <span class="s2">&quot;Herbalism&quot;</span><span class="p">,</span> <span class="s2">&quot;Smithing&quot;</span><span class="p">],</span>
+                                  <span class="p">[</span><span class="mi">12</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">9</span><span class="p">],[</span><span class="s2">&quot;550/1200&quot;</span><span class="p">,</span> <span class="s2">&quot;990/1400&quot;</span><span class="p">,</span> <span class="s2">&quot;205/900&quot;</span><span class="p">]],</span>
+                           <span class="n">border</span><span class="o">=</span><span class="s2">&quot;incols&quot;</span><span class="p">)</span>
+<span class="c1"># add the tables to the proper ids in the form</span>
+<span class="n">form</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">tables</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="n">tableA</span><span class="p">,</span>
+                 <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="n">tableB</span><span class="p">})</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This produces the following result:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">.------------------------------------------------.</span>
+<span class="o">|</span>                                                <span class="o">|</span>
+<span class="o">|</span>  <span class="n">Name</span><span class="p">:</span> <span class="n">Tom</span> <span class="n">the</span>        <span class="n">Player</span><span class="p">:</span> <span class="n">Griatch</span>          <span class="o">|</span>
+<span class="o">|</span>        <span class="n">Bouncer</span>                                 <span class="o">|</span>
+<span class="o">|</span>                                                <span class="o">|</span>
+ <span class="o">&gt;----------------------------------------------&lt;</span>
+<span class="o">|</span>                                                <span class="o">|</span>
+<span class="o">|</span> <span class="n">Desc</span><span class="p">:</span>  <span class="n">A</span> <span class="n">sturdy</span>       <span class="n">STR</span><span class="p">:</span> <span class="mi">12</span>     <span class="n">DEX</span><span class="p">:</span> <span class="mi">10</span>      <span class="o">|</span>
+<span class="o">|</span>        <span class="n">fellow</span>         <span class="n">INT</span><span class="p">:</span> <span class="mi">5</span>      <span class="n">STA</span><span class="p">:</span> <span class="mi">18</span>      <span class="o">|</span>
+<span class="o">|</span>                       <span class="n">LUC</span><span class="p">:</span> <span class="mi">10</span>     <span class="n">MAG</span><span class="p">:</span> <span class="mi">3</span>       <span class="o">|</span>
+<span class="o">|</span>                                                <span class="o">|</span>
+ <span class="o">&gt;----------------------------------------------&lt;</span>
+<span class="o">|</span>          <span class="o">|</span>                                     <span class="o">|</span>
+<span class="o">|</span> <span class="n">HP</span><span class="o">|</span><span class="n">MV</span><span class="o">|</span><span class="n">MP</span> <span class="o">|</span> <span class="n">Skill</span>      <span class="o">|</span><span class="n">Value</span>      <span class="o">|</span><span class="n">Exp</span>         <span class="o">|</span>
+<span class="o">|</span> <span class="o">~~+~~+~~</span> <span class="o">|</span> <span class="o">~~~~~~~~~~~+~~~~~~~~~~~+~~~~~~~~~~~</span> <span class="o">|</span>
+<span class="o">|</span> <span class="o">**|**|**</span> <span class="o">|</span> <span class="n">Shooting</span>   <span class="o">|</span><span class="mi">12</span>         <span class="o">|</span><span class="mi">550</span><span class="o">/</span><span class="mi">1200</span>    <span class="o">|</span>
+<span class="o">|</span>   <span class="o">|**|*</span>  <span class="o">|</span> <span class="n">Herbalism</span>  <span class="o">|</span><span class="mi">14</span>         <span class="o">|</span><span class="mi">990</span><span class="o">/</span><span class="mi">1400</span>    <span class="o">|</span>
+<span class="o">|</span>   <span class="o">|*</span> <span class="o">|</span>   <span class="o">|</span> <span class="n">Smithing</span>   <span class="o">|</span><span class="mi">9</span>          <span class="o">|</span><span class="mi">205</span><span class="o">/</span><span class="mi">900</span>     <span class="o">|</span>
+<span class="o">|</span>          <span class="o">|</span>                                     <span class="o">|</span>
+ <span class="o">------------------------------------------------</span>
+</pre></div>
+</div>
+<p>The marked forms have been replaced with EvCells of text and with
+EvTables. The form can be updated by simply re-applying <strong>form.map()</strong>
+with the updated data.</p>
+<p>When working with the template ASCII file, you can use <strong>form.reload()</strong>
+to re-read the template and re-apply all existing mappings.</p>
+<p>Each component is restrained to the width and height specified by the
+template, so it will resize to fit (or crop text if the area is too
+small for it). If you try to fit a table into an area it cannot fit
+into (when including its borders and at least one line of text), the
+form will raise an error.</p>
+<hr class="docutils" />
+<dl class="py class">
+<dt id="evennia.utils.evform.EvForm">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.evform.</code><code class="sig-name descname">EvForm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cells</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tables</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">form</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evform.html#EvForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evform.EvForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This object is instantiated with a text file and parses
+it for rectangular form fields. It can then be fed a
+mapping so as to populate the fields with fixed-width
+EvCell or Tables.</p>
+<dl class="py method">
+<dt id="evennia.utils.evform.EvForm.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cells</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tables</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">form</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evform.html#EvForm.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evform.EvForm.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initiate the form</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>str</em>) – Path to template file.</p></li>
+<li><p><strong>cells</strong> (<em>dict</em>) – A dictionary mapping  <strong>{id: text}</strong></p></li>
+<li><p><strong>tables</strong> (<em>dict</em>) – A dictionary mapping  <strong>{id: EvTable}</strong>.</p></li>
+<li><p><strong>form</strong> (<em>dict</em>) – A dictionary
+<strong>{“FORMCHAR”:char, “TABLECHAR”:char, “FORM”:templatestring}</strong>.
+If this is given, filename is not read.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Other kwargs are fed as options to the EvCells and EvTables
+(see <strong>evtable.EvCell</strong> and <strong>evtable.EvTable</strong> for more info).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.evform.EvForm.map">
+<code class="sig-name descname">map</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cells</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tables</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evform.html#EvForm.map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evform.EvForm.map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add mapping for form.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cells</strong> (<em>dict</em>) – A dictionary of {identifier:celltext}</p></li>
+<li><p><strong>tables</strong> (<em>dict</em>) – A dictionary of {identifier:table}</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>kwargs will be forwarded to tables/cells. See
+<strong>evtable.EvCell</strong> and <strong>evtable.EvTable</strong> for info.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.evform.EvForm.reload">
+<code class="sig-name descname">reload</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">form</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evform.html#EvForm.reload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evform.EvForm.reload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the form from a stored file name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>str</em>) – The file to read from.</p></li>
+<li><p><strong>form</strong> (<em>dict</em>) – A mapping for the form.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Kwargs are passed through to Cel creation.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.utils.evform.rst.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../1.0-dev/api/evennia.utils.evform.html">1.0-dev (develop branch)</a></li>
+  <li><a href="evennia.utils.evform.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.evform</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+    </div>
+  </body>
+</html>

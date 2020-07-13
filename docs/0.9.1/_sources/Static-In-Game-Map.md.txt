@@ -3,13 +3,13 @@
 
 ## Introduction
 
-This tutorial describes the creation of an in-game map display based on a pre-drawn map. It also details how to use the [Batch code processor](Batch-Code-Processor) for advanced building. There is also the [Dynamic in-game map tutorial](Dynamic-In-Game-Map) that works in the opposite direction, by generating a map from an existing grid of rooms. 
+This tutorial describes the creation of an in-game map display based on a pre-drawn map. It also details how to use the [Batch code processor](./Batch-Code-Processor) for advanced building. There is also the [Dynamic in-game map tutorial](./Dynamic-In-Game-Map) that works in the opposite direction, by generating a map from an existing grid of rooms. 
 
 Evennia does not require its rooms to be positioned in a "logical" way. Your exits could be named anything. You could make an exit "west" that leads to a room described to be in the far north. You could have rooms inside one another, exits leading back to the same room or describing spatial geometries impossible in the real world. 
 
 That said, most games *do* organize their rooms in a logical fashion, if nothing else to retain the sanity of their players. And when they do, the game becomes possible to map. This tutorial will give an example of a simple but flexible in-game map system to further help player's to navigate. We will 
 
-To simplify development and error-checking we'll break down the work into bite-size chunks, each building on what came before. For this we'll make extensive use of the [Batch code processor](Batch-Code-Processor), so you may want to familiarize yourself with that.
+To simplify development and error-checking we'll break down the work into bite-size chunks, each building on what came before. For this we'll make extensive use of the [Batch code processor](./Batch-Code-Processor), so you may want to familiarize yourself with that.
 
 1. **Planning the map** - Here we'll come up with a small example map to use for the rest of the tutorial.
 2. **Making a map object** - This will showcase how to make a static in-game "map" object a Character could pick up and look at. 
@@ -27,7 +27,7 @@ To simplify development and error-checking we'll break down the work into bite-s
     Exits: north(#8), east(#9), south(#10), west(#11)
     ```
 
-We will henceforth assume your game folder is name named `mygame` and that you haven't modified the default commands. We will also not be using [Colors](TextTags#colored-text) for our map since they don't show in the documentation wiki.
+We will henceforth assume your game folder is name named `mygame` and that you haven't modified the default commands. We will also not be using [Colors](./TextTags#colored-text) for our map since they don't show in the documentation wiki.
 
 ## Planning the Map
 
@@ -55,11 +55,11 @@ There are many considerations when making a game map depending on the play style
 
 In this section we will try to create an actual "map" object that an account can pick up and look at. 
 
-Evennia offers a range of [default commands](Default-Command-Help) for [creating objects and rooms in-game](Building-Quickstart). While readily accessible, these commands are made to do very specific, restricted things and will thus not offer as much flexibility to experiment (for an advanced exception see [in-line functions](TextTags#new-inlinefuncs)). Additionally, entering long descriptions and properties over and over in the game client can become tedious; especially when testing and you may want to delete and recreate things over and over. 
+Evennia offers a range of [default commands](./Default-Command-Help) for [creating objects and rooms in-game](./Building-Quickstart). While readily accessible, these commands are made to do very specific, restricted things and will thus not offer as much flexibility to experiment (for an advanced exception see [in-line functions](./TextTags#new-inlinefuncs)). Additionally, entering long descriptions and properties over and over in the game client can become tedious; especially when testing and you may want to delete and recreate things over and over. 
 
-To overcome this, Evennia offers [batch processors](Batch-Processors) that work as input-files created out-of-game. In this tutorial we'll be using the more powerful of the two available batch processors, the [Batch Code Processor ](Batch-Code-Processor), called with the `@batchcode` command. This is a very powerful tool. It allows you to craft Python files to act as blueprints of your entire game world. These files have access to use Evennia's Python API directly. Batchcode allows for easy editing and creation in whatever text editor you prefer, avoiding having to manually build the world line-by-line inside the game. 
+To overcome this, Evennia offers [batch processors](./Batch-Processors) that work as input-files created out-of-game. In this tutorial we'll be using the more powerful of the two available batch processors, the [Batch Code Processor ](./Batch-Code-Processor), called with the `@batchcode` command. This is a very powerful tool. It allows you to craft Python files to act as blueprints of your entire game world. These files have access to use Evennia's Python API directly. Batchcode allows for easy editing and creation in whatever text editor you prefer, avoiding having to manually build the world line-by-line inside the game. 
 
-> Important warning: `@batchcode`'s power is only rivaled by the `@py` command. Batchcode is so powerful it should be reserved only for the [superuser](Building-Permissions). Think carefully before you let others (such as `Developer`- level staff) run `@batchcode` on their own - make sure you are okay with them running *arbitrary Python code* on your server.
+> Important warning: `@batchcode`'s power is only rivaled by the `@py` command. Batchcode is so powerful it should be reserved only for the [superuser](./Building-Permissions). Think carefully before you let others (such as `Developer`- level staff) run `@batchcode` on their own - make sure you are okay with them running *arbitrary Python code* on your server.
 
 While a simple example, the map object it serves as good way to try out `@batchcode`. Go to `mygame/world` and create a new file there named `batchcode_map.py`:
 
@@ -232,8 +232,7 @@ def return_minimap(x, y, radius = 2):
     map = ""
     
     #For each row we need, add the characters we need.
-    for valuey in world_map[y-radius:y+radius+1]:
-        for valuex in valuey[x-radius:x+radius+1]:
+    for valuey in world_map[y-radius:y+radius+1]:         for valuex in valuey[x-radius:x+radius+1]:
             map += valuex
         map += "\n"
     
@@ -334,4 +333,4 @@ Log in to evennia and run `@batchcode batchcode_world` and you'll have a little 
 
 You should now have a mapped little world and a basic understanding of batchcode, EvTable and how easily new game defining features can be added to Evennia. 
 
-You can easily build from this tutorial by expanding the map and creating more rooms to explore. Why not add more features to your game by trying other tutorials: [Add weather to your world](Weather-Tutorial), [fill your world with NPC's](Tutorial-Aggressive-NPCs) or [implement a combat system](Turn-based-Combat-System).
+You can easily build from this tutorial by expanding the map and creating more rooms to explore. Why not add more features to your game by trying other tutorials: [Add weather to your world](./Weather-Tutorial), [fill your world with NPC's](./Tutorial-Aggressive-NPCs) or [implement a combat system](./Turn-based-Combat-System).

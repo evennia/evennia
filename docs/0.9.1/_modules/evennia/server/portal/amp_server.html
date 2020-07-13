@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.server.portal.amp_server &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.server.portal.amp_server</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.amp_server</a></li> 
       </ul>
     </div>  
 
@@ -58,11 +55,11 @@
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">class_from_module</span>
 
 
-<div class="viewcode-block" id="_is_windows"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.amp_server._is_windows">[docs]</a><span class="k">def</span> <span class="nf">_is_windows</span><span class="p">():</span>
-    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;nt&quot;</span></div>
+<span class="k">def</span> <span class="nf">_is_windows</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;nt&quot;</span>
 
 
-<div class="viewcode-block" id="getenv"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.amp_server.getenv">[docs]</a><span class="k">def</span> <span class="nf">getenv</span><span class="p">():</span>
+<div class="viewcode-block" id="getenv"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp_server.html#evennia.server.portal.amp_server.getenv">[docs]</a><span class="k">def</span> <span class="nf">getenv</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get current environment and add PYTHONPATH.</span>
 
@@ -76,7 +73,7 @@
     <span class="k">return</span> <span class="n">env</span></div>
 
 
-<div class="viewcode-block" id="AMPServerFactory"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.amp_server.AMPServerFactory">[docs]</a><span class="k">class</span> <span class="nc">AMPServerFactory</span><span class="p">(</span><span class="n">protocol</span><span class="o">.</span><span class="n">ServerFactory</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPServerFactory"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp_server.html#evennia.server.portal.amp_server.AMPServerFactory">[docs]</a><span class="k">class</span> <span class="nc">AMPServerFactory</span><span class="p">(</span><span class="n">protocol</span><span class="o">.</span><span class="n">ServerFactory</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This factory creates AMP Server connection. This acts as the &#39;Portal&#39;-side communication to the</span>
@@ -86,11 +83,11 @@
 
     <span class="n">noisy</span> <span class="o">=</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="AMPServerFactory.logPrefix"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.amp_server.AMPServerFactory.logPrefix">[docs]</a>    <span class="k">def</span> <span class="nf">logPrefix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPServerFactory.logPrefix"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp_server.html#evennia.server.portal.amp_server.AMPServerFactory.logPrefix">[docs]</a>    <span class="k">def</span> <span class="nf">logPrefix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;How this is named in logs&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;AMP&quot;</span></div>
 
-<div class="viewcode-block" id="AMPServerFactory.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.amp_server.AMPServerFactory.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">portal</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPServerFactory.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp_server.html#evennia.server.portal.amp_server.AMPServerFactory.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">portal</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the factory. This is called as the Portal service starts.</span>
 
@@ -108,7 +105,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">disconnect_callbacks</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">server_connect_callbacks</span> <span class="o">=</span> <span class="p">[]</span></div>
 
-<div class="viewcode-block" id="AMPServerFactory.buildProtocol"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.amp_server.AMPServerFactory.buildProtocol">[docs]</a>    <span class="k">def</span> <span class="nf">buildProtocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPServerFactory.buildProtocol"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp_server.html#evennia.server.portal.amp_server.AMPServerFactory.buildProtocol">[docs]</a>    <span class="k">def</span> <span class="nf">buildProtocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start a new connection, and store it on the service object.</span>
 
@@ -124,13 +121,13 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">amp_protocol</span></div></div>
 
 
-<div class="viewcode-block" id="AMPServerProtocol"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.amp_server.AMPServerProtocol">[docs]</a><span class="k">class</span> <span class="nc">AMPServerProtocol</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">AMPMultiConnectionProtocol</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPServerProtocol"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp_server.html#evennia.server.portal.amp_server.AMPServerProtocol">[docs]</a><span class="k">class</span> <span class="nc">AMPServerProtocol</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">AMPMultiConnectionProtocol</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Protocol subclass for the AMP-server run by the Portal.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="AMPServerProtocol.connectionLost"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.amp_server.AMPServerProtocol.connectionLost">[docs]</a>    <span class="k">def</span> <span class="nf">connectionLost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPServerProtocol.connectionLost"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp_server.html#evennia.server.portal.amp_server.AMPServerProtocol.connectionLost">[docs]</a>    <span class="k">def</span> <span class="nf">connectionLost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set up a simple callback mechanism to let the amp-server wait for a connection to close.</span>
 
@@ -150,7 +147,7 @@
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="AMPServerProtocol.get_status"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.amp_server.AMPServerProtocol.get_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPServerProtocol.get_status"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp_server.html#evennia.server.portal.amp_server.AMPServerProtocol.get_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return status for the Evennia infrastructure.</span>
 
@@ -168,7 +165,7 @@
         <span class="n">portal_pid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">()</span>
         <span class="k">return</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">server_connected</span><span class="p">,</span> <span class="n">portal_pid</span><span class="p">,</span> <span class="n">server_pid</span><span class="p">,</span> <span class="n">portal_info_dict</span><span class="p">,</span> <span class="n">server_info_dict</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="AMPServerProtocol.data_to_server"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.amp_server.AMPServerProtocol.data_to_server">[docs]</a>    <span class="k">def</span> <span class="nf">data_to_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">sessid</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPServerProtocol.data_to_server"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp_server.html#evennia.server.portal.amp_server.AMPServerProtocol.data_to_server">[docs]</a>    <span class="k">def</span> <span class="nf">data_to_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">sessid</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send data across the wire to the Server.</span>
 
@@ -194,7 +191,7 @@
             <span class="c1"># if no server connection is available, broadcast</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">sessid</span><span class="p">,</span> <span class="n">packed_data</span><span class="o">=</span><span class="n">amp</span><span class="o">.</span><span class="n">dumps</span><span class="p">((</span><span class="n">sessid</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)))</span></div>
 
-<div class="viewcode-block" id="AMPServerProtocol.start_server"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.amp_server.AMPServerProtocol.start_server">[docs]</a>    <span class="k">def</span> <span class="nf">start_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server_twistd_cmd</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPServerProtocol.start_server"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp_server.html#evennia.server.portal.amp_server.AMPServerProtocol.start_server">[docs]</a>    <span class="k">def</span> <span class="nf">start_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server_twistd_cmd</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        (Re-)Launch the Evennia server.</span>
 
@@ -237,7 +234,7 @@
             <span class="n">process</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
         <span class="k">return</span></div>
 
-<div class="viewcode-block" id="AMPServerProtocol.wait_for_disconnect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.amp_server.AMPServerProtocol.wait_for_disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">wait_for_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPServerProtocol.wait_for_disconnect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp_server.html#evennia.server.portal.amp_server.AMPServerProtocol.wait_for_disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">wait_for_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a callback for when this connection is lost.</span>
 
@@ -248,7 +245,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">disconnect_callbacks</span><span class="p">[</span><span class="bp">self</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="AMPServerProtocol.wait_for_server_connect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.amp_server.AMPServerProtocol.wait_for_server_connect">[docs]</a>    <span class="k">def</span> <span class="nf">wait_for_server_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPServerProtocol.wait_for_server_connect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp_server.html#evennia.server.portal.amp_server.AMPServerProtocol.wait_for_server_connect">[docs]</a>    <span class="k">def</span> <span class="nf">wait_for_server_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a callback for when the Server is sure to have connected.</span>
 
@@ -259,7 +256,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">server_connect_callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">callback</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="AMPServerProtocol.stop_server"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.amp_server.AMPServerProtocol.stop_server">[docs]</a>    <span class="k">def</span> <span class="nf">stop_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;shutdown&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPServerProtocol.stop_server"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp_server.html#evennia.server.portal.amp_server.AMPServerProtocol.stop_server">[docs]</a>    <span class="k">def</span> <span class="nf">stop_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;shutdown&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shut down server in one or more modes.</span>
 
@@ -277,7 +274,7 @@
 
     <span class="c1"># sending amp data</span>
 
-<div class="viewcode-block" id="AMPServerProtocol.send_Status2Launcher"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.amp_server.AMPServerProtocol.send_Status2Launcher">[docs]</a>    <span class="k">def</span> <span class="nf">send_Status2Launcher</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPServerProtocol.send_Status2Launcher"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp_server.html#evennia.server.portal.amp_server.AMPServerProtocol.send_Status2Launcher">[docs]</a>    <span class="k">def</span> <span class="nf">send_Status2Launcher</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send a status stanza to the launcher.</span>
 
@@ -289,7 +286,7 @@
                 <span class="n">amp</span><span class="o">.</span><span class="n">MsgStatus</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">amp</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_status</span><span class="p">())</span>
             <span class="p">)</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">errback</span><span class="p">,</span> <span class="n">amp</span><span class="o">.</span><span class="n">MsgStatus</span><span class="o">.</span><span class="n">key</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="AMPServerProtocol.send_MsgPortal2Server"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.amp_server.AMPServerProtocol.send_MsgPortal2Server">[docs]</a>    <span class="k">def</span> <span class="nf">send_MsgPortal2Server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPServerProtocol.send_MsgPortal2Server"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp_server.html#evennia.server.portal.amp_server.AMPServerProtocol.send_MsgPortal2Server">[docs]</a>    <span class="k">def</span> <span class="nf">send_MsgPortal2Server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Access method called by the Portal and executed on the Portal.</span>
 
@@ -303,7 +300,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_to_server</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">MsgPortal2Server</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">sessid</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="AMPServerProtocol.send_AdminPortal2Server"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.amp_server.AMPServerProtocol.send_AdminPortal2Server">[docs]</a>    <span class="k">def</span> <span class="nf">send_AdminPortal2Server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPServerProtocol.send_AdminPortal2Server"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp_server.html#evennia.server.portal.amp_server.AMPServerProtocol.send_AdminPortal2Server">[docs]</a>    <span class="k">def</span> <span class="nf">send_AdminPortal2Server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send Admin instructions from the Portal to the Server.</span>
 <span class="sd">        Executed on the Portal.</span>
@@ -526,6 +523,7 @@
         <span class="k">return</span> <span class="p">{}</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -563,17 +561,15 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.server.portal.amp_server</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.amp_server</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

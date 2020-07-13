@@ -1,0 +1,705 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Static In Game Map &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Static In Game Map</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="static-in-game-map">
+<h1>Static In Game Map<a class="headerlink" href="#static-in-game-map" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>This tutorial describes the creation of an in-game map display based on a pre-drawn map. It also
+details how to use the <a class="reference internal" href="../Components/Batch-Code-Processor.html"><span class="doc">Batch code processor</span></a> for advanced building. There is
+also the <a class="reference internal" href="Dynamic-In-Game-Map.html"><span class="doc">Dynamic in-game map tutorial</span></a> that works in the opposite direction,
+by generating a map from an existing grid of rooms.</p>
+<p>Evennia does not require its rooms to be positioned in a “logical” way. Your exits could be named
+anything. You could make an exit “west” that leads to a room described to be in the far north. You
+could have rooms inside one another, exits leading back to the same room or describing spatial
+geometries impossible in the real world.</p>
+<p>That said, most games <em>do</em> organize their rooms in a logical fashion, if nothing else to retain the
+sanity of their players. And when they do, the game becomes possible to map. This tutorial will give
+an example of a simple but flexible in-game map system to further help player’s to navigate. We will</p>
+<p>To simplify development and error-checking we’ll break down the work into bite-size chunks, each
+building on what came before. For this we’ll make extensive use of the [Batch code processor](Batch-
+Code-Processor), so you may want to familiarize yourself with that.</p>
+<ol>
+<li><p><strong>Planning the map</strong> - Here we’ll come up with a small example map to use for the rest of the
+tutorial.</p></li>
+<li><p><strong>Making a map object</strong> - This will showcase how to make a static in-game “map” object a
+Character could pick up and look at.</p></li>
+<li><p><strong>Building the map areas</strong> - Here we’ll actually create the small example area according to the
+map we designed before.</p></li>
+<li><p><strong>Map code</strong> - This will link the map to the location so our output looks something like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>crossroads(#3)
+↑╚∞╝↑
+≈↑│↑∩  The merger of two roads. To the north looms a mighty castle.
+O─O─O  To the south, the glow of a campfire can be seen. To the east lie
+≈↑│↑∩  the vast mountains and to the west is heard the waves of the sea.
+↑▲O▲↑
+
+Exits: north(#8), east(#9), south(#10), west(#11)
+</pre></div>
+</div>
+</li>
+</ol>
+<p>We will henceforth assume your game folder is name named <code class="docutils literal notranslate"><span class="pre">mygame</span></code> and that you haven’t modified the
+default commands. We will also not be using <a class="reference external" href="Concepts/TextTags.html#colored-text">Colors</a> for our map since they
+don’t show in the documentation wiki.</p>
+</div>
+<div class="section" id="planning-the-map">
+<h2>Planning the Map<a class="headerlink" href="#planning-the-map" title="Permalink to this headline">¶</a></h2>
+<p>Let’s begin with the fun part! Maps in MUDs come in many different [shapes and
+sizes](http://journal.imaginary-realities.com/volume-05/issue-01/modern-interface-modern-
+mud/index.html). Some appear as just boxes connected by lines. Others have complex graphics that are
+external to the game itself.</p>
+<p>Our map will be in-game text but that doesn’t mean we’re restricted to the normal alphabet! If
+you’ve ever selected the <a class="reference external" href="https://en.wikipedia.org/wiki/Wingdings">Wingdings font</a> in Microsoft Word
+you will know there are a multitude of other characters around to use. When creating your game with
+Evennia you have access to the <a class="reference external" href="https://en.wikipedia.org/wiki/UTF-8">UTF-8 character encoding</a> which
+put at your disposal <a class="reference external" href="http://mcdlr.com/utf-8/#1">thousands of letters, number and geometric shapes</a>.</p>
+<p>For this exercise, we’ve copy-and-pasted from the pallet of special characters used over at
+<a class="reference external" href="http://dwarffortresswiki.org/index.php/Character_table">Dwarf Fortress</a> to create what is hopefully a
+pleasing and easy to understood landscape:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>≈≈↑↑↑↑↑∩∩
+≈≈↑╔═╗↑∩∩   Places the account can visit are indicated by &quot;O&quot;.
+≈≈↑║O║↑∩∩   Up the top is a castle visitable by the account.
+≈≈↑╚∞╝↑∩∩   To the right is a cottage and to the left the beach.
+≈≈≈↑│↑∩∩∩   And down the bottom is a camp site with tents.
+≈≈O─O─O⌂∩   In the center is the starting location, a crossroads
+≈≈≈↑│↑∩∩∩   which connect the four other areas.
+≈≈↑▲O▲↑∩∩   
+≈≈↑↑▲↑↑∩∩
+≈≈↑↑↑↑↑∩∩
+</pre></div>
+</div>
+<p>There are many considerations when making a game map depending on the play style and requirements
+you intend to implement. Here we will display a 5x5 character map of the area surrounding the
+account. This means making sure to account for 2 characters around every visitable location. Good
+planning at this stage can solve many problems before they happen.</p>
+</div>
+<div class="section" id="creating-a-map-object">
+<h2>Creating a Map Object<a class="headerlink" href="#creating-a-map-object" title="Permalink to this headline">¶</a></h2>
+<p>In this section we will try to create an actual “map” object that an account can pick up and look
+at.</p>
+<p>Evennia offers a range of <a class="reference external" href="../api/evennia.commands.default.html#modules">default commands</a> for
+<a class="reference internal" href="../Howto/Starting/Part1/Building-Quickstart.html"><span class="doc">creating objects and rooms in-game</span></a>. While readily accessible, these commands are made to do very
+specific, restricted things and will thus not offer as much flexibility to experiment (for an
+advanced exception see <a class="reference external" href="Concepts/TextTags.html#new-inlinefuncs">in-line functions</a>). Additionally, entering long
+descriptions and properties over and over in the game client can become tedious; especially when
+testing and you may want to delete and recreate things over and over.</p>
+<p>To overcome this, Evennia offers <a class="reference internal" href="../Components/Batch-Processors.html"><span class="doc">batch processors</span></a> that work as input-files
+created out-of-game. In this tutorial we’ll be using the more powerful of the two available batch
+processors, the <a class="reference internal" href="../Components/Batch-Code-Processor.html"><span class="doc">Batch Code Processor </span></a>, called with the <code class="docutils literal notranslate"><span class="pre">&#64;batchcode</span></code> command.
+This is a very powerful tool. It allows you to craft Python files to act as blueprints of your
+entire game world. These files have access to use Evennia’s Python API directly. Batchcode allows
+for easy editing and creation in whatever text editor you prefer, avoiding having to manually build
+the world line-by-line inside the game.</p>
+<blockquote>
+<div><p>Important warning: <code class="docutils literal notranslate"><span class="pre">&#64;batchcode</span></code>’s power is only rivaled by the <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code> command. Batchcode is so
+powerful it should be reserved only for the <a class="reference internal" href="../Concepts/Building-Permissions.html"><span class="doc">superuser</span></a>. Think carefully
+before you let others (such as <code class="docutils literal notranslate"><span class="pre">Developer</span></code>- level staff) run <code class="docutils literal notranslate"><span class="pre">&#64;batchcode</span></code> on their own - make sure
+you are okay with them running <em>arbitrary Python code</em> on your server.</p>
+</div></blockquote>
+<p>While a simple example, the map object it serves as good way to try out <code class="docutils literal notranslate"><span class="pre">&#64;batchcode</span></code>. Go to
+<code class="docutils literal notranslate"><span class="pre">mygame/world</span></code> and create a new file there named <code class="docutils literal notranslate"><span class="pre">batchcode_map.py</span></code>:</p>
+<div class="highlight-Python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/world/batchcode_map.py</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
+
+<span class="c1"># We use the create_object function to call into existence a </span>
+<span class="c1"># DefaultObject named &quot;Map&quot; wherever you are standing.</span>
+
+<span class="nb">map</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Map&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
+
+<span class="c1"># We then access its description directly to make it our map.</span>
+
+<span class="nb">map</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">≈≈↑↑↑↑↑∩∩</span>
+<span class="s2">≈≈↑╔═╗↑∩∩</span>
+<span class="s2">≈≈↑║O║↑∩∩</span>
+<span class="s2">≈≈↑╚∞╝↑∩∩</span>
+<span class="s2">≈≈≈↑│↑∩∩∩</span>
+<span class="s2">≈≈O─O─O⌂∩</span>
+<span class="s2">≈≈≈↑│↑∩∩∩</span>
+<span class="s2">≈≈↑▲O▲↑∩∩</span>
+<span class="s2">≈≈↑↑▲↑↑∩∩</span>
+<span class="s2">≈≈↑↑↑↑↑∩∩</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="c1"># This message lets us know our map was created successfully.</span>
+<span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;A map appears out of thin air and falls to the ground.&quot;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>Log into your game project as the superuser and run the command</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@batchcode</span> <span class="n">batchcode_map</span>
+</pre></div>
+</div>
+<p>This will load your <code class="docutils literal notranslate"><span class="pre">batchcode_map.py</span></code> file and execute the code (Evennia will look in your <code class="docutils literal notranslate"><span class="pre">world/</span></code>
+folder automatically so you don’t need to specify it).</p>
+<p>A new map object should have appeared on the ground. You can view the map by using <code class="docutils literal notranslate"><span class="pre">look</span> <span class="pre">map</span></code>. Let’s
+take it with the <code class="docutils literal notranslate"><span class="pre">get</span> <span class="pre">map</span></code> command. We’ll need it in case we get lost!</p>
+</div>
+<div class="section" id="building-the-map-areas">
+<h2>Building the map areas<a class="headerlink" href="#building-the-map-areas" title="Permalink to this headline">¶</a></h2>
+<p>We’ve just used batchcode to create an object useful for our adventures. But the locations on that
+map does not actually exist yet - we’re all mapped up with nowhere to go! Let’s use batchcode to
+build a game area based on our map. We have five areas outlined: a castle, a cottage, a campsite, a
+coastal beach and the crossroads which connects them. Create a new batchcode file for this in
+<code class="docutils literal notranslate"><span class="pre">mygame/world</span></code>, named <code class="docutils literal notranslate"><span class="pre">batchcode_world.py</span></code>.</p>
+<div class="highlight-Python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/world/batchcode_world.py</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span><span class="p">,</span> <span class="n">search_object</span>
+<span class="kn">from</span> <span class="nn">typeclasses</span> <span class="kn">import</span> <span class="n">rooms</span><span class="p">,</span> <span class="n">exits</span>
+
+<span class="c1"># We begin by creating our rooms so we can detail them later.</span>
+
+<span class="n">centre</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">rooms</span><span class="o">.</span><span class="n">Room</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;crossroads&quot;</span><span class="p">)</span>
+<span class="n">north</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">rooms</span><span class="o">.</span><span class="n">Room</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;castle&quot;</span><span class="p">)</span>
+<span class="n">east</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">rooms</span><span class="o">.</span><span class="n">Room</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;cottage&quot;</span><span class="p">)</span>
+<span class="n">south</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">rooms</span><span class="o">.</span><span class="n">Room</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;camp&quot;</span><span class="p">)</span>
+<span class="n">west</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">rooms</span><span class="o">.</span><span class="n">Room</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;coast&quot;</span><span class="p">)</span>
+
+<span class="c1"># This is where we set up the cross roads.</span>
+<span class="c1"># The rooms description is what we see with the &#39;look&#39; command.</span>
+
+<span class="n">centre</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">The merger of two roads. A single lamp post dimly illuminates the lonely crossroads.</span>
+<span class="s2">To the north looms a mighty castle. To the south the glow of a campfire can be seen.</span>
+<span class="s2">To the east lie a wall of mountains and to the west the dull roar of the open sea.</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="c1"># Here we are creating exits from the centre &quot;crossroads&quot; location to </span>
+<span class="c1"># destinations to the north, east, south, and west. We will be able </span>
+<span class="c1"># to use the exit by typing it&#39;s key e.g. &quot;north&quot; or an alias e.g. &quot;n&quot;.</span>
+
+<span class="n">centre_north</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">exits</span><span class="o">.</span><span class="n">Exit</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;north&quot;</span><span class="p">,</span> 
+                            <span class="n">aliases</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;n&quot;</span><span class="p">],</span> <span class="n">location</span><span class="o">=</span><span class="n">centre</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="n">north</span><span class="p">)</span>
+<span class="n">centre_east</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">exits</span><span class="o">.</span><span class="n">Exit</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;east&quot;</span><span class="p">,</span> 
+                            <span class="n">aliases</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;e&quot;</span><span class="p">],</span> <span class="n">location</span><span class="o">=</span><span class="n">centre</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="n">east</span><span class="p">)</span>
+<span class="n">centre_south</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">exits</span><span class="o">.</span><span class="n">Exit</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;south&quot;</span><span class="p">,</span> 
+                            <span class="n">aliases</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">],</span> <span class="n">location</span><span class="o">=</span><span class="n">centre</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="n">south</span><span class="p">)</span>
+<span class="n">centre_west</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">exits</span><span class="o">.</span><span class="n">Exit</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;west&quot;</span><span class="p">,</span> 
+                            <span class="n">aliases</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">],</span> <span class="n">location</span><span class="o">=</span><span class="n">centre</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="n">west</span><span class="p">)</span>
+
+<span class="c1"># Now we repeat this for the other rooms we&#39;ll be implementing.</span>
+<span class="c1"># This is where we set up the northern castle.</span>
+
+<span class="n">north</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;An impressive castle surrounds you. &quot;</span> \
+                <span class="s2">&quot;There might be a princess in one of these towers.&quot;</span>
+<span class="n">north_south</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">exits</span><span class="o">.</span><span class="n">Exit</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;south&quot;</span><span class="p">,</span> 
+                            <span class="n">aliases</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">],</span> <span class="n">location</span><span class="o">=</span><span class="n">north</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="n">centre</span><span class="p">)</span>
+
+<span class="c1"># This is where we set up the eastern cottage.</span>
+
+<span class="n">east</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;A cosy cottage nestled among mountains &quot;</span> \
+               <span class="s2">&quot;stretching east as far as the eye can see.&quot;</span>
+<span class="n">east_west</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">exits</span><span class="o">.</span><span class="n">Exit</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;west&quot;</span><span class="p">,</span> 
+                            <span class="n">aliases</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">],</span> <span class="n">location</span><span class="o">=</span><span class="n">east</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="n">centre</span><span class="p">)</span>
+
+<span class="c1"># This is where we set up the southern camp.</span>
+
+<span class="n">south</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;Surrounding a clearing are a number of &quot;</span> \
+                <span class="s2">&quot;tribal tents and at their centre a roaring fire.&quot;</span>
+<span class="n">south_north</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">exits</span><span class="o">.</span><span class="n">Exit</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;north&quot;</span><span class="p">,</span> 
+                            <span class="n">aliases</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;n&quot;</span><span class="p">],</span> <span class="n">location</span><span class="o">=</span><span class="n">south</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="n">centre</span><span class="p">)</span>
+
+<span class="c1"># This is where we set up the western coast.</span>
+
+<span class="n">west</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;The dark forest halts to a sandy beach. &quot;</span> \
+               <span class="s2">&quot;The sound of crashing waves calms the soul.&quot;</span>
+<span class="n">west_east</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">exits</span><span class="o">.</span><span class="n">Exit</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;east&quot;</span><span class="p">,</span> 
+                            <span class="n">aliases</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;e&quot;</span><span class="p">],</span> <span class="n">location</span><span class="o">=</span><span class="n">west</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="n">centre</span><span class="p">)</span>
+
+<span class="c1"># Lastly, lets make an entrance to our world from the default Limbo room.</span>
+
+<span class="n">limbo</span> <span class="o">=</span> <span class="n">search_object</span><span class="p">(</span><span class="s1">&#39;Limbo&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">limbo_exit</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">exits</span><span class="o">.</span><span class="n">Exit</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;enter world&quot;</span><span class="p">,</span> 
+                            <span class="n">aliases</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;enter&quot;</span><span class="p">],</span> <span class="n">location</span><span class="o">=</span><span class="n">limbo</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="n">centre</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>Apply this new batch code with <code class="docutils literal notranslate"><span class="pre">&#64;batchcode</span> <span class="pre">batchcode_world</span></code>. If there are no errors in the code we
+now have a nice mini-world to explore. Remember that if you get lost you can look at the map we
+created!</p>
+</div>
+<div class="section" id="in-game-minimap">
+<h2>In-game minimap<a class="headerlink" href="#in-game-minimap" title="Permalink to this headline">¶</a></h2>
+<p>Now we have a landscape and matching map, but what we really want is a mini-map that displays
+whenever we move to a room or use the <code class="docutils literal notranslate"><span class="pre">look</span></code> command.</p>
+<p>We <em>could</em> manually enter a part of the map into the description of every room like we did our map
+object description. But some MUDs have tens of thousands of rooms! Besides, if we ever changed our
+map we would have to potentially alter a lot of those room descriptions manually to match the
+change. So instead we will make one central module to hold our map. Rooms will reference this
+central location on creation and the map changes will thus come into effect when next running our
+batchcode.</p>
+<p>To make our mini-map we need to be able to cut our full map into parts. To do this we need to put it
+in a format which allows us to do that easily. Luckily, python allows us to treat strings as lists
+of characters allowing us to pick out the characters we need.</p>
+<p><code class="docutils literal notranslate"><span class="pre">mygame/world/map_module.py</span></code></p>
+<div class="highlight-Python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># We place our map into a sting here.</span>
+<span class="n">world_map</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">≈≈↑↑↑↑↑∩∩</span>
+<span class="s2">≈≈↑╔═╗↑∩∩</span>
+<span class="s2">≈≈↑║O║↑∩∩</span>
+<span class="s2">≈≈↑╚∞╝↑∩∩</span>
+<span class="s2">≈≈≈↑│↑∩∩∩</span>
+<span class="s2">≈≈O─O─O⌂∩</span>
+<span class="s2">≈≈≈↑│↑∩∩∩</span>
+<span class="s2">≈≈↑▲O▲↑∩∩</span>
+<span class="s2">≈≈↑↑▲↑↑∩∩</span>
+<span class="s2">≈≈↑↑↑↑↑∩∩</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="c1"># This turns our map string into a list of rows. Because python </span>
+<span class="c1"># allows us to treat strings as a list of characters, we can access </span>
+<span class="c1"># those characters with world_map[5][5] where world_map[row][column].</span>
+<span class="n">world_map</span> <span class="o">=</span> <span class="n">world_map</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">return_map</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function returns the whole map</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">map</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    
+    <span class="c1">#For each row in our map, add it to map</span>
+    <span class="k">for</span> <span class="n">valuey</span> <span class="ow">in</span> <span class="n">world_map</span><span class="p">:</span>
+        <span class="nb">map</span> <span class="o">+=</span> <span class="n">valuey</span>
+        <span class="nb">map</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    
+    <span class="k">return</span> <span class="nb">map</span>
+
+<span class="k">def</span> <span class="nf">return_minimap</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">radius</span> <span class="o">=</span> <span class="mi">2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function returns only part of the map.</span>
+<span class="sd">    Returning all chars in a 2 char radius from (x,y)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">map</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    
+    <span class="c1">#For each row we need, add the characters we need.</span>
+    <span class="k">for</span> <span class="n">valuey</span> <span class="ow">in</span> <span class="n">world_map</span><span class="p">[</span><span class="n">y</span><span class="o">-</span><span class="n">radius</span><span class="p">:</span><span class="n">y</span><span class="o">+</span><span class="n">radius</span><span class="o">+</span><span class="mi">1</span><span class="p">]:</span>         <span class="k">for</span> <span class="n">valuex</span> <span class="ow">in</span> <span class="n">valuey</span><span class="p">[</span><span class="n">x</span><span class="o">-</span><span class="n">radius</span><span class="p">:</span><span class="n">x</span><span class="o">+</span><span class="n">radius</span><span class="o">+</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="nb">map</span> <span class="o">+=</span> <span class="n">valuex</span>
+        <span class="nb">map</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    
+    <span class="k">return</span> <span class="nb">map</span>
+</pre></div>
+</td></tr></table></div>
+<p>With our map_module set up, let’s replace our hardcoded map in <code class="docutils literal notranslate"><span class="pre">mygame/world/batchcode_map.py</span></code> with
+a reference to our map module. Make sure to import our map_module!</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame/world/batchcode_map.py</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
+<span class="kn">from</span> <span class="nn">world</span> <span class="kn">import</span> <span class="n">map_module</span>
+
+<span class="nb">map</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Map&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
+
+<span class="nb">map</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">map_module</span><span class="o">.</span><span class="n">return_map</span><span class="p">()</span>
+
+<span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;A map appears out of thin air and falls to the ground.&quot;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>Log into Evennia as the superuser and run this batchcode. If everything worked our new map should
+look exactly the same as the old map - you can use <code class="docutils literal notranslate"><span class="pre">&#64;delete</span></code> to delete the old one (use a number to
+pick which to delete).</p>
+<p>Now, lets turn our attention towards our game’s rooms. Let’s use the <code class="docutils literal notranslate"><span class="pre">return_minimap</span></code> method we
+created above in order to include a minimap in our room descriptions. This is a little more
+complicated.</p>
+<p>By itself we would have to settle for either the map being <em>above</em> the description with
+<code class="docutils literal notranslate"><span class="pre">room.db.desc</span> <span class="pre">=</span> <span class="pre">map_string</span> <span class="pre">+</span> <span class="pre">description_string</span></code>, or the map going <em>below</em> by reversing their order.
+Both options are rather unsatisfactory - we would like to have the map next to the text! For this
+solution we’ll explore the utilities that ship with Evennia. Tucked away in <code class="docutils literal notranslate"><span class="pre">evennia\evennia\utils</span></code>
+is a little module called <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia.utils.evtable">EvTable</a> . This is an advanced ASCII table
+creator for you to utilize in your game. We’ll use it by creating a basic table with 1 row and two
+columns (one for our map and one for our text) whilst also hiding the borders. Open the batchfile
+again</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># mygame\world\batchcode_world.py</span>
+
+<span class="c1"># Add to imports</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">evtable</span>
+<span class="kn">from</span> <span class="nn">world</span> <span class="kn">import</span> <span class="n">map_module</span>
+
+<span class="c1"># [...]</span>
+
+<span class="c1"># Replace the descriptions with the below code.</span>
+
+<span class="c1"># The cross roads.</span>
+<span class="c1"># We pass what we want in our table and EvTable does the rest.</span>
+<span class="c1"># Passing two arguments will create two columns but we could add more.</span>
+<span class="c1"># We also specify no border.</span>
+<span class="n">centre</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">evtable</span><span class="o">.</span><span class="n">EvTable</span><span class="p">(</span><span class="n">map_module</span><span class="o">.</span><span class="n">return_minimap</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span> 
+                 <span class="s2">&quot;The merger of two roads. A single lamp post dimly &quot;</span> \
+                 <span class="s2">&quot;illuminates the lonely crossroads. To the north &quot;</span> \
+                 <span class="s2">&quot;looms a mighty castle. To the south the glow of &quot;</span> \
+                 <span class="s2">&quot;a campfire can be seen. To the east lie a wall of &quot;</span> \
+                 <span class="s2">&quot;mountains and to the west the dull roar of the open sea.&quot;</span><span class="p">,</span> 
+                 <span class="n">border</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+<span class="c1"># EvTable allows formatting individual columns and cells. We use that here</span>
+<span class="c1"># to set a maximum width for our description, but letting the map fill</span>
+<span class="c1"># whatever space it needs. </span>
+<span class="n">centre</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="o">.</span><span class="n">reformat_column</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">70</span><span class="p">)</span>
+
+<span class="c1"># [...]</span>
+
+<span class="c1"># The northern castle.</span>
+<span class="n">north</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">evtable</span><span class="o">.</span><span class="n">EvTable</span><span class="p">(</span><span class="n">map_module</span><span class="o">.</span><span class="n">return_minimap</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> 
+                <span class="s2">&quot;An impressive castle surrounds you. There might be &quot;</span> \
+                <span class="s2">&quot;a princess in one of these towers.&quot;</span><span class="p">,</span> 
+                <span class="n">border</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+<span class="n">north</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="o">.</span><span class="n">reformat_column</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">70</span><span class="p">)</span>   
+
+<span class="c1"># [...]</span>
+
+<span class="c1"># The eastern cottage.</span>
+<span class="n">east</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">evtable</span><span class="o">.</span><span class="n">EvTable</span><span class="p">(</span><span class="n">map_module</span><span class="o">.</span><span class="n">return_minimap</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span> 
+               <span class="s2">&quot;A cosy cottage nestled among mountains stretching &quot;</span> \
+               <span class="s2">&quot;east as far as the eye can see.&quot;</span><span class="p">,</span> 
+               <span class="n">border</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+<span class="n">east</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="o">.</span><span class="n">reformat_column</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">70</span><span class="p">)</span>
+
+<span class="c1"># [...]</span>
+
+<span class="c1"># The southern camp.</span>
+<span class="n">south</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">evtable</span><span class="o">.</span><span class="n">EvTable</span><span class="p">(</span><span class="n">map_module</span><span class="o">.</span><span class="n">return_minimap</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="p">),</span> 
+                <span class="s2">&quot;Surrounding a clearing are a number of tribal tents &quot;</span> \
+                <span class="s2">&quot;and at their centre a roaring fire.&quot;</span><span class="p">,</span> 
+                <span class="n">border</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+<span class="n">south</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="o">.</span><span class="n">reformat_column</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">70</span><span class="p">)</span>
+
+<span class="c1"># [...]</span>
+
+<span class="c1"># The western coast.</span>
+<span class="n">west</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">evtable</span><span class="o">.</span><span class="n">EvTable</span><span class="p">(</span><span class="n">map_module</span><span class="o">.</span><span class="n">return_minimap</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span> 
+               <span class="s2">&quot;The dark forest halts to a sandy beach. The sound of &quot;</span> \
+               <span class="s2">&quot;crashing waves calms the soul.&quot;</span><span class="p">,</span> 
+               <span class="n">border</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+<span class="n">west</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="o">.</span><span class="n">reformat_column</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">70</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>Before we run our new batchcode, if you are anything like me you would have something like 100 maps
+lying around and 3-4 different versions of our rooms extending from limbo. Let’s wipe it all and
+start with a clean slate. In Command Prompt you can run <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">flush</span></code> to clear the database and
+start anew. It won’t reset dbref values however, so if you are at #100 it will start from there.
+Alternatively you can navigate to <code class="docutils literal notranslate"><span class="pre">mygame/server</span></code> and delete the <code class="docutils literal notranslate"><span class="pre">evennia.db3</span></code> file. Now in  Command
+Prompt use <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">migrate</span></code> to have a completely freshly made database.</p>
+<p>Log in to evennia and run <code class="docutils literal notranslate"><span class="pre">&#64;batchcode</span> <span class="pre">batchcode_world</span></code> and you’ll have a little world to explore.</p>
+</div>
+<div class="section" id="conclusions">
+<h2>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this headline">¶</a></h2>
+<p>You should now have a mapped little world and a basic understanding of batchcode, EvTable and how
+easily new game defining features can be added to Evennia.</p>
+<p>You can easily build from this tutorial by expanding the map and creating more rooms to explore. Why
+not add more features to your game by trying other tutorials: [Add weather to your world](Weather-
+Tutorial), <a class="reference internal" href="../Howto/Tutorial-Aggressive-NPCs.html"><span class="doc">fill your world with NPC’s</span></a> or
+<a class="reference internal" href="../Howto/Starting/Part3/Turn-based-Combat-System.html"><span class="doc">implement a combat system</span></a>.</p>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Static In Game Map</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#planning-the-map">Planning the Map</a></li>
+<li><a class="reference internal" href="#creating-a-map-object">Creating a Map Object</a></li>
+<li><a class="reference internal" href="#building-the-map-areas">Building the map areas</a></li>
+<li><a class="reference internal" href="#in-game-minimap">In-game minimap</a></li>
+<li><a class="reference internal" href="#conclusions">Conclusions</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Contribs/Static-In-Game-Map.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Static-In-Game-Map.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.1/index.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Static In Game Map</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+    </div>
+  </body>
+</html>

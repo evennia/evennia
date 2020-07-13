@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.chargen &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.chargen</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.chargen</a></li> 
       </ul>
     </div>  
 
@@ -75,7 +72,7 @@
 <span class="n">CHARACTER_TYPECLASS</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span>
 
 
-<div class="viewcode-block" id="CmdOOCLook"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.chargen.CmdOOCLook">[docs]</a><span class="k">class</span> <span class="nc">CmdOOCLook</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdOOCLook"><a class="viewcode-back" href="../../../api/evennia.contrib.chargen.html#evennia.contrib.chargen.CmdOOCLook">[docs]</a><span class="k">class</span> <span class="nc">CmdOOCLook</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    ooc look</span>
 
@@ -96,7 +93,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;General&quot;</span>
 
-<div class="viewcode-block" id="CmdOOCLook.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.chargen.CmdOOCLook.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdOOCLook.func"><a class="viewcode-back" href="../../../api/evennia.contrib.chargen.html#evennia.contrib.chargen.CmdOOCLook.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements the ooc look command</span>
 
@@ -167,7 +164,7 @@
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">func</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="CmdOOCCharacterCreate"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.chargen.CmdOOCCharacterCreate">[docs]</a><span class="k">class</span> <span class="nc">CmdOOCCharacterCreate</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdOOCCharacterCreate"><a class="viewcode-back" href="../../../api/evennia.contrib.chargen.html#evennia.contrib.chargen.CmdOOCCharacterCreate">[docs]</a><span class="k">class</span> <span class="nc">CmdOOCCharacterCreate</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    creates a character</span>
 
@@ -181,7 +178,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;create&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
 
-<div class="viewcode-block" id="CmdOOCCharacterCreate.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.chargen.CmdOOCCharacterCreate.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdOOCCharacterCreate.func"><a class="viewcode-back" href="../../../api/evennia.contrib.chargen.html#evennia.contrib.chargen.CmdOOCCharacterCreate.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tries to create the Character object. We also put an</span>
 <span class="sd">        attribute on ourselves to remember it.</span>
@@ -227,17 +224,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|gThe character |c</span><span class="si">%s</span><span class="s2">|g was successfully created!&quot;</span> <span class="o">%</span> <span class="n">charname</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="OOCCmdSetCharGen"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.chargen.OOCCmdSetCharGen">[docs]</a><span class="k">class</span> <span class="nc">OOCCmdSetCharGen</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">AccountCmdSet</span><span class="p">):</span>
+<div class="viewcode-block" id="OOCCmdSetCharGen"><a class="viewcode-back" href="../../../api/evennia.contrib.chargen.html#evennia.contrib.chargen.OOCCmdSetCharGen">[docs]</a><span class="k">class</span> <span class="nc">OOCCmdSetCharGen</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">AccountCmdSet</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extends the default OOC cmdset.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="OOCCmdSetCharGen.at_cmdset_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.chargen.OOCCmdSetCharGen.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="OOCCmdSetCharGen.at_cmdset_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.chargen.html#evennia.contrib.chargen.OOCCmdSetCharGen.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Install everything from the default set, then overload&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdOOCLook</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdOOCCharacterCreate</span><span class="p">())</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -275,17 +273,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.chargen</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.chargen</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

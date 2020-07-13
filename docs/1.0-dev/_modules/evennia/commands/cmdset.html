@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.commands.cmdset &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.commands.cmdset</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdset</a></li> 
       </ul>
     </div>  
 
@@ -101,7 +98,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="CmdSet"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdset.CmdSet">[docs]</a><span class="k">class</span> <span class="nc">CmdSet</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">_CmdSetMeta</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSet"><a class="viewcode-back" href="../../../api/evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet">[docs]</a><span class="k">class</span> <span class="nc">CmdSet</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">_CmdSetMeta</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class describes a unique cmdset that understands priorities.</span>
 <span class="sd">    CmdSets can be merged and made to perform various set operations</span>
@@ -215,7 +212,7 @@
         <span class="s2">&quot;errmessage&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
-<div class="viewcode-block" id="CmdSet.__init__"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdset.CmdSet.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdsetobj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSet.__init__"><a class="viewcode-back" href="../../../api/evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdsetobj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a new CmdSet instance.</span>
 
@@ -245,7 +242,7 @@
 
     <span class="c1"># Priority-sensitive merge operations for cmdsets</span>
 
-<div class="viewcode-block" id="CmdSet._union"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdset.CmdSet._union">[docs]</a>    <span class="k">def</span> <span class="nf">_union</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset_a</span><span class="p">,</span> <span class="n">cmdset_b</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_union</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset_a</span><span class="p">,</span> <span class="n">cmdset_b</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Merge two sets using union merger</span>
 
@@ -267,9 +264,9 @@
             <span class="n">cmdset_c</span><span class="o">.</span><span class="n">commands</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">cmdset_b</span><span class="o">.</span><span class="n">commands</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">cmdset_c</span><span class="o">.</span><span class="n">commands</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">cmd</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">cmdset_b</span> <span class="k">if</span> <span class="n">cmd</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cmdset_a</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">cmdset_c</span></div>
+        <span class="k">return</span> <span class="n">cmdset_c</span>
 
-<div class="viewcode-block" id="CmdSet._intersect"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdset.CmdSet._intersect">[docs]</a>    <span class="k">def</span> <span class="nf">_intersect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset_a</span><span class="p">,</span> <span class="n">cmdset_b</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_intersect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset_a</span><span class="p">,</span> <span class="n">cmdset_b</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Merge two sets using intersection merger</span>
 
@@ -294,9 +291,9 @@
                 <span class="n">cmdset_c</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cmdset_b</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cmd</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">cmdset_c</span><span class="o">.</span><span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">cmd</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">cmdset_a</span> <span class="k">if</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">cmdset_b</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">cmdset_c</span></div>
+        <span class="k">return</span> <span class="n">cmdset_c</span>
 
-<div class="viewcode-block" id="CmdSet._replace"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdset.CmdSet._replace">[docs]</a>    <span class="k">def</span> <span class="nf">_replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset_a</span><span class="p">,</span> <span class="n">cmdset_b</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset_a</span><span class="p">,</span> <span class="n">cmdset_b</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Replace the contents of one set with another</span>
 
@@ -313,9 +310,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">cmdset_c</span> <span class="o">=</span> <span class="n">cmdset_a</span><span class="o">.</span><span class="n">_duplicate</span><span class="p">()</span>
         <span class="n">cmdset_c</span><span class="o">.</span><span class="n">commands</span> <span class="o">=</span> <span class="n">cmdset_a</span><span class="o">.</span><span class="n">commands</span><span class="p">[:]</span>
-        <span class="k">return</span> <span class="n">cmdset_c</span></div>
+        <span class="k">return</span> <span class="n">cmdset_c</span>
 
-<div class="viewcode-block" id="CmdSet._remove"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdset.CmdSet._remove">[docs]</a>    <span class="k">def</span> <span class="nf">_remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset_a</span><span class="p">,</span> <span class="n">cmdset_b</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset_a</span><span class="p">,</span> <span class="n">cmdset_b</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter a set by another.</span>
 
@@ -333,9 +330,9 @@
 
         <span class="n">cmdset_c</span> <span class="o">=</span> <span class="n">cmdset_a</span><span class="o">.</span><span class="n">_duplicate</span><span class="p">()</span>
         <span class="n">cmdset_c</span><span class="o">.</span><span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">cmd</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">cmdset_b</span> <span class="k">if</span> <span class="n">cmd</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cmdset_a</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">cmdset_c</span></div>
+        <span class="k">return</span> <span class="n">cmdset_c</span>
 
-<div class="viewcode-block" id="CmdSet._instantiate"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdset.CmdSet._instantiate">[docs]</a>    <span class="k">def</span> <span class="nf">_instantiate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_instantiate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        checks so that object is an instantiated command and not, say</span>
 <span class="sd">        a cmdclass. If it is, instantiate it.  Other types, like</span>
@@ -351,9 +348,9 @@
         <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">cmd</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">cmd</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">cmd</span></div>
+            <span class="k">return</span> <span class="n">cmd</span>
 
-<div class="viewcode-block" id="CmdSet._duplicate"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdset.CmdSet._duplicate">[docs]</a>    <span class="k">def</span> <span class="nf">_duplicate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_duplicate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a new cmdset with the same settings as this one (no</span>
 <span class="sd">        actual commands are copied over)</span>
@@ -368,7 +365,7 @@
                 <span class="c1"># class-vars into instance vars</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="n">cmdset</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
         <span class="n">cmdset</span><span class="o">.</span><span class="n">key_mergetypes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key_mergetypes</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">cmdset</span></div>
+        <span class="k">return</span> <span class="n">cmdset</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -490,7 +487,7 @@
         <span class="n">cmdset_c</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sys_commands</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">cmdset_c</span>
 
-<div class="viewcode-block" id="CmdSet.add"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdset.CmdSet.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSet.add"><a class="viewcode-back" href="../../../api/evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a new command or commands to this CmdSetcommand, a list of</span>
 <span class="sd">        commands or a cmdset to this cmdset. Note that this is *not*</span>
@@ -553,7 +550,7 @@
                 <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                     <span class="n">system_commands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CmdSet.remove"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdset.CmdSet.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSet.remove"><a class="viewcode-back" href="../../../api/evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove a command instance from the cmdset.</span>
 
@@ -573,7 +570,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">oldcmd</span> <span class="k">for</span> <span class="n">oldcmd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands</span> <span class="k">if</span> <span class="n">oldcmd</span> <span class="o">!=</span> <span class="n">cmd</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="CmdSet.get"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdset.CmdSet.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSet.get"><a class="viewcode-back" href="../../../api/evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a command from the cmdset. This is mostly useful to</span>
 <span class="sd">        check if the command is part of this cmdset or not.</span>
@@ -591,7 +588,7 @@
                 <span class="k">return</span> <span class="n">thiscmd</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="CmdSet.count"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdset.CmdSet.count">[docs]</a>    <span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSet.count"><a class="viewcode-back" href="../../../api/evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet.count">[docs]</a>    <span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Number of commands in set.</span>
 
@@ -601,7 +598,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CmdSet.get_system_cmds"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdset.CmdSet.get_system_cmds">[docs]</a>    <span class="k">def</span> <span class="nf">get_system_cmds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSet.get_system_cmds"><a class="viewcode-back" href="../../../api/evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet.get_system_cmds">[docs]</a>    <span class="k">def</span> <span class="nf">get_system_cmds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get system commands in cmdset</span>
 
@@ -616,7 +613,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">system_commands</span></div>
 
-<div class="viewcode-block" id="CmdSet.make_unique"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdset.CmdSet.make_unique">[docs]</a>    <span class="k">def</span> <span class="nf">make_unique</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSet.make_unique"><a class="viewcode-back" href="../../../api/evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet.make_unique">[docs]</a>    <span class="k">def</span> <span class="nf">make_unique</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove duplicate command-keys (unsafe)</span>
 
@@ -645,7 +642,7 @@
                 <span class="n">unique</span><span class="p">[</span><span class="n">cmd</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">cmd</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">commands</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">unique</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="CmdSet.get_all_cmd_keys_and_aliases"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdset.CmdSet.get_all_cmd_keys_and_aliases">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_cmd_keys_and_aliases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSet.get_all_cmd_keys_and_aliases"><a class="viewcode-back" href="../../../api/evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet.get_all_cmd_keys_and_aliases">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_cmd_keys_and_aliases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Collects keys/aliases from commands</span>
 
@@ -666,7 +663,7 @@
             <span class="p">[</span><span class="n">names</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">cmd</span><span class="o">.</span><span class="n">_keyaliases</span><span class="p">)</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">names</span></div>
 
-<div class="viewcode-block" id="CmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../api/evennia.commands.html#evennia.commands.cmdset.CmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../api/evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook method - this should be overloaded in the inheriting</span>
 <span class="sd">        class, and should take care of populating the cmdset by use of</span>
@@ -675,6 +672,7 @@
         <span class="k">pass</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -712,17 +710,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.commands.cmdset</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdset</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

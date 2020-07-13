@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.test_traits &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.test_traits</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.test_traits</a></li> 
       </ul>
     </div>  
 
@@ -59,21 +56,21 @@
 <span class="kn">from</span> <span class="nn">evennia.contrib</span> <span class="k">import</span> <span class="n">traits</span>
 
 
-<div class="viewcode-block" id="_MockObj"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits._MockObj">[docs]</a><span class="k">class</span> <span class="nc">_MockObj</span><span class="p">:</span>
-<div class="viewcode-block" id="_MockObj.__init__"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits._MockObj.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">_MockObj</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dbstore</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">category</span> <span class="o">=</span> <span class="s2">&quot;traits&quot;</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">category</span> <span class="o">=</span> <span class="s2">&quot;traits&quot;</span>
 
-<div class="viewcode-block" id="_MockObj.get"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits._MockObj.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">assert</span> <span class="n">category</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">category</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbstore</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbstore</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
-<div class="viewcode-block" id="_MockObj.add"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits._MockObj.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">assert</span> <span class="n">category</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">category</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dbstore</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dbstore</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
 
 <span class="c1"># we want to test the base traits too</span>
@@ -85,30 +82,30 @@
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="_TraitHandlerBase"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits._TraitHandlerBase">[docs]</a><span class="k">class</span> <span class="nc">_TraitHandlerBase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">_TraitHandlerBase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
     <span class="s2">&quot;Base for trait tests&quot;</span>
 
-<div class="viewcode-block" id="_TraitHandlerBase.setUp"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits._TraitHandlerBase.setUp">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.traits._TRAIT_CLASS_PATHS&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">_TEST_TRAIT_CLASS_PATHS</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.traits._TRAIT_CLASS_PATHS&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">_TEST_TRAIT_CLASS_PATHS</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">_MockObj</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span> <span class="o">=</span> <span class="n">traits</span><span class="o">.</span><span class="n">TraitHandler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span>
 
-<div class="viewcode-block" id="_TraitHandlerBase._get_dbstore"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits._TraitHandlerBase._get_dbstore">[docs]</a>    <span class="k">def</span> <span class="nf">_get_dbstore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">dbstore</span><span class="p">[</span><span class="s2">&quot;traits&quot;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span></div></div>
+    <span class="k">def</span> <span class="nf">_get_dbstore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">dbstore</span><span class="p">[</span><span class="s2">&quot;traits&quot;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="TraitHandlerTest"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TraitHandlerTest">[docs]</a><span class="k">class</span> <span class="nc">TraitHandlerTest</span><span class="p">(</span><span class="n">_TraitHandlerBase</span><span class="p">):</span>
+<div class="viewcode-block" id="TraitHandlerTest"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TraitHandlerTest">[docs]</a><span class="k">class</span> <span class="nc">TraitHandlerTest</span><span class="p">(</span><span class="n">_TraitHandlerBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Testing for TraitHandler&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TraitHandlerTest.setUp"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TraitHandlerTest.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TraitHandlerTest.setUp"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TraitHandlerTest.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;test1&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Test1&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;trait&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
             <span class="s2">&quot;test2&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Test2&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;trait&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]},</span> <span class="mi">4</span><span class="p">],</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TraitHandlerTest.test_add_trait"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TraitHandlerTest.test_add_trait">[docs]</a>    <span class="k">def</span> <span class="nf">test_add_trait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TraitHandlerTest.test_add_trait"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TraitHandlerTest.test_add_trait">[docs]</a>    <span class="k">def</span> <span class="nf">test_add_trait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_get_dbstore</span><span class="p">(</span><span class="s2">&quot;test1&quot;</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Test1&quot;</span><span class="p">,</span> <span class="s2">&quot;trait_type&quot;</span><span class="p">:</span> <span class="s2">&quot;trait&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,}</span>
         <span class="p">)</span>
@@ -118,7 +115,7 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TraitHandlerTest.test_cache"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TraitHandlerTest.test_cache">[docs]</a>    <span class="k">def</span> <span class="nf">test_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TraitHandlerTest.test_cache"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TraitHandlerTest.test_cache">[docs]</a>    <span class="k">def</span> <span class="nf">test_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Cache should not be set until first get</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -130,7 +127,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">test2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">_cache</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TraitHandlerTest.test_setting"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TraitHandlerTest.test_setting">[docs]</a>    <span class="k">def</span> <span class="nf">test_setting</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TraitHandlerTest.test_setting"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TraitHandlerTest.test_setting">[docs]</a>    <span class="k">def</span> <span class="nf">test_setting</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Don&#39;t allow setting stuff on traithandler&quot;</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">traits</span><span class="o">.</span><span class="n">TraitException</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">foo</span> <span class="o">=</span> <span class="s2">&quot;bar&quot;</span>
@@ -139,7 +136,7 @@
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">traits</span><span class="o">.</span><span class="n">TraitException</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">test1</span> <span class="o">=</span> <span class="s2">&quot;foo&quot;</span></div>
 
-<div class="viewcode-block" id="TraitHandlerTest.test_getting"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TraitHandlerTest.test_getting">[docs]</a>    <span class="k">def</span> <span class="nf">test_getting</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TraitHandlerTest.test_getting"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TraitHandlerTest.test_getting">[docs]</a>    <span class="k">def</span> <span class="nf">test_getting</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Test we are getting data from the dbstore&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">test1</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Test1&quot;</span><span class="p">,</span> <span class="s2">&quot;trait_type&quot;</span><span class="p">:</span> <span class="s2">&quot;trait&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
@@ -153,11 +150,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">bar</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TraitHandlerTest.test_all"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TraitHandlerTest.test_all">[docs]</a>    <span class="k">def</span> <span class="nf">test_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TraitHandlerTest.test_all"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TraitHandlerTest.test_all">[docs]</a>    <span class="k">def</span> <span class="nf">test_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Test all method&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">all</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;test1&quot;</span><span class="p">,</span> <span class="s2">&quot;test2&quot;</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="TraitHandlerTest.test_remove"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TraitHandlerTest.test_remove">[docs]</a>    <span class="k">def</span> <span class="nf">test_remove</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TraitHandlerTest.test_remove"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TraitHandlerTest.test_remove">[docs]</a>    <span class="k">def</span> <span class="nf">test_remove</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Test remove method&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;test2&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
@@ -166,12 +163,12 @@
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">traits</span><span class="o">.</span><span class="n">TraitException</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TraitHandlerTest.test_clear"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TraitHandlerTest.test_clear">[docs]</a>    <span class="k">def</span> <span class="nf">test_clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TraitHandlerTest.test_clear"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TraitHandlerTest.test_clear">[docs]</a>    <span class="k">def</span> <span class="nf">test_clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Test clear method&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TraitHandlerTest.test_trait_db_connection"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TraitHandlerTest.test_trait_db_connection">[docs]</a>    <span class="k">def</span> <span class="nf">test_trait_db_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TraitHandlerTest.test_trait_db_connection"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TraitHandlerTest.test_trait_db_connection">[docs]</a>    <span class="k">def</span> <span class="nf">test_trait_db_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Test that updating a trait property actually updates value in db&quot;</span>
         <span class="n">trait</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">test1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">trait</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -187,12 +184,12 @@
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="TestTrait"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTrait">[docs]</a><span class="k">class</span> <span class="nc">TestTrait</span><span class="p">(</span><span class="n">_TraitHandlerBase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTrait"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTrait">[docs]</a><span class="k">class</span> <span class="nc">TestTrait</span><span class="p">(</span><span class="n">_TraitHandlerBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test the base Trait class</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TestTrait.setUp"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTrait.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTrait.setUp"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTrait.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
             <span class="s2">&quot;test1&quot;</span><span class="p">,</span>
@@ -204,7 +201,7 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;test1&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestTrait.test_init"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTrait.test_init">[docs]</a>    <span class="k">def</span> <span class="nf">test_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTrait.test_init"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTrait.test_init">[docs]</a>    <span class="k">def</span> <span class="nf">test_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span>
             <span class="p">{</span>
@@ -216,7 +213,7 @@
             <span class="p">},</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestTrait.test_validate_input__valid"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTrait.test_validate_input__valid">[docs]</a>    <span class="k">def</span> <span class="nf">test_validate_input__valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTrait.test_validate_input__valid"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTrait.test_validate_input__valid">[docs]</a>    <span class="k">def</span> <span class="nf">test_validate_input__valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Test valid validation input&quot;&quot;&quot;</span>
         <span class="c1"># all data supplied, and extras</span>
         <span class="n">dat</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Test&quot;</span><span class="p">,</span> <span class="s2">&quot;trait_type&quot;</span><span class="p">:</span> <span class="s2">&quot;trait&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;extra_val&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">}</span>
@@ -248,7 +245,7 @@
         <span class="k">with</span> <span class="n">patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">traits</span><span class="o">.</span><span class="n">Trait</span><span class="p">,</span> <span class="s2">&quot;allow_extra_properties&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span> <span class="n">traits</span><span class="o">.</span><span class="n">Trait</span><span class="o">.</span><span class="n">validate_input</span><span class="p">(</span><span class="n">traits</span><span class="o">.</span><span class="n">Trait</span><span class="p">,</span> <span class="n">dat</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestTrait.test_validate_input__fail"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTrait.test_validate_input__fail">[docs]</a>    <span class="k">def</span> <span class="nf">test_validate_input__fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTrait.test_validate_input__fail"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTrait.test_validate_input__fail">[docs]</a>    <span class="k">def</span> <span class="nf">test_validate_input__fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Test failing validation&quot;&quot;&quot;</span>
         <span class="n">dat</span> <span class="o">=</span> <span class="p">{</span>
             <span class="c1"># missing name</span>
@@ -271,7 +268,7 @@
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">traits</span><span class="o">.</span><span class="n">TraitException</span><span class="p">):</span>
                 <span class="n">traits</span><span class="o">.</span><span class="n">Trait</span><span class="o">.</span><span class="n">validate_input</span><span class="p">(</span><span class="n">traits</span><span class="o">.</span><span class="n">Trait</span><span class="p">,</span> <span class="n">dat</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestTrait.test_trait_getset"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTrait.test_trait_getset">[docs]</a>    <span class="k">def</span> <span class="nf">test_trait_getset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTrait.test_trait_getset"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTrait.test_trait_getset">[docs]</a>    <span class="k">def</span> <span class="nf">test_trait_getset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get-set-del operations on trait&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;Test1&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="s2">&quot;Test1&quot;</span><span class="p">)</span>
@@ -302,17 +299,17 @@
         <span class="c1"># fall back to default</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">traits</span><span class="o">.</span><span class="n">Trait</span><span class="o">.</span><span class="n">default_keys</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="TestTrait.test_repr"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTrait.test_repr">[docs]</a>    <span class="k">def</span> <span class="nf">test_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTrait.test_repr"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTrait.test_repr">[docs]</a>    <span class="k">def</span> <span class="nf">test_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="p">),</span> <span class="n">Something</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="p">),</span> <span class="n">Something</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="TestTraitStatic"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitStatic">[docs]</a><span class="k">class</span> <span class="nc">TestTraitStatic</span><span class="p">(</span><span class="n">_TraitHandlerBase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitStatic"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitStatic">[docs]</a><span class="k">class</span> <span class="nc">TestTraitStatic</span><span class="p">(</span><span class="n">_TraitHandlerBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test for static Traits</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TestTraitStatic.setUp"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitStatic.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitStatic.setUp"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitStatic.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
             <span class="s2">&quot;test1&quot;</span><span class="p">,</span>
@@ -325,10 +322,10 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;test1&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestTraitStatic._get_values"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitStatic._get_values">[docs]</a>    <span class="k">def</span> <span class="nf">_get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">mod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">value</span></div>
+    <span class="k">def</span> <span class="nf">_get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">mod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">value</span>
 
-<div class="viewcode-block" id="TestTraitStatic.test_init"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitStatic.test_init">[docs]</a>    <span class="k">def</span> <span class="nf">test_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitStatic.test_init"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitStatic.test_init">[docs]</a>    <span class="k">def</span> <span class="nf">test_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_get_dbstore</span><span class="p">(</span><span class="s2">&quot;test1&quot;</span><span class="p">),</span>
             <span class="p">{</span>
@@ -341,7 +338,7 @@
             <span class="p">},</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestTraitStatic.test_value"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitStatic.test_value">[docs]</a>    <span class="k">def</span> <span class="nf">test_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitStatic.test_value"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitStatic.test_value">[docs]</a>    <span class="k">def</span> <span class="nf">test_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;value is base + mod&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_values</span><span class="p">(),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">base</span> <span class="o">+=</span> <span class="mi">4</span>
@@ -349,7 +346,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">mod</span> <span class="o">-=</span> <span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_values</span><span class="p">(),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestTraitStatic.test_delete"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitStatic.test_delete">[docs]</a>    <span class="k">def</span> <span class="nf">test_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitStatic.test_delete"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitStatic.test_delete">[docs]</a>    <span class="k">def</span> <span class="nf">test_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Deleting resets to default.&quot;&quot;&quot;</span>
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">base</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_values</span><span class="p">(),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
@@ -357,12 +354,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_values</span><span class="p">(),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span></div></div>
 
 
-<div class="viewcode-block" id="TestTraitCounter"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitCounter">[docs]</a><span class="k">class</span> <span class="nc">TestTraitCounter</span><span class="p">(</span><span class="n">_TraitHandlerBase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitCounter"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitCounter">[docs]</a><span class="k">class</span> <span class="nc">TestTraitCounter</span><span class="p">(</span><span class="n">_TraitHandlerBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test for counter- Traits</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TestTraitCounter.setUp"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitCounter.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitCounter.setUp"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitCounter.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
             <span class="s2">&quot;test1&quot;</span><span class="p">,</span>
@@ -378,11 +375,11 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;test1&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestTraitCounter._get_values"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitCounter._get_values">[docs]</a>    <span class="k">def</span> <span class="nf">_get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get (base, mod, value, min, max).&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">mod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">min</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">max</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">mod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">min</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">max</span><span class="p">)</span>
 
-<div class="viewcode-block" id="TestTraitCounter.test_init"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitCounter.test_init">[docs]</a>    <span class="k">def</span> <span class="nf">test_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitCounter.test_init"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitCounter.test_init">[docs]</a>    <span class="k">def</span> <span class="nf">test_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_get_dbstore</span><span class="p">(</span><span class="s2">&quot;test1&quot;</span><span class="p">),</span>
             <span class="p">{</span>
@@ -401,7 +398,7 @@
             <span class="p">},</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestTraitCounter.test_value"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitCounter.test_value">[docs]</a>    <span class="k">def</span> <span class="nf">test_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitCounter.test_value"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitCounter.test_value">[docs]</a>    <span class="k">def</span> <span class="nf">test_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;value is current + mod, where current defaults to base&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_values</span><span class="p">(),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">base</span> <span class="o">+=</span> <span class="mi">4</span>
@@ -409,7 +406,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">mod</span> <span class="o">-=</span> <span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_values</span><span class="p">(),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestTraitCounter.test_boundaries__minmax"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitCounter.test_boundaries__minmax">[docs]</a>    <span class="k">def</span> <span class="nf">test_boundaries__minmax</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitCounter.test_boundaries__minmax"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitCounter.test_boundaries__minmax">[docs]</a>    <span class="k">def</span> <span class="nf">test_boundaries__minmax</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Test range&quot;&quot;&quot;</span>
         <span class="c1"># should not exceed min/max values</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">base</span> <span class="o">+=</span> <span class="mi">20</span>
@@ -421,7 +418,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">base</span> <span class="o">=</span> <span class="o">-</span><span class="mi">100</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_values</span><span class="p">(),</span> <span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestTraitCounter.test_boundaries__bigmod"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitCounter.test_boundaries__bigmod">[docs]</a>    <span class="k">def</span> <span class="nf">test_boundaries__bigmod</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitCounter.test_boundaries__bigmod"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitCounter.test_boundaries__bigmod">[docs]</a>    <span class="k">def</span> <span class="nf">test_boundaries__bigmod</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;add a big mod&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">base</span> <span class="o">=</span> <span class="mi">5</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">mod</span> <span class="o">=</span> <span class="mi">100</span>
@@ -429,7 +426,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">mod</span> <span class="o">=</span> <span class="o">-</span><span class="mi">100</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_values</span><span class="p">(),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestTraitCounter.test_boundaries__change_boundaries"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitCounter.test_boundaries__change_boundaries">[docs]</a>    <span class="k">def</span> <span class="nf">test_boundaries__change_boundaries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitCounter.test_boundaries__change_boundaries"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitCounter.test_boundaries__change_boundaries">[docs]</a>    <span class="k">def</span> <span class="nf">test_boundaries__change_boundaries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Change boundaries after base/mod change&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">base</span> <span class="o">=</span> <span class="mi">5</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">mod</span> <span class="o">=</span> <span class="o">-</span><span class="mi">100</span>
@@ -443,7 +440,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">mod</span> <span class="o">=</span> <span class="mi">100</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_values</span><span class="p">(),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="o">-</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestTraitCounter.test_boundaries__disable"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitCounter.test_boundaries__disable">[docs]</a>    <span class="k">def</span> <span class="nf">test_boundaries__disable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitCounter.test_boundaries__disable"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitCounter.test_boundaries__disable">[docs]</a>    <span class="k">def</span> <span class="nf">test_boundaries__disable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Disable and re-enable boundaries&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">base</span> <span class="o">=</span> <span class="mi">5</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">mod</span> <span class="o">=</span> <span class="mi">100</span>
@@ -462,7 +459,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">min</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># his is blocked since base+mod is lower</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_values</span><span class="p">(),</span> <span class="p">(</span><span class="o">-</span><span class="mi">200</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mi">195</span><span class="p">,</span> <span class="o">-</span><span class="mi">195</span><span class="p">,</span> <span class="mi">15</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestTraitCounter.test_boundaries__inverse"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitCounter.test_boundaries__inverse">[docs]</a>    <span class="k">def</span> <span class="nf">test_boundaries__inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitCounter.test_boundaries__inverse"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitCounter.test_boundaries__inverse">[docs]</a>    <span class="k">def</span> <span class="nf">test_boundaries__inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Set inverse boundaries - limited by base&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">mod</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_values</span><span class="p">(),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
@@ -471,7 +468,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="o">-</span><span class="mi">20</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_values</span><span class="p">(),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestTraitCounter.test_current"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitCounter.test_current">[docs]</a>    <span class="k">def</span> <span class="nf">test_current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitCounter.test_current"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitCounter.test_current">[docs]</a>    <span class="k">def</span> <span class="nf">test_current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Modifying current value&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="mi">5</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_values</span><span class="p">(),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
@@ -484,7 +481,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">current</span> <span class="o">-=</span> <span class="mi">10</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_values</span><span class="p">(),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestTraitCounter.test_delete"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitCounter.test_delete">[docs]</a>    <span class="k">def</span> <span class="nf">test_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitCounter.test_delete"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitCounter.test_delete">[docs]</a>    <span class="k">def</span> <span class="nf">test_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Deleting resets to default.&quot;&quot;&quot;</span>
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">base</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_values</span><span class="p">(),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
@@ -494,7 +491,7 @@
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">max</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_values</span><span class="p">(),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestTraitCounter.test_percentage"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitCounter.test_percentage">[docs]</a>    <span class="k">def</span> <span class="nf">test_percentage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitCounter.test_percentage"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitCounter.test_percentage">[docs]</a>    <span class="k">def</span> <span class="nf">test_percentage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Test percentage calculation&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">base</span> <span class="o">=</span> <span class="mi">8</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">mod</span> <span class="o">=</span> <span class="mi">2</span>
@@ -514,7 +511,7 @@
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">min</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">percent</span><span class="p">(),</span> <span class="s2">&quot;100.0%&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestTraitCounter.test_descs"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitCounter.test_descs">[docs]</a>    <span class="k">def</span> <span class="nf">test_descs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitCounter.test_descs"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitCounter.test_descs">[docs]</a>    <span class="k">def</span> <span class="nf">test_descs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Test descriptions&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">min</span> <span class="o">=</span> <span class="o">-</span><span class="mi">5</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">mod</span> <span class="o">=</span> <span class="mi">0</span>
@@ -535,12 +532,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">desc</span><span class="p">(),</span> <span class="s2">&quot;range3&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="TestTraitCounterTimed"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitCounterTimed">[docs]</a><span class="k">class</span> <span class="nc">TestTraitCounterTimed</span><span class="p">(</span><span class="n">_TraitHandlerBase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitCounterTimed"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitCounterTimed">[docs]</a><span class="k">class</span> <span class="nc">TestTraitCounterTimed</span><span class="p">(</span><span class="n">_TraitHandlerBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test for trait with timer component</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TestTraitCounterTimed.setUp"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitCounterTimed.setUp">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.traits.time&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">MagicMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mi">1000</span><span class="p">))</span>
+<div class="viewcode-block" id="TestTraitCounterTimed.setUp"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitCounterTimed.setUp">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.traits.time&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">MagicMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mi">1000</span><span class="p">))</span>
     <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
@@ -559,16 +556,16 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;test1&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestTraitCounterTimed._get_timer_data"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitCounterTimed._get_timer_data">[docs]</a>    <span class="k">def</span> <span class="nf">_get_timer_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_timer_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">current</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">rate</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;last_update&quot;</span><span class="p">],</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">ratetarget</span><span class="p">,</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
 
-<div class="viewcode-block" id="TestTraitCounterTimed.test_timer_rate"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitCounterTimed.test_timer_rate">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.traits.time&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="TestTraitCounterTimed.test_timer_rate"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitCounterTimed.test_timer_rate">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.traits.time&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_timer_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_time</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Test time stepping&quot;&quot;&quot;</span>
         <span class="n">mock_time</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="mi">1000</span>
@@ -595,7 +592,7 @@
         <span class="n">mock_time</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="mi">1218</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_timer_data</span><span class="p">(),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestTraitCounterTimed.test_timer_ratetarget"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitCounterTimed.test_timer_ratetarget">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.traits.time&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="TestTraitCounterTimed.test_timer_ratetarget"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitCounterTimed.test_timer_ratetarget">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.traits.time&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_timer_ratetarget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_time</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;test ratetarget&quot;&quot;&quot;</span>
         <span class="n">mock_time</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="mi">1000</span>
@@ -614,8 +611,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_timer_data</span><span class="p">(),</span> <span class="p">(</span><span class="mi">70</span><span class="p">,</span> <span class="mi">68</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">70</span><span class="p">))</span></div></div>
 
 
-<div class="viewcode-block" id="TestTraitGauge"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitGauge">[docs]</a><span class="k">class</span> <span class="nc">TestTraitGauge</span><span class="p">(</span><span class="n">_TraitHandlerBase</span><span class="p">):</span>
-<div class="viewcode-block" id="TestTraitGauge.setUp"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitGauge.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitGauge"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitGauge">[docs]</a><span class="k">class</span> <span class="nc">TestTraitGauge</span><span class="p">(</span><span class="n">_TraitHandlerBase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitGauge.setUp"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitGauge.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
             <span class="s2">&quot;test1&quot;</span><span class="p">,</span>
@@ -629,11 +626,11 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;test1&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestTraitGauge._get_values"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitGauge._get_values">[docs]</a>    <span class="k">def</span> <span class="nf">_get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get (base, mod, value, min, max).&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">mod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">min</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">max</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">mod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">min</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">max</span><span class="p">)</span>
 
-<div class="viewcode-block" id="TestTraitGauge.test_init"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitGauge.test_init">[docs]</a>    <span class="k">def</span> <span class="nf">test_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitGauge.test_init"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitGauge.test_init">[docs]</a>    <span class="k">def</span> <span class="nf">test_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_get_dbstore</span><span class="p">(</span><span class="s2">&quot;test1&quot;</span><span class="p">),</span>
             <span class="p">{</span>
@@ -651,7 +648,7 @@
             <span class="p">},</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestTraitGauge.test_value"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitGauge.test_value">[docs]</a>    <span class="k">def</span> <span class="nf">test_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitGauge.test_value"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitGauge.test_value">[docs]</a>    <span class="k">def</span> <span class="nf">test_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;value is current, where current defaults to base + mod&quot;&quot;&quot;</span>
         <span class="c1"># current unset - follows base + mod</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_values</span><span class="p">(),</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
@@ -669,7 +666,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">base</span> <span class="o">=</span> <span class="o">-</span><span class="mi">20</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_values</span><span class="p">(),</span> <span class="p">(</span><span class="o">-</span><span class="mi">20</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">18</span><span class="p">,</span> <span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="o">-</span><span class="mi">18</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestTraitGauge.test_boundaries__minmax"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitGauge.test_boundaries__minmax">[docs]</a>    <span class="k">def</span> <span class="nf">test_boundaries__minmax</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitGauge.test_boundaries__minmax"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitGauge.test_boundaries__minmax">[docs]</a>    <span class="k">def</span> <span class="nf">test_boundaries__minmax</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Test range&quot;&quot;&quot;</span>
         <span class="c1"># current unset - tied to base + mod</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">base</span> <span class="o">+=</span> <span class="mi">20</span>
@@ -688,7 +685,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="o">-</span><span class="mi">10</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_values</span><span class="p">(),</span> <span class="p">(</span><span class="mi">28</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="o">-</span><span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestTraitGauge.test_boundaries__bigmod"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitGauge.test_boundaries__bigmod">[docs]</a>    <span class="k">def</span> <span class="nf">test_boundaries__bigmod</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitGauge.test_boundaries__bigmod"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitGauge.test_boundaries__bigmod">[docs]</a>    <span class="k">def</span> <span class="nf">test_boundaries__bigmod</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;add a big mod&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">base</span> <span class="o">=</span> <span class="mi">5</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">mod</span> <span class="o">=</span> <span class="mi">100</span>
@@ -699,7 +696,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">min</span> <span class="o">=</span> <span class="o">-</span><span class="mi">200</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_values</span><span class="p">(),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">200</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestTraitGauge.test_boundaries__change_boundaries"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitGauge.test_boundaries__change_boundaries">[docs]</a>    <span class="k">def</span> <span class="nf">test_boundaries__change_boundaries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitGauge.test_boundaries__change_boundaries"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitGauge.test_boundaries__change_boundaries">[docs]</a>    <span class="k">def</span> <span class="nf">test_boundaries__change_boundaries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Change boundaries after current change&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="mi">20</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_values</span><span class="p">(),</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
@@ -709,7 +706,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">min</span> <span class="o">=</span> <span class="mi">20</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_values</span><span class="p">(),</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">102</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">110</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestTraitGauge.test_boundaries__disable"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitGauge.test_boundaries__disable">[docs]</a>    <span class="k">def</span> <span class="nf">test_boundaries__disable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitGauge.test_boundaries__disable"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitGauge.test_boundaries__disable">[docs]</a>    <span class="k">def</span> <span class="nf">test_boundaries__disable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Disable and re-enable boundary&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">base</span> <span class="o">=</span> <span class="mi">5</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">min</span> <span class="o">=</span> <span class="mi">1</span>
@@ -722,7 +719,7 @@
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">traits</span><span class="o">.</span><span class="n">TraitException</span><span class="p">):</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">max</span></div>
 
-<div class="viewcode-block" id="TestTraitGauge.test_boundaries__inverse"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitGauge.test_boundaries__inverse">[docs]</a>    <span class="k">def</span> <span class="nf">test_boundaries__inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitGauge.test_boundaries__inverse"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitGauge.test_boundaries__inverse">[docs]</a>    <span class="k">def</span> <span class="nf">test_boundaries__inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Try to set reversed boundaries&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">mod</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">base</span> <span class="o">=</span> <span class="o">-</span><span class="mi">10</span>  <span class="c1"># limited by min</span>
@@ -734,7 +731,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">min</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># limited by base + mod</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_values</span><span class="p">(),</span> <span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestTraitGauge.test_current"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitGauge.test_current">[docs]</a>    <span class="k">def</span> <span class="nf">test_current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitGauge.test_current"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitGauge.test_current">[docs]</a>    <span class="k">def</span> <span class="nf">test_current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Modifying current value&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">base</span> <span class="o">=</span> <span class="mi">10</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="mi">5</span>
@@ -748,7 +745,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_values</span><span class="p">(),</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestTraitGauge.test_delete"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitGauge.test_delete">[docs]</a>    <span class="k">def</span> <span class="nf">test_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitGauge.test_delete"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitGauge.test_delete">[docs]</a>    <span class="k">def</span> <span class="nf">test_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Deleting resets to default.&quot;&quot;&quot;</span>
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">mod</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_values</span><span class="p">(),</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
@@ -762,7 +759,7 @@
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">min</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_values</span><span class="p">(),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestTraitGauge.test_percentage"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitGauge.test_percentage">[docs]</a>    <span class="k">def</span> <span class="nf">test_percentage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitGauge.test_percentage"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitGauge.test_percentage">[docs]</a>    <span class="k">def</span> <span class="nf">test_percentage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Test percentage calculation&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">percent</span><span class="p">(),</span> <span class="s2">&quot;100.0%&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="mi">5</span>
@@ -772,7 +769,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">mod</span> <span class="o">-=</span> <span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">percent</span><span class="p">(),</span> <span class="s2">&quot;33.3%&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestTraitGauge.test_descs"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitGauge.test_descs">[docs]</a>    <span class="k">def</span> <span class="nf">test_descs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitGauge.test_descs"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitGauge.test_descs">[docs]</a>    <span class="k">def</span> <span class="nf">test_descs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Test descriptions&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">min</span> <span class="o">=</span> <span class="o">-</span><span class="mi">5</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_values</span><span class="p">(),</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
@@ -792,12 +789,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">desc</span><span class="p">(),</span> <span class="s2">&quot;range3&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="TestTraitGaugeTimed"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitGaugeTimed">[docs]</a><span class="k">class</span> <span class="nc">TestTraitGaugeTimed</span><span class="p">(</span><span class="n">_TraitHandlerBase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTraitGaugeTimed"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitGaugeTimed">[docs]</a><span class="k">class</span> <span class="nc">TestTraitGaugeTimed</span><span class="p">(</span><span class="n">_TraitHandlerBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test for trait with timer component</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TestTraitGaugeTimed.setUp"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitGaugeTimed.setUp">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.traits.time&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">MagicMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mi">1000</span><span class="p">))</span>
+<div class="viewcode-block" id="TestTraitGaugeTimed.setUp"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitGaugeTimed.setUp">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.traits.time&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">MagicMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mi">1000</span><span class="p">))</span>
     <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
@@ -815,16 +812,16 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;test1&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestTraitGaugeTimed._get_timer_data"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitGaugeTimed._get_timer_data">[docs]</a>    <span class="k">def</span> <span class="nf">_get_timer_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_timer_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">current</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">rate</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;last_update&quot;</span><span class="p">],</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">ratetarget</span><span class="p">,</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
 
-<div class="viewcode-block" id="TestTraitGaugeTimed.test_timer_rate"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitGaugeTimed.test_timer_rate">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.traits.time&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="TestTraitGaugeTimed.test_timer_rate"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitGaugeTimed.test_timer_rate">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.traits.time&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_timer_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_time</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Test time stepping&quot;&quot;&quot;</span>
         <span class="n">mock_time</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="mi">1000</span>
@@ -852,7 +849,7 @@
         <span class="n">mock_time</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="mi">1218</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_timer_data</span><span class="p">(),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestTraitGaugeTimed.test_timer_ratetarget"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestTraitGaugeTimed.test_timer_ratetarget">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.traits.time&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="TestTraitGaugeTimed.test_timer_ratetarget"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestTraitGaugeTimed.test_timer_ratetarget">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.traits.time&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_timer_ratetarget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_time</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;test ratetarget&quot;&quot;&quot;</span>
         <span class="n">mock_time</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="mi">1000</span>
@@ -872,24 +869,24 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_timer_data</span><span class="p">(),</span> <span class="p">(</span><span class="mi">70</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">70</span><span class="p">))</span></div></div>
 
 
-<div class="viewcode-block" id="TestNumericTraitOperators"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestNumericTraitOperators">[docs]</a><span class="k">class</span> <span class="nc">TestNumericTraitOperators</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestNumericTraitOperators"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestNumericTraitOperators">[docs]</a><span class="k">class</span> <span class="nc">TestNumericTraitOperators</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Test case for numeric magic method implementations.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TestNumericTraitOperators.setUp"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestNumericTraitOperators.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestNumericTraitOperators.setUp"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestNumericTraitOperators.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># direct instantiation for testing only; use TraitHandler in production</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">st</span> <span class="o">=</span> <span class="n">traits</span><span class="o">.</span><span class="n">Trait</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Strength&quot;</span><span class="p">,</span> <span class="s2">&quot;trait_type&quot;</span><span class="p">:</span> <span class="s2">&quot;trait&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,})</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">at</span> <span class="o">=</span> <span class="n">traits</span><span class="o">.</span><span class="n">Trait</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Attack&quot;</span><span class="p">,</span> <span class="s2">&quot;trait_type&quot;</span><span class="p">:</span> <span class="s2">&quot;trait&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,})</span></div>
 
-<div class="viewcode-block" id="TestNumericTraitOperators.tearDown"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestNumericTraitOperators.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestNumericTraitOperators.tearDown"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestNumericTraitOperators.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">at</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="TestNumericTraitOperators.test_pos_shortcut"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestNumericTraitOperators.test_pos_shortcut">[docs]</a>    <span class="k">def</span> <span class="nf">test_pos_shortcut</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestNumericTraitOperators.test_pos_shortcut"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestNumericTraitOperators.test_pos_shortcut">[docs]</a>    <span class="k">def</span> <span class="nf">test_pos_shortcut</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;overridden unary + operator returns `value` property&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="p">),</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestNumericTraitOperators.test_add_traits"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestNumericTraitOperators.test_add_traits">[docs]</a>    <span class="k">def</span> <span class="nf">test_add_traits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestNumericTraitOperators.test_add_traits"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestNumericTraitOperators.test_add_traits">[docs]</a>    <span class="k">def</span> <span class="nf">test_add_traits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;test addition of `Trait` objects&quot;&quot;&quot;</span>
         <span class="c1"># two Trait objects</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">st</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">at</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
@@ -897,7 +894,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">st</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestNumericTraitOperators.test_sub_traits"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestNumericTraitOperators.test_sub_traits">[docs]</a>    <span class="k">def</span> <span class="nf">test_sub_traits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestNumericTraitOperators.test_sub_traits"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestNumericTraitOperators.test_sub_traits">[docs]</a>    <span class="k">def</span> <span class="nf">test_sub_traits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;test subtraction of `Trait` objects&quot;&quot;&quot;</span>
         <span class="c1"># two Trait objects</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">st</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">at</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
@@ -905,7 +902,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">st</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">10</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestNumericTraitOperators.test_mul_traits"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestNumericTraitOperators.test_mul_traits">[docs]</a>    <span class="k">def</span> <span class="nf">test_mul_traits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestNumericTraitOperators.test_mul_traits"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestNumericTraitOperators.test_mul_traits">[docs]</a>    <span class="k">def</span> <span class="nf">test_mul_traits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;test multiplication of `Trait` objects&quot;&quot;&quot;</span>
         <span class="c1"># between two Traits</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">st</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">at</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
@@ -913,7 +910,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">at</span> <span class="o">*</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">at</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestNumericTraitOperators.test_floordiv"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestNumericTraitOperators.test_floordiv">[docs]</a>    <span class="k">def</span> <span class="nf">test_floordiv</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestNumericTraitOperators.test_floordiv"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestNumericTraitOperators.test_floordiv">[docs]</a>    <span class="k">def</span> <span class="nf">test_floordiv</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;test floor division of `Trait` objects&quot;&quot;&quot;</span>
         <span class="c1"># between two Traits</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">st</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">at</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
@@ -921,7 +918,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">st</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">18</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestNumericTraitOperators.test_comparisons_traits"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestNumericTraitOperators.test_comparisons_traits">[docs]</a>    <span class="k">def</span> <span class="nf">test_comparisons_traits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestNumericTraitOperators.test_comparisons_traits"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestNumericTraitOperators.test_comparisons_traits">[docs]</a>    <span class="k">def</span> <span class="nf">test_comparisons_traits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;test equality comparison between `Trait` objects&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">at</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertLess</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">at</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="p">)</span>
@@ -929,7 +926,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertGreater</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">at</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertGreaterEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">at</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestNumericTraitOperators.test_comparisons_numeric"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.test_traits.TestNumericTraitOperators.test_comparisons_numeric">[docs]</a>    <span class="k">def</span> <span class="nf">test_comparisons_numeric</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestNumericTraitOperators.test_comparisons_numeric"><a class="viewcode-back" href="../../../api/evennia.contrib.test_traits.html#evennia.contrib.test_traits.TestNumericTraitOperators.test_comparisons_numeric">[docs]</a>    <span class="k">def</span> <span class="nf">test_comparisons_numeric</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;equality comparisons between `Trait` and numeric&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="p">)</span>
@@ -949,6 +946,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertGreaterEqual</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="p">)</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -986,17 +984,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.test_traits</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.test_traits</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

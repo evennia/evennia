@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.server.server &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.server.server</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.server.server</a></li> 
       </ul>
     </div>  
 
@@ -43,12 +40,12 @@
             
   <h1>Source code for evennia.server.server</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">This module implements the main Evennia server process, the core of</span>
-<span class="sd">the game engine.</span>
+<span class="sd">This module implements the main Evennia server process, the core of the game</span>
+<span class="sd">engine.</span>
 
-<span class="sd">This module should be started with the &#39;twistd&#39; executable since it</span>
-<span class="sd">sets up all the networking features.  (this is done automatically</span>
-<span class="sd">by evennia/server/server_runner.py).</span>
+<span class="sd">This module should be started with the &#39;twistd&#39; executable since it sets up all</span>
+<span class="sd">the networking features.  (this is done automatically by</span>
+<span class="sd">evennia/server/server_runner.py).</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">time</span>
@@ -152,7 +149,7 @@
 <span class="n">_LAST_SERVER_TIME_SNAPSHOT</span> <span class="o">=</span> <span class="mi">0</span>
 
 
-<div class="viewcode-block" id="_server_maintenance"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.server._server_maintenance">[docs]</a><span class="k">def</span> <span class="nf">_server_maintenance</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">_server_maintenance</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This maintenance function handles repeated checks and updates that</span>
 <span class="sd">    the server needs to do. It is called every minute.</span>
@@ -210,7 +207,7 @@
                 <span class="n">to_disconnect</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">session</span> <span class="ow">in</span> <span class="n">to_disconnect</span><span class="p">:</span>
-            <span class="n">SESSIONS</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="n">reason</span><span class="p">)</span></div>
+            <span class="n">SESSIONS</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="n">reason</span><span class="p">)</span>
 
 
 <span class="c1"># ------------------------------------------------------------</span>
@@ -218,7 +215,7 @@
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="Evennia"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.server.Evennia">[docs]</a><span class="k">class</span> <span class="nc">Evennia</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Evennia"><a class="viewcode-back" href="../../../api/evennia.server.server.html#evennia.server.server.Evennia">[docs]</a><span class="k">class</span> <span class="nc">Evennia</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The main Evennia server handler. This object sets up the database and</span>
@@ -226,7 +223,7 @@
 <span class="sd">    evennia.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Evennia.__init__"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.server.Evennia.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">application</span><span class="p">):</span>
+<div class="viewcode-block" id="Evennia.__init__"><a class="viewcode-back" href="../../../api/evennia.server.server.html#evennia.server.server.Evennia.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">application</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Setup the server.</span>
 
@@ -270,7 +267,7 @@
 
     <span class="c1"># Server startup methods</span>
 
-<div class="viewcode-block" id="Evennia.sqlite3_prep"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.server.Evennia.sqlite3_prep">[docs]</a>    <span class="k">def</span> <span class="nf">sqlite3_prep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Evennia.sqlite3_prep"><a class="viewcode-back" href="../../../api/evennia.server.server.html#evennia.server.server.Evennia.sqlite3_prep">[docs]</a>    <span class="k">def</span> <span class="nf">sqlite3_prep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Optimize some SQLite stuff at startup since we</span>
 <span class="sd">        can&#39;t save it to the database.</span>
@@ -289,7 +286,7 @@
             <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;PRAGMA count_changes=OFF&quot;</span><span class="p">)</span>
             <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;PRAGMA temp_store=2&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Evennia.update_defaults"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.server.Evennia.update_defaults">[docs]</a>    <span class="k">def</span> <span class="nf">update_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Evennia.update_defaults"><a class="viewcode-back" href="../../../api/evennia.server.server.html#evennia.server.server.Evennia.update_defaults">[docs]</a>    <span class="k">def</span> <span class="nf">update_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        We make sure to store the most important object defaults here, so</span>
 <span class="sd">        we can catch if they change and update them on-objects automatically.</span>
@@ -376,7 +373,7 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="p">]</span></div>
 
-<div class="viewcode-block" id="Evennia.run_initial_setup"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.server.Evennia.run_initial_setup">[docs]</a>    <span class="k">def</span> <span class="nf">run_initial_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Evennia.run_initial_setup"><a class="viewcode-back" href="../../../api/evennia.server.server.html#evennia.server.server.Evennia.run_initial_setup">[docs]</a>    <span class="k">def</span> <span class="nf">run_initial_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is triggered by the amp protocol when the connection</span>
 <span class="sd">        to the portal has been established.</span>
@@ -402,7 +399,7 @@
             <span class="p">)</span>
             <span class="n">initial_setup</span><span class="o">.</span><span class="n">handle_setup</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">last_initial_setup_step</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Evennia.run_init_hooks"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.server.Evennia.run_init_hooks">[docs]</a>    <span class="k">def</span> <span class="nf">run_init_hooks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+<div class="viewcode-block" id="Evennia.run_init_hooks"><a class="viewcode-back" href="../../../api/evennia.server.server.html#evennia.server.server.Evennia.run_init_hooks">[docs]</a>    <span class="k">def</span> <span class="nf">run_init_hooks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the amp client once receiving sync back from Portal</span>
 
@@ -439,22 +436,22 @@
         <span class="c1"># always call this regardless of start type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">at_server_start</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Evennia.shutdown"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.server.Evennia.shutdown">[docs]</a>    <span class="nd">@defer</span><span class="o">.</span><span class="n">inlineCallbacks</span>
+<div class="viewcode-block" id="Evennia.shutdown"><a class="viewcode-back" href="../../../api/evennia.server.server.html#evennia.server.server.Evennia.shutdown">[docs]</a>    <span class="nd">@defer</span><span class="o">.</span><span class="n">inlineCallbacks</span>
     <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;reload&quot;</span><span class="p">,</span> <span class="n">_reactor_stopping</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shuts down the server from inside it.</span>
 
 <span class="sd">        mode - sets the server restart mode.</span>
-<span class="sd">               &#39;reload&#39; - server restarts, no &quot;persistent&quot; scripts</span>
-<span class="sd">                          are stopped, at_reload hooks called.</span>
-<span class="sd">               &#39;reset&#39; - server restarts, non-persistent scripts stopped,</span>
-<span class="sd">                         at_shutdown hooks called but sessions will not</span>
-<span class="sd">                         be disconnected.</span>
-<span class="sd">               &#39;shutdown&#39; - like reset, but server will not auto-restart.</span>
+<span class="sd">           - &#39;reload&#39; - server restarts, no &quot;persistent&quot; scripts</span>
+<span class="sd">             are stopped, at_reload hooks called.</span>
+<span class="sd">           - &#39;reset&#39; - server restarts, non-persistent scripts stopped,</span>
+<span class="sd">             at_shutdown hooks called but sessions will not</span>
+<span class="sd">             be disconnected.</span>
+<span class="sd">           - &#39;shutdown&#39; - like reset, but server will not auto-restart.</span>
 <span class="sd">        _reactor_stopping - this is set if server is stopped by a kill</span>
-<span class="sd">                            command OR this method was already called</span>
-<span class="sd">                             once - in both cases the reactor is</span>
-<span class="sd">                             dead/stopping already.</span>
+<span class="sd">           command OR this method was already called</span>
+<span class="sd">           once - in both cases the reactor is</span>
+<span class="sd">           dead/stopping already.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">_reactor_stopping</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;shutdown_complete&quot;</span><span class="p">):</span>
             <span class="c1"># this means we have already passed through this method</span>
@@ -525,13 +522,13 @@
         <span class="c1"># we make sure the proper gametime is saved as late as possible</span>
         <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;runtime&quot;</span><span class="p">,</span> <span class="n">_GAMETIME_MODULE</span><span class="o">.</span><span class="n">runtime</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="Evennia.get_info_dict"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.server.Evennia.get_info_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_info_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Evennia.get_info_dict"><a class="viewcode-back" href="../../../api/evennia.server.server.html#evennia.server.server.Evennia.get_info_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_info_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Return the server info, for display.&quot;</span>
         <span class="k">return</span> <span class="n">INFO_DICT</span></div>
 
     <span class="c1"># server start/stop hooks</span>
 
-<div class="viewcode-block" id="Evennia.at_server_start"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.server.Evennia.at_server_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Evennia.at_server_start"><a class="viewcode-back" href="../../../api/evennia.server.server.html#evennia.server.server.Evennia.at_server_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called every time the server starts up, regardless of</span>
 <span class="sd">        how it was shut down.</span>
@@ -539,7 +536,7 @@
         <span class="k">if</span> <span class="n">SERVER_STARTSTOP_MODULE</span><span class="p">:</span>
             <span class="n">SERVER_STARTSTOP_MODULE</span><span class="o">.</span><span class="n">at_server_start</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Evennia.at_server_stop"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.server.Evennia.at_server_stop">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Evennia.at_server_stop"><a class="viewcode-back" href="../../../api/evennia.server.server.html#evennia.server.server.Evennia.at_server_stop">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called just before a server is shut down, regardless</span>
 <span class="sd">        of it is fore a reload, reset or shutdown.</span>
@@ -547,14 +544,14 @@
         <span class="k">if</span> <span class="n">SERVER_STARTSTOP_MODULE</span><span class="p">:</span>
             <span class="n">SERVER_STARTSTOP_MODULE</span><span class="o">.</span><span class="n">at_server_stop</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Evennia.at_server_reload_start"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.server.Evennia.at_server_reload_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_reload_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Evennia.at_server_reload_start"><a class="viewcode-back" href="../../../api/evennia.server.server.html#evennia.server.server.Evennia.at_server_reload_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_reload_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called only when server starts back up after a reload.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">SERVER_STARTSTOP_MODULE</span><span class="p">:</span>
             <span class="n">SERVER_STARTSTOP_MODULE</span><span class="o">.</span><span class="n">at_server_reload_start</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Evennia.at_post_portal_sync"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.server.Evennia.at_post_portal_sync">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_portal_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+<div class="viewcode-block" id="Evennia.at_post_portal_sync"><a class="viewcode-back" href="../../../api/evennia.server.server.html#evennia.server.server.Evennia.at_post_portal_sync">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_portal_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called just after the portal has finished syncing back data to the server</span>
 <span class="sd">        after reconnecting.</span>
@@ -609,14 +606,14 @@
         <span class="c1"># delete the temporary setting</span>
         <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;server_restart_mode&quot;</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Evennia.at_server_reload_stop"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.server.Evennia.at_server_reload_stop">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_reload_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Evennia.at_server_reload_stop"><a class="viewcode-back" href="../../../api/evennia.server.server.html#evennia.server.server.Evennia.at_server_reload_stop">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_reload_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called only time the server stops before a reload.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">SERVER_STARTSTOP_MODULE</span><span class="p">:</span>
             <span class="n">SERVER_STARTSTOP_MODULE</span><span class="o">.</span><span class="n">at_server_reload_stop</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Evennia.at_server_cold_start"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.server.Evennia.at_server_cold_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_cold_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Evennia.at_server_cold_start"><a class="viewcode-back" href="../../../api/evennia.server.server.html#evennia.server.server.Evennia.at_server_cold_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_cold_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called only when the server starts &quot;cold&quot;, i.e. after a</span>
 <span class="sd">        shutdown or a reset.</span>
@@ -644,7 +641,7 @@
         <span class="k">if</span> <span class="n">SERVER_STARTSTOP_MODULE</span><span class="p">:</span>
             <span class="n">SERVER_STARTSTOP_MODULE</span><span class="o">.</span><span class="n">at_server_cold_start</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Evennia.at_server_cold_stop"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.server.Evennia.at_server_cold_stop">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_cold_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Evennia.at_server_cold_stop"><a class="viewcode-back" href="../../../api/evennia.server.server.html#evennia.server.server.Evennia.at_server_cold_stop">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_cold_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called only when the server goes down due to a shutdown or reset.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -775,6 +772,7 @@
 <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;server_starting_mode&quot;</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -812,17 +810,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.server.server</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.server.server</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.help.models &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.help.models</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.help.models</a></li> 
       </ul>
     </div>  
 
@@ -74,7 +71,7 @@
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="HelpEntry"><a class="viewcode-back" href="../../../api/evennia.help.html#evennia.help.admin.HelpEntry">[docs]</a><span class="k">class</span> <span class="nc">HelpEntry</span><span class="p">(</span><span class="n">SharedMemoryModel</span><span class="p">):</span>
+<div class="viewcode-block" id="HelpEntry"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.admin.HelpEntry">[docs]</a><span class="k">class</span> <span class="nc">HelpEntry</span><span class="p">(</span><span class="n">SharedMemoryModel</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A generic help entry.</span>
 
@@ -130,15 +127,15 @@
 
     <span class="c1"># lazy-loaded handlers</span>
 
-<div class="viewcode-block" id="HelpEntry.locks"><a class="viewcode-back" href="../../../api/evennia.help.html#evennia.help.admin.HelpEntry.locks">[docs]</a>    <span class="nd">@lazy_property</span>
+<div class="viewcode-block" id="HelpEntry.locks"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.admin.HelpEntry.locks">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">locks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">LockHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HelpEntry.tags"><a class="viewcode-back" href="../../../api/evennia.help.html#evennia.help.admin.HelpEntry.tags">[docs]</a>    <span class="nd">@lazy_property</span>
+<div class="viewcode-block" id="HelpEntry.tags"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.admin.HelpEntry.tags">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">tags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">TagHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HelpEntry.aliases"><a class="viewcode-back" href="../../../api/evennia.help.html#evennia.help.admin.HelpEntry.aliases">[docs]</a>    <span class="nd">@lazy_property</span>
+<div class="viewcode-block" id="HelpEntry.aliases"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.admin.HelpEntry.aliases">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">aliases</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">AliasHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
@@ -159,7 +156,7 @@
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span>
 
-<div class="viewcode-block" id="HelpEntry.access"><a class="viewcode-back" href="../../../api/evennia.help.html#evennia.help.admin.HelpEntry.access">[docs]</a>    <span class="k">def</span> <span class="nf">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;read&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="HelpEntry.access"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.admin.HelpEntry.access">[docs]</a>    <span class="k">def</span> <span class="nf">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;read&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines if another object has permission to access.</span>
 <span class="sd">        accessing_obj - object trying to access this one</span>
@@ -185,7 +182,7 @@
     <span class="c1"># Web/Django methods</span>
     <span class="c1">#</span>
 
-<div class="viewcode-block" id="HelpEntry.web_get_admin_url"><a class="viewcode-back" href="../../../api/evennia.help.html#evennia.help.admin.HelpEntry.web_get_admin_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_admin_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="HelpEntry.web_get_admin_url"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.admin.HelpEntry.web_get_admin_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_admin_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for the Django Admin page for this object.</span>
 
@@ -200,7 +197,7 @@
             <span class="s2">&quot;admin:</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s</span><span class="s2">_change&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">content_type</span><span class="o">.</span><span class="n">app_label</span><span class="p">,</span> <span class="n">content_type</span><span class="o">.</span><span class="n">model</span><span class="p">),</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,)</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="HelpEntry.web_get_create_url"><a class="viewcode-back" href="../../../api/evennia.help.html#evennia.help.admin.HelpEntry.web_get_create_url">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="HelpEntry.web_get_create_url"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.admin.HelpEntry.web_get_create_url">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">web_get_create_url</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for a View that allows users to create new</span>
@@ -231,7 +228,7 @@
         <span class="k">except</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
-<div class="viewcode-block" id="HelpEntry.web_get_detail_url"><a class="viewcode-back" href="../../../api/evennia.help.html#evennia.help.admin.HelpEntry.web_get_detail_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_detail_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="HelpEntry.web_get_detail_url"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.admin.HelpEntry.web_get_detail_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_detail_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for a View that allows users to view details for</span>
 <span class="sd">        this object.</span>
@@ -266,7 +263,7 @@
             <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
-<div class="viewcode-block" id="HelpEntry.web_get_update_url"><a class="viewcode-back" href="../../../api/evennia.help.html#evennia.help.admin.HelpEntry.web_get_update_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_update_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="HelpEntry.web_get_update_url"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.admin.HelpEntry.web_get_update_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_update_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for a View that allows users to update this</span>
 <span class="sd">        object.</span>
@@ -300,7 +297,7 @@
         <span class="k">except</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;#&quot;</span></div>
 
-<div class="viewcode-block" id="HelpEntry.web_get_delete_url"><a class="viewcode-back" href="../../../api/evennia.help.html#evennia.help.admin.HelpEntry.web_get_delete_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_delete_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="HelpEntry.web_get_delete_url"><a class="viewcode-back" href="../../../api/evennia.help.models.html#evennia.help.admin.HelpEntry.web_get_delete_url">[docs]</a>    <span class="k">def</span> <span class="nf">web_get_delete_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the URI path for a View that allows users to delete this object.</span>
 
@@ -337,6 +334,7 @@
     <span class="n">get_absolute_url</span> <span class="o">=</span> <span class="n">web_get_detail_url</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -374,17 +372,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.help.models</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.help.models</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>
