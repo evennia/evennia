@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.scripts.monitorhandler &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.scripts.monitorhandler</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.scripts.monitorhandler</a></li> 
       </ul>
     </div>  
 
@@ -67,20 +64,20 @@
 <span class="n">_DA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__delattr__</span>
 
 
-<div class="viewcode-block" id="MonitorHandler"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.monitorhandler.MonitorHandler">[docs]</a><span class="k">class</span> <span class="nc">MonitorHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="MonitorHandler"><a class="viewcode-back" href="../../../api/evennia.scripts.monitorhandler.html#evennia.scripts.monitorhandler.MonitorHandler">[docs]</a><span class="k">class</span> <span class="nc">MonitorHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a resource singleton that allows for registering</span>
 <span class="sd">    callbacks for when a field or Attribute is updated (saved).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="MonitorHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.monitorhandler.MonitorHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MonitorHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.scripts.monitorhandler.html#evennia.scripts.monitorhandler.MonitorHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the handler.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">savekey</span> <span class="o">=</span> <span class="s2">&quot;_monitorhandler_save&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="MonitorHandler.save"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.monitorhandler.MonitorHandler.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MonitorHandler.save"><a class="viewcode-back" href="../../../api/evennia.scripts.monitorhandler.html#evennia.scripts.monitorhandler.MonitorHandler.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Store our monitors to the database. This is called</span>
 <span class="sd">        by the server process.</span>
@@ -101,7 +98,7 @@
             <span class="n">savedata</span> <span class="o">=</span> <span class="n">dbserialize</span><span class="p">(</span><span class="n">savedata</span><span class="p">)</span>
             <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">savekey</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">savedata</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MonitorHandler.restore"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.monitorhandler.MonitorHandler.restore">[docs]</a>    <span class="k">def</span> <span class="nf">restore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server_reload</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="MonitorHandler.restore"><a class="viewcode-back" href="../../../api/evennia.scripts.monitorhandler.html#evennia.scripts.monitorhandler.MonitorHandler.restore">[docs]</a>    <span class="k">def</span> <span class="nf">restore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server_reload</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Restore our monitors after a reload. This is called</span>
 <span class="sd">        by the server process.</span>
@@ -135,7 +132,7 @@
         <span class="c1"># make sure to clean data from database</span>
         <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">savekey</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MonitorHandler.at_update"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.monitorhandler.MonitorHandler.at_update">[docs]</a>    <span class="k">def</span> <span class="nf">at_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">):</span>
+<div class="viewcode-block" id="MonitorHandler.at_update"><a class="viewcode-back" href="../../../api/evennia.scripts.monitorhandler.html#evennia.scripts.monitorhandler.MonitorHandler.at_update">[docs]</a>    <span class="k">def</span> <span class="nf">at_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the field as it saves.</span>
 
@@ -152,7 +149,7 @@
         <span class="k">for</span> <span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">idstring</span><span class="p">)</span> <span class="ow">in</span> <span class="n">to_delete</span><span class="p">:</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="n">obj</span><span class="p">][</span><span class="n">fieldname</span><span class="p">][</span><span class="n">idstring</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="MonitorHandler.add"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.monitorhandler.MonitorHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="MonitorHandler.add"><a class="viewcode-back" href="../../../api/evennia.scripts.monitorhandler.html#evennia.scripts.monitorhandler.MonitorHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add monitoring to a given field or Attribute. A field must</span>
 <span class="sd">        be specified with the full db_* name or it will be assumed</span>
@@ -169,7 +166,7 @@
 <span class="sd">            persistent (bool, optional): If False, the monitor will survive</span>
 <span class="sd">                a server reload but not a cold restart. This is default.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            session (Session): If this keyword is given, the monitorhandler will</span>
 <span class="sd">                correctly analyze it and remove the monitor if after a reload/reboot</span>
 <span class="sd">                the session is no longer valid.</span>
@@ -202,7 +199,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="n">obj</span><span class="p">][</span><span class="n">fieldname</span><span class="p">][</span><span class="n">idstring</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">persistent</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MonitorHandler.remove"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.monitorhandler.MonitorHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="MonitorHandler.remove"><a class="viewcode-back" href="../../../api/evennia.scripts.monitorhandler.html#evennia.scripts.monitorhandler.MonitorHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove a monitor.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -216,13 +213,13 @@
         <span class="k">if</span> <span class="n">idstring</span> <span class="ow">in</span> <span class="n">idstring_dict</span><span class="p">:</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span><span class="p">[</span><span class="n">obj</span><span class="p">][</span><span class="n">fieldname</span><span class="p">][</span><span class="n">idstring</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="MonitorHandler.clear"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.monitorhandler.MonitorHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MonitorHandler.clear"><a class="viewcode-back" href="../../../api/evennia.scripts.monitorhandler.html#evennia.scripts.monitorhandler.MonitorHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Delete all monitors.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">monitors</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="MonitorHandler.all"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.monitorhandler.MonitorHandler.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="MonitorHandler.all"><a class="viewcode-back" href="../../../api/evennia.scripts.monitorhandler.html#evennia.scripts.monitorhandler.MonitorHandler.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        List all monitors or all monitors of a given object.</span>
 
@@ -249,6 +246,7 @@
 <span class="n">MONITOR_HANDLER</span> <span class="o">=</span> <span class="n">MonitorHandler</span><span class="p">()</span>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -286,17 +284,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.scripts.monitorhandler</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.scripts.monitorhandler</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

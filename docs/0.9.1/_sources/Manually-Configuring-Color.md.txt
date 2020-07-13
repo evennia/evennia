@@ -3,7 +3,7 @@
 
 This is a small tutorial for customizing your character objects, using the example of letting users turn on and off ANSI color parsing as an example.  `@options NOCOLOR=True` will now do what this tutorial shows, but the tutorial subject can be applied to other toggles you may want, as well.
 
-In the Building guide's [Colors](TextTags#coloured-text) page you can learn how to add color to your game by using special markup. Colors enhance the gaming experience, but not all users want color. Examples would be users working from clients that don't support color, or people with various seeing disabilities that rely on screen readers to play your game. Also, whereas Evennia normally automatically detects if a client supports color, it may get it wrong. Being able to turn it on manually if you know it **should** work could be a nice feature.
+In the Building guide's [Colors](./TextTags#coloured-text) page you can learn how to add color to your game by using special markup. Colors enhance the gaming experience, but not all users want color. Examples would be users working from clients that don't support color, or people with various seeing disabilities that rely on screen readers to play your game. Also, whereas Evennia normally automatically detects if a client supports color, it may get it wrong. Being able to turn it on manually if you know it **should** work could be a nice feature.
 
 So here's how to allow those users to remove color. It basically means you implementing a simple configuration system for your characters. This is the basic sequence:
 
@@ -17,7 +17,7 @@ So here's how to allow those users to remove color. It basically means you imple
 
 Create a new module in `mygame/typeclasses` named, for example, `mycharacter.py`. Alternatively you can simply add a new class to 'mygamegame/typeclasses/characters.py'.
 
-In your new module(or characters.py), create a new [Typeclass](Typeclasses) inheriting from `evennia.DefaultCharacter`. We will also import `evennia.utils.ansi`, which we will use later.
+In your new module(or characters.py), create a new [Typeclass](./Typeclasses) inheriting from `evennia.DefaultCharacter`. We will also import `evennia.utils.ansi`, which we will use later.
 
 ```python
     from evennia import Character
@@ -29,7 +29,7 @@ In your new module(or characters.py), create a new [Typeclass](Typeclasses) inhe
             self.db.config_color = True
 ```
 
-Above we set a simple config value as an [Attribute](Attributes).
+Above we set a simple config value as an [Attribute](./Attributes).
 
 Let's make sure that new characters are created of this type. Edit your `mygame/server/conf/settings.py` file and add/change `BASE_CHARACTER_TYPECLASS` to point to your new character class. Observe that this will only affect *new* characters, not those already created. You have to convert already created characters to the new typeclass by using the `@typeclass` command (try on a secondary character first though, to test that everything works - you don't want to render your root user unusable!).
 
@@ -127,7 +127,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
 
 ## More colors
 
-Apart from ANSI colors, Evennia also supports **Xterm256** colors (See [Colors](TextTags#colored-text)). The `msg()` method supports the `xterm256` keyword for manually activating/deactiving xterm256. It should be easy to expand the above example to allow players to customize xterm256 regardless of if Evennia thinks their client supports it or not.
+Apart from ANSI colors, Evennia also supports **Xterm256** colors (See [Colors](./TextTags#colored-text)). The `msg()` method supports the `xterm256` keyword for manually activating/deactiving xterm256. It should be easy to expand the above example to allow players to customize xterm256 regardless of if Evennia thinks their client supports it or not.
 
 To get a better understanding of how `msg()` works with keywords, you can try this as superuser:
 

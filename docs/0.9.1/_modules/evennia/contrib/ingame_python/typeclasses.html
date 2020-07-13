@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.ingame_python.typeclasses &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.ingame_python.typeclasses</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.ingame_python.typeclasses</a></li> 
       </ul>
     </div>  
 
@@ -205,7 +202,7 @@
 <span class="s2">&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="EventCharacter"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.typeclasses.EventCharacter">[docs]</a><span class="nd">@register_events</span>
+<div class="viewcode-block" id="EventCharacter"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.typeclasses.html#evennia.contrib.ingame_python.typeclasses.EventCharacter">[docs]</a><span class="nd">@register_events</span>
 <span class="k">class</span> <span class="nc">EventCharacter</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;Typeclass to represent a character and call event types.&quot;&quot;&quot;</span>
@@ -224,12 +221,12 @@
         <span class="s2">&quot;unpuppeted&quot;</span><span class="p">:</span> <span class="p">([</span><span class="s2">&quot;character&quot;</span><span class="p">],</span> <span class="n">CHARACTER_UNPUPPETED</span><span class="p">),</span>
     <span class="p">}</span>
 
-<div class="viewcode-block" id="EventCharacter.callbacks"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.typeclasses.EventCharacter.callbacks">[docs]</a>    <span class="nd">@lazy_property</span>
+<div class="viewcode-block" id="EventCharacter.callbacks"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.typeclasses.html#evennia.contrib.ingame_python.typeclasses.EventCharacter.callbacks">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the CallbackHandler.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">CallbackHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EventCharacter.announce_move_from"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.typeclasses.EventCharacter.announce_move_from">[docs]</a>    <span class="k">def</span> <span class="nf">announce_move_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="EventCharacter.announce_move_from"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.typeclasses.html#evennia.contrib.ingame_python.typeclasses.EventCharacter.announce_move_from">[docs]</a>    <span class="k">def</span> <span class="nf">announce_move_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called if the move is to be announced. This is</span>
 <span class="sd">        called while we are still standing in the old</span>
@@ -276,7 +273,7 @@
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">announce_move_from</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="n">string</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="n">mapping</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EventCharacter.announce_move_to"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.typeclasses.EventCharacter.announce_move_to">[docs]</a>    <span class="k">def</span> <span class="nf">announce_move_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="EventCharacter.announce_move_to"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.typeclasses.html#evennia.contrib.ingame_python.typeclasses.EventCharacter.announce_move_to">[docs]</a>    <span class="k">def</span> <span class="nf">announce_move_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called after the move if the move was not quiet. At this point</span>
 <span class="sd">        we are standing in the new location.</span>
@@ -334,7 +331,7 @@
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">announce_move_to</span><span class="p">(</span><span class="n">source_location</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="n">string</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="n">mapping</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EventCharacter.at_before_move"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.typeclasses.EventCharacter.at_before_move">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
+<div class="viewcode-block" id="EventCharacter.at_before_move"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.typeclasses.html#evennia.contrib.ingame_python.typeclasses.EventCharacter.at_before_move">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called just before starting to move this object to</span>
 <span class="sd">        destination.</span>
@@ -374,7 +371,7 @@
 
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="EventCharacter.at_after_move"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.typeclasses.EventCharacter.at_after_move">[docs]</a>    <span class="k">def</span> <span class="nf">at_after_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_location</span><span class="p">):</span>
+<div class="viewcode-block" id="EventCharacter.at_after_move"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.typeclasses.html#evennia.contrib.ingame_python.typeclasses.EventCharacter.at_after_move">[docs]</a>    <span class="k">def</span> <span class="nf">at_after_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_location</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called after move has completed, regardless of quiet mode or</span>
 <span class="sd">        not.  Allows changes to the object due to the location it is</span>
@@ -399,7 +396,7 @@
             <span class="p">]:</span>
                 <span class="n">present</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;greet&quot;</span><span class="p">,</span> <span class="n">present</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EventCharacter.at_object_delete"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.typeclasses.EventCharacter.at_object_delete">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EventCharacter.at_object_delete"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.typeclasses.html#evennia.contrib.ingame_python.typeclasses.EventCharacter.at_object_delete">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called just before the database object is permanently</span>
 <span class="sd">        delete()d from the database. If this method returns False,</span>
@@ -412,7 +409,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="EventCharacter.at_post_puppet"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.typeclasses.EventCharacter.at_post_puppet">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_puppet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EventCharacter.at_post_puppet"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.typeclasses.html#evennia.contrib.ingame_python.typeclasses.EventCharacter.at_post_puppet">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_puppet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called just after puppeting has been completed and all</span>
 <span class="sd">        Account&lt;-&gt;Object links have been established.</span>
@@ -433,7 +430,7 @@
         <span class="k">if</span> <span class="n">location</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="n">DefaultRoom</span><span class="p">):</span>
             <span class="n">location</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;puppeted_in&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EventCharacter.at_pre_unpuppet"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.typeclasses.EventCharacter.at_pre_unpuppet">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_unpuppet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EventCharacter.at_pre_unpuppet"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.typeclasses.html#evennia.contrib.ingame_python.typeclasses.EventCharacter.at_pre_unpuppet">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_unpuppet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called just before beginning to un-connect a puppeting from</span>
 <span class="sd">        this Account.</span>
@@ -454,7 +451,7 @@
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_pre_unpuppet</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EventCharacter.at_before_say"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.typeclasses.EventCharacter.at_before_say">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_say</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EventCharacter.at_before_say"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.typeclasses.html#evennia.contrib.ingame_python.typeclasses.EventCharacter.at_before_say">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_say</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Before the object says something.</span>
 
@@ -465,7 +462,7 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            message (str): The suggested say/whisper text spoken by self.</span>
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            whisper (bool): If True, this is a whisper rather than</span>
 <span class="sd">                a say. This is sent by the whisper command by default.</span>
 <span class="sd">                Other verbal commands could use this hook in similar</span>
@@ -503,7 +500,7 @@
 
         <span class="k">return</span> <span class="n">message</span></div>
 
-<div class="viewcode-block" id="EventCharacter.at_say"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.typeclasses.EventCharacter.at_say">[docs]</a>    <span class="k">def</span> <span class="nf">at_say</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EventCharacter.at_say"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.typeclasses.html#evennia.contrib.ingame_python.typeclasses.EventCharacter.at_say">[docs]</a>    <span class="k">def</span> <span class="nf">at_say</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Display the actual say (or whisper) of self.</span>
 
@@ -521,7 +518,7 @@
 <span class="sd">                (by default only used by whispers).</span>
 <span class="sd">            msg_receiver(str, optional): Specific message for receiver only.</span>
 <span class="sd">            mapping (dict, optional): Additional mapping in messages.</span>
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            whisper (bool): If this is a whisper rather than a say. Kwargs</span>
 <span class="sd">                can be used by other verbal commands in a similar way.</span>
 
@@ -660,7 +657,7 @@
 <span class="s2">&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="EventExit"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.typeclasses.EventExit">[docs]</a><span class="nd">@register_events</span>
+<div class="viewcode-block" id="EventExit"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.typeclasses.html#evennia.contrib.ingame_python.typeclasses.EventExit">[docs]</a><span class="nd">@register_events</span>
 <span class="k">class</span> <span class="nc">EventExit</span><span class="p">(</span><span class="n">DefaultExit</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;Modified exit including management of events.&quot;&quot;&quot;</span>
@@ -679,12 +676,12 @@
         <span class="s2">&quot;traverse&quot;</span><span class="p">:</span> <span class="p">([</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="s2">&quot;exit&quot;</span><span class="p">,</span> <span class="s2">&quot;origin&quot;</span><span class="p">,</span> <span class="s2">&quot;destination&quot;</span><span class="p">],</span> <span class="n">EXIT_TRAVERSE</span><span class="p">),</span>
     <span class="p">}</span>
 
-<div class="viewcode-block" id="EventExit.callbacks"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.typeclasses.EventExit.callbacks">[docs]</a>    <span class="nd">@lazy_property</span>
+<div class="viewcode-block" id="EventExit.callbacks"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.typeclasses.html#evennia.contrib.ingame_python.typeclasses.EventExit.callbacks">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the CallbackHandler.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">CallbackHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EventExit.at_traverse"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.typeclasses.EventExit.at_traverse">[docs]</a>    <span class="k">def</span> <span class="nf">at_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">):</span>
+<div class="viewcode-block" id="EventExit.at_traverse"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.typeclasses.html#evennia.contrib.ingame_python.typeclasses.EventExit.at_traverse">[docs]</a>    <span class="k">def</span> <span class="nf">at_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This hook is responsible for handling the actual traversal,</span>
 <span class="sd">        normally by calling</span>
@@ -756,7 +753,7 @@
 <span class="s2">&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="EventObject"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.typeclasses.EventObject">[docs]</a><span class="nd">@register_events</span>
+<div class="viewcode-block" id="EventObject"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.typeclasses.html#evennia.contrib.ingame_python.typeclasses.EventObject">[docs]</a><span class="nd">@register_events</span>
 <span class="k">class</span> <span class="nc">EventObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;Default object with management of events.&quot;&quot;&quot;</span>
@@ -767,12 +764,12 @@
         <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="p">([</span><span class="s2">&quot;object&quot;</span><span class="p">],</span> <span class="n">OBJECT_TIME</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">time_event</span><span class="p">),</span>
     <span class="p">}</span>
 
-<div class="viewcode-block" id="EventObject.callbacks"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.typeclasses.EventObject.callbacks">[docs]</a>    <span class="nd">@lazy_property</span>
+<div class="viewcode-block" id="EventObject.callbacks"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.typeclasses.html#evennia.contrib.ingame_python.typeclasses.EventObject.callbacks">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the CallbackHandler.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">CallbackHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EventObject.at_get"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.typeclasses.EventObject.at_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="p">):</span>
+<div class="viewcode-block" id="EventObject.at_get"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.typeclasses.html#evennia.contrib.ingame_python.typeclasses.EventObject.at_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the default `get` command when this object has been</span>
 <span class="sd">        picked up.</span>
@@ -788,7 +785,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_get</span><span class="p">(</span><span class="n">getter</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;get&quot;</span><span class="p">,</span> <span class="n">getter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EventObject.at_drop"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.typeclasses.EventObject.at_drop">[docs]</a>    <span class="k">def</span> <span class="nf">at_drop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dropper</span><span class="p">):</span>
+<div class="viewcode-block" id="EventObject.at_drop"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.typeclasses.html#evennia.contrib.ingame_python.typeclasses.EventObject.at_drop">[docs]</a>    <span class="k">def</span> <span class="nf">at_drop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dropper</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the default `drop` command when this object has been</span>
 <span class="sd">        dropped.</span>
@@ -927,7 +924,7 @@
 <span class="s2">&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="EventRoom"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.typeclasses.EventRoom">[docs]</a><span class="nd">@register_events</span>
+<div class="viewcode-block" id="EventRoom"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.typeclasses.html#evennia.contrib.ingame_python.typeclasses.EventRoom">[docs]</a><span class="nd">@register_events</span>
 <span class="k">class</span> <span class="nc">EventRoom</span><span class="p">(</span><span class="n">DefaultRoom</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;Default room with management of events.&quot;&quot;&quot;</span>
@@ -944,12 +941,12 @@
         <span class="s2">&quot;unpuppeted_in&quot;</span><span class="p">:</span> <span class="p">([</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="s2">&quot;room&quot;</span><span class="p">],</span> <span class="n">ROOM_UNPUPPETED_IN</span><span class="p">),</span>
     <span class="p">}</span>
 
-<div class="viewcode-block" id="EventRoom.callbacks"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.typeclasses.EventRoom.callbacks">[docs]</a>    <span class="nd">@lazy_property</span>
+<div class="viewcode-block" id="EventRoom.callbacks"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.typeclasses.html#evennia.contrib.ingame_python.typeclasses.EventRoom.callbacks">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the CallbackHandler.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">CallbackHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EventRoom.at_object_delete"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.typeclasses.EventRoom.at_object_delete">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EventRoom.at_object_delete"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.typeclasses.html#evennia.contrib.ingame_python.typeclasses.EventRoom.at_object_delete">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called just before the database object is permanently</span>
 <span class="sd">        delete()d from the database. If this method returns False,</span>
@@ -963,6 +960,7 @@
         <span class="k">return</span> <span class="kc">True</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -1000,17 +998,15 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.ingame_python.typeclasses</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.ingame_python.typeclasses</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

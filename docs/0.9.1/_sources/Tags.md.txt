@@ -3,9 +3,9 @@
 
 A common task of a game designer is to organize and find groups of objects and do operations on them. A classic example is to have a weather script affect all "outside" rooms. Another would be for a player casting a magic spell that affects every location "in the dungeon", but not those "outside". Another would be to quickly find everyone joined with a particular guild or everyone currently dead. 
 
-*Tags* are short text labels that you attach to objects so as to easily be able to retrieve and group them. An Evennia entity can be tagged with any number of Tags. On the database side, Tag entities are *shared* between all objects with that tag. This makes them very efficient but also fundamentally different from [Attributes](Attributes), each of which always belongs to one *single* object. 
+*Tags* are short text labels that you attach to objects so as to easily be able to retrieve and group them. An Evennia entity can be tagged with any number of Tags. On the database side, Tag entities are *shared* between all objects with that tag. This makes them very efficient but also fundamentally different from [Attributes](./Attributes), each of which always belongs to one *single* object. 
 
-In Evennia, Tags are technically also used to implement `Aliases` (alternative names for objects) and `Permissions` (simple strings for [Locks](Locks) to check for). 
+In Evennia, Tags are technically also used to implement `Aliases` (alternative names for objects) and `Permissions` (simple strings for [Locks](./Locks) to check for). 
 
 
 ## Properties of Tags (and Aliases and Permissions)
@@ -14,7 +14,7 @@ Tags are *unique*. This means that there is only ever one Tag object with a give
 
 > Not specifying a category (default) gives the tag a category of `None`, which is also considered a unique key + category combination. 
 
-When Tags are assigned to game entities, these entities are actually sharing the same Tag. This means that Tags are not suitable for storing information about a single object - use an [Attribute](Attributes) for this instead. Tags are a lot more limited than Attributes but this also makes them very quick to lookup in the database - this is the whole point.
+When Tags are assigned to game entities, these entities are actually sharing the same Tag. This means that Tags are not suitable for storing information about a single object - use an [Attribute](./Attributes) for this instead. Tags are a lot more limited than Attributes but this also makes them very quick to lookup in the database - this is the whole point.
 
 Tags have the following properties, stored in the database:
 
@@ -28,7 +28,7 @@ There are also two special properties. These should usually not need to be chang
 
 ## Adding/Removing Tags
 
-You can tag any *typeclassed* object, namely [Objects](Objects), [Accounts](Accounts), [Scripts](Scripts) and [Channels](Communications). General tags are added by the *Taghandler*.  The tag handler is accessed as a property `tags` on the relevant entity: 
+You can tag any *typeclassed* object, namely [Objects](./Objects), [Accounts](./Accounts), [Scripts](./Scripts) and [Channels](./Communications). General tags are added by the *Taghandler*.  The tag handler is accessed as a property `tags` on the relevant entity: 
 
 ```python
      mychair.tags.add("furniture")
@@ -100,7 +100,7 @@ objs = evennia.search_tag(category="bar")
 
 
 
-There is also an in-game command that deals with assigning and using ([Object-](Objects)) tags:
+There is also an in-game command that deals with assigning and using ([Object-](./Objects)) tags:
 
      @tag/search furniture
 
@@ -123,4 +123,4 @@ and so on. Similarly to how `@tag` works in-game, there is also the `@perm` comm
 Generally, tags are enough on their own for grouping objects. Having no tag `category` is perfectly fine and the normal operation. Simply adding a new Tag for grouping objects is often better than making a new category. So think hard before deciding you really need to categorize your Tags. 
 
 That said, tag categories can be useful if you build some game system that uses tags. You can then use tag categories to make sure to separate tags created with this system from any other tags created elsewhere. You can then supply custom search methods that *only* find objects tagged with tags of that category. An example of this 
-is found in the [Zone tutorial](Zones). 
+is found in the [Zone tutorial](./Zones). 

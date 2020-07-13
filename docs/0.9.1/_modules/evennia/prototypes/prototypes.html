@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.prototypes.prototypes &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.prototypes.prototypes</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.prototypes.prototypes</a></li> 
       </ul>
     </div>  
 
@@ -103,11 +100,11 @@
 <span class="n">_PROTOTYPE_FALLBACK_LOCK</span> <span class="o">=</span> <span class="s2">&quot;spawn:all();edit:all()&quot;</span>
 
 
-<div class="viewcode-block" id="PermissionError"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.prototypes.PermissionError">[docs]</a><span class="k">class</span> <span class="nc">PermissionError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+<div class="viewcode-block" id="PermissionError"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.PermissionError">[docs]</a><span class="k">class</span> <span class="nc">PermissionError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="ValidationError"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.prototypes.ValidationError">[docs]</a><span class="k">class</span> <span class="nc">ValidationError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+<div class="viewcode-block" id="ValidationError"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.ValidationError">[docs]</a><span class="k">class</span> <span class="nc">ValidationError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Raised on prototype validation errors</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -115,7 +112,7 @@
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="homogenize_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.prototypes.homogenize_prototype">[docs]</a><span class="k">def</span> <span class="nf">homogenize_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">custom_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="homogenize_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.homogenize_prototype">[docs]</a><span class="k">def</span> <span class="nf">homogenize_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">custom_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Homogenize the more free-form prototype supported pre Evennia 0.7 into the stricter form.</span>
 
@@ -216,12 +213,12 @@
 <span class="c1"># Db-based prototypes</span>
 
 
-<div class="viewcode-block" id="DbPrototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.prototypes.DbPrototype">[docs]</a><span class="k">class</span> <span class="nc">DbPrototype</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<div class="viewcode-block" id="DbPrototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.DbPrototype">[docs]</a><span class="k">class</span> <span class="nc">DbPrototype</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This stores a single prototype, in an Attribute `prototype`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="DbPrototype.at_script_creation"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.prototypes.DbPrototype.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DbPrototype.at_script_creation"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.DbPrototype.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;empty prototype&quot;</span>  <span class="c1"># prototype_key</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;A prototype&quot;</span>  <span class="c1"># prototype_desc (.tags are used for prototype_tags)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">prototype</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># actual prototype</span></div>
@@ -239,7 +236,7 @@
 <span class="c1"># Prototype manager functions</span>
 
 
-<div class="viewcode-block" id="save_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.prototypes.save_prototype">[docs]</a><span class="k">def</span> <span class="nf">save_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">):</span>
+<div class="viewcode-block" id="save_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.save_prototype">[docs]</a><span class="k">def</span> <span class="nf">save_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create/Store a prototype persistently.</span>
 
@@ -328,7 +325,7 @@
 <span class="n">create_prototype</span> <span class="o">=</span> <span class="n">save_prototype</span>  <span class="c1"># alias</span>
 
 
-<div class="viewcode-block" id="delete_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.prototypes.delete_prototype">[docs]</a><span class="k">def</span> <span class="nf">delete_prototype</span><span class="p">(</span><span class="n">prototype_key</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="delete_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.delete_prototype">[docs]</a><span class="k">def</span> <span class="nf">delete_prototype</span><span class="p">(</span><span class="n">prototype_key</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Delete a stored prototype</span>
 
@@ -364,11 +361,11 @@
     <span class="k">return</span> <span class="kc">True</span></div>
 
 
-<div class="viewcode-block" id="search_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.prototypes.search_prototype">[docs]</a><span class="k">def</span> <span class="nf">search_prototype</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">require_single</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="search_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.search_prototype">[docs]</a><span class="k">def</span> <span class="nf">search_prototype</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">require_single</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find prototypes based on key and/or tags, or all prototypes.</span>
 
-<span class="sd">    Kwargs:</span>
+<span class="sd">    Keyword args:</span>
 <span class="sd">        key (str): An exact or partial key to query for.</span>
 <span class="sd">        tags (str or list): Tag key or keys to query for. These</span>
 <span class="sd">            will always be applied with the &#39;db_protototype&#39;</span>
@@ -454,7 +451,7 @@
     <span class="k">return</span> <span class="n">matches</span></div>
 
 
-<div class="viewcode-block" id="search_objects_with_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.prototypes.search_objects_with_prototype">[docs]</a><span class="k">def</span> <span class="nf">search_objects_with_prototype</span><span class="p">(</span><span class="n">prototype_key</span><span class="p">):</span>
+<div class="viewcode-block" id="search_objects_with_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.search_objects_with_prototype">[docs]</a><span class="k">def</span> <span class="nf">search_objects_with_prototype</span><span class="p">(</span><span class="n">prototype_key</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retrieve all object instances created by a given prototype.</span>
 
@@ -468,7 +465,7 @@
     <span class="k">return</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_by_tag</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">prototype_key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">PROTOTYPE_TAG_CATEGORY</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="list_prototypes"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.prototypes.list_prototypes">[docs]</a><span class="k">def</span> <span class="nf">list_prototypes</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show_non_use</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_non_edit</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="list_prototypes"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.list_prototypes">[docs]</a><span class="k">def</span> <span class="nf">list_prototypes</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show_non_use</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_non_edit</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Collate a list of found prototypes based on search criteria and access.</span>
 
@@ -539,7 +536,7 @@
     <span class="k">return</span> <span class="n">table</span></div>
 
 
-<div class="viewcode-block" id="validate_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.prototypes.validate_prototype">[docs]</a><span class="k">def</span> <span class="nf">validate_prototype</span><span class="p">(</span>
+<div class="viewcode-block" id="validate_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.validate_prototype">[docs]</a><span class="k">def</span> <span class="nf">validate_prototype</span><span class="p">(</span>
     <span class="n">prototype</span><span class="p">,</span> <span class="n">protkey</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">protparents</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">is_prototype_base</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">_flags</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -673,7 +670,7 @@
         <span class="k">raise</span>
 
 
-<div class="viewcode-block" id="protfunc_parser"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.prototypes.protfunc_parser">[docs]</a><span class="k">def</span> <span class="nf">protfunc_parser</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">available_functions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">testing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stacktrace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="protfunc_parser"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.protfunc_parser">[docs]</a><span class="k">def</span> <span class="nf">protfunc_parser</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">available_functions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">testing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stacktrace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse a prototype value string for a protfunc and process it.</span>
 
@@ -689,7 +686,7 @@
 <span class="sd">            behave differently.</span>
 <span class="sd">        stacktrace (bool, optional): If set, print the stack parsing process of the protfunc-parser.</span>
 
-<span class="sd">    Kwargs:</span>
+<span class="sd">    Keyword args:</span>
 <span class="sd">        session (Session): Passed to protfunc. Session of the entity spawning the prototype.</span>
 <span class="sd">        protototype (dict): Passed to protfunc. The dict this protfunc is a part of.</span>
 <span class="sd">        current_key(str): Passed to protfunc. The key in the prototype that will hold this value.</span>
@@ -730,7 +727,7 @@
 <span class="c1"># Various prototype utilities</span>
 
 
-<div class="viewcode-block" id="format_available_protfuncs"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.prototypes.format_available_protfuncs">[docs]</a><span class="k">def</span> <span class="nf">format_available_protfuncs</span><span class="p">():</span>
+<div class="viewcode-block" id="format_available_protfuncs"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.format_available_protfuncs">[docs]</a><span class="k">def</span> <span class="nf">format_available_protfuncs</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get all protfuncs in a pretty-formatted form.</span>
 
@@ -747,7 +744,7 @@
     <span class="k">return</span> <span class="n">justify</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out</span><span class="p">),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="prototype_to_str"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.prototypes.prototype_to_str">[docs]</a><span class="k">def</span> <span class="nf">prototype_to_str</span><span class="p">(</span><span class="n">prototype</span><span class="p">):</span>
+<div class="viewcode-block" id="prototype_to_str"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.prototype_to_str">[docs]</a><span class="k">def</span> <span class="nf">prototype_to_str</span><span class="p">(</span><span class="n">prototype</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Format a prototype to a nice string representation.</span>
 
@@ -830,7 +827,7 @@
     <span class="k">return</span> <span class="n">header</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span> <span class="o">+</span> <span class="n">body</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="check_permission"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.prototypes.check_permission">[docs]</a><span class="k">def</span> <span class="nf">check_permission</span><span class="p">(</span><span class="n">prototype_key</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="check_permission"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.check_permission">[docs]</a><span class="k">def</span> <span class="nf">check_permission</span><span class="p">(</span><span class="n">prototype_key</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function to check access to actions on given prototype.</span>
 
@@ -863,7 +860,7 @@
     <span class="k">return</span> <span class="n">default</span></div>
 
 
-<div class="viewcode-block" id="init_spawn_value"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.prototypes.init_spawn_value">[docs]</a><span class="k">def</span> <span class="nf">init_spawn_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="init_spawn_value"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.init_spawn_value">[docs]</a><span class="k">def</span> <span class="nf">init_spawn_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Analyze the prototype value and produce a value useful at the point of spawning.</span>
 
@@ -891,7 +888,7 @@
     <span class="k">return</span> <span class="n">protfunc_parser</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="value_to_obj_or_any"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.prototypes.value_to_obj_or_any">[docs]</a><span class="k">def</span> <span class="nf">value_to_obj_or_any</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="value_to_obj_or_any"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.value_to_obj_or_any">[docs]</a><span class="k">def</span> <span class="nf">value_to_obj_or_any</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
     <span class="s2">&quot;Convert value(s) to Object if possible, otherwise keep original value&quot;</span>
     <span class="n">stype</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
@@ -905,7 +902,7 @@
     <span class="k">return</span> <span class="n">obj</span> <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="value_to_obj"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.prototypes.value_to_obj">[docs]</a><span class="k">def</span> <span class="nf">value_to_obj</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="value_to_obj"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.value_to_obj">[docs]</a><span class="k">def</span> <span class="nf">value_to_obj</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="s2">&quot;Always convert value(s) to Object, or None&quot;</span>
     <span class="n">stype</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
@@ -916,6 +913,7 @@
     <span class="k">return</span> <span class="n">dbid_to_obj</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ObjectDB</span><span class="p">)</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -953,17 +951,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.prototypes.prototypes</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.prototypes.prototypes</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

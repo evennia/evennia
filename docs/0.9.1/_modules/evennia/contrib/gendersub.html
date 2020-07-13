@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.gendersub &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.gendersub</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.gendersub</a></li> 
       </ul>
     </div>  
 
@@ -101,7 +98,7 @@
 <span class="c1"># in-game command for setting the gender</span>
 
 
-<div class="viewcode-block" id="SetGender"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.gendersub.SetGender">[docs]</a><span class="k">class</span> <span class="nc">SetGender</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="SetGender"><a class="viewcode-back" href="../../../api/evennia.contrib.gendersub.html#evennia.contrib.gendersub.SetGender">[docs]</a><span class="k">class</span> <span class="nc">SetGender</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sets gender on yourself</span>
 
@@ -114,7 +111,7 @@
     <span class="n">aliases</span> <span class="o">=</span> <span class="s2">&quot;@sex&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;call:all()&quot;</span>
 
-<div class="viewcode-block" id="SetGender.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.gendersub.SetGender.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SetGender.func"><a class="viewcode-back" href="../../../api/evennia.contrib.gendersub.html#evennia.contrib.gendersub.SetGender.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements the command.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -130,20 +127,20 @@
 <span class="c1"># Gender-aware character class</span>
 
 
-<div class="viewcode-block" id="GenderCharacter"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.gendersub.GenderCharacter">[docs]</a><span class="k">class</span> <span class="nc">GenderCharacter</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+<div class="viewcode-block" id="GenderCharacter"><a class="viewcode-back" href="../../../api/evennia.contrib.gendersub.html#evennia.contrib.gendersub.GenderCharacter">[docs]</a><span class="k">class</span> <span class="nc">GenderCharacter</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a Character class aware of gender.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="GenderCharacter.at_object_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.gendersub.GenderCharacter.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GenderCharacter.at_object_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.gendersub.html#evennia.contrib.gendersub.GenderCharacter.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called once when the object is created.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_object_creation</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">gender</span> <span class="o">=</span> <span class="s2">&quot;ambiguous&quot;</span></div>
 
-<div class="viewcode-block" id="GenderCharacter._get_pronoun"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.gendersub.GenderCharacter._get_pronoun">[docs]</a>    <span class="k">def</span> <span class="nf">_get_pronoun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">regex_match</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_pronoun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">regex_match</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get pronoun from the pronoun marker in the text. This is used as</span>
 <span class="sd">        the callable for the re.sub function.</span>
@@ -162,9 +159,9 @@
         <span class="n">gender</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;gender&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;ambiguous&quot;</span><span class="p">)</span>
         <span class="n">gender</span> <span class="o">=</span> <span class="n">gender</span> <span class="k">if</span> <span class="n">gender</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;male&quot;</span><span class="p">,</span> <span class="s2">&quot;female&quot;</span><span class="p">,</span> <span class="s2">&quot;neutral&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;ambiguous&quot;</span>
         <span class="n">pronoun</span> <span class="o">=</span> <span class="n">_GENDER_PRONOUN_MAP</span><span class="p">[</span><span class="n">gender</span><span class="p">][</span><span class="n">typ</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
-        <span class="k">return</span> <span class="n">pronoun</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">if</span> <span class="n">typ</span><span class="o">.</span><span class="n">isupper</span><span class="p">()</span> <span class="k">else</span> <span class="n">pronoun</span></div>
+        <span class="k">return</span> <span class="n">pronoun</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">if</span> <span class="n">typ</span><span class="o">.</span><span class="n">isupper</span><span class="p">()</span> <span class="k">else</span> <span class="n">pronoun</span>
 
-<div class="viewcode-block" id="GenderCharacter.msg"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.gendersub.GenderCharacter.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="GenderCharacter.msg"><a class="viewcode-back" href="../../../api/evennia.contrib.gendersub.html#evennia.contrib.gendersub.GenderCharacter.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Emits something to a session attached to the object.</span>
 <span class="sd">        Overloads the default msg() implementation to include</span>
@@ -197,6 +194,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">from_obj</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -234,17 +232,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.gendersub</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.gendersub</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

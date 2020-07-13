@@ -1,4 +1,4 @@
-evennia.server.game\_index\_client package
+evennia.server.game\_index\_client 
 ==========================================
 
 .. automodule:: evennia.server.game_index_client
@@ -9,19 +9,8 @@ evennia.server.game\_index\_client package
 Submodules
 ----------
 
-evennia.server.game\_index\_client.client module
-------------------------------------------------
+.. toctree::
+   :maxdepth: 6
 
-.. automodule:: evennia.server.game_index_client.client
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.server.game\_index\_client.service module
--------------------------------------------------
-
-.. automodule:: evennia.server.game_index_client.service
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
+   evennia.server.game_index_client.client
+   evennia.server.game_index_client.service

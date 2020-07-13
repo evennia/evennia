@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.turnbattle.tb_range &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.turnbattle.tb_range</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.turnbattle.tb_range</a></li> 
       </ul>
     </div>  
 
@@ -164,7 +161,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="roll_init"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.roll_init">[docs]</a><span class="k">def</span> <span class="nf">roll_init</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
+<div class="viewcode-block" id="roll_init"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.roll_init">[docs]</a><span class="k">def</span> <span class="nf">roll_init</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Rolls a number between 1-1000 to determine initiative.</span>
 
@@ -191,7 +188,7 @@
     <span class="k">return</span> <span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_attack"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.get_attack">[docs]</a><span class="k">def</span> <span class="nf">get_attack</span><span class="p">(</span><span class="n">attacker</span><span class="p">,</span> <span class="n">defender</span><span class="p">,</span> <span class="n">attack_type</span><span class="p">):</span>
+<div class="viewcode-block" id="get_attack"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.get_attack">[docs]</a><span class="k">def</span> <span class="nf">get_attack</span><span class="p">(</span><span class="n">attacker</span><span class="p">,</span> <span class="n">defender</span><span class="p">,</span> <span class="n">attack_type</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a value for an attack roll.</span>
 
@@ -223,7 +220,7 @@
     <span class="k">return</span> <span class="n">attack_value</span></div>
 
 
-<div class="viewcode-block" id="get_defense"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.get_defense">[docs]</a><span class="k">def</span> <span class="nf">get_defense</span><span class="p">(</span><span class="n">attacker</span><span class="p">,</span> <span class="n">defender</span><span class="p">,</span> <span class="n">attack_type</span><span class="p">):</span>
+<div class="viewcode-block" id="get_defense"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.get_defense">[docs]</a><span class="k">def</span> <span class="nf">get_defense</span><span class="p">(</span><span class="n">attacker</span><span class="p">,</span> <span class="n">defender</span><span class="p">,</span> <span class="n">attack_type</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a value for defense, which an attack roll must equal or exceed in order</span>
 <span class="sd">    for an attack to hit.</span>
@@ -248,7 +245,7 @@
     <span class="k">return</span> <span class="n">defense_value</span></div>
 
 
-<div class="viewcode-block" id="get_damage"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.get_damage">[docs]</a><span class="k">def</span> <span class="nf">get_damage</span><span class="p">(</span><span class="n">attacker</span><span class="p">,</span> <span class="n">defender</span><span class="p">):</span>
+<div class="viewcode-block" id="get_damage"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.get_damage">[docs]</a><span class="k">def</span> <span class="nf">get_damage</span><span class="p">(</span><span class="n">attacker</span><span class="p">,</span> <span class="n">defender</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a value for damage to be deducted from the defender&#39;s HP after abilities</span>
 <span class="sd">    successful hit.</span>
@@ -272,7 +269,7 @@
     <span class="k">return</span> <span class="n">damage_value</span></div>
 
 
-<div class="viewcode-block" id="apply_damage"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.apply_damage">[docs]</a><span class="k">def</span> <span class="nf">apply_damage</span><span class="p">(</span><span class="n">defender</span><span class="p">,</span> <span class="n">damage</span><span class="p">):</span>
+<div class="viewcode-block" id="apply_damage"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.apply_damage">[docs]</a><span class="k">def</span> <span class="nf">apply_damage</span><span class="p">(</span><span class="n">defender</span><span class="p">,</span> <span class="n">damage</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Applies damage to a target, reducing their HP by the damage amount to a</span>
 <span class="sd">    minimum of 0.</span>
@@ -287,7 +284,7 @@
         <span class="n">defender</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">hp</span> <span class="o">=</span> <span class="mi">0</span></div>
 
 
-<div class="viewcode-block" id="at_defeat"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.at_defeat">[docs]</a><span class="k">def</span> <span class="nf">at_defeat</span><span class="p">(</span><span class="n">defeated</span><span class="p">):</span>
+<div class="viewcode-block" id="at_defeat"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.at_defeat">[docs]</a><span class="k">def</span> <span class="nf">at_defeat</span><span class="p">(</span><span class="n">defeated</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Announces the defeat of a fighter in combat.</span>
 <span class="sd">    </span>
@@ -303,7 +300,7 @@
     <span class="n">defeated</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> has been defeated!&quot;</span> <span class="o">%</span> <span class="n">defeated</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="resolve_attack"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.resolve_attack">[docs]</a><span class="k">def</span> <span class="nf">resolve_attack</span><span class="p">(</span><span class="n">attacker</span><span class="p">,</span> <span class="n">defender</span><span class="p">,</span> <span class="n">attack_type</span><span class="p">,</span> <span class="n">attack_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">defense_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="resolve_attack"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.resolve_attack">[docs]</a><span class="k">def</span> <span class="nf">resolve_attack</span><span class="p">(</span><span class="n">attacker</span><span class="p">,</span> <span class="n">defender</span><span class="p">,</span> <span class="n">attack_type</span><span class="p">,</span> <span class="n">attack_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">defense_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Resolves an attack and outputs the result.</span>
 
@@ -341,7 +338,7 @@
             <span class="n">at_defeat</span><span class="p">(</span><span class="n">defender</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_range"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.get_range">[docs]</a><span class="k">def</span> <span class="nf">get_range</span><span class="p">(</span><span class="n">obj1</span><span class="p">,</span> <span class="n">obj2</span><span class="p">):</span>
+<div class="viewcode-block" id="get_range"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.get_range">[docs]</a><span class="k">def</span> <span class="nf">get_range</span><span class="p">(</span><span class="n">obj1</span><span class="p">,</span> <span class="n">obj2</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Gets the combat range between two objects.</span>
 <span class="sd">    </span>
@@ -365,7 +362,7 @@
     <span class="k">return</span> <span class="n">obj1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">[</span><span class="n">obj2</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="distance_inc"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.distance_inc">[docs]</a><span class="k">def</span> <span class="nf">distance_inc</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+<div class="viewcode-block" id="distance_inc"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.distance_inc">[docs]</a><span class="k">def</span> <span class="nf">distance_inc</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function that increases distance in range field between mover and target.</span>
 <span class="sd">    </span>
@@ -381,7 +378,7 @@
         <span class="n">mover</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span><span class="p">[</span><span class="n">target</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span></div>
 
 
-<div class="viewcode-block" id="approach"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.approach">[docs]</a><span class="k">def</span> <span class="nf">approach</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+<div class="viewcode-block" id="approach"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.approach">[docs]</a><span class="k">def</span> <span class="nf">approach</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Manages a character&#39;s whole approach, including changes in ranges to other characters.</span>
 <span class="sd">    </span>
@@ -429,7 +426,7 @@
     <span class="n">distance_dec</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="withdraw"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.withdraw">[docs]</a><span class="k">def</span> <span class="nf">withdraw</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+<div class="viewcode-block" id="withdraw"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.withdraw">[docs]</a><span class="k">def</span> <span class="nf">withdraw</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Manages a character&#39;s whole withdrawal, including changes in ranges to other characters.</span>
 <span class="sd">    </span>
@@ -462,7 +459,7 @@
     <span class="n">distance_inc</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="combat_cleanup"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.combat_cleanup">[docs]</a><span class="k">def</span> <span class="nf">combat_cleanup</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
+<div class="viewcode-block" id="combat_cleanup"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.combat_cleanup">[docs]</a><span class="k">def</span> <span class="nf">combat_cleanup</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cleans up all the temporary combat-related attributes on a character.</span>
 
@@ -478,7 +475,7 @@
             <span class="n">character</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">attr</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>  <span class="c1"># ...then delete it!</span></div>
 
 
-<div class="viewcode-block" id="is_in_combat"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.is_in_combat">[docs]</a><span class="k">def</span> <span class="nf">is_in_combat</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
+<div class="viewcode-block" id="is_in_combat"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.is_in_combat">[docs]</a><span class="k">def</span> <span class="nf">is_in_combat</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns true if the given character is in combat.</span>
 
@@ -491,7 +488,7 @@
     <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_turnhandler</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="is_turn"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.is_turn">[docs]</a><span class="k">def</span> <span class="nf">is_turn</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
+<div class="viewcode-block" id="is_turn"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.is_turn">[docs]</a><span class="k">def</span> <span class="nf">is_turn</span><span class="p">(</span><span class="n">character</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns true if it&#39;s currently the given character&#39;s turn in combat.</span>
 
@@ -506,7 +503,7 @@
     <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">character</span> <span class="o">==</span> <span class="n">currentchar</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="spend_action"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.spend_action">[docs]</a><span class="k">def</span> <span class="nf">spend_action</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">action_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="spend_action"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.spend_action">[docs]</a><span class="k">def</span> <span class="nf">spend_action</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">action_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Spends a character&#39;s available combat actions and checks for end of turn.</span>
 
@@ -514,7 +511,7 @@
 <span class="sd">        character (obj): Character spending the action</span>
 <span class="sd">        actions (int) or &#39;all&#39;: Number of actions to spend, or &#39;all&#39; to spend all actions</span>
 
-<span class="sd">    Kwargs:</span>
+<span class="sd">    Keyword args:</span>
 <span class="sd">        action_name (str or None): If a string is given, sets character&#39;s last action in</span>
 <span class="sd">        combat to provided string</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -529,7 +526,7 @@
     <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_turnhandler</span><span class="o">.</span><span class="n">turn_end_check</span><span class="p">(</span><span class="n">character</span><span class="p">)</span>  <span class="c1"># Signal potential end of turn.</span></div>
 
 
-<div class="viewcode-block" id="combat_status_message"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.combat_status_message">[docs]</a><span class="k">def</span> <span class="nf">combat_status_message</span><span class="p">(</span><span class="n">fighter</span><span class="p">):</span>
+<div class="viewcode-block" id="combat_status_message"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.combat_status_message">[docs]</a><span class="k">def</span> <span class="nf">combat_status_message</span><span class="p">(</span><span class="n">fighter</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sends a message to a player with their current HP and</span>
 <span class="sd">    distances to other fighters and objects. Called at turn</span>
@@ -575,7 +572,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="TBRangeTurnHandler"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler">[docs]</a><span class="k">class</span> <span class="nc">TBRangeTurnHandler</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<div class="viewcode-block" id="TBRangeTurnHandler"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler">[docs]</a><span class="k">class</span> <span class="nc">TBRangeTurnHandler</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the script that handles the progression of combat through turns.</span>
 <span class="sd">    On creation (when a fight is started) it adds all combat-ready characters</span>
@@ -587,7 +584,7 @@
 <span class="sd">    remaining participants choose to end the combat with the &#39;disengage&#39; command.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TBRangeTurnHandler.at_script_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TBRangeTurnHandler.at_script_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called once, when the script is created.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -627,7 +624,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">turn</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">timer</span> <span class="o">=</span> <span class="n">TURN_TIMEOUT</span>  <span class="c1"># Set timer to turn timeout specified in options</span></div>
 
-<div class="viewcode-block" id="TBRangeTurnHandler.at_stop"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.at_stop">[docs]</a>    <span class="k">def</span> <span class="nf">at_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TBRangeTurnHandler.at_stop"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.at_stop">[docs]</a>    <span class="k">def</span> <span class="nf">at_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called at script termination.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -635,7 +632,7 @@
             <span class="n">combat_cleanup</span><span class="p">(</span><span class="n">thing</span><span class="p">)</span>  <span class="c1"># Clean up the combat attributes for every object in the room.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_turnhandler</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Remove reference to turn handler in location</span></div>
 
-<div class="viewcode-block" id="TBRangeTurnHandler.at_repeat"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.at_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TBRangeTurnHandler.at_repeat"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.at_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called once every self.interval seconds.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -656,7 +653,7 @@
             <span class="n">currentchar</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;WARNING: About to time out!&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">timeout_warning_given</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="TBRangeTurnHandler.init_range"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.init_range">[docs]</a>    <span class="k">def</span> <span class="nf">init_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_init</span><span class="p">):</span>
+<div class="viewcode-block" id="TBRangeTurnHandler.init_range"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.init_range">[docs]</a>    <span class="k">def</span> <span class="nf">init_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_init</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes range values for an object at the start of a fight.</span>
 <span class="sd">        </span>
@@ -679,14 +676,14 @@
                     <span class="n">rangedict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">thing</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
         <span class="n">to_init</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span> <span class="o">=</span> <span class="n">rangedict</span></div>
 
-<div class="viewcode-block" id="TBRangeTurnHandler.join_rangefield"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.join_rangefield">[docs]</a>    <span class="k">def</span> <span class="nf">join_rangefield</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_init</span><span class="p">,</span> <span class="n">anchor_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">add_distance</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="TBRangeTurnHandler.join_rangefield"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.join_rangefield">[docs]</a>    <span class="k">def</span> <span class="nf">join_rangefield</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_init</span><span class="p">,</span> <span class="n">anchor_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">add_distance</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds a new object to the range field of a fight in progress.</span>
 <span class="sd">        </span>
 <span class="sd">        Args:</span>
 <span class="sd">            to_init (object): Object to initialize range field for.</span>
 <span class="sd">        </span>
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            anchor_obj (object): Object to copy range values from, or None for a random object.</span>
 <span class="sd">            add_distance (int): Distance to put between to_init object and anchor object.</span>
 <span class="sd">            </span>
@@ -709,7 +706,7 @@
         <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">add_distance</span><span class="p">):</span>
             <span class="n">withdraw</span><span class="p">(</span><span class="n">to_init</span><span class="p">,</span> <span class="n">anchor_obj</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TBRangeTurnHandler.initialize_for_combat"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.initialize_for_combat">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_for_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
+<div class="viewcode-block" id="TBRangeTurnHandler.initialize_for_combat"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.initialize_for_combat">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_for_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Prepares a character for combat when starting or entering a fight.</span>
 
@@ -725,7 +722,7 @@
         <span class="p">)</span>
         <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_lastaction</span> <span class="o">=</span> <span class="s2">&quot;null&quot;</span>  <span class="c1"># Track last action taken in combat</span></div>
 
-<div class="viewcode-block" id="TBRangeTurnHandler.start_turn"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.start_turn">[docs]</a>    <span class="k">def</span> <span class="nf">start_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
+<div class="viewcode-block" id="TBRangeTurnHandler.start_turn"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.start_turn">[docs]</a>    <span class="k">def</span> <span class="nf">start_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Readies a character for the start of their turn by replenishing their</span>
 <span class="sd">        available actions and notifying them that their turn has come up.</span>
@@ -743,7 +740,7 @@
         <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|wIt&#39;s your turn!|n&quot;</span><span class="p">)</span>
         <span class="n">combat_status_message</span><span class="p">(</span><span class="n">character</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TBRangeTurnHandler.next_turn"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.next_turn">[docs]</a>    <span class="k">def</span> <span class="nf">next_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TBRangeTurnHandler.next_turn"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.next_turn">[docs]</a>    <span class="k">def</span> <span class="nf">next_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Advances to the next character in the turn order.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -786,7 +783,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&#39;s turn ends - </span><span class="si">%s</span><span class="s2">&#39;s turn begins!&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">currentchar</span><span class="p">,</span> <span class="n">newchar</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_turn</span><span class="p">(</span><span class="n">newchar</span><span class="p">)</span>  <span class="c1"># Start the new character&#39;s turn.</span></div>
 
-<div class="viewcode-block" id="TBRangeTurnHandler.turn_end_check"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.turn_end_check">[docs]</a>    <span class="k">def</span> <span class="nf">turn_end_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
+<div class="viewcode-block" id="TBRangeTurnHandler.turn_end_check"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.turn_end_check">[docs]</a>    <span class="k">def</span> <span class="nf">turn_end_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tests to see if a character&#39;s turn is over, and cycles to the next turn if it is.</span>
 
@@ -797,7 +794,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">next_turn</span><span class="p">()</span>
             <span class="k">return</span></div>
 
-<div class="viewcode-block" id="TBRangeTurnHandler.join_fight"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.join_fight">[docs]</a>    <span class="k">def</span> <span class="nf">join_fight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
+<div class="viewcode-block" id="TBRangeTurnHandler.join_fight"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.join_fight">[docs]</a>    <span class="k">def</span> <span class="nf">join_fight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds a new character to a fight already in progress.</span>
 
@@ -822,13 +819,13 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="TBRangeCharacter"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.TBRangeCharacter">[docs]</a><span class="k">class</span> <span class="nc">TBRangeCharacter</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+<div class="viewcode-block" id="TBRangeCharacter"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.TBRangeCharacter">[docs]</a><span class="k">class</span> <span class="nc">TBRangeCharacter</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A character able to participate in turn-based combat. Has attributes for current</span>
 <span class="sd">    and maximum HP, and access to combat commands.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TBRangeCharacter.at_object_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.TBRangeCharacter.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TBRangeCharacter.at_object_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.TBRangeCharacter.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called once, when this object is first created. This is the</span>
 <span class="sd">        normal hook to overload for most object types.</span>
@@ -843,7 +840,7 @@
 <span class="sd">        can be changed at creation and factor into combat calculations.</span>
 <span class="sd">        &quot;&quot;&quot;</span></div>
 
-<div class="viewcode-block" id="TBRangeCharacter.at_before_move"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.TBRangeCharacter.at_before_move">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
+<div class="viewcode-block" id="TBRangeCharacter.at_before_move"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.TBRangeCharacter.at_before_move">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called just before starting to move this object to</span>
 <span class="sd">        destination.</span>
@@ -869,7 +866,7 @@
         <span class="k">return</span> <span class="kc">True</span></div></div>
 
 
-<div class="viewcode-block" id="TBRangeObject"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.TBRangeObject">[docs]</a><span class="k">class</span> <span class="nc">TBRangeObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+<div class="viewcode-block" id="TBRangeObject"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.TBRangeObject">[docs]</a><span class="k">class</span> <span class="nc">TBRangeObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An object that is assigned range values in combat. Getting, giving, and dropping</span>
 <span class="sd">    the object has restrictions in combat - you must be next to an object to get it,</span>
@@ -877,7 +874,7 @@
 <span class="sd">    objects on your own turn.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TBRangeObject.at_before_drop"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_before_drop">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_drop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dropper</span><span class="p">):</span>
+<div class="viewcode-block" id="TBRangeObject.at_before_drop"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_before_drop">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_drop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dropper</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the default `drop` command before this object has been</span>
 <span class="sd">        dropped.</span>
@@ -901,7 +898,7 @@
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="TBRangeObject.at_drop"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_drop">[docs]</a>    <span class="k">def</span> <span class="nf">at_drop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dropper</span><span class="p">):</span>
+<div class="viewcode-block" id="TBRangeObject.at_drop"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_drop">[docs]</a>    <span class="k">def</span> <span class="nf">at_drop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dropper</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the default `drop` command when this object has been</span>
 <span class="sd">        dropped.</span>
@@ -922,7 +919,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_range</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="n">dropper</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_turnhandler</span><span class="o">.</span><span class="n">join_rangefield</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">anchor_obj</span><span class="o">=</span><span class="n">dropper</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TBRangeObject.at_before_get"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_before_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="p">):</span>
+<div class="viewcode-block" id="TBRangeObject.at_before_get"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_before_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the default `get` command before this object has been</span>
 <span class="sd">        picked up.</span>
@@ -949,7 +946,7 @@
                 <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="TBRangeObject.at_get"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="p">):</span>
+<div class="viewcode-block" id="TBRangeObject.at_get"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the default `get` command when this object has been</span>
 <span class="sd">        picked up.</span>
@@ -976,7 +973,7 @@
         <span class="k">if</span> <span class="n">is_in_combat</span><span class="p">(</span><span class="n">getter</span><span class="p">):</span>
             <span class="n">spend_action</span><span class="p">(</span><span class="n">getter</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">action_name</span><span class="o">=</span><span class="s2">&quot;get&quot;</span><span class="p">)</span>  <span class="c1"># Use up one action.</span></div>
 
-<div class="viewcode-block" id="TBRangeObject.at_before_give"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_before_give">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_give</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">giver</span><span class="p">,</span> <span class="n">getter</span><span class="p">):</span>
+<div class="viewcode-block" id="TBRangeObject.at_before_give"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_before_give">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_give</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">giver</span><span class="p">,</span> <span class="n">getter</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the default `give` command before this object has been</span>
 <span class="sd">        given.</span>
@@ -1007,7 +1004,7 @@
                 <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="TBRangeObject.at_give"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_give">[docs]</a>    <span class="k">def</span> <span class="nf">at_give</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">giver</span><span class="p">,</span> <span class="n">getter</span><span class="p">):</span>
+<div class="viewcode-block" id="TBRangeObject.at_give"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_give">[docs]</a>    <span class="k">def</span> <span class="nf">at_give</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">giver</span><span class="p">,</span> <span class="n">getter</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the default `give` command when this object has been</span>
 <span class="sd">        given.</span>
@@ -1035,7 +1032,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="CmdFight"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.CmdFight">[docs]</a><span class="k">class</span> <span class="nc">CmdFight</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdFight"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.CmdFight">[docs]</a><span class="k">class</span> <span class="nc">CmdFight</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Starts a fight with everyone in the same room as you.</span>
 
@@ -1050,7 +1047,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;fight&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;combat&quot;</span>
 
-<div class="viewcode-block" id="CmdFight.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.CmdFight.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdFight.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.CmdFight.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This performs the actual command.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1079,7 +1076,7 @@
         <span class="c1"># Remember you&#39;ll have to change the path to the script if you copy this code to your own modules!</span>
 
 
-<div class="viewcode-block" id="CmdAttack"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.CmdAttack">[docs]</a><span class="k">class</span> <span class="nc">CmdAttack</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdAttack"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.CmdAttack">[docs]</a><span class="k">class</span> <span class="nc">CmdAttack</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Attacks another character in melee.</span>
 
@@ -1095,7 +1092,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;attack&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;combat&quot;</span>
 
-<div class="viewcode-block" id="CmdAttack.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.CmdAttack.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdAttack.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.CmdAttack.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;This performs the actual command.&quot;</span>
         <span class="s2">&quot;Set the attacker to the caller and the defender to the target.&quot;</span>
 
@@ -1137,7 +1134,7 @@
         <span class="n">spend_action</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">action_name</span><span class="o">=</span><span class="s2">&quot;attack&quot;</span><span class="p">)</span>  <span class="c1"># Use up one action.</span></div></div>
 
 
-<div class="viewcode-block" id="CmdShoot"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.CmdShoot">[docs]</a><span class="k">class</span> <span class="nc">CmdShoot</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdShoot"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.CmdShoot">[docs]</a><span class="k">class</span> <span class="nc">CmdShoot</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Attacks another character from range.</span>
 
@@ -1154,7 +1151,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;shoot&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;combat&quot;</span>
 
-<div class="viewcode-block" id="CmdShoot.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.CmdShoot.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdShoot.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.CmdShoot.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;This performs the actual command.&quot;</span>
         <span class="s2">&quot;Set the attacker to the caller and the defender to the target.&quot;</span>
 
@@ -1203,7 +1200,7 @@
         <span class="n">spend_action</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">action_name</span><span class="o">=</span><span class="s2">&quot;attack&quot;</span><span class="p">)</span>  <span class="c1"># Use up one action.</span></div></div>
 
 
-<div class="viewcode-block" id="CmdApproach"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.CmdApproach">[docs]</a><span class="k">class</span> <span class="nc">CmdApproach</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdApproach"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.CmdApproach">[docs]</a><span class="k">class</span> <span class="nc">CmdApproach</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Approaches an object.</span>
 
@@ -1217,7 +1214,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;approach&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;combat&quot;</span>
 
-<div class="viewcode-block" id="CmdApproach.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.CmdApproach.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdApproach.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.CmdApproach.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;This performs the actual command.&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_in_combat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">):</span>  <span class="c1"># If not in combat, can&#39;t approach.</span>
@@ -1256,7 +1253,7 @@
         <span class="n">spend_action</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">action_name</span><span class="o">=</span><span class="s2">&quot;move&quot;</span><span class="p">)</span>  <span class="c1"># Use up one action.</span></div></div>
 
 
-<div class="viewcode-block" id="CmdWithdraw"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.CmdWithdraw">[docs]</a><span class="k">class</span> <span class="nc">CmdWithdraw</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdWithdraw"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.CmdWithdraw">[docs]</a><span class="k">class</span> <span class="nc">CmdWithdraw</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Moves away from an object.</span>
 
@@ -1269,7 +1266,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;withdraw&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;combat&quot;</span>
 
-<div class="viewcode-block" id="CmdWithdraw.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.CmdWithdraw.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdWithdraw.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.CmdWithdraw.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;This performs the actual command.&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_in_combat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">):</span>  <span class="c1"># If not in combat, can&#39;t withdraw.</span>
@@ -1308,7 +1305,7 @@
         <span class="n">spend_action</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">action_name</span><span class="o">=</span><span class="s2">&quot;move&quot;</span><span class="p">)</span>  <span class="c1"># Use up one action.</span></div></div>
 
 
-<div class="viewcode-block" id="CmdPass"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.CmdPass">[docs]</a><span class="k">class</span> <span class="nc">CmdPass</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdPass"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.CmdPass">[docs]</a><span class="k">class</span> <span class="nc">CmdPass</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Passes on your turn.</span>
 
@@ -1323,7 +1320,7 @@
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;wait&quot;</span><span class="p">,</span> <span class="s2">&quot;hold&quot;</span><span class="p">]</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;combat&quot;</span>
 
-<div class="viewcode-block" id="CmdPass.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.CmdPass.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdPass.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.CmdPass.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This performs the actual command.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1341,7 +1338,7 @@
         <span class="n">spend_action</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">action_name</span><span class="o">=</span><span class="s2">&quot;pass&quot;</span><span class="p">)</span>  <span class="c1"># Spend all remaining actions.</span></div></div>
 
 
-<div class="viewcode-block" id="CmdDisengage"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.CmdDisengage">[docs]</a><span class="k">class</span> <span class="nc">CmdDisengage</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdDisengage"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.CmdDisengage">[docs]</a><span class="k">class</span> <span class="nc">CmdDisengage</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Passes your turn and attempts to end combat.</span>
 
@@ -1357,7 +1354,7 @@
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;spare&quot;</span><span class="p">]</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;combat&quot;</span>
 
-<div class="viewcode-block" id="CmdDisengage.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.CmdDisengage.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdDisengage.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.CmdDisengage.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This performs the actual command.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1377,7 +1374,7 @@
 <span class="sd">        &quot;&quot;&quot;</span></div></div>
 
 
-<div class="viewcode-block" id="CmdRest"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.CmdRest">[docs]</a><span class="k">class</span> <span class="nc">CmdRest</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdRest"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.CmdRest">[docs]</a><span class="k">class</span> <span class="nc">CmdRest</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Recovers damage.</span>
 
@@ -1391,7 +1388,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;rest&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;combat&quot;</span>
 
-<div class="viewcode-block" id="CmdRest.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.CmdRest.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdRest.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.CmdRest.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;This performs the actual command.&quot;</span>
 
         <span class="k">if</span> <span class="n">is_in_combat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">):</span>  <span class="c1"># If you&#39;re in combat</span>
@@ -1405,7 +1402,7 @@
 <span class="sd">        &quot;&quot;&quot;</span></div></div>
 
 
-<div class="viewcode-block" id="CmdStatus"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.CmdStatus">[docs]</a><span class="k">class</span> <span class="nc">CmdStatus</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdStatus"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.CmdStatus">[docs]</a><span class="k">class</span> <span class="nc">CmdStatus</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Gives combat information.</span>
 
@@ -1419,12 +1416,12 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;status&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;combat&quot;</span>
 
-<div class="viewcode-block" id="CmdStatus.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.CmdStatus.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdStatus.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.CmdStatus.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;This performs the actual command.&quot;</span>
         <span class="n">combat_status_message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdCombatHelp"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.CmdCombatHelp">[docs]</a><span class="k">class</span> <span class="nc">CmdCombatHelp</span><span class="p">(</span><span class="n">CmdHelp</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdCombatHelp"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.CmdCombatHelp">[docs]</a><span class="k">class</span> <span class="nc">CmdCombatHelp</span><span class="p">(</span><span class="n">CmdHelp</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    View help or a list of topics</span>
 
@@ -1440,7 +1437,7 @@
     <span class="c1"># Just like the default help command, but will give quick</span>
     <span class="c1"># tips on combat when used in a fight with no arguments.</span>
 
-<div class="viewcode-block" id="CmdCombatHelp.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.CmdCombatHelp.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdCombatHelp.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.CmdCombatHelp.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">is_in_combat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>  <span class="c1"># In combat and entered &#39;help&#39; alone</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
                 <span class="s2">&quot;Available combat commands:|/&quot;</span>
@@ -1456,14 +1453,14 @@
             <span class="nb">super</span><span class="p">(</span><span class="n">CmdCombatHelp</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">func</span><span class="p">()</span>  <span class="c1"># Call the default help command</span></div></div>
 
 
-<div class="viewcode-block" id="BattleCmdSet"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.BattleCmdSet">[docs]</a><span class="k">class</span> <span class="nc">BattleCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+<div class="viewcode-block" id="BattleCmdSet"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.BattleCmdSet">[docs]</a><span class="k">class</span> <span class="nc">BattleCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This command set includes all the commmands used in the battle system.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultCharacter&quot;</span>
 
-<div class="viewcode-block" id="BattleCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.html#evennia.contrib.turnbattle.tb_range.BattleCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BattleCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.turnbattle.tb_range.html#evennia.contrib.turnbattle.tb_range.BattleCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Populates the cmdset</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1479,6 +1476,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdCombatHelp</span><span class="p">())</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -1516,17 +1514,15 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.turnbattle.tb_range</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.turnbattle.tb_range</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

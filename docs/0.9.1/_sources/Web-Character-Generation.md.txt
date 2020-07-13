@@ -7,7 +7,7 @@ This tutorial will create a simple web-based interface for generating a new in-g
 
 It is probably most useful to set `MULTISESSION_MODE = 2` or `3` (which gives you a character-selection screen when you log into the game later). Other modes can be used with some adaptation to auto-puppet the new Character.
 
-You should have some familiarity with how Django sets up its Model Template View framework. You need to understand what is happening in the basic [Web Character View tutorial](Web-Character-View-Tutorial). If you don’t understand the listed tutorial or have a grasp of Django basics, please look at the [Django tutorial](https://docs.djangoproject.com/en/1.8/intro/) to get a taste of what Django does, before throwing Evennia into the mix (Evennia shares its API and attributes with the website interface). This guide will outline the format of the models, views, urls, and html templates needed. 
+You should have some familiarity with how Django sets up its Model Template View framework. You need to understand what is happening in the basic [Web Character View tutorial](./Web-Character-View-Tutorial). If you don’t understand the listed tutorial or have a grasp of Django basics, please look at the [Django tutorial](https://docs.djangoproject.com/en/1.8/intro/) to get a taste of what Django does, before throwing Evennia into the mix (Evennia shares its API and attributes with the website interface). This guide will outline the format of the models, views, urls, and html templates needed. 
 
 ## Pictures
 
@@ -60,7 +60,7 @@ After this, we will get into defining our *models* (the description of the datab
 
 Models are created in `mygame/web/chargen/models.py`.
 
-A [Django database model](New-Models) is a Python class that describes the database storage of the data you want to manage. Any data you choose to store is stored in the same database as the game and you have access to all the game's objects here. 
+A [Django database model](./New-Models) is a Python class that describes the database storage of the data you want to manage. Any data you choose to store is stored in the same database as the game and you have access to all the game's objects here. 
 
 We need to define what a character application actually is. This will differ from game to game so for this tutorial we will define a simple character sheet with the following database fields: 
 
@@ -217,9 +217,9 @@ def creating(request):
 
 Most importantly, the following attributes must be set on the created character object:
 
-* Evennia [permissions](Locks#permissions) (copied from the `AccountDB`).
-* The right `puppet` [locks](Locks) so the Account can actually play as this Character later.
-* The relevant Character [typeclass](Typeclasses)
+* Evennia [permissions](./Locks#permissions) (copied from the `AccountDB`).
+* The right `puppet` [locks](./Locks) so the Account can actually play as this Character later.
+* The relevant Character [typeclass](./Typeclasses)
 * Character name (key)
 * The Character's home room location (`#2` by default)
 

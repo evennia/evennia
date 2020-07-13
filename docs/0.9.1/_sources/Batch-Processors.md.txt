@@ -15,8 +15,8 @@ You can of course still build completely online should you want to - this is cer
 
 There are two batch processors, the Batch-*command* processor and the Batch-*code* processor. The first one is the simpler of the two. It doesn't require any programming knowledge - you basically just list in-game commands in a text file. The code-processor on the other hand is much more powerful but also more complex - it lets you use Evennia's API to code your world in full-fledged Python code.
 
-- The [Batch Command Processor](Batch-Command-Processor)
-- The [Batch Code Processor](Batch-Code-Processor)
+- The [Batch Command Processor](./Batch-Command-Processor)
+- The [Batch Code Processor](./Batch-Code-Processor)
 
 If you plan to use international characters in your batchfiles you are wise to read about *file encodings* below.
 
@@ -34,6 +34,6 @@ With this little introduction it should be clear that Evennia can't guess but ha
 
 You can often change the text editor encoding (this depends on your editor though), otherwise you need to add the editor's encoding to Evennia's `ENCODINGS` list. If you are unsure, write a test file with lots of non-ASCII letters in the editor of your choice, then import to make sure it works as it should.
 
-More help with encodings can be found in the entry [Text Encodings](Text-Encodings) and also in the Wikipedia article [here](http://en.wikipedia.org/wiki/Text_encodings).
+More help with encodings can be found in the entry [Text Encodings](./Text-Encodings) and also in the Wikipedia article [here](http://en.wikipedia.org/wiki/Text_encodings).
 
 **A footnote for the batch-code processor**: Just because *Evennia* can parse your file and your fancy special characters, doesn't mean that *Python* allows their use. Python syntax only allows international characters inside *strings*. In all other source code only `ASCII` set characters are allowed.

@@ -1,0 +1,323 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>evennia.comms.channelhandler &#8212; Evennia 0.9.1 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.comms.channelhandler</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-evennia.comms.channelhandler">
+<span id="evennia-comms-channelhandler"></span><h1>evennia.comms.channelhandler<a class="headerlink" href="#module-evennia.comms.channelhandler" title="Permalink to this headline">¶</a></h1>
+<p>The channel handler, accessed from this module as CHANNEL_HANDLER is a
+singleton that handles the stored set of channels and how they are
+represented against the cmdhandler.</p>
+<p>If there is a channel named ‘newbie’, we want to be able to just write</p>
+<blockquote>
+<div><p>newbie Hello!</p>
+</div></blockquote>
+<p>For this to work, ‘newbie’, the name of the channel, must be
+identified by the cmdhandler as a command name. The channelhandler
+stores all channels as custom ‘commands’ that the cmdhandler can
+import and look through.</p>
+<p>&gt; Warning - channel names take precedence over command names, so make
+sure to not pick clashing channel names.</p>
+<p>Unless deleting a channel you normally don’t need to bother about the
+channelhandler at all - the create_channel method handles the update.</p>
+<p>To delete a channel cleanly, delete the channel object, then call
+update() on the channelhandler. Or use Channel.objects.delete() which
+does this for you.</p>
+<dl class="py class">
+<dt id="evennia.comms.channelhandler.ChannelCommand">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.comms.channelhandler.</code><code class="sig-name descname">ChannelCommand</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/channelhandler.html#ChannelCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.channelhandler.ChannelCommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
+<p>{channelkey} channel</p>
+<p>{channeldesc}</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>{lower_channelkey}  &lt;message&gt;
+{lower_channelkey}/history [start]
+{lower_channelkey} off - mutes the channel
+{lower_channelkey} on  - unmutes the channel</p>
+</dd>
+<dt>Switch:</dt><dd><dl class="simple">
+<dt>history: View 20 previous messages, either from the end or</dt><dd><p>from &lt;start&gt; number of messages from the end.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>{lower_channelkey} Hello World!
+{lower_channelkey}/history
+{lower_channelkey}/history 30</p>
+<dl class="py attribute">
+<dt id="evennia.comms.channelhandler.ChannelCommand.is_channel">
+<code class="sig-name descname">is_channel</code><em class="property"> = True</em><a class="headerlink" href="#evennia.comms.channelhandler.ChannelCommand.is_channel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.comms.channelhandler.ChannelCommand.key">
+<code class="sig-name descname">key</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.comms.channelhandler.ChannelCommand.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.comms.channelhandler.ChannelCommand.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'channel names'</em><a class="headerlink" href="#evennia.comms.channelhandler.ChannelCommand.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.comms.channelhandler.ChannelCommand.obj">
+<code class="sig-name descname">obj</code><em class="property"> = None</em><a class="headerlink" href="#evennia.comms.channelhandler.ChannelCommand.obj" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.comms.channelhandler.ChannelCommand.arg_regex">
+<code class="sig-name descname">arg_regex</code><em class="property"> = re.compile('\\s.*?|/history.*?', re.IGNORECASE)</em><a class="headerlink" href="#evennia.comms.channelhandler.ChannelCommand.arg_regex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.comms.channelhandler.ChannelCommand.parse">
+<code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/channelhandler.html#ChannelCommand.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.channelhandler.ChannelCommand.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple parser</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.comms.channelhandler.ChannelCommand.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/channelhandler.html#ChannelCommand.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.channelhandler.ChannelCommand.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new message and send it to channel, using
+the already formatted input.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.comms.channelhandler.ChannelCommand.get_extra_info">
+<code class="sig-name descname">get_extra_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/channelhandler.html#ChannelCommand.get_extra_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.channelhandler.ChannelCommand.get_extra_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Let users know that this command is for communicating on a channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>caller</strong> (<a class="reference internal" href="evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject" title="evennia.typeclasses.models.TypedObject"><em>TypedObject</em></a>) – A Character or Account who has entered an ambiguous command.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A string with identifying information to disambiguate the object, conventionally with a preceding space.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.comms.channelhandler.ChannelCommand.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.comms.channelhandler.ChannelCommand.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.comms.channelhandler.ChannelCommand.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.comms.channelhandler.ChannelCommand.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.comms.channelhandler.ChannelCommand.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'channel names', 'key': 'general', 'tags': '', 'text': '\n    {channelkey} channel\n\n    {channeldesc}\n\n    Usage:\n       {lower_channelkey}  &lt;message&gt;\n       {lower_channelkey}/history [start]\n       {lower_channelkey} off - mutes the channel\n       {lower_channelkey} on  - unmutes the channel\n\n    Switch:\n        history: View 20 previous messages, either from the end or\n            from &lt;start&gt; number of messages from the end.\n\n    Example:\n        {lower_channelkey} Hello World!\n        {lower_channelkey}/history\n        {lower_channelkey}/history 30\n\n    '}</em><a class="headerlink" href="#evennia.comms.channelhandler.ChannelCommand.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.comms.channelhandler.ChannelHandler">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.comms.channelhandler.</code><code class="sig-name descname">ChannelHandler</code><a class="reference internal" href="../_modules/evennia/comms/channelhandler.html#ChannelHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.channelhandler.ChannelHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The ChannelHandler manages all active in-game channels and
+dynamically creates channel commands for users so that they can
+just give the channel’s key or alias to write to it. Whenever a
+new channel is created in the database, the update() method on
+this handler must be called to sync it with the database (this is
+done automatically if creating the channel with
+evennia.create_channel())</p>
+<dl class="py method">
+<dt id="evennia.comms.channelhandler.ChannelHandler.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/channelhandler.html#ChannelHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.channelhandler.ChannelHandler.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes the channel handler’s internal state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.comms.channelhandler.ChannelHandler.clear">
+<code class="sig-name descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/channelhandler.html#ChannelHandler.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.channelhandler.ChannelHandler.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the cache storage.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.comms.channelhandler.ChannelHandler.add">
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/channelhandler.html#ChannelHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.channelhandler.ChannelHandler.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an individual channel to the handler. This is called
+whenever a new channel is created.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>channel</strong> (<em>Channel</em>) – The channel to add.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>To remove a channel, simply delete the channel object and
+run self.update on the handler. This should usually be
+handled automatically by one of the deletion methos of
+the Channel itself.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.comms.channelhandler.ChannelHandler.add_channel">
+<code class="sig-name descname">add_channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.comms.channelhandler.ChannelHandler.add_channel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an individual channel to the handler. This is called
+whenever a new channel is created.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>channel</strong> (<em>Channel</em>) – The channel to add.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>To remove a channel, simply delete the channel object and
+run self.update on the handler. This should usually be
+handled automatically by one of the deletion methos of
+the Channel itself.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.comms.channelhandler.ChannelHandler.remove">
+<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/channelhandler.html#ChannelHandler.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.channelhandler.ChannelHandler.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove channel from channelhandler. This will also delete it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>channel</strong> (<em>Channel</em>) – Channel to remove/delete.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.comms.channelhandler.ChannelHandler.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/channelhandler.html#ChannelHandler.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.channelhandler.ChannelHandler.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the handler completely, including removing old removed
+Channel objects. This must be called after deleting a Channel.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.comms.channelhandler.ChannelHandler.get">
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channelname</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/channelhandler.html#ChannelHandler.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.channelhandler.ChannelHandler.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a channel from the handler, or all channels</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>channelame</strong> (<em>str</em><em>, </em><em>optional</em>) – Channel key, case insensitive.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Returns</dt><dd><dl class="simple">
+<dt>channels (list): The matching channels in a list, or all</dt><dd><p>channels in the handler.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.comms.channelhandler.ChannelHandler.get_cmdset">
+<code class="sig-name descname">get_cmdset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source_object</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/comms/channelhandler.html#ChannelHandler.get_cmdset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.comms.channelhandler.ChannelHandler.get_cmdset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve cmdset for channels this source_object has
+access to send to.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>source_object</strong> (<em>Object</em>) – An object subscribing to one
+or more channels.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>cmdsets (list)</em> –</p>
+<dl class="simple">
+<dt>The Channel-Cmdsets <strong>source_object</strong> has</dt><dd><p>access to.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.comms.channelhandler.rst.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../1.0-dev/api/evennia.comms.channelhandler.html">1.0-dev (develop branch)</a></li>
+  <li><a href="evennia.comms.channelhandler.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.comms.channelhandler</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+    </div>
+  </body>
+</html>

@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.scripts.taskhandler &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.scripts.taskhandler</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.scripts.taskhandler</a></li> 
       </ul>
     </div>  
 
@@ -57,7 +54,7 @@
 <span class="n">TASK_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="TaskHandler"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.taskhandler.TaskHandler">[docs]</a><span class="k">class</span> <span class="nc">TaskHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TaskHandler"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandler">[docs]</a><span class="k">class</span> <span class="nc">TaskHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A light singleton wrapper allowing to access permanent tasks.</span>
@@ -72,11 +69,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TaskHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.taskhandler.TaskHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TaskHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">to_save</span> <span class="o">=</span> <span class="p">{}</span></div>
 
-<div class="viewcode-block" id="TaskHandler.load"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.taskhandler.TaskHandler.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TaskHandler.load"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandler.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Load from the ServerConfig.</span>
 
 <span class="sd">        Note:</span>
@@ -107,7 +104,7 @@
         <span class="k">if</span> <span class="n">to_save</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TaskHandler.save"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.taskhandler.TaskHandler.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TaskHandler.save"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandler.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Save the tasks in ServerConfig.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">task_id</span><span class="p">,</span> <span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">task_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_save</span><span class="p">:</span>
@@ -136,7 +133,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">to_save</span><span class="p">[</span><span class="n">task_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">dbserialize</span><span class="p">((</span><span class="n">date</span><span class="p">,</span> <span class="n">safe_callback</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">))</span>
         <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;delayed_tasks&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_save</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TaskHandler.add"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.taskhandler.TaskHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timedelay</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="TaskHandler.add"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timedelay</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Add a new persistent task in the configuration.</span>
 
 <span class="sd">        Args:</span>
@@ -144,7 +141,7 @@
 <span class="sd">            callback (function or instance method): the callback itself</span>
 <span class="sd">            any (any): any additional positional arguments to send to the callback</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            persistent (bool, optional): persist the task (store it).</span>
 <span class="sd">            any (any): additional keyword arguments to send to the callback</span>
 
@@ -196,7 +193,7 @@
 
         <span class="k">return</span> <span class="n">deferLater</span><span class="p">(</span><span class="n">reactor</span><span class="p">,</span> <span class="n">timedelay</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TaskHandler.remove"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.taskhandler.TaskHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">):</span>
+<div class="viewcode-block" id="TaskHandler.remove"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Remove a persistent task without executing it.</span>
 
 <span class="sd">        Args:</span>
@@ -213,7 +210,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TaskHandler.do_task"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.taskhandler.TaskHandler.do_task">[docs]</a>    <span class="k">def</span> <span class="nf">do_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">):</span>
+<div class="viewcode-block" id="TaskHandler.do_task"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandler.do_task">[docs]</a>    <span class="k">def</span> <span class="nf">do_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Execute the task (call its callback).</span>
 
 <span class="sd">        Args:</span>
@@ -230,7 +227,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
         <span class="n">callback</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TaskHandler.create_delays"><a class="viewcode-back" href="../../../api/evennia.scripts.html#evennia.scripts.taskhandler.TaskHandler.create_delays">[docs]</a>    <span class="k">def</span> <span class="nf">create_delays</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TaskHandler.create_delays"><a class="viewcode-back" href="../../../api/evennia.scripts.taskhandler.html#evennia.scripts.taskhandler.TaskHandler.create_delays">[docs]</a>    <span class="k">def</span> <span class="nf">create_delays</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create the delayed tasks for the persistent tasks.</span>
 
 <span class="sd">        Note:</span>
@@ -247,6 +244,7 @@
 <span class="n">TASK_HANDLER</span> <span class="o">=</span> <span class="n">TaskHandler</span><span class="p">()</span>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -284,17 +282,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.scripts.taskhandler</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.scripts.taskhandler</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.server.initial_setup &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.server.initial_setup</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.server.initial_setup</a></li> 
       </ul>
     </div>  
 
@@ -87,7 +84,7 @@
 <span class="s2">    &quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="get_god_account"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.initial_setup.get_god_account">[docs]</a><span class="k">def</span> <span class="nf">get_god_account</span><span class="p">():</span>
+<div class="viewcode-block" id="get_god_account"><a class="viewcode-back" href="../../../api/evennia.server.initial_setup.html#evennia.server.initial_setup.get_god_account">[docs]</a><span class="k">def</span> <span class="nf">get_god_account</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates the god user and don&#39;t take no for an answer.</span>
 
@@ -99,7 +96,7 @@
     <span class="k">return</span> <span class="n">god_account</span></div>
 
 
-<div class="viewcode-block" id="create_objects"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.initial_setup.create_objects">[docs]</a><span class="k">def</span> <span class="nf">create_objects</span><span class="p">():</span>
+<div class="viewcode-block" id="create_objects"><a class="viewcode-back" href="../../../api/evennia.server.initial_setup.html#evennia.server.initial_setup.create_objects">[docs]</a><span class="k">def</span> <span class="nf">create_objects</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates the #1 account and Limbo room.</span>
 
@@ -165,7 +162,7 @@
         <span class="n">god_character</span><span class="o">.</span><span class="n">home</span> <span class="o">=</span> <span class="n">limbo_obj</span></div>
 
 
-<div class="viewcode-block" id="create_channels"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.initial_setup.create_channels">[docs]</a><span class="k">def</span> <span class="nf">create_channels</span><span class="p">():</span>
+<div class="viewcode-block" id="create_channels"><a class="viewcode-back" href="../../../api/evennia.server.initial_setup.html#evennia.server.initial_setup.create_channels">[docs]</a><span class="k">def</span> <span class="nf">create_channels</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates some sensible default channels.</span>
 
@@ -189,7 +186,7 @@
         <span class="n">channel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">goduser</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="at_initial_setup"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.initial_setup.at_initial_setup">[docs]</a><span class="k">def</span> <span class="nf">at_initial_setup</span><span class="p">():</span>
+<div class="viewcode-block" id="at_initial_setup"><a class="viewcode-back" href="../../../api/evennia.server.initial_setup.html#evennia.server.initial_setup.at_initial_setup">[docs]</a><span class="k">def</span> <span class="nf">at_initial_setup</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Custom hook for users to overload some or all parts of the initial</span>
 <span class="sd">    setup. Called very last in the sequence. It tries to import and</span>
@@ -209,7 +206,7 @@
         <span class="n">mod</span><span class="o">.</span><span class="n">at_initial_setup</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="collectstatic"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.initial_setup.collectstatic">[docs]</a><span class="k">def</span> <span class="nf">collectstatic</span><span class="p">():</span>
+<div class="viewcode-block" id="collectstatic"><a class="viewcode-back" href="../../../api/evennia.server.initial_setup.html#evennia.server.initial_setup.collectstatic">[docs]</a><span class="k">def</span> <span class="nf">collectstatic</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run collectstatic to make sure all web assets are loaded.</span>
 
@@ -220,7 +217,7 @@
     <span class="n">call_command</span><span class="p">(</span><span class="s2">&quot;collectstatic&quot;</span><span class="p">,</span> <span class="s2">&quot;--noinput&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="reset_server"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.initial_setup.reset_server">[docs]</a><span class="k">def</span> <span class="nf">reset_server</span><span class="p">():</span>
+<div class="viewcode-block" id="reset_server"><a class="viewcode-back" href="../../../api/evennia.server.initial_setup.html#evennia.server.initial_setup.reset_server">[docs]</a><span class="k">def</span> <span class="nf">reset_server</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    We end the initialization by resetting the server. This makes sure</span>
 <span class="sd">    the first login is the same as all the following ones,</span>
@@ -235,7 +232,7 @@
     <span class="n">SESSIONS</span><span class="o">.</span><span class="n">portal_reset_server</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="handle_setup"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.initial_setup.handle_setup">[docs]</a><span class="k">def</span> <span class="nf">handle_setup</span><span class="p">(</span><span class="n">last_step</span><span class="p">):</span>
+<div class="viewcode-block" id="handle_setup"><a class="viewcode-back" href="../../../api/evennia.server.initial_setup.html#evennia.server.initial_setup.handle_setup">[docs]</a><span class="k">def</span> <span class="nf">handle_setup</span><span class="p">(</span><span class="n">last_step</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Main logic for the module. It allows for restarting the</span>
 <span class="sd">    initialization at any point if one of the modules should crash.</span>
@@ -283,6 +280,7 @@
     <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;last_initial_setup_step&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -320,17 +318,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.server.initial_setup</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.server.initial_setup</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

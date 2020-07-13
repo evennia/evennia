@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.wilderness &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.wilderness</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.wilderness</a></li> 
       </ul>
     </div>  
 
@@ -165,7 +162,7 @@
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">inherits_from</span>
 
 
-<div class="viewcode-block" id="create_wilderness"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.wilderness.create_wilderness">[docs]</a><span class="k">def</span> <span class="nf">create_wilderness</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">mapprovider</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="create_wilderness"><a class="viewcode-back" href="../../../api/evennia.contrib.wilderness.html#evennia.contrib.wilderness.create_wilderness">[docs]</a><span class="k">def</span> <span class="nf">create_wilderness</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">mapprovider</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates a new wilderness map. Does nothing if a wilderness map already</span>
 <span class="sd">    exists with the same name.</span>
@@ -188,7 +185,7 @@
     <span class="n">script</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">mapprovider</span> <span class="o">=</span> <span class="n">mapprovider</span></div>
 
 
-<div class="viewcode-block" id="enter_wilderness"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.wilderness.enter_wilderness">[docs]</a><span class="k">def</span> <span class="nf">enter_wilderness</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">coordinates</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="enter_wilderness"><a class="viewcode-back" href="../../../api/evennia.contrib.wilderness.html#evennia.contrib.wilderness.enter_wilderness">[docs]</a><span class="k">def</span> <span class="nf">enter_wilderness</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">coordinates</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Moves obj into the wilderness. The wilderness needs to exist first and the</span>
 <span class="sd">    provided coordinates needs to be valid inside that wilderness.</span>
@@ -214,7 +211,7 @@
         <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="get_new_coordinates"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.wilderness.get_new_coordinates">[docs]</a><span class="k">def</span> <span class="nf">get_new_coordinates</span><span class="p">(</span><span class="n">coordinates</span><span class="p">,</span> <span class="n">direction</span><span class="p">):</span>
+<div class="viewcode-block" id="get_new_coordinates"><a class="viewcode-back" href="../../../api/evennia.contrib.wilderness.html#evennia.contrib.wilderness.get_new_coordinates">[docs]</a><span class="k">def</span> <span class="nf">get_new_coordinates</span><span class="p">(</span><span class="n">coordinates</span><span class="p">,</span> <span class="n">direction</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the coordinates of direction applied to the provided coordinates.</span>
 
@@ -239,7 +236,7 @@
     <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="WildernessScript"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.wilderness.WildernessScript">[docs]</a><span class="k">class</span> <span class="nc">WildernessScript</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<div class="viewcode-block" id="WildernessScript"><a class="viewcode-back" href="../../../api/evennia.contrib.wilderness.html#evennia.contrib.wilderness.WildernessScript">[docs]</a><span class="k">class</span> <span class="nc">WildernessScript</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the main &quot;handler&quot; for the wilderness system: inside here the</span>
 <span class="sd">    coordinates of every item currently inside the wilderness is stored. This</span>
@@ -247,7 +244,7 @@
 <span class="sd">    into storage when they are not needed anymore.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="WildernessScript.at_script_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.wilderness.WildernessScript.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="WildernessScript.at_script_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.wilderness.html#evennia.contrib.wilderness.WildernessScript.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Only called once, when the script is created. This is a default Evennia</span>
 <span class="sd">        hook.</span>
@@ -289,7 +286,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">itemcoordinates</span>
 
-<div class="viewcode-block" id="WildernessScript.at_start"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.wilderness.WildernessScript.at_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="WildernessScript.at_start"><a class="viewcode-back" href="../../../api/evennia.contrib.wilderness.html#evennia.contrib.wilderness.WildernessScript.at_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when the script is started and also after server reloads.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -304,7 +301,7 @@
                 <span class="k">continue</span>
             <span class="n">item</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">wilderness</span> <span class="o">=</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="WildernessScript.is_valid_coordinates"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.wilderness.WildernessScript.is_valid_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">):</span>
+<div class="viewcode-block" id="WildernessScript.is_valid_coordinates"><a class="viewcode-back" href="../../../api/evennia.contrib.wilderness.html#evennia.contrib.wilderness.WildernessScript.is_valid_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns True if coordinates are valid (and can be travelled to).</span>
 <span class="sd">        Otherwise returns False</span>
@@ -317,7 +314,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapprovider</span><span class="o">.</span><span class="n">is_valid_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="WildernessScript.get_obj_coordinates"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.wilderness.WildernessScript.get_obj_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_obj_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="WildernessScript.get_obj_coordinates"><a class="viewcode-back" href="../../../api/evennia.contrib.wilderness.html#evennia.contrib.wilderness.WildernessScript.get_obj_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_obj_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the coordinates of obj in the wilderness.</span>
 
@@ -331,7 +328,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">itemcoordinates</span><span class="p">[</span><span class="n">obj</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="WildernessScript.get_objs_at_coordinates"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.wilderness.WildernessScript.get_objs_at_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_objs_at_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">):</span>
+<div class="viewcode-block" id="WildernessScript.get_objs_at_coordinates"><a class="viewcode-back" href="../../../api/evennia.contrib.wilderness.html#evennia.contrib.wilderness.WildernessScript.get_objs_at_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_objs_at_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a list of every object at certain coordinates.</span>
 
@@ -356,7 +353,7 @@
                 <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
-<div class="viewcode-block" id="WildernessScript.move_obj"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.wilderness.WildernessScript.move_obj">[docs]</a>    <span class="k">def</span> <span class="nf">move_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">new_coordinates</span><span class="p">):</span>
+<div class="viewcode-block" id="WildernessScript.move_obj"><a class="viewcode-back" href="../../../api/evennia.contrib.wilderness.html#evennia.contrib.wilderness.WildernessScript.move_obj">[docs]</a>    <span class="k">def</span> <span class="nf">move_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">new_coordinates</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Moves obj to new coordinates in this wilderness.</span>
 
@@ -414,7 +411,7 @@
         <span class="n">obj</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">room</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">wilderness</span> <span class="o">=</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="WildernessScript._create_room"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.wilderness.WildernessScript._create_room">[docs]</a>    <span class="k">def</span> <span class="nf">_create_room</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">report_to</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_create_room</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">report_to</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets a new WildernessRoom to be used for the provided coordinates.</span>
 
@@ -462,9 +459,9 @@
         <span class="n">room</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">wildernessscript</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rooms</span><span class="p">[</span><span class="n">coordinates</span><span class="p">]</span> <span class="o">=</span> <span class="n">room</span>
 
-        <span class="k">return</span> <span class="n">room</span></div>
+        <span class="k">return</span> <span class="n">room</span>
 
-<div class="viewcode-block" id="WildernessScript._destroy_room"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.wilderness.WildernessScript._destroy_room">[docs]</a>    <span class="k">def</span> <span class="nf">_destroy_room</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_destroy_room</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Moves a room back to storage. If room is not a WildernessRoom or there</span>
 <span class="sd">        is a player inside the room, then this does nothing.</span>
@@ -493,9 +490,9 @@
             <span class="c1"># Then delete its reference</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rooms</span><span class="p">[</span><span class="n">room</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">active_coordinates</span><span class="p">]</span>
             <span class="c1"># And finally put this room away in storage</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">unused_rooms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">room</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">unused_rooms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">room</span><span class="p">)</span>
 
-<div class="viewcode-block" id="WildernessScript.at_after_object_leave"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.wilderness.WildernessScript.at_after_object_leave">[docs]</a>    <span class="k">def</span> <span class="nf">at_after_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="WildernessScript.at_after_object_leave"><a class="viewcode-back" href="../../../api/evennia.contrib.wilderness.html#evennia.contrib.wilderness.WildernessScript.at_after_object_leave">[docs]</a>    <span class="k">def</span> <span class="nf">at_after_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called after an object left this wilderness map. Used for cleaning up.</span>
 
@@ -511,7 +508,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_destroy_room</span><span class="p">(</span><span class="n">room</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="WildernessRoom"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.wilderness.WildernessRoom">[docs]</a><span class="k">class</span> <span class="nc">WildernessRoom</span><span class="p">(</span><span class="n">DefaultRoom</span><span class="p">):</span>
+<div class="viewcode-block" id="WildernessRoom"><a class="viewcode-back" href="../../../api/evennia.contrib.wilderness.html#evennia.contrib.wilderness.WildernessRoom">[docs]</a><span class="k">class</span> <span class="nc">WildernessRoom</span><span class="p">(</span><span class="n">DefaultRoom</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a single room inside the wilderness. This room provides a &quot;view&quot;</span>
 <span class="sd">    into the wilderness map. When an account moves around, instead of going to</span>
@@ -550,7 +547,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">active_coordinates</span>
 
-<div class="viewcode-block" id="WildernessRoom.at_object_receive"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.wilderness.WildernessRoom.at_object_receive">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_obj</span><span class="p">,</span> <span class="n">source_location</span><span class="p">):</span>
+<div class="viewcode-block" id="WildernessRoom.at_object_receive"><a class="viewcode-back" href="../../../api/evennia.contrib.wilderness.html#evennia.contrib.wilderness.WildernessRoom.at_object_receive">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_obj</span><span class="p">,</span> <span class="n">source_location</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called after an object has been moved into this object. This is a</span>
 <span class="sd">        default Evennia hook.</span>
@@ -585,7 +582,7 @@
             <span class="c1"># This object wasn&#39;t in the wilderness yet. Let&#39;s add it.</span>
             <span class="n">itemcoords</span><span class="p">[</span><span class="n">moved_obj</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span></div>
 
-<div class="viewcode-block" id="WildernessRoom.at_object_leave"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.wilderness.WildernessRoom.at_object_leave">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_obj</span><span class="p">,</span> <span class="n">target_location</span><span class="p">):</span>
+<div class="viewcode-block" id="WildernessRoom.at_object_leave"><a class="viewcode-back" href="../../../api/evennia.contrib.wilderness.html#evennia.contrib.wilderness.WildernessRoom.at_object_leave">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_obj</span><span class="p">,</span> <span class="n">target_location</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called just before an object leaves from inside this object. This is a</span>
 <span class="sd">        default Evennia hook.</span>
@@ -597,7 +594,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">wilderness</span><span class="o">.</span><span class="n">at_after_object_leave</span><span class="p">(</span><span class="n">moved_obj</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="WildernessRoom.set_active_coordinates"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.wilderness.WildernessRoom.set_active_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">set_active_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_coordinates</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="WildernessRoom.set_active_coordinates"><a class="viewcode-back" href="../../../api/evennia.contrib.wilderness.html#evennia.contrib.wilderness.WildernessRoom.set_active_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">set_active_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_coordinates</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Changes this room to show the wilderness map from other coordinates.</span>
 
@@ -639,7 +636,7 @@
         <span class="c1"># customise it</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">wilderness</span><span class="o">.</span><span class="n">mapprovider</span><span class="o">.</span><span class="n">at_prepare_room</span><span class="p">(</span><span class="n">new_coordinates</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="WildernessRoom.get_display_name"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.wilderness.WildernessRoom.get_display_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="WildernessRoom.get_display_name"><a class="viewcode-back" href="../../../api/evennia.contrib.wilderness.html#evennia.contrib.wilderness.WildernessRoom.get_display_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Displays the name of the object in a viewer-aware manner.</span>
 
@@ -668,7 +665,7 @@
         <span class="k">return</span> <span class="n">name</span></div></div>
 
 
-<div class="viewcode-block" id="WildernessExit"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.wilderness.WildernessExit">[docs]</a><span class="k">class</span> <span class="nc">WildernessExit</span><span class="p">(</span><span class="n">DefaultExit</span><span class="p">):</span>
+<div class="viewcode-block" id="WildernessExit"><a class="viewcode-back" href="../../../api/evennia.contrib.wilderness.html#evennia.contrib.wilderness.WildernessExit">[docs]</a><span class="k">class</span> <span class="nc">WildernessExit</span><span class="p">(</span><span class="n">DefaultExit</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is an Exit object used inside a WildernessRoom. Instead of changing</span>
 <span class="sd">    the location of an Object traversing through it (like a traditional exit</span>
@@ -697,7 +694,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wilderness</span><span class="o">.</span><span class="n">mapprovider</span>
 
-<div class="viewcode-block" id="WildernessExit.at_traverse_coordinates"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.wilderness.WildernessExit.at_traverse_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">at_traverse_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">current_coordinates</span><span class="p">,</span> <span class="n">new_coordinates</span><span class="p">):</span>
+<div class="viewcode-block" id="WildernessExit.at_traverse_coordinates"><a class="viewcode-back" href="../../../api/evennia.contrib.wilderness.html#evennia.contrib.wilderness.WildernessExit.at_traverse_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">at_traverse_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">current_coordinates</span><span class="p">,</span> <span class="n">new_coordinates</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when an object wants to travel from one place inside the</span>
 <span class="sd">        wilderness to another place inside the wilderness.</span>
@@ -719,7 +716,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="WildernessExit.at_traverse"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.wilderness.WildernessExit.at_traverse">[docs]</a>    <span class="k">def</span> <span class="nf">at_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">):</span>
+<div class="viewcode-block" id="WildernessExit.at_traverse"><a class="viewcode-back" href="../../../api/evennia.contrib.wilderness.html#evennia.contrib.wilderness.WildernessExit.at_traverse">[docs]</a>    <span class="k">def</span> <span class="nf">at_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This implements the actual traversal. The traverse lock has</span>
 <span class="sd">        already been checked (in the Exit command) at this point.</span>
@@ -760,7 +757,7 @@
         <span class="k">return</span> <span class="kc">True</span></div></div>
 
 
-<div class="viewcode-block" id="WildernessMapProvider"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.wilderness.WildernessMapProvider">[docs]</a><span class="k">class</span> <span class="nc">WildernessMapProvider</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="WildernessMapProvider"><a class="viewcode-back" href="../../../api/evennia.contrib.wilderness.html#evennia.contrib.wilderness.WildernessMapProvider">[docs]</a><span class="k">class</span> <span class="nc">WildernessMapProvider</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Default Wilderness Map provider.</span>
 
@@ -770,7 +767,7 @@
     <span class="n">room_typeclass</span> <span class="o">=</span> <span class="n">WildernessRoom</span>
     <span class="n">exit_typeclass</span> <span class="o">=</span> <span class="n">WildernessExit</span>
 
-<div class="viewcode-block" id="WildernessMapProvider.is_valid_coordinates"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.wilderness.WildernessMapProvider.is_valid_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wilderness</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">):</span>
+<div class="viewcode-block" id="WildernessMapProvider.is_valid_coordinates"><a class="viewcode-back" href="../../../api/evennia.contrib.wilderness.html#evennia.contrib.wilderness.WildernessMapProvider.is_valid_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wilderness</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Returns True if coordinates is valid and can be walked to.</span>
 
 <span class="sd">        Args:</span>
@@ -788,7 +785,7 @@
 
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="WildernessMapProvider.get_location_name"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.wilderness.WildernessMapProvider.get_location_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_location_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">):</span>
+<div class="viewcode-block" id="WildernessMapProvider.get_location_name"><a class="viewcode-back" href="../../../api/evennia.contrib.wilderness.html#evennia.contrib.wilderness.WildernessMapProvider.get_location_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_location_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a name for the position at coordinates.</span>
 
@@ -800,7 +797,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;The wilderness&quot;</span></div>
 
-<div class="viewcode-block" id="WildernessMapProvider.at_prepare_room"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.wilderness.WildernessMapProvider.at_prepare_room">[docs]</a>    <span class="k">def</span> <span class="nf">at_prepare_room</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
+<div class="viewcode-block" id="WildernessMapProvider.at_prepare_room"><a class="viewcode-back" href="../../../api/evennia.contrib.wilderness.html#evennia.contrib.wilderness.WildernessMapProvider.at_prepare_room">[docs]</a>    <span class="k">def</span> <span class="nf">at_prepare_room</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when a room gets activated for certain coordinates. This happens</span>
 <span class="sd">        after every object is moved in it.</span>
@@ -821,6 +818,7 @@
         <span class="k">pass</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -858,17 +856,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.wilderness</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.wilderness</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

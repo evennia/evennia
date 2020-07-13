@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.tree_select &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.tree_select</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tree_select</a></li> 
       </ul>
     </div>  
 
@@ -206,7 +203,7 @@
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">Command</span>
 
 
-<div class="viewcode-block" id="init_tree_selection"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.tree_select.init_tree_selection">[docs]</a><span class="k">def</span> <span class="nf">init_tree_selection</span><span class="p">(</span>
+<div class="viewcode-block" id="init_tree_selection"><a class="viewcode-back" href="../../../api/evennia.contrib.tree_select.html#evennia.contrib.tree_select.init_tree_selection">[docs]</a><span class="k">def</span> <span class="nf">init_tree_selection</span><span class="p">(</span>
     <span class="n">treestr</span><span class="p">,</span>
     <span class="n">caller</span><span class="p">,</span>
     <span class="n">callback</span><span class="p">,</span>
@@ -275,7 +272,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="dashcount"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.tree_select.dashcount">[docs]</a><span class="k">def</span> <span class="nf">dashcount</span><span class="p">(</span><span class="n">entry</span><span class="p">):</span>
+<div class="viewcode-block" id="dashcount"><a class="viewcode-back" href="../../../api/evennia.contrib.tree_select.html#evennia.contrib.tree_select.dashcount">[docs]</a><span class="k">def</span> <span class="nf">dashcount</span><span class="p">(</span><span class="n">entry</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Counts the number of dashes at the beginning of a string. This</span>
 <span class="sd">    is needed to determine the depth of options in categories.</span>
@@ -295,7 +292,7 @@
     <span class="k">return</span> <span class="n">dashes</span></div>
 
 
-<div class="viewcode-block" id="is_category"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.tree_select.is_category">[docs]</a><span class="k">def</span> <span class="nf">is_category</span><span class="p">(</span><span class="n">treestr</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+<div class="viewcode-block" id="is_category"><a class="viewcode-back" href="../../../api/evennia.contrib.tree_select.html#evennia.contrib.tree_select.is_category">[docs]</a><span class="k">def</span> <span class="nf">is_category</span><span class="p">(</span><span class="n">treestr</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determines whether an option in a tree string is a category by</span>
 <span class="sd">    whether or not there are additional options below it.</span>
@@ -315,7 +312,7 @@
     <span class="k">return</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="n">dashcount</span><span class="p">(</span><span class="n">opt_list</span><span class="p">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span> <span class="o">!=</span> <span class="n">dashcount</span><span class="p">(</span><span class="n">opt_list</span><span class="p">[</span><span class="n">index</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="parse_opts"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.tree_select.parse_opts">[docs]</a><span class="k">def</span> <span class="nf">parse_opts</span><span class="p">(</span><span class="n">treestr</span><span class="p">,</span> <span class="n">category_index</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="parse_opts"><a class="viewcode-back" href="../../../api/evennia.contrib.tree_select.html#evennia.contrib.tree_select.parse_opts">[docs]</a><span class="k">def</span> <span class="nf">parse_opts</span><span class="p">(</span><span class="n">treestr</span><span class="p">,</span> <span class="n">category_index</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parses a tree string and given index into a list of options. If</span>
 <span class="sd">    category_index is none, returns all the options at the top level of</span>
@@ -360,7 +357,7 @@
     <span class="k">return</span> <span class="n">kept_opts</span></div>
 
 
-<div class="viewcode-block" id="index_to_selection"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.tree_select.index_to_selection">[docs]</a><span class="k">def</span> <span class="nf">index_to_selection</span><span class="p">(</span><span class="n">treestr</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="index_to_selection"><a class="viewcode-back" href="../../../api/evennia.contrib.tree_select.html#evennia.contrib.tree_select.index_to_selection">[docs]</a><span class="k">def</span> <span class="nf">index_to_selection</span><span class="p">(</span><span class="n">treestr</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a menu tree string and an index, returns the corresponding selection&#39;s</span>
 <span class="sd">    name as a string. If &#39;desc&#39; is set to True, will return the selection&#39;s</span>
@@ -395,7 +392,7 @@
         <span class="k">return</span> <span class="n">selection</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="go_up_one_category"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.tree_select.go_up_one_category">[docs]</a><span class="k">def</span> <span class="nf">go_up_one_category</span><span class="p">(</span><span class="n">treestr</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+<div class="viewcode-block" id="go_up_one_category"><a class="viewcode-back" href="../../../api/evennia.contrib.tree_select.html#evennia.contrib.tree_select.go_up_one_category">[docs]</a><span class="k">def</span> <span class="nf">go_up_one_category</span><span class="p">(</span><span class="n">treestr</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a menu tree string and an index, returns the category that the given option</span>
 <span class="sd">    belongs to. Used for the &#39;go back&#39; option.</span>
@@ -424,7 +421,7 @@
         <span class="n">current_index</span> <span class="o">-=</span> <span class="mi">1</span></div>
 
 
-<div class="viewcode-block" id="optlist_to_menuoptions"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.tree_select.optlist_to_menuoptions">[docs]</a><span class="k">def</span> <span class="nf">optlist_to_menuoptions</span><span class="p">(</span><span class="n">treestr</span><span class="p">,</span> <span class="n">optlist</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">mark_category</span><span class="p">,</span> <span class="n">go_back</span><span class="p">):</span>
+<div class="viewcode-block" id="optlist_to_menuoptions"><a class="viewcode-back" href="../../../api/evennia.contrib.tree_select.html#evennia.contrib.tree_select.optlist_to_menuoptions">[docs]</a><span class="k">def</span> <span class="nf">optlist_to_menuoptions</span><span class="p">(</span><span class="n">treestr</span><span class="p">,</span> <span class="n">optlist</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">mark_category</span><span class="p">,</span> <span class="n">go_back</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Takes a list of options processed by parse_opts and turns it into</span>
 <span class="sd">    a list/dictionary of menu options for use in menunode_treeselect.</span>
@@ -472,7 +469,7 @@
     <span class="k">return</span> <span class="n">menuoptions</span></div>
 
 
-<div class="viewcode-block" id="menunode_treeselect"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.tree_select.menunode_treeselect">[docs]</a><span class="k">def</span> <span class="nf">menunode_treeselect</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="menunode_treeselect"><a class="viewcode-back" href="../../../api/evennia.contrib.tree_select.html#evennia.contrib.tree_select.menunode_treeselect">[docs]</a><span class="k">def</span> <span class="nf">menunode_treeselect</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the repeating menu node that handles the tree selection.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -558,7 +555,7 @@
 <span class="s2">Remove name color: Remove your name color, if any&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="CmdNameColor"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.tree_select.CmdNameColor">[docs]</a><span class="k">class</span> <span class="nc">CmdNameColor</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdNameColor"><a class="viewcode-back" href="../../../api/evennia.contrib.tree_select.html#evennia.contrib.tree_select.CmdNameColor">[docs]</a><span class="k">class</span> <span class="nc">CmdNameColor</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set or remove a special color on your name. Just an example for the</span>
 <span class="sd">    easy menu selection tree contrib.</span>
@@ -566,14 +563,14 @@
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;namecolor&quot;</span>
 
-<div class="viewcode-block" id="CmdNameColor.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.tree_select.CmdNameColor.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdNameColor.func"><a class="viewcode-back" href="../../../api/evennia.contrib.tree_select.html#evennia.contrib.tree_select.CmdNameColor.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># This is all you have to do to initialize a menu!</span>
         <span class="n">init_tree_selection</span><span class="p">(</span>
             <span class="n">NAMECOLOR_MENU</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">change_name_color</span><span class="p">,</span> <span class="n">start_text</span><span class="o">=</span><span class="s2">&quot;Name color options:&quot;</span>
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="change_name_color"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.tree_select.change_name_color">[docs]</a><span class="k">def</span> <span class="nf">change_name_color</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">treestr</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">selection</span><span class="p">):</span>
+<div class="viewcode-block" id="change_name_color"><a class="viewcode-back" href="../../../api/evennia.contrib.tree_select.html#evennia.contrib.tree_select.change_name_color">[docs]</a><span class="k">def</span> <span class="nf">change_name_color</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">treestr</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">selection</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Changes a player&#39;s name color.</span>
 
@@ -621,6 +618,7 @@
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">newcolor</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;Name color changed to </span><span class="si">%s</span><span class="s2">!&quot;</span> <span class="o">%</span> <span class="n">selection</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;|n&quot;</span><span class="p">)</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -658,17 +656,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.tree_select</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tree_select</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.prototypes.spawner &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.prototypes.spawner</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.prototypes.spawner</a></li> 
       </ul>
     </div>  
 
@@ -210,7 +207,7 @@
 <span class="n">_NON_CREATE_KWARGS</span> <span class="o">=</span> <span class="n">_CREATE_OBJECT_KWARGS</span> <span class="o">+</span> <span class="n">_PROTOTYPE_META_NAMES</span>
 
 
-<div class="viewcode-block" id="Unset"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.spawner.Unset">[docs]</a><span class="k">class</span> <span class="nc">Unset</span><span class="p">:</span>
+<div class="viewcode-block" id="Unset"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.Unset">[docs]</a><span class="k">class</span> <span class="nc">Unset</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper class representing a non-set diff element.</span>
 
@@ -226,7 +223,7 @@
 <span class="c1"># Helper</span>
 
 
-<div class="viewcode-block" id="_get_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.spawner._get_prototype">[docs]</a><span class="k">def</span> <span class="nf">_get_prototype</span><span class="p">(</span><span class="n">inprot</span><span class="p">,</span> <span class="n">protparents</span><span class="p">,</span> <span class="n">uninherited</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_workprot</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_get_prototype</span><span class="p">(</span><span class="n">inprot</span><span class="p">,</span> <span class="n">protparents</span><span class="p">,</span> <span class="n">uninherited</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_workprot</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Recursively traverse a prototype dictionary, including multiple</span>
 <span class="sd">    inheritance. Use validate_prototype before this, we don&#39;t check</span>
@@ -281,10 +278,10 @@
         <span class="c1"># put back the parts that should not be inherited</span>
         <span class="n">_workprot</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">uninherited</span><span class="p">)</span>
     <span class="n">_workprot</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;prototype_parent&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># we don&#39;t need this for spawning</span>
-    <span class="k">return</span> <span class="n">_workprot</span></div>
+    <span class="k">return</span> <span class="n">_workprot</span>
 
 
-<div class="viewcode-block" id="flatten_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.spawner.flatten_prototype">[docs]</a><span class="k">def</span> <span class="nf">flatten_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="flatten_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.flatten_prototype">[docs]</a><span class="k">def</span> <span class="nf">flatten_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Produce a &#39;flattened&#39; prototype, where all prototype parents in the inheritance tree have been</span>
 <span class="sd">    merged into a final prototype.</span>
@@ -313,7 +310,7 @@
 <span class="c1"># obj-related prototype functions</span>
 
 
-<div class="viewcode-block" id="prototype_from_object"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.spawner.prototype_from_object">[docs]</a><span class="k">def</span> <span class="nf">prototype_from_object</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="prototype_from_object"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.prototype_from_object">[docs]</a><span class="k">def</span> <span class="nf">prototype_from_object</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Guess a minimal prototype from an existing object.</span>
 
@@ -380,7 +377,7 @@
     <span class="k">return</span> <span class="n">prot</span></div>
 
 
-<div class="viewcode-block" id="prototype_diff"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.spawner.prototype_diff">[docs]</a><span class="k">def</span> <span class="nf">prototype_diff</span><span class="p">(</span><span class="n">prototype1</span><span class="p">,</span> <span class="n">prototype2</span><span class="p">,</span> <span class="n">maxdepth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">homogenize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">implicit_keep</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="prototype_diff"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.prototype_diff">[docs]</a><span class="k">def</span> <span class="nf">prototype_diff</span><span class="p">(</span><span class="n">prototype1</span><span class="p">,</span> <span class="n">prototype2</span><span class="p">,</span> <span class="n">maxdepth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">homogenize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">implicit_keep</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A &#39;detailed&#39; diff specifies differences down to individual sub-sections</span>
 <span class="sd">    of the prototype, like individual attributes, permissions etc. It is used</span>
@@ -468,7 +465,7 @@
     <span class="k">return</span> <span class="n">diff</span></div>
 
 
-<div class="viewcode-block" id="flatten_diff"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.spawner.flatten_diff">[docs]</a><span class="k">def</span> <span class="nf">flatten_diff</span><span class="p">(</span><span class="n">diff</span><span class="p">):</span>
+<div class="viewcode-block" id="flatten_diff"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.flatten_diff">[docs]</a><span class="k">def</span> <span class="nf">flatten_diff</span><span class="p">(</span><span class="n">diff</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For spawning, a &#39;detailed&#39; diff is not necessary, rather we just want instructions on how to</span>
 <span class="sd">    handle each root key.</span>
@@ -536,7 +533,7 @@
     <span class="k">return</span> <span class="n">flat_diff</span></div>
 
 
-<div class="viewcode-block" id="prototype_diff_from_object"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.spawner.prototype_diff_from_object">[docs]</a><span class="k">def</span> <span class="nf">prototype_diff_from_object</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">implicit_keep</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="prototype_diff_from_object"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.prototype_diff_from_object">[docs]</a><span class="k">def</span> <span class="nf">prototype_diff_from_object</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">implicit_keep</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a simple diff for a prototype compared to an object which may or may not already have a</span>
 <span class="sd">    prototype (or has one but changed locally). For more complex migratations a manual diff may be</span>
@@ -573,7 +570,7 @@
     <span class="k">return</span> <span class="n">diff</span><span class="p">,</span> <span class="n">obj_prototype</span></div>
 
 
-<div class="viewcode-block" id="format_diff"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.spawner.format_diff">[docs]</a><span class="k">def</span> <span class="nf">format_diff</span><span class="p">(</span><span class="n">diff</span><span class="p">,</span> <span class="n">minimal</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="format_diff"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.format_diff">[docs]</a><span class="k">def</span> <span class="nf">format_diff</span><span class="p">(</span><span class="n">diff</span><span class="p">,</span> <span class="n">minimal</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reformat a diff for presentation. This is a shortened version</span>
 <span class="sd">    of the olc _format_diff_text_and_options without the options.</span>
@@ -648,7 +645,7 @@
     <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">texts</span> <span class="k">if</span> <span class="n">line</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="batch_update_objects_with_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.spawner.batch_update_objects_with_prototype">[docs]</a><span class="k">def</span> <span class="nf">batch_update_objects_with_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">diff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="batch_update_objects_with_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.batch_update_objects_with_prototype">[docs]</a><span class="k">def</span> <span class="nf">batch_update_objects_with_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">diff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Update existing objects with the latest version of the prototype.</span>
 
@@ -807,7 +804,7 @@
     <span class="k">return</span> <span class="n">changed</span></div>
 
 
-<div class="viewcode-block" id="batch_create_object"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.spawner.batch_create_object">[docs]</a><span class="k">def</span> <span class="nf">batch_create_object</span><span class="p">(</span><span class="o">*</span><span class="n">objparams</span><span class="p">):</span>
+<div class="viewcode-block" id="batch_create_object"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.batch_create_object">[docs]</a><span class="k">def</span> <span class="nf">batch_create_object</span><span class="p">(</span><span class="o">*</span><span class="n">objparams</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a cut-down version of the create_object() function,</span>
 <span class="sd">    optimized for speed. It does NOT check and convert various input</span>
@@ -877,7 +874,7 @@
 <span class="c1"># Spawner mechanism</span>
 
 
-<div class="viewcode-block" id="spawn"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.spawner.spawn">[docs]</a><span class="k">def</span> <span class="nf">spawn</span><span class="p">(</span><span class="o">*</span><span class="n">prototypes</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="spawn"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.spawn">[docs]</a><span class="k">def</span> <span class="nf">spawn</span><span class="p">(</span><span class="o">*</span><span class="n">prototypes</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Spawn a number of prototyped objects.</span>
 
@@ -885,7 +882,7 @@
 <span class="sd">        prototypes (str or dict): Each argument should either be a</span>
 <span class="sd">            prototype_key (will be used to find the prototype) or a full prototype</span>
 <span class="sd">            dictionary. These will be batched-spawned as one object each.</span>
-<span class="sd">    Kwargs:</span>
+<span class="sd">    Keyword args:</span>
 <span class="sd">        prototype_modules (str or list): A python-path to a prototype</span>
 <span class="sd">            module, or a list of such paths. These will be used to build</span>
 <span class="sd">            the global protparents dictionary accessible by the input</span>
@@ -1033,6 +1030,7 @@
     <span class="k">return</span> <span class="n">batch_create_object</span><span class="p">(</span><span class="o">*</span><span class="n">objsparams</span><span class="p">)</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -1070,17 +1068,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.prototypes.spawner</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.prototypes.spawner</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

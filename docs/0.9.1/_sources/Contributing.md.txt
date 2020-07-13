@@ -37,7 +37,7 @@ We always need more eyes and hands on the code. Even if you don't feel confident
 and reporting when stuff doesn't make sense helps us a lot.
 
 The most elegant way to contribute code to Evennia is to use GitHub to create a *fork* of the
-Evennia repository and make your changes to that. Refer to the [Forking Evennia](Version-Control#forking-evennia) version
+Evennia repository and make your changes to that. Refer to the [Forking Evennia](./Version-Control#forking-evennia) version
 control instructions for detailed instructions. 
 
 Once you have a fork set up, you can not only work on your own game in a separate branch, you can
@@ -72,8 +72,8 @@ Forked repository as described above.
 * The code itself should follow Evennia's [Code style guidelines][codestyle].
 * The code must be well documented as described in our [documentation style guide](https://github.com/evennia/evennia/blob/master/CODING_STYLE.md#doc-strings). Expect that your code will be read and should be possible to understand by others. Include comments as well as a header in all modules. If a single file, the header should include info about how to include the contrib in a game (installation instructions). If stored in a subdirectory, this info should go into a new `README.md` file within that directory.
 * Within reason, your contribution should be designed as genre-agnostic as possible. Limit the amount of game-style-specific code. Assume your code will be applied to a very different game than you had in mind when creating it. 
-* To make the licensing situation clear we assume all contributions are released with the same [license as Evennia](Licensing). If this is not possible for some reason, talk to us and we'll handle it on a case-by-case basis.
-* Your contribution must be covered by [unit tests](Unit-Testing). Having unit tests will both help make your code more stable and make sure small changes does not break it without it being noticed, it will also help us test its functionality and merge it quicker. If your contribution is a single module, you can add your unit tests to `evennia/contribs/tests.py`. If your contribution is bigger and in its own sub-directory you could just put the tests in your own `tests.py` file (Evennia will find it automatically). 
+* To make the licensing situation clear we assume all contributions are released with the same [license as Evennia](./Licensing). If this is not possible for some reason, talk to us and we'll handle it on a case-by-case basis.
+* Your contribution must be covered by [unit tests](./Unit-Testing). Having unit tests will both help make your code more stable and make sure small changes does not break it without it being noticed, it will also help us test its functionality and merge it quicker. If your contribution is a single module, you can add your unit tests to `evennia/contribs/tests.py`. If your contribution is bigger and in its own sub-directory you could just put the tests in your own `tests.py` file (Evennia will find it automatically). 
 * Merging of your code into Evennia is not guaranteed. Be ready to receive feedback and to be asked to make corrections or fix bugs. Furthermore, merging a contrib means the Evennia project takes on the responsibility of maintaining and supporting it. For various reasons this may be deemed to be beyond our manpower. However, if your code were to *not* be accepted for merger for some reason, we will instead add a link to your online repository so people can still find and use your work if they want. 
 
 [ohloh]: http://www.ohloh.net/p/evennia

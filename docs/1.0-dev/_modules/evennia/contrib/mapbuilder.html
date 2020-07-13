@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.mapbuilder &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.mapbuilder</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.mapbuilder</a></li> 
       </ul>
     </div>  
 
@@ -155,7 +152,7 @@
 <span class="s2">&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="example1_build_forest"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.mapbuilder.example1_build_forest">[docs]</a><span class="k">def</span> <span class="nf">example1_build_forest</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="example1_build_forest"><a class="viewcode-back" href="../../../api/evennia.contrib.mapbuilder.html#evennia.contrib.mapbuilder.example1_build_forest">[docs]</a><span class="k">def</span> <span class="nf">example1_build_forest</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A basic example of build instructions. Make sure to include **kwargs</span>
 <span class="sd">    in the arguments and return an instance of the room for exit generation.&quot;&quot;&quot;</span>
 
@@ -170,7 +167,7 @@
     <span class="k">return</span> <span class="n">room</span></div>
 
 
-<div class="viewcode-block" id="example1_build_mountains"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.mapbuilder.example1_build_mountains">[docs]</a><span class="k">def</span> <span class="nf">example1_build_mountains</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="example1_build_mountains"><a class="viewcode-back" href="../../../api/evennia.contrib.mapbuilder.html#evennia.contrib.mapbuilder.example1_build_mountains">[docs]</a><span class="k">def</span> <span class="nf">example1_build_mountains</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A room that is a little more advanced&quot;&quot;&quot;</span>
 
     <span class="c1"># Create the room.</span>
@@ -196,7 +193,7 @@
     <span class="k">return</span> <span class="n">room</span></div>
 
 
-<div class="viewcode-block" id="example1_build_temple"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.mapbuilder.example1_build_temple">[docs]</a><span class="k">def</span> <span class="nf">example1_build_temple</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="example1_build_temple"><a class="viewcode-back" href="../../../api/evennia.contrib.mapbuilder.html#evennia.contrib.mapbuilder.example1_build_temple">[docs]</a><span class="k">def</span> <span class="nf">example1_build_temple</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A unique room that does not need to be as general&quot;&quot;&quot;</span>
 
     <span class="c1"># Create the room.</span>
@@ -256,7 +253,7 @@
 <span class="s2">&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="example2_build_forest"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.mapbuilder.example2_build_forest">[docs]</a><span class="k">def</span> <span class="nf">example2_build_forest</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="example2_build_forest"><a class="viewcode-back" href="../../../api/evennia.contrib.mapbuilder.html#evennia.contrib.mapbuilder.example2_build_forest">[docs]</a><span class="k">def</span> <span class="nf">example2_build_forest</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A basic room&quot;&quot;&quot;</span>
     <span class="c1"># If on anything other than the first iteration - Do nothing.</span>
     <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;iteration&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -270,7 +267,7 @@
     <span class="k">return</span> <span class="n">room</span></div>
 
 
-<div class="viewcode-block" id="example2_build_verticle_exit"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.mapbuilder.example2_build_verticle_exit">[docs]</a><span class="k">def</span> <span class="nf">example2_build_verticle_exit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="example2_build_verticle_exit"><a class="viewcode-back" href="../../../api/evennia.contrib.mapbuilder.html#evennia.contrib.mapbuilder.example2_build_verticle_exit">[docs]</a><span class="k">def</span> <span class="nf">example2_build_verticle_exit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Creates two exits to and from the two rooms north and south.&quot;&quot;&quot;</span>
     <span class="c1"># If on the first iteration - Do nothing.</span>
     <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;iteration&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -291,7 +288,7 @@
     <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;caller&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Connected: &quot;</span> <span class="o">+</span> <span class="n">north_room</span><span class="o">.</span><span class="n">key</span> <span class="o">+</span> <span class="s2">&quot; &amp; &quot;</span> <span class="o">+</span> <span class="n">south_room</span><span class="o">.</span><span class="n">key</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="example2_build_horizontal_exit"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.mapbuilder.example2_build_horizontal_exit">[docs]</a><span class="k">def</span> <span class="nf">example2_build_horizontal_exit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="example2_build_horizontal_exit"><a class="viewcode-back" href="../../../api/evennia.contrib.mapbuilder.html#evennia.contrib.mapbuilder.example2_build_horizontal_exit">[docs]</a><span class="k">def</span> <span class="nf">example2_build_horizontal_exit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Creates two exits to and from the two rooms east and west.&quot;&quot;&quot;</span>
     <span class="c1"># If on the first iteration - Do nothing.</span>
     <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;iteration&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -320,7 +317,7 @@
 
 
 <span class="c1"># Helper function for readability.</span>
-<div class="viewcode-block" id="_map_to_list"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.mapbuilder._map_to_list">[docs]</a><span class="k">def</span> <span class="nf">_map_to_list</span><span class="p">(</span><span class="n">game_map</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_map_to_list</span><span class="p">(</span><span class="n">game_map</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Splits multi line map string into list of rows.</span>
 
@@ -331,10 +328,10 @@
 <span class="sd">        list (list): The map split into rows</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">game_map</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">game_map</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="build_map"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.mapbuilder.build_map">[docs]</a><span class="k">def</span> <span class="nf">build_map</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">game_map</span><span class="p">,</span> <span class="n">legend</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">build_exits</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="build_map"><a class="viewcode-back" href="../../../api/evennia.contrib.mapbuilder.html#evennia.contrib.mapbuilder.build_map">[docs]</a><span class="k">def</span> <span class="nf">build_map</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">game_map</span><span class="p">,</span> <span class="n">legend</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">build_exits</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Receives the fetched map and legend vars provided by the player.</span>
 
@@ -434,7 +431,7 @@
 <span class="c1"># access command</span>
 
 
-<div class="viewcode-block" id="CmdMapBuilder"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.mapbuilder.CmdMapBuilder">[docs]</a><span class="k">class</span> <span class="nc">CmdMapBuilder</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdMapBuilder"><a class="viewcode-back" href="../../../api/evennia.contrib.mapbuilder.html#evennia.contrib.mapbuilder.CmdMapBuilder">[docs]</a><span class="k">class</span> <span class="nc">CmdMapBuilder</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Build a map from a 2D ASCII map.</span>
 
@@ -468,7 +465,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:superuser()&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
-<div class="viewcode-block" id="CmdMapBuilder.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.mapbuilder.CmdMapBuilder.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdMapBuilder.func"><a class="viewcode-back" href="../../../api/evennia.contrib.mapbuilder.html#evennia.contrib.mapbuilder.CmdMapBuilder.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Starts the processor.&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
@@ -546,6 +543,7 @@
         <span class="n">build_map</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">game_map</span><span class="p">,</span> <span class="n">legend</span><span class="p">,</span> <span class="n">iterations</span><span class="p">,</span> <span class="n">build_exits</span><span class="p">)</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -583,17 +581,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.mapbuilder</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.mapbuilder</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

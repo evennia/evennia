@@ -5,8 +5,8 @@
 their own custom client protocol.*
 
 
-A [PortalSession](Sessions#Portal-and-Server-Sessions) is the basic data object representing an external
-connection to the Evennia [Portal](Portal-And-Server) -- usually a human player running a mud client
+A [PortalSession](./Sessions#Portal-and-Server-Sessions) is the basic data object representing an external
+connection to the Evennia [Portal](./Portal-And-Server) -- usually a human player running a mud client
 of some kind.  The way they connect (the language the player's client and Evennia use to talk to
 each other) is called the connection *Protocol*. The most common such protocol for MUD:s is the
 *Telnet* protocol. All Portal Sessions are stored and managed by the Portal's *sessionhandler*.
@@ -25,7 +25,7 @@ You <->
             InputFunc  
 ```
 
-(See the [Message Path](Messagepath) for the bigger picture of how data flows through Evennia). The parts that needs to be customized to make your own custom protocol is the `Protocol + PortalSession` (which translates between data coming in/out over the wire to/from Evennia internal representation) as well as the `InputFunc` (which handles incoming data).
+(See the [Message Path](./Messagepath) for the bigger picture of how data flows through Evennia). The parts that needs to be customized to make your own custom protocol is the `Protocol + PortalSession` (which translates between data coming in/out over the wire to/from Evennia internal representation) as well as the `InputFunc` (which handles incoming data).
 
 ## Adding custom Protocols
 
@@ -206,7 +206,7 @@ The message will pass through the system such that the sessionhandler will dig o
 
 ### Receiving data 
 
-Just because the protocol is there, does not mean Evennia knows what to do with it. An [Inputfunc](Inputfuncs) must exist to receive it. In the case of the `text` input exemplified above, Evennia alredy handles this input - it will parse it as a Command name followed by its inputs. So handle that you need to simply add a cmdset with commands on your receiving Session (and/or the Object/Character it is puppeting). If not you may need to add your own Inputfunc (see the [Inputfunc](Inputfuncs) page for how to do this. 
+Just because the protocol is there, does not mean Evennia knows what to do with it. An [Inputfunc](./Inputfuncs) must exist to receive it. In the case of the `text` input exemplified above, Evennia alredy handles this input - it will parse it as a Command name followed by its inputs. So handle that you need to simply add a cmdset with commands on your receiving Session (and/or the Object/Character it is puppeting). If not you may need to add your own Inputfunc (see the [Inputfunc](./Inputfuncs) page for how to do this. 
 
 These might not be as clear-cut in all protocols, but the principle is there. These four basic
 components - however they are accessed - links to the *Portal Session*, which is the actual common

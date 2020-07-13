@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.locks.lockfuncs &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.locks.lockfuncs</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.locks.lockfuncs</a></li> 
       </ul>
     </div>  
 
@@ -144,36 +141,36 @@
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="_to_account"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs._to_account">[docs]</a><span class="k">def</span> <span class="nf">_to_account</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_to_account</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">):</span>
     <span class="s2">&quot;Helper function. Makes sure an accessing object is an account object&quot;</span>
     <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">inherits_from</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="s2">&quot;evennia.objects.objects.DefaultObject&quot;</span><span class="p">):</span>
         <span class="c1"># an object. Convert to account.</span>
         <span class="n">accessing_obj</span> <span class="o">=</span> <span class="n">accessing_obj</span><span class="o">.</span><span class="n">account</span>
-    <span class="k">return</span> <span class="n">accessing_obj</span></div>
+    <span class="k">return</span> <span class="n">accessing_obj</span>
 
 
 <span class="c1"># lock functions</span>
 
 
-<div class="viewcode-block" id="true"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.true">[docs]</a><span class="k">def</span> <span class="nf">true</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="true"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.true">[docs]</a><span class="k">def</span> <span class="nf">true</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="s2">&quot;Always returns True.&quot;</span>
     <span class="k">return</span> <span class="kc">True</span></div>
 
 
-<div class="viewcode-block" id="all"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.all">[docs]</a><span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="all"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.all">[docs]</a><span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="k">return</span> <span class="kc">True</span></div>
 
 
-<div class="viewcode-block" id="false"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.false">[docs]</a><span class="k">def</span> <span class="nf">false</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="false"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.false">[docs]</a><span class="k">def</span> <span class="nf">false</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="s2">&quot;Always returns False&quot;</span>
     <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="none"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.none">[docs]</a><span class="k">def</span> <span class="nf">none</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="none"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.none">[docs]</a><span class="k">def</span> <span class="nf">none</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="self"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.self">[docs]</a><span class="k">def</span> <span class="nf">self</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="self"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.self">[docs]</a><span class="k">def</span> <span class="nf">self</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if accessing_obj is the same as accessed_obj</span>
 
@@ -186,7 +183,7 @@
     <span class="k">return</span> <span class="n">accessing_obj</span> <span class="o">==</span> <span class="n">accessed_obj</span></div>
 
 
-<div class="viewcode-block" id="perm"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.perm">[docs]</a><span class="k">def</span> <span class="nf">perm</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="perm"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.perm">[docs]</a><span class="k">def</span> <span class="nf">perm</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The basic permission-checker. Ignores case.</span>
 
@@ -290,7 +287,7 @@
     <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="perm_above"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.perm_above">[docs]</a><span class="k">def</span> <span class="nf">perm_above</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="perm_above"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.perm_above">[docs]</a><span class="k">def</span> <span class="nf">perm_above</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Only allow objects with a permission *higher* in the permission</span>
 <span class="sd">    hierarchy than the one given. If there is no such higher rank,</span>
@@ -301,7 +298,7 @@
     <span class="k">return</span> <span class="n">perm</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="pperm"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.pperm">[docs]</a><span class="k">def</span> <span class="nf">pperm</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="pperm"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.pperm">[docs]</a><span class="k">def</span> <span class="nf">pperm</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The basic permission-checker only for Account objects. Ignores case.</span>
 
@@ -316,7 +313,7 @@
     <span class="k">return</span> <span class="n">perm</span><span class="p">(</span><span class="n">_to_account</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">),</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="pperm_above"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.pperm_above">[docs]</a><span class="k">def</span> <span class="nf">pperm_above</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="pperm_above"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.pperm_above">[docs]</a><span class="k">def</span> <span class="nf">pperm_above</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Only allow Account objects with a permission *higher* in the permission</span>
 <span class="sd">    hierarchy than the one given. If there is no such higher rank,</span>
@@ -326,7 +323,7 @@
     <span class="k">return</span> <span class="n">perm_above</span><span class="p">(</span><span class="n">_to_account</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">),</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="dbref"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.dbref">[docs]</a><span class="k">def</span> <span class="nf">dbref</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="dbref"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.dbref">[docs]</a><span class="k">def</span> <span class="nf">dbref</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage:</span>
 <span class="sd">      dbref(3)</span>
@@ -347,19 +344,19 @@
     <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="pdbref"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.pdbref">[docs]</a><span class="k">def</span> <span class="nf">pdbref</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="pdbref"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.pdbref">[docs]</a><span class="k">def</span> <span class="nf">pdbref</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Same as dbref, but making sure accessing_obj is an account.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">dbref</span><span class="p">(</span><span class="n">_to_account</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">),</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="id"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.id">[docs]</a><span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="id"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.id">[docs]</a><span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="s2">&quot;Alias to dbref&quot;</span>
     <span class="k">return</span> <span class="n">dbref</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="pid"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.pid">[docs]</a><span class="k">def</span> <span class="nf">pid</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="pid"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.pid">[docs]</a><span class="k">def</span> <span class="nf">pid</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="s2">&quot;Alias to dbref, for Accounts&quot;</span>
     <span class="k">return</span> <span class="n">dbref</span><span class="p">(</span><span class="n">_to_account</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">),</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
@@ -376,7 +373,7 @@
 <span class="p">}</span>
 
 
-<div class="viewcode-block" id="attr"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.attr">[docs]</a><span class="k">def</span> <span class="nf">attr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="attr"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.attr">[docs]</a><span class="k">def</span> <span class="nf">attr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage:</span>
 <span class="sd">      attr(attrname)</span>
@@ -442,7 +439,7 @@
     <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="objattr"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.objattr">[docs]</a><span class="k">def</span> <span class="nf">objattr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="objattr"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.objattr">[docs]</a><span class="k">def</span> <span class="nf">objattr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage:</span>
 <span class="sd">      objattr(attrname)</span>
@@ -456,7 +453,7 @@
     <span class="k">return</span> <span class="n">attr</span><span class="p">(</span><span class="n">accessed_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="locattr"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.locattr">[docs]</a><span class="k">def</span> <span class="nf">locattr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="locattr"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.locattr">[docs]</a><span class="k">def</span> <span class="nf">locattr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage:</span>
 <span class="sd">      locattr(attrname)</span>
@@ -477,7 +474,7 @@
     <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="objlocattr"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.objlocattr">[docs]</a><span class="k">def</span> <span class="nf">objlocattr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="objlocattr"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.objlocattr">[docs]</a><span class="k">def</span> <span class="nf">objlocattr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage:</span>
 <span class="sd">      locattr(attrname)</span>
@@ -498,7 +495,7 @@
     <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="attr_eq"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.attr_eq">[docs]</a><span class="k">def</span> <span class="nf">attr_eq</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="attr_eq"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.attr_eq">[docs]</a><span class="k">def</span> <span class="nf">attr_eq</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage:</span>
 <span class="sd">       attr_gt(attrname, 54)</span>
@@ -506,7 +503,7 @@
     <span class="k">return</span> <span class="n">attr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="attr_gt"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.attr_gt">[docs]</a><span class="k">def</span> <span class="nf">attr_gt</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="attr_gt"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.attr_gt">[docs]</a><span class="k">def</span> <span class="nf">attr_gt</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage:</span>
 <span class="sd">       attr_gt(attrname, 54)</span>
@@ -516,7 +513,7 @@
     <span class="k">return</span> <span class="n">attr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;compare&quot;</span><span class="p">:</span> <span class="s2">&quot;gt&quot;</span><span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="attr_ge"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.attr_ge">[docs]</a><span class="k">def</span> <span class="nf">attr_ge</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="attr_ge"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.attr_ge">[docs]</a><span class="k">def</span> <span class="nf">attr_ge</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage:</span>
 <span class="sd">       attr_gt(attrname, 54)</span>
@@ -526,7 +523,7 @@
     <span class="k">return</span> <span class="n">attr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;compare&quot;</span><span class="p">:</span> <span class="s2">&quot;ge&quot;</span><span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="attr_lt"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.attr_lt">[docs]</a><span class="k">def</span> <span class="nf">attr_lt</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="attr_lt"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.attr_lt">[docs]</a><span class="k">def</span> <span class="nf">attr_lt</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage:</span>
 <span class="sd">       attr_gt(attrname, 54)</span>
@@ -536,7 +533,7 @@
     <span class="k">return</span> <span class="n">attr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;compare&quot;</span><span class="p">:</span> <span class="s2">&quot;lt&quot;</span><span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="attr_le"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.attr_le">[docs]</a><span class="k">def</span> <span class="nf">attr_le</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="attr_le"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.attr_le">[docs]</a><span class="k">def</span> <span class="nf">attr_le</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage:</span>
 <span class="sd">       attr_gt(attrname, 54)</span>
@@ -546,7 +543,7 @@
     <span class="k">return</span> <span class="n">attr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;compare&quot;</span><span class="p">:</span> <span class="s2">&quot;le&quot;</span><span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="attr_ne"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.attr_ne">[docs]</a><span class="k">def</span> <span class="nf">attr_ne</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="attr_ne"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.attr_ne">[docs]</a><span class="k">def</span> <span class="nf">attr_ne</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage:</span>
 <span class="sd">       attr_gt(attrname, 54)</span>
@@ -556,7 +553,7 @@
     <span class="k">return</span> <span class="n">attr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;compare&quot;</span><span class="p">:</span> <span class="s2">&quot;ne&quot;</span><span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="tag"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.tag">[docs]</a><span class="k">def</span> <span class="nf">tag</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="tag"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.tag">[docs]</a><span class="k">def</span> <span class="nf">tag</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage:</span>
 <span class="sd">        tag(tagkey)</span>
@@ -574,7 +571,7 @@
     <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">accessing_obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tagkey</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="objtag"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.objtag">[docs]</a><span class="k">def</span> <span class="nf">objtag</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="objtag"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.objtag">[docs]</a><span class="k">def</span> <span class="nf">objtag</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage:</span>
 <span class="sd">        objtag(tagkey)</span>
@@ -586,7 +583,7 @@
     <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">accessed_obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="inside"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.inside">[docs]</a><span class="k">def</span> <span class="nf">inside</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="inside"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.inside">[docs]</a><span class="k">def</span> <span class="nf">inside</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage:</span>
 <span class="sd">       inside()</span>
@@ -600,7 +597,7 @@
     <span class="k">return</span> <span class="n">accessing_obj</span><span class="o">.</span><span class="n">location</span> <span class="o">==</span> <span class="n">accessed_obj</span></div>
 
 
-<div class="viewcode-block" id="inside_rec"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.inside_rec">[docs]</a><span class="k">def</span> <span class="nf">inside_rec</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="inside_rec"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.inside_rec">[docs]</a><span class="k">def</span> <span class="nf">inside_rec</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage:</span>
 <span class="sd">        inside_rec()</span>
@@ -624,7 +621,7 @@
     <span class="k">return</span> <span class="n">_recursive_inside</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="holds"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.holds">[docs]</a><span class="k">def</span> <span class="nf">holds</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="holds"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.holds">[docs]</a><span class="k">def</span> <span class="nf">holds</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage:</span>
 <span class="sd">      holds()            checks if accessed_obj or accessed_obj.obj</span>
@@ -684,7 +681,7 @@
     <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="superuser"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.superuser">[docs]</a><span class="k">def</span> <span class="nf">superuser</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="superuser"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.superuser">[docs]</a><span class="k">def</span> <span class="nf">superuser</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Only accepts an accesing_obj that is superuser (e.g. user #1)</span>
 
@@ -695,7 +692,7 @@
     <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="has_account"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.has_account">[docs]</a><span class="k">def</span> <span class="nf">has_account</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="has_account"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.has_account">[docs]</a><span class="k">def</span> <span class="nf">has_account</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Only returns true if accessing_obj has_account is true, that is,</span>
 <span class="sd">    this is an account-controlled object. It fails on actual accounts!</span>
@@ -706,7 +703,7 @@
     <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="s2">&quot;has_account&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">accessing_obj</span><span class="o">.</span><span class="n">has_account</span></div>
 
 
-<div class="viewcode-block" id="serversetting"><a class="viewcode-back" href="../../../api/evennia.locks.html#evennia.locks.lockfuncs.serversetting">[docs]</a><span class="k">def</span> <span class="nf">serversetting</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="serversetting"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.serversetting">[docs]</a><span class="k">def</span> <span class="nf">serversetting</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Only returns true if the Evennia settings exists, alternatively has</span>
 <span class="sd">    a certain value.</span>
@@ -738,6 +735,7 @@
     <span class="k">return</span> <span class="kc">False</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -775,17 +773,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.locks.lockfuncs</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.locks.lockfuncs</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

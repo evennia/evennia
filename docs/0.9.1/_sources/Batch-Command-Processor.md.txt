@@ -1,7 +1,7 @@
 # Batch Command Processor
 
 
-For an introduction and motivation to using batch processors, see [here](Batch-Processors). This page describes the Batch-*command* processor. The Batch-*code* one is covered [here](Batch-Code-Processor).
+For an introduction and motivation to using batch processors, see [here](./Batch-Processors). This page describes the Batch-*command* processor. The Batch-*code* one is covered [here](./Batch-Code-Processor).
 
 ## Basic Usage
 
@@ -107,7 +107,7 @@ The main issue is that when you run a batch-command script you (*you*, as in you
 
 This also means there are several pitfalls when designing and adding certain types of objects. Here are some examples: 
 
-- *Rooms that change your [Command Set](Command-Sets)*: Imagine that you build a 'dark' room, which severely limits the cmdsets of those entering it (maybe you have to find the light switch to proceed). In your batch script you would create this room, then teleport to it - and promptly be shifted into the dark state where none of your normal build commands work ...
+- *Rooms that change your [Command Set](./Command-Sets)*: Imagine that you build a 'dark' room, which severely limits the cmdsets of those entering it (maybe you have to find the light switch to proceed). In your batch script you would create this room, then teleport to it - and promptly be shifted into the dark state where none of your normal build commands work ...
 - *Auto-teleportation*: Rooms that automatically teleport those that enter them to another place (like a trap room, for example). You would be teleported away too.
 - *Mobiles*: If you add aggressive mobs, they might attack you, drawing you into combat. If they have AI they might even follow you around when building - or they might move away from you before you've had time to finish describing and equipping them!
 
@@ -115,7 +115,7 @@ The solution to all these is to plan ahead. Make sure that superusers are never 
 
 ## Assorted notes
 
-The fact that you build as 'yourself' can also be considered an advantage however, should you ever decide to change the default command to allow others than superusers to call the processor. Since normal access-checks are still performed, a malevolent builder with access to the processor should not be able to do all that much damage (this is the main drawback of the [Batch Code Processor](Batch-Code-Processor))
+The fact that you build as 'yourself' can also be considered an advantage however, should you ever decide to change the default command to allow others than superusers to call the processor. Since normal access-checks are still performed, a malevolent builder with access to the processor should not be able to do all that much damage (this is the main drawback of the [Batch Code Processor](./Batch-Code-Processor))
 
 - [GNU Emacs](https://www.gnu.org/software/emacs/) users might find it interesting to use emacs' *evennia mode*. This is an Emacs major mode found in `evennia/utils/evennia-mode.el`. It offers correct syntax highlighting and indentation with `<tab>` when editing `.ev` files in Emacs. See the header of that file for installation instructions.
 - [VIM](http://www.vim.org/) users can use amfl's [vim-evennia](https://github.com/amfl/vim-evennia) mode instead, see its readme for install instructions.

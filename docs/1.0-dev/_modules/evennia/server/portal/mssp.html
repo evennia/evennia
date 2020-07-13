@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.server.portal.mssp &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.server.portal.mssp</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.mssp</a></li> 
       </ul>
     </div>  
 
@@ -66,14 +63,14 @@
 <span class="n">MSSPTable_CUSTOM</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">variable_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">MSSP_META_MODULE</span><span class="p">,</span> <span class="s2">&quot;MSSPTable&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">{})</span>
 
 
-<div class="viewcode-block" id="Mssp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.mssp.Mssp">[docs]</a><span class="k">class</span> <span class="nc">Mssp</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Mssp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.mssp.html#evennia.server.portal.mssp.Mssp">[docs]</a><span class="k">class</span> <span class="nc">Mssp</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implements the MSSP protocol. Add this to a variable on the telnet</span>
 <span class="sd">    protocol to set it up.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Mssp.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.mssp.Mssp.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">):</span>
+<div class="viewcode-block" id="Mssp.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.mssp.html#evennia.server.portal.mssp.Mssp.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize MSSP by storing protocol on ourselves and calling</span>
 <span class="sd">        the client to see if it supports MSSP.</span>
@@ -85,7 +82,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="n">protocol</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">will</span><span class="p">(</span><span class="n">MSSP</span><span class="p">)</span><span class="o">.</span><span class="n">addCallbacks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_mssp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_mssp</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Mssp.get_player_count"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.mssp.Mssp.get_player_count">[docs]</a>    <span class="k">def</span> <span class="nf">get_player_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Mssp.get_player_count"><a class="viewcode-back" href="../../../../api/evennia.server.portal.mssp.html#evennia.server.portal.mssp.Mssp.get_player_count">[docs]</a>    <span class="k">def</span> <span class="nf">get_player_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get number of logged-in players.</span>
 
@@ -95,7 +92,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">count_loggedin</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="Mssp.get_uptime"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.mssp.Mssp.get_uptime">[docs]</a>    <span class="k">def</span> <span class="nf">get_uptime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Mssp.get_uptime"><a class="viewcode-back" href="../../../../api/evennia.server.portal.mssp.html#evennia.server.portal.mssp.Mssp.get_uptime">[docs]</a>    <span class="k">def</span> <span class="nf">get_uptime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get how long the portal has been online (reloads are not counted).</span>
 
@@ -105,7 +102,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">uptime</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Mssp.no_mssp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.mssp.Mssp.no_mssp">[docs]</a>    <span class="k">def</span> <span class="nf">no_mssp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
+<div class="viewcode-block" id="Mssp.no_mssp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.mssp.html#evennia.server.portal.mssp.Mssp.no_mssp">[docs]</a>    <span class="k">def</span> <span class="nf">no_mssp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when mssp is not requested. This is the normal</span>
 <span class="sd">        operation.</span>
@@ -116,7 +113,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">handshake_done</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Mssp.do_mssp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.html#evennia.server.portal.mssp.Mssp.do_mssp">[docs]</a>    <span class="k">def</span> <span class="nf">do_mssp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
+<div class="viewcode-block" id="Mssp.do_mssp"><a class="viewcode-back" href="../../../../api/evennia.server.portal.mssp.html#evennia.server.portal.mssp.Mssp.do_mssp">[docs]</a>    <span class="k">def</span> <span class="nf">do_mssp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Negotiate all the information.</span>
 
@@ -179,6 +176,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">handshake_done</span><span class="p">()</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -216,17 +214,15 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.server.portal.mssp</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.mssp</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

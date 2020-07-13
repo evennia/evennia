@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.server.evennia_launcher &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.server.evennia_launcher</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.server.evennia_launcher</a></li> 
       </ul>
     </div>  
 
@@ -511,11 +508,11 @@
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="_is_windows"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher._is_windows">[docs]</a><span class="k">def</span> <span class="nf">_is_windows</span><span class="p">():</span>
-    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;nt&quot;</span></div>
+<span class="k">def</span> <span class="nf">_is_windows</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;nt&quot;</span>
 
 
-<div class="viewcode-block" id="_file_names_compact"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher._file_names_compact">[docs]</a><span class="k">def</span> <span class="nf">_file_names_compact</span><span class="p">(</span><span class="n">filepath1</span><span class="p">,</span> <span class="n">filepath2</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_file_names_compact</span><span class="p">(</span><span class="n">filepath1</span><span class="p">,</span> <span class="n">filepath2</span><span class="p">):</span>
     <span class="s2">&quot;Compact the output of filenames with same base dir&quot;</span>
     <span class="n">dirname1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">filepath1</span><span class="p">)</span>
     <span class="n">dirname2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">filepath2</span><span class="p">)</span>
@@ -523,10 +520,10 @@
         <span class="n">name2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filepath2</span><span class="p">)</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filepath1</span><span class="p">,</span> <span class="n">name2</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filepath1</span><span class="p">,</span> <span class="n">filepath2</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filepath1</span><span class="p">,</span> <span class="n">filepath2</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="_print_info"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher._print_info">[docs]</a><span class="k">def</span> <span class="nf">_print_info</span><span class="p">(</span><span class="n">portal_info_dict</span><span class="p">,</span> <span class="n">server_info_dict</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_print_info</span><span class="p">(</span><span class="n">portal_info_dict</span><span class="p">,</span> <span class="n">server_info_dict</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Format info dicts from the Portal/Server for display</span>
 
@@ -557,15 +554,15 @@
     <span class="n">maxwidth</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">))</span>
     <span class="n">top_border</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">maxwidth</span> <span class="o">-</span> <span class="mi">11</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; Evennia &quot;</span> <span class="o">+</span> <span class="s2">&quot;---&quot;</span>
     <span class="n">border</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">maxwidth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">top_border</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">info</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">border</span><span class="p">)</span></div>
+    <span class="nb">print</span><span class="p">(</span><span class="n">top_border</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">info</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">border</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="_parse_status"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher._parse_status">[docs]</a><span class="k">def</span> <span class="nf">_parse_status</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_parse_status</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
     <span class="s2">&quot;Unpack the status information&quot;</span>
-    <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">])</span></div>
+    <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">])</span>
 
 
-<div class="viewcode-block" id="_get_twistd_cmdline"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher._get_twistd_cmdline">[docs]</a><span class="k">def</span> <span class="nf">_get_twistd_cmdline</span><span class="p">(</span><span class="n">pprofiler</span><span class="p">,</span> <span class="n">sprofiler</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_get_twistd_cmdline</span><span class="p">(</span><span class="n">pprofiler</span><span class="p">,</span> <span class="n">sprofiler</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compile the command line for starting a Twisted application using the &#39;twistd&#39; executable.</span>
 
@@ -587,12 +584,12 @@
             <span class="p">[</span><span class="s2">&quot;--savestats&quot;</span><span class="p">,</span> <span class="s2">&quot;--profiler=cprofile&quot;</span><span class="p">,</span> <span class="s2">&quot;--profile=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">SPROFILER_LOGFILE</span><span class="p">)]</span>
         <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">portal_cmd</span><span class="p">,</span> <span class="n">server_cmd</span></div>
+    <span class="k">return</span> <span class="n">portal_cmd</span><span class="p">,</span> <span class="n">server_cmd</span>
 
 
-<div class="viewcode-block" id="_reactor_stop"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher._reactor_stop">[docs]</a><span class="k">def</span> <span class="nf">_reactor_stop</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">_reactor_stop</span><span class="p">():</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">NO_REACTOR_STOP</span><span class="p">:</span>
-        <span class="n">reactor</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
+        <span class="n">reactor</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 
 
 <span class="c1"># ------------------------------------------------------------</span>
@@ -602,7 +599,7 @@
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="MsgStatus"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.MsgStatus">[docs]</a><span class="k">class</span> <span class="nc">MsgStatus</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="MsgStatus"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.MsgStatus">[docs]</a><span class="k">class</span> <span class="nc">MsgStatus</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Ping between AMP services</span>
 
@@ -614,7 +611,7 @@
     <span class="n">response</span> <span class="o">=</span> <span class="p">[(</span><span class="sa">b</span><span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="n">amp</span><span class="o">.</span><span class="n">String</span><span class="p">())]</span></div>
 
 
-<div class="viewcode-block" id="MsgLauncher2Portal"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.MsgLauncher2Portal">[docs]</a><span class="k">class</span> <span class="nc">MsgLauncher2Portal</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="MsgLauncher2Portal"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.MsgLauncher2Portal">[docs]</a><span class="k">class</span> <span class="nc">MsgLauncher2Portal</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Message Launcher -&gt; Portal</span>
 
@@ -626,23 +623,23 @@
     <span class="n">response</span> <span class="o">=</span> <span class="p">[]</span></div>
 
 
-<div class="viewcode-block" id="AMPLauncherProtocol"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.AMPLauncherProtocol">[docs]</a><span class="k">class</span> <span class="nc">AMPLauncherProtocol</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">AMP</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPLauncherProtocol"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.AMPLauncherProtocol">[docs]</a><span class="k">class</span> <span class="nc">AMPLauncherProtocol</span><span class="p">(</span><span class="n">amp</span><span class="o">.</span><span class="n">AMP</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Defines callbacks to the launcher</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="AMPLauncherProtocol.__init__"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.AMPLauncherProtocol.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPLauncherProtocol.__init__"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.AMPLauncherProtocol.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">on_status</span> <span class="o">=</span> <span class="p">[]</span></div>
 
-<div class="viewcode-block" id="AMPLauncherProtocol.wait_for_status"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.AMPLauncherProtocol.wait_for_status">[docs]</a>    <span class="k">def</span> <span class="nf">wait_for_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
+<div class="viewcode-block" id="AMPLauncherProtocol.wait_for_status"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.AMPLauncherProtocol.wait_for_status">[docs]</a>    <span class="k">def</span> <span class="nf">wait_for_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Register a waiter for a status return.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">on_status</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="AMPLauncherProtocol.receive_status_from_portal"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.AMPLauncherProtocol.receive_status_from_portal">[docs]</a>    <span class="nd">@MsgStatus</span><span class="o">.</span><span class="n">responder</span>
+<div class="viewcode-block" id="AMPLauncherProtocol.receive_status_from_portal"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.AMPLauncherProtocol.receive_status_from_portal">[docs]</a>    <span class="nd">@MsgStatus</span><span class="o">.</span><span class="n">responder</span>
     <span class="k">def</span> <span class="nf">receive_status_from_portal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a status signal from portal - fire next queued</span>
@@ -659,7 +656,7 @@
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">)}</span></div></div>
 
 
-<div class="viewcode-block" id="send_instruction"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.send_instruction">[docs]</a><span class="k">def</span> <span class="nf">send_instruction</span><span class="p">(</span><span class="n">operation</span><span class="p">,</span> <span class="n">arguments</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">errback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="send_instruction"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.send_instruction">[docs]</a><span class="k">def</span> <span class="nf">send_instruction</span><span class="p">(</span><span class="n">operation</span><span class="p">,</span> <span class="n">arguments</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">errback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Send instruction and handle the response.</span>
 
@@ -716,7 +713,7 @@
         <span class="k">return</span> <span class="n">deferred</span></div>
 
 
-<div class="viewcode-block" id="query_status"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.query_status">[docs]</a><span class="k">def</span> <span class="nf">query_status</span><span class="p">(</span><span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="query_status"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.query_status">[docs]</a><span class="k">def</span> <span class="nf">query_status</span><span class="p">(</span><span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Send status ping to portal</span>
 
@@ -746,7 +743,7 @@
     <span class="n">send_instruction</span><span class="p">(</span><span class="n">PSTATUS</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_callback</span><span class="p">,</span> <span class="n">_errback</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="wait_for_status_reply"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.wait_for_status_reply">[docs]</a><span class="k">def</span> <span class="nf">wait_for_status_reply</span><span class="p">(</span><span class="n">callback</span><span class="p">):</span>
+<div class="viewcode-block" id="wait_for_status_reply"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.wait_for_status_reply">[docs]</a><span class="k">def</span> <span class="nf">wait_for_status_reply</span><span class="p">(</span><span class="n">callback</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wait for an explicit STATUS signal to be sent back from Evennia.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -756,7 +753,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No Evennia connection established.&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="wait_for_status"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.wait_for_status">[docs]</a><span class="k">def</span> <span class="nf">wait_for_status</span><span class="p">(</span>
+<div class="viewcode-block" id="wait_for_status"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.wait_for_status">[docs]</a><span class="k">def</span> <span class="nf">wait_for_status</span><span class="p">(</span>
     <span class="n">portal_running</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">server_running</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">errback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rate</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">retries</span><span class="o">=</span><span class="mi">20</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -843,12 +840,12 @@
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="collectstatic"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.collectstatic">[docs]</a><span class="k">def</span> <span class="nf">collectstatic</span><span class="p">():</span>
+<div class="viewcode-block" id="collectstatic"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.collectstatic">[docs]</a><span class="k">def</span> <span class="nf">collectstatic</span><span class="p">():</span>
     <span class="s2">&quot;Run the collectstatic django command&quot;</span>
     <span class="n">django</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">management</span><span class="o">.</span><span class="n">call_command</span><span class="p">(</span><span class="s2">&quot;collectstatic&quot;</span><span class="p">,</span> <span class="n">interactive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="start_evennia"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.start_evennia">[docs]</a><span class="k">def</span> <span class="nf">start_evennia</span><span class="p">(</span><span class="n">pprofiler</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sprofiler</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="start_evennia"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.start_evennia">[docs]</a><span class="k">def</span> <span class="nf">start_evennia</span><span class="p">(</span><span class="n">pprofiler</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sprofiler</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This will start Evennia anew by launching the Evennia Portal (which in turn</span>
 <span class="sd">    will start the Server)</span>
@@ -904,7 +901,7 @@
     <span class="n">send_instruction</span><span class="p">(</span><span class="n">PSTATUS</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_portal_running</span><span class="p">,</span> <span class="n">_portal_not_running</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="reload_evennia"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.reload_evennia">[docs]</a><span class="k">def</span> <span class="nf">reload_evennia</span><span class="p">(</span><span class="n">sprofiler</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="reload_evennia"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.reload_evennia">[docs]</a><span class="k">def</span> <span class="nf">reload_evennia</span><span class="p">(</span><span class="n">sprofiler</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This will instruct the Portal to reboot the Server component. We</span>
 <span class="sd">    do this manually by telling the server to shutdown (in reload mode)</span>
@@ -945,7 +942,7 @@
     <span class="n">send_instruction</span><span class="p">(</span><span class="n">PSTATUS</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_portal_running</span><span class="p">,</span> <span class="n">_portal_not_running</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="stop_evennia"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.stop_evennia">[docs]</a><span class="k">def</span> <span class="nf">stop_evennia</span><span class="p">():</span>
+<div class="viewcode-block" id="stop_evennia"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.stop_evennia">[docs]</a><span class="k">def</span> <span class="nf">stop_evennia</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This instructs the Portal to stop the Server and then itself.</span>
 
@@ -978,7 +975,7 @@
     <span class="n">send_instruction</span><span class="p">(</span><span class="n">PSTATUS</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_portal_running</span><span class="p">,</span> <span class="n">_portal_not_running</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="reboot_evennia"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.reboot_evennia">[docs]</a><span class="k">def</span> <span class="nf">reboot_evennia</span><span class="p">(</span><span class="n">pprofiler</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sprofiler</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="reboot_evennia"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.reboot_evennia">[docs]</a><span class="k">def</span> <span class="nf">reboot_evennia</span><span class="p">(</span><span class="n">pprofiler</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sprofiler</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is essentially an evennia stop &amp;&amp; evennia start except we make sure</span>
 <span class="sd">    the system has successfully shut down before starting it again.</span>
@@ -1018,7 +1015,7 @@
     <span class="n">send_instruction</span><span class="p">(</span><span class="n">PSTATUS</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_portal_running</span><span class="p">,</span> <span class="n">_portal_not_running</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="start_only_server"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.start_only_server">[docs]</a><span class="k">def</span> <span class="nf">start_only_server</span><span class="p">():</span>
+<div class="viewcode-block" id="start_only_server"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.start_only_server">[docs]</a><span class="k">def</span> <span class="nf">start_only_server</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Tell portal to start server (debug)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1028,7 +1025,7 @@
     <span class="n">send_instruction</span><span class="p">(</span><span class="n">SSTART</span><span class="p">,</span> <span class="n">server_cmd</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="start_server_interactive"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.start_server_interactive">[docs]</a><span class="k">def</span> <span class="nf">start_server_interactive</span><span class="p">():</span>
+<div class="viewcode-block" id="start_server_interactive"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.start_server_interactive">[docs]</a><span class="k">def</span> <span class="nf">start_server_interactive</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Start the Server under control of the launcher process (foreground)</span>
 
@@ -1049,7 +1046,7 @@
     <span class="n">stop_server_only</span><span class="p">(</span><span class="n">when_stopped</span><span class="o">=</span><span class="n">_iserver</span><span class="p">,</span> <span class="n">interactive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="start_portal_interactive"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.start_portal_interactive">[docs]</a><span class="k">def</span> <span class="nf">start_portal_interactive</span><span class="p">():</span>
+<div class="viewcode-block" id="start_portal_interactive"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.start_portal_interactive">[docs]</a><span class="k">def</span> <span class="nf">start_portal_interactive</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Start the Portal under control of the launcher process (foreground)</span>
 
@@ -1090,7 +1087,7 @@
     <span class="n">send_instruction</span><span class="p">(</span><span class="n">PSTATUS</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_portal_running</span><span class="p">,</span> <span class="n">_iportal</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="stop_server_only"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.stop_server_only">[docs]</a><span class="k">def</span> <span class="nf">stop_server_only</span><span class="p">(</span><span class="n">when_stopped</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">interactive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="stop_server_only"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.stop_server_only">[docs]</a><span class="k">def</span> <span class="nf">stop_server_only</span><span class="p">(</span><span class="n">when_stopped</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">interactive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Only stop the Server-component of Evennia (this is not useful except for debug)</span>
 
@@ -1134,7 +1131,7 @@
     <span class="n">send_instruction</span><span class="p">(</span><span class="n">PSTATUS</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_portal_running</span><span class="p">,</span> <span class="n">_portal_not_running</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="query_info"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.query_info">[docs]</a><span class="k">def</span> <span class="nf">query_info</span><span class="p">():</span>
+<div class="viewcode-block" id="query_info"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.query_info">[docs]</a><span class="k">def</span> <span class="nf">query_info</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Display the info strings from the running Evennia</span>
 
@@ -1154,7 +1151,7 @@
     <span class="n">send_instruction</span><span class="p">(</span><span class="n">PSTATUS</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_portal_running</span><span class="p">,</span> <span class="n">_portal_not_running</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="tail_log_files"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.tail_log_files">[docs]</a><span class="k">def</span> <span class="nf">tail_log_files</span><span class="p">(</span><span class="n">filename1</span><span class="p">,</span> <span class="n">filename2</span><span class="p">,</span> <span class="n">start_lines1</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">start_lines2</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">rate</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="tail_log_files"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.tail_log_files">[docs]</a><span class="k">def</span> <span class="nf">tail_log_files</span><span class="p">(</span><span class="n">filename1</span><span class="p">,</span> <span class="n">filename2</span><span class="p">,</span> <span class="n">start_lines1</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">start_lines2</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">rate</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Tail two logfiles interactively, combining their output to stdout</span>
 
@@ -1267,7 +1264,7 @@
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="evennia_version"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.evennia_version">[docs]</a><span class="k">def</span> <span class="nf">evennia_version</span><span class="p">():</span>
+<div class="viewcode-block" id="evennia_version"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.evennia_version">[docs]</a><span class="k">def</span> <span class="nf">evennia_version</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the Evennia version info from the main package.</span>
 
@@ -1294,7 +1291,7 @@
 <span class="n">EVENNIA_VERSION</span> <span class="o">=</span> <span class="n">evennia_version</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="check_main_evennia_dependencies"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.check_main_evennia_dependencies">[docs]</a><span class="k">def</span> <span class="nf">check_main_evennia_dependencies</span><span class="p">():</span>
+<div class="viewcode-block" id="check_main_evennia_dependencies"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.check_main_evennia_dependencies">[docs]</a><span class="k">def</span> <span class="nf">check_main_evennia_dependencies</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks and imports the Evennia dependencies. This must be done</span>
 <span class="sd">    already before the paths are set up.</span>
@@ -1343,7 +1340,7 @@
     <span class="k">return</span> <span class="ow">not</span> <span class="n">error</span></div>
 
 
-<div class="viewcode-block" id="set_gamedir"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.set_gamedir">[docs]</a><span class="k">def</span> <span class="nf">set_gamedir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<div class="viewcode-block" id="set_gamedir"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.set_gamedir">[docs]</a><span class="k">def</span> <span class="nf">set_gamedir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set GAMEDIR based on path, by figuring out where the setting file</span>
 <span class="sd">    is inside the directory tree. This allows for running the launcher</span>
@@ -1366,7 +1363,7 @@
     <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="create_secret_key"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.create_secret_key">[docs]</a><span class="k">def</span> <span class="nf">create_secret_key</span><span class="p">():</span>
+<div class="viewcode-block" id="create_secret_key"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.create_secret_key">[docs]</a><span class="k">def</span> <span class="nf">create_secret_key</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Randomly create the secret key for the settings file</span>
 
@@ -1386,7 +1383,7 @@
     <span class="k">return</span> <span class="n">secret_key</span></div>
 
 
-<div class="viewcode-block" id="create_settings_file"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.create_settings_file">[docs]</a><span class="k">def</span> <span class="nf">create_settings_file</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">secret_settings</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="create_settings_file"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.create_settings_file">[docs]</a><span class="k">def</span> <span class="nf">create_settings_file</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">secret_settings</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Uses the template settings file to build a working settings file.</span>
 
@@ -1436,7 +1433,7 @@
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">settings_string</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="create_game_directory"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.create_game_directory">[docs]</a><span class="k">def</span> <span class="nf">create_game_directory</span><span class="p">(</span><span class="n">dirname</span><span class="p">):</span>
+<div class="viewcode-block" id="create_game_directory"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.create_game_directory">[docs]</a><span class="k">def</span> <span class="nf">create_game_directory</span><span class="p">(</span><span class="n">dirname</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Initialize a new game directory named dirname</span>
 <span class="sd">    at the current path. This means copying the</span>
@@ -1461,7 +1458,7 @@
     <span class="n">create_settings_file</span><span class="p">(</span><span class="n">secret_settings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="create_superuser"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.create_superuser">[docs]</a><span class="k">def</span> <span class="nf">create_superuser</span><span class="p">():</span>
+<div class="viewcode-block" id="create_superuser"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.create_superuser">[docs]</a><span class="k">def</span> <span class="nf">create_superuser</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create the superuser account</span>
 
@@ -1473,7 +1470,7 @@
     <span class="n">django</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">management</span><span class="o">.</span><span class="n">call_command</span><span class="p">(</span><span class="s2">&quot;createsuperuser&quot;</span><span class="p">,</span> <span class="n">interactive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="check_database"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.check_database">[docs]</a><span class="k">def</span> <span class="nf">check_database</span><span class="p">(</span><span class="n">always_return</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="check_database"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.check_database">[docs]</a><span class="k">def</span> <span class="nf">check_database</span><span class="p">(</span><span class="n">always_return</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check so the database exists.</span>
 
@@ -1540,7 +1537,7 @@
     <span class="k">return</span> <span class="kc">True</span></div>
 
 
-<div class="viewcode-block" id="getenv"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.getenv">[docs]</a><span class="k">def</span> <span class="nf">getenv</span><span class="p">():</span>
+<div class="viewcode-block" id="getenv"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.getenv">[docs]</a><span class="k">def</span> <span class="nf">getenv</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get current environment and add PYTHONPATH.</span>
 
@@ -1554,7 +1551,7 @@
     <span class="k">return</span> <span class="n">env</span></div>
 
 
-<div class="viewcode-block" id="get_pid"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.get_pid">[docs]</a><span class="k">def</span> <span class="nf">get_pid</span><span class="p">(</span><span class="n">pidfile</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="get_pid"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.get_pid">[docs]</a><span class="k">def</span> <span class="nf">get_pid</span><span class="p">(</span><span class="n">pidfile</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the PID (Process ID) by trying to access an PID file.</span>
 
@@ -1573,7 +1570,7 @@
     <span class="k">return</span> <span class="n">default</span></div>
 
 
-<div class="viewcode-block" id="del_pid"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.del_pid">[docs]</a><span class="k">def</span> <span class="nf">del_pid</span><span class="p">(</span><span class="n">pidfile</span><span class="p">):</span>
+<div class="viewcode-block" id="del_pid"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.del_pid">[docs]</a><span class="k">def</span> <span class="nf">del_pid</span><span class="p">(</span><span class="n">pidfile</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The pidfile should normally be removed after a process has</span>
 <span class="sd">    finished, but when sending certain signals they remain, so we need</span>
@@ -1587,7 +1584,7 @@
         <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">pidfile</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="kill"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.kill">[docs]</a><span class="k">def</span> <span class="nf">kill</span><span class="p">(</span><span class="n">pidfile</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="s2">&quot;Server&quot;</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">errback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">killsignal</span><span class="o">=</span><span class="n">SIG</span><span class="p">):</span>
+<div class="viewcode-block" id="kill"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.kill">[docs]</a><span class="k">def</span> <span class="nf">kill</span><span class="p">(</span><span class="n">pidfile</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="s2">&quot;Server&quot;</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">errback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">killsignal</span><span class="o">=</span><span class="n">SIG</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Send a kill signal to a process based on PID. A customized</span>
 <span class="sd">    success/error message will be returned. If clean=True, the system</span>
@@ -1654,7 +1651,7 @@
             <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="show_version_info"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.show_version_info">[docs]</a><span class="k">def</span> <span class="nf">show_version_info</span><span class="p">(</span><span class="n">about</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="show_version_info"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.show_version_info">[docs]</a><span class="k">def</span> <span class="nf">show_version_info</span><span class="p">(</span><span class="n">about</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Display version info.</span>
 
@@ -1678,7 +1675,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="error_check_python_modules"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.error_check_python_modules">[docs]</a><span class="k">def</span> <span class="nf">error_check_python_modules</span><span class="p">(</span><span class="n">show_warnings</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="error_check_python_modules"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.error_check_python_modules">[docs]</a><span class="k">def</span> <span class="nf">error_check_python_modules</span><span class="p">(</span><span class="n">show_warnings</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Import settings modules in settings. This will raise exceptions on</span>
 <span class="sd">    pure python-syntax issues which are hard to catch gracefully with</span>
@@ -1686,7 +1683,7 @@
 <span class="sd">    python source files themselves). Best they fail already here</span>
 <span class="sd">    before we get any further.</span>
 
-<span class="sd">    Kwargs:</span>
+<span class="sd">    Keyword args:</span>
 <span class="sd">        show_warnings (bool): If non-fatal warning messages should be shown.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1744,7 +1741,7 @@
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="init_game_directory"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.init_game_directory">[docs]</a><span class="k">def</span> <span class="nf">init_game_directory</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">check_db</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">need_gamedir</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="init_game_directory"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.init_game_directory">[docs]</a><span class="k">def</span> <span class="nf">init_game_directory</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">check_db</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">need_gamedir</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Try to analyze the given path to find settings.py - this defines</span>
 <span class="sd">    the game directory and also sets PYTHONPATH as well as the django</span>
@@ -1882,7 +1879,7 @@
             <span class="nb">print</span><span class="p">(</span><span class="n">INFO_WINDOWS_BATFILE</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">twistd_path</span><span class="o">=</span><span class="n">twistd_path</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="run_dummyrunner"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.run_dummyrunner">[docs]</a><span class="k">def</span> <span class="nf">run_dummyrunner</span><span class="p">(</span><span class="n">number_of_dummies</span><span class="p">):</span>
+<div class="viewcode-block" id="run_dummyrunner"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.run_dummyrunner">[docs]</a><span class="k">def</span> <span class="nf">run_dummyrunner</span><span class="p">(</span><span class="n">number_of_dummies</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Start an instance of the dummyrunner</span>
 
@@ -1908,7 +1905,7 @@
         <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="run_connect_wizard"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.run_connect_wizard">[docs]</a><span class="k">def</span> <span class="nf">run_connect_wizard</span><span class="p">():</span>
+<div class="viewcode-block" id="run_connect_wizard"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.run_connect_wizard">[docs]</a><span class="k">def</span> <span class="nf">run_connect_wizard</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run the linking wizard, for adding new external connections.</span>
 
@@ -1919,7 +1916,7 @@
     <span class="n">node_start</span><span class="p">(</span><span class="n">wizard</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="list_settings"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.list_settings">[docs]</a><span class="k">def</span> <span class="nf">list_settings</span><span class="p">(</span><span class="n">keys</span><span class="p">):</span>
+<div class="viewcode-block" id="list_settings"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.list_settings">[docs]</a><span class="k">def</span> <span class="nf">list_settings</span><span class="p">(</span><span class="n">keys</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Display the server settings. We only display the Evennia specific</span>
 <span class="sd">    settings here. The result will be printed to the terminal.</span>
@@ -1949,7 +1946,7 @@
     <span class="nb">print</span><span class="p">(</span><span class="n">table</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="run_menu"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.run_menu">[docs]</a><span class="k">def</span> <span class="nf">run_menu</span><span class="p">():</span>
+<div class="viewcode-block" id="run_menu"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.run_menu">[docs]</a><span class="k">def</span> <span class="nf">run_menu</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This launches an interactive menu.</span>
 
@@ -2031,7 +2028,7 @@
         <span class="k">return</span></div>
 
 
-<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.evennia_launcher.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run the evennia launcher main program.</span>
 
@@ -2341,6 +2338,7 @@
     <span class="n">main</span><span class="p">()</span>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -2378,17 +2376,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.server.evennia_launcher</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.server.evennia_launcher</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

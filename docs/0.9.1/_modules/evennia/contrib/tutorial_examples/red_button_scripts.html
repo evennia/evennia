@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.tutorial_examples.red_button_scripts &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.tutorial_examples.red_button_scripts</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorial_examples.red_button_scripts</a></li> 
       </ul>
     </div>  
 
@@ -71,20 +68,20 @@
 <span class="c1"># to remove itself after a while (and the player recovers their eyesight).</span>
 
 
-<div class="viewcode-block" id="ClosedLidState"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button_scripts.ClosedLidState">[docs]</a><span class="k">class</span> <span class="nc">ClosedLidState</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<div class="viewcode-block" id="ClosedLidState"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button_scripts.html#evennia.contrib.tutorial_examples.red_button_scripts.ClosedLidState">[docs]</a><span class="k">class</span> <span class="nc">ClosedLidState</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This manages the cmdset for the &quot;closed&quot; button state. What this</span>
 <span class="sd">    means is that while this script is valid, we add the RedButtonClosed</span>
 <span class="sd">    cmdset to it (with commands like open, nudge lid etc)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ClosedLidState.at_script_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button_scripts.ClosedLidState.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ClosedLidState.at_script_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button_scripts.html#evennia.contrib.tutorial_examples.red_button_scripts.ClosedLidState.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Called when script first created.&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;closed_lid_script&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;Script that manages the closed-state cmdsets for red button.&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">persistent</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="ClosedLidState.at_start"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button_scripts.ClosedLidState.at_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ClosedLidState.at_start"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button_scripts.html#evennia.contrib.tutorial_examples.red_button_scripts.ClosedLidState.at_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called once every server restart, so we want to add the</span>
 <span class="sd">        (memory-resident) cmdset to the object here. is_valid is automatically</span>
@@ -94,14 +91,14 @@
         <span class="c1"># All we do is add the cmdset for the closed state.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cmdsetexamples</span><span class="o">.</span><span class="n">LidClosedCmdSet</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ClosedLidState.is_valid"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button_scripts.ClosedLidState.is_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ClosedLidState.is_valid"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button_scripts.html#evennia.contrib.tutorial_examples.red_button_scripts.ClosedLidState.is_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The script is only valid while the lid is closed.</span>
 <span class="sd">        self.obj is the red_button on which this script is defined.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lid_open</span></div>
 
-<div class="viewcode-block" id="ClosedLidState.at_stop"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button_scripts.ClosedLidState.at_stop">[docs]</a>    <span class="k">def</span> <span class="nf">at_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ClosedLidState.at_stop"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button_scripts.html#evennia.contrib.tutorial_examples.red_button_scripts.ClosedLidState.at_stop">[docs]</a>    <span class="k">def</span> <span class="nf">at_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        When the script stops we must make sure to clean up after us.</span>
 
@@ -109,19 +106,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">cmdsetexamples</span><span class="o">.</span><span class="n">LidClosedCmdSet</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="OpenLidState"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button_scripts.OpenLidState">[docs]</a><span class="k">class</span> <span class="nc">OpenLidState</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<div class="viewcode-block" id="OpenLidState"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button_scripts.html#evennia.contrib.tutorial_examples.red_button_scripts.OpenLidState">[docs]</a><span class="k">class</span> <span class="nc">OpenLidState</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This manages the cmdset for the &quot;open&quot; button state. This will add</span>
 <span class="sd">    the RedButtonOpen</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="OpenLidState.at_script_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button_scripts.OpenLidState.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="OpenLidState.at_script_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button_scripts.html#evennia.contrib.tutorial_examples.red_button_scripts.OpenLidState.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Called when script first created.&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;open_lid_script&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;Script that manages the opened-state cmdsets for red button.&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">persistent</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="OpenLidState.at_start"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button_scripts.OpenLidState.at_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="OpenLidState.at_start"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button_scripts.html#evennia.contrib.tutorial_examples.red_button_scripts.OpenLidState.at_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called once every server restart, so we want to add the</span>
 <span class="sd">        (memory-resident) cmdset to the object here. is_valid is</span>
@@ -130,14 +127,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cmdsetexamples</span><span class="o">.</span><span class="n">LidOpenCmdSet</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="OpenLidState.is_valid"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button_scripts.OpenLidState.is_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="OpenLidState.is_valid"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button_scripts.html#evennia.contrib.tutorial_examples.red_button_scripts.OpenLidState.is_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The script is only valid while the lid is open.</span>
 <span class="sd">        self.obj is the red_button on which this script is defined.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lid_open</span></div>
 
-<div class="viewcode-block" id="OpenLidState.at_stop"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button_scripts.OpenLidState.at_stop">[docs]</a>    <span class="k">def</span> <span class="nf">at_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="OpenLidState.at_stop"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button_scripts.html#evennia.contrib.tutorial_examples.red_button_scripts.OpenLidState.at_stop">[docs]</a>    <span class="k">def</span> <span class="nf">at_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        When the script stops (like if the lid is closed again)</span>
 <span class="sd">        we must make sure to clean up after us.</span>
@@ -145,7 +142,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">cmdsetexamples</span><span class="o">.</span><span class="n">LidOpenCmdSet</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="BlindedState"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button_scripts.BlindedState">[docs]</a><span class="k">class</span> <span class="nc">BlindedState</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<div class="viewcode-block" id="BlindedState"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button_scripts.html#evennia.contrib.tutorial_examples.red_button_scripts.BlindedState">[docs]</a><span class="k">class</span> <span class="nc">BlindedState</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a timed state.</span>
 
@@ -155,7 +152,7 @@
 <span class="sd">    set it on the right account object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="BlindedState.at_script_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button_scripts.BlindedState.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BlindedState.at_script_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button_scripts.html#evennia.contrib.tutorial_examples.red_button_scripts.BlindedState.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        We set up the script here.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -166,7 +163,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">repeats</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># this will go away after interval seconds.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">persistent</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># we will ditch this if server goes down</span></div>
 
-<div class="viewcode-block" id="BlindedState.at_start"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button_scripts.BlindedState.at_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BlindedState.at_start"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button_scripts.html#evennia.contrib.tutorial_examples.red_button_scripts.BlindedState.at_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        We want to add the cmdset to the linked object.</span>
 
@@ -179,7 +176,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cmdsetexamples</span><span class="o">.</span><span class="n">BlindCmdSet</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BlindedState.at_stop"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button_scripts.BlindedState.at_stop">[docs]</a>    <span class="k">def</span> <span class="nf">at_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BlindedState.at_stop"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button_scripts.html#evennia.contrib.tutorial_examples.red_button_scripts.BlindedState.at_stop">[docs]</a>    <span class="k">def</span> <span class="nf">at_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        It&#39;s important that we clear out that blinded cmdset</span>
 <span class="sd">        when we are done!</span>
@@ -202,7 +199,7 @@
 <span class="c1">#</span>
 
 
-<div class="viewcode-block" id="CloseLidEvent"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button_scripts.CloseLidEvent">[docs]</a><span class="k">class</span> <span class="nc">CloseLidEvent</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<div class="viewcode-block" id="CloseLidEvent"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button_scripts.html#evennia.contrib.tutorial_examples.red_button_scripts.CloseLidEvent">[docs]</a><span class="k">class</span> <span class="nc">CloseLidEvent</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This event closes the glass lid over the button</span>
 <span class="sd">    some time after it was opened. It&#39;s a one-off</span>
@@ -210,7 +207,7 @@
 <span class="sd">    lid is opened.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="CloseLidEvent.at_script_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button_scripts.CloseLidEvent.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CloseLidEvent.at_script_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button_scripts.html#evennia.contrib.tutorial_examples.red_button_scripts.CloseLidEvent.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when script object is first created. Sets things up.</span>
 <span class="sd">        We want to have a lid on the button that the user can pull</span>
@@ -226,7 +223,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">persistent</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># even if the server crashes in those 20 seconds,</span></div>
         <span class="c1"># the lid will still close once the game restarts.</span>
 
-<div class="viewcode-block" id="CloseLidEvent.is_valid"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button_scripts.CloseLidEvent.is_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CloseLidEvent.is_valid"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button_scripts.html#evennia.contrib.tutorial_examples.red_button_scripts.CloseLidEvent.is_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This script can only operate if the lid is open; if it</span>
 <span class="sd">        is already closed, the script is clearly invalid.</span>
@@ -238,7 +235,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lid_open</span></div>
 
-<div class="viewcode-block" id="CloseLidEvent.at_repeat"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button_scripts.CloseLidEvent.at_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CloseLidEvent.at_repeat"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button_scripts.html#evennia.contrib.tutorial_examples.red_button_scripts.CloseLidEvent.at_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called after self.interval seconds. It closes the lid. Before this method is</span>
 <span class="sd">        called, self.is_valid() is automatically checked, so there is no need to</span>
@@ -247,12 +244,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">close_lid</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="BlinkButtonEvent"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button_scripts.BlinkButtonEvent">[docs]</a><span class="k">class</span> <span class="nc">BlinkButtonEvent</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<div class="viewcode-block" id="BlinkButtonEvent"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button_scripts.html#evennia.contrib.tutorial_examples.red_button_scripts.BlinkButtonEvent">[docs]</a><span class="k">class</span> <span class="nc">BlinkButtonEvent</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This timed script lets the button flash at regular intervals.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="BlinkButtonEvent.at_script_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button_scripts.BlinkButtonEvent.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BlinkButtonEvent.at_script_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button_scripts.html#evennia.contrib.tutorial_examples.red_button_scripts.BlinkButtonEvent.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets things up. We want the button&#39;s lamp to blink at</span>
 <span class="sd">        regular intervals, unless it&#39;s broken (can happen</span>
@@ -264,13 +261,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">start_delay</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># blink right away</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">persistent</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># keep blinking also after server reboot</span></div>
 
-<div class="viewcode-block" id="BlinkButtonEvent.is_valid"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button_scripts.BlinkButtonEvent.is_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BlinkButtonEvent.is_valid"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button_scripts.html#evennia.contrib.tutorial_examples.red_button_scripts.BlinkButtonEvent.is_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Button will keep blinking unless it is broken.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">lamp_works</span></div>
 
-<div class="viewcode-block" id="BlinkButtonEvent.at_repeat"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button_scripts.BlinkButtonEvent.at_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BlinkButtonEvent.at_repeat"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button_scripts.html#evennia.contrib.tutorial_examples.red_button_scripts.BlinkButtonEvent.at_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called every self.interval seconds. Makes the lamp in</span>
 <span class="sd">        the button blink.</span>
@@ -278,7 +275,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">blink</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="DeactivateButtonEvent"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button_scripts.DeactivateButtonEvent">[docs]</a><span class="k">class</span> <span class="nc">DeactivateButtonEvent</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<div class="viewcode-block" id="DeactivateButtonEvent"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button_scripts.html#evennia.contrib.tutorial_examples.red_button_scripts.DeactivateButtonEvent">[docs]</a><span class="k">class</span> <span class="nc">DeactivateButtonEvent</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This deactivates the button for a short while (it won&#39;t blink, won&#39;t</span>
 <span class="sd">    close its lid etc). It is meant to be called when the button is pushed</span>
@@ -287,7 +284,7 @@
 <span class="sd">    whereas this one must be defined on the *button*.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="DeactivateButtonEvent.at_script_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button_scripts.DeactivateButtonEvent.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DeactivateButtonEvent.at_script_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button_scripts.html#evennia.contrib.tutorial_examples.red_button_scripts.DeactivateButtonEvent.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets things up.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -298,7 +295,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">persistent</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">repeats</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># only do this once</span></div>
 
-<div class="viewcode-block" id="DeactivateButtonEvent.at_start"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button_scripts.DeactivateButtonEvent.at_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DeactivateButtonEvent.at_start"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button_scripts.html#evennia.contrib.tutorial_examples.red_button_scripts.DeactivateButtonEvent.at_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Deactivate the button. Observe that this method is always</span>
 <span class="sd">        called directly, regardless of the value of self.start_delay</span>
@@ -312,7 +309,7 @@
         <span class="c1"># breaking the lamp also sets a correct desc</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">break_lamp</span><span class="p">(</span><span class="n">feedback</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DeactivateButtonEvent.at_repeat"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.html#evennia.contrib.tutorial_examples.red_button_scripts.DeactivateButtonEvent.at_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DeactivateButtonEvent.at_repeat"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_examples.red_button_scripts.html#evennia.contrib.tutorial_examples.red_button_scripts.DeactivateButtonEvent.at_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        When this is called, reset the functionality of the button.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -329,6 +326,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -366,17 +364,15 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.tutorial_examples.red_button_scripts</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorial_examples.red_button_scripts</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

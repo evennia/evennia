@@ -1,4 +1,4 @@
-evennia.web.api package
+evennia.web.api 
 =======================
 
 .. automodule:: evennia.web.api
@@ -6,54 +6,15 @@ evennia.web.api package
    :undoc-members:
    :show-inheritance:
 
-Submodules
-----------
+Modules
+-------
 
-evennia.web.api.filters module
-------------------------------
+.. toctree::
+   :maxdepth: 6
 
-.. automodule:: evennia.web.api.filters
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.web.api.permissions module
-----------------------------------
-
-.. automodule:: evennia.web.api.permissions
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.web.api.serializers module
-----------------------------------
-
-.. automodule:: evennia.web.api.serializers
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.web.api.tests module
-----------------------------
-
-.. automodule:: evennia.web.api.tests
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.web.api.urls module
----------------------------
-
-.. automodule:: evennia.web.api.urls
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.web.api.views module
-----------------------------
-
-.. automodule:: evennia.web.api.views
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
+   evennia.web.api.filters
+   evennia.web.api.permissions
+   evennia.web.api.serializers
+   evennia.web.api.tests
+   evennia.web.api.urls
+   evennia.web.api.views

@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>evennia.web package &#8212; Evennia 1.0-dev documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>evennia.web &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -27,10 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.web package</a></li>
-
-
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.web</a></li> 
       </ul>
     </div>  
 
@@ -40,67 +37,80 @@
           <div class="body" role="main">
             
   <div class="section" id="module-evennia.web">
-<span id="evennia-web-package"></span><h1>evennia.web package<a class="headerlink" href="#module-evennia.web" title="Permalink to this headline">¶</a></h1>
+<span id="evennia-web"></span><h1>evennia.web<a class="headerlink" href="#module-evennia.web" title="Permalink to this headline">¶</a></h1>
 <p>This sub-package holds the web presence of Evennia, using normal
 Django to relate the database contents to web pages. Also the basic
 webclient and the website are defined in here (the webserver itself is
-found under the <cite>server</cite> package).</p>
-<div class="section" id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+found under the <strong>server</strong> package).</p>
+<div class="section" id="modules">
+<h2>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="evennia.web.api.html">evennia.web.api package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="evennia.web.api.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.web.api.html#module-evennia.web.api.filters">evennia.web.api.filters module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.web.api.html#module-evennia.web.api.permissions">evennia.web.api.permissions module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.web.api.html#module-evennia.web.api.serializers">evennia.web.api.serializers module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.web.api.html#module-evennia.web.api.tests">evennia.web.api.tests module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.web.api.html#module-evennia.web.api.urls">evennia.web.api.urls module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.web.api.html#module-evennia.web.api.views">evennia.web.api.views module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.web.urls.html">evennia.web.urls</a></li>
 </ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="evennia.web.utils.html">evennia.web.utils package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="evennia.web.utils.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.web.utils.html#module-evennia.web.utils.backends">evennia.web.utils.backends module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.web.utils.html#module-evennia.web.utils.general_context">evennia.web.utils.general_context module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.web.utils.html#module-evennia.web.utils.middleware">evennia.web.utils.middleware module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.web.utils.html#module-evennia.web.utils.tests">evennia.web.utils.tests module</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="evennia.web.webclient.html">evennia.web.webclient package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="evennia.web.webclient.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.web.webclient.html#module-evennia.web.webclient.urls">evennia.web.webclient.urls module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.web.webclient.html#module-evennia.web.webclient.views">evennia.web.webclient.views module</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="evennia.web.website.html">evennia.web.website package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="evennia.web.website.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="evennia.web.website.templatetags.html">evennia.web.website.templatetags package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="evennia.web.website.templatetags.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="evennia.web.website.templatetags.html#module-evennia.web.website.templatetags.addclass">evennia.web.website.templatetags.addclass module</a></li>
+</div>
+</div>
+<div class="section" id="packages-folders">
+<h2>Packages/folders<a class="headerlink" href="#packages-folders" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="evennia.web.api.html">evennia.web.api</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.web.api.html#modules">Modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.web.api.filters.html">evennia.web.api.filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.web.api.permissions.html">evennia.web.api.permissions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.web.api.serializers.html">evennia.web.api.serializers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.web.api.tests.html">evennia.web.api.tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.web.api.urls.html">evennia.web.api.urls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.web.api.views.html">evennia.web.api.views</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.web.website.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.web.website.html#module-evennia.web.website.forms">evennia.web.website.forms module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.web.website.html#module-evennia.web.website.tests">evennia.web.website.tests module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.web.website.html#module-evennia.web.website.urls">evennia.web.website.urls module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evennia.web.website.html#module-evennia.web.website.views">evennia.web.website.views module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.web.utils.html">evennia.web.utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.web.utils.html#modules">Modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.web.utils.backends.html">evennia.web.utils.backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.web.utils.general_context.html">evennia.web.utils.general_context</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.web.utils.middleware.html">evennia.web.utils.middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.web.utils.tests.html">evennia.web.utils.tests</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.web.webclient.html">evennia.web.webclient</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.web.webclient.html#modules">Modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.web.webclient.urls.html">evennia.web.webclient.urls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.web.webclient.views.html">evennia.web.webclient.views</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.web.website.html">evennia.web.website</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.web.website.html#modules">Modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.web.website.forms.html">evennia.web.website.forms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.web.website.tests.html">evennia.web.website.tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.web.website.urls.html">evennia.web.website.urls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.web.website.views.html">evennia.web.website.views</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.web.website.html#packages-folders">Packages/folders</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.web.website.templatetags.html">evennia.web.website.templatetags</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="evennia.web.website.templatetags.html#modules">Modules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="evennia.web.website.templatetags.addclass.html">evennia.web.website.templatetags.addclass</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 </div>
-</div>
-<div class="section" id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-evennia.web.urls">
-<span id="evennia-web-urls-module"></span><h2>evennia.web.urls module<a class="headerlink" href="#module-evennia.web.urls" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -121,10 +131,9 @@ found under the <cite>server</cite> package).</p>
 <script>$('#searchbox').show(0);</script>
 <p><h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">evennia.web package</a><ul>
-<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-evennia.web.urls">evennia.web.urls module</a></li>
+<li><a class="reference internal" href="#">evennia.web</a><ul>
+<li><a class="reference internal" href="#modules">Modules</a></li>
+<li><a class="reference internal" href="#packages-folders">Packages/folders</a></li>
 </ul>
 </li>
 </ul>
@@ -155,15 +164,13 @@ found under the <cite>server</cite> package).</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.web package</a></li>
-
-
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.web</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

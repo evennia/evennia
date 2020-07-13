@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.utils.gametime &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.utils.gametime</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.gametime</a></li> 
       </ul>
     </div>  
 
@@ -86,17 +83,17 @@
 <span class="c1"># below).</span>
 
 
-<div class="viewcode-block" id="TimeScript"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.gametime.TimeScript">[docs]</a><span class="k">class</span> <span class="nc">TimeScript</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<div class="viewcode-block" id="TimeScript"><a class="viewcode-back" href="../../../api/evennia.utils.gametime.html#evennia.utils.gametime.TimeScript">[docs]</a><span class="k">class</span> <span class="nc">TimeScript</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Gametime-sensitive script.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TimeScript.at_script_creation"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.gametime.TimeScript.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TimeScript.at_script_creation"><a class="viewcode-back" href="../../../api/evennia.utils.gametime.html#evennia.utils.gametime.TimeScript.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;The script is created.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;unknown scr&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="mi">100</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_delay</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">persistent</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="TimeScript.at_repeat"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.gametime.TimeScript.at_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TimeScript.at_repeat"><a class="viewcode-back" href="../../../api/evennia.utils.gametime.html#evennia.utils.gametime.TimeScript.at_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Call the callback and reset interval.&quot;&quot;&quot;</span>
         <span class="n">callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">callback</span>
         <span class="k">if</span> <span class="n">callback</span><span class="p">:</span>
@@ -109,7 +106,7 @@
 <span class="c1"># Access functions</span>
 
 
-<div class="viewcode-block" id="runtime"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.gametime.runtime">[docs]</a><span class="k">def</span> <span class="nf">runtime</span><span class="p">():</span>
+<div class="viewcode-block" id="runtime"><a class="viewcode-back" href="../../../api/evennia.utils.gametime.html#evennia.utils.gametime.runtime">[docs]</a><span class="k">def</span> <span class="nf">runtime</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the total runtime of the server since first start (minus</span>
 <span class="sd">    downtimes)</span>
@@ -125,7 +122,7 @@
     <span class="k">return</span> <span class="n">SERVER_RUNTIME</span> <span class="o">+</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">SERVER_RUNTIME_LAST_UPDATED</span></div>
 
 
-<div class="viewcode-block" id="server_epoch"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.gametime.server_epoch">[docs]</a><span class="k">def</span> <span class="nf">server_epoch</span><span class="p">():</span>
+<div class="viewcode-block" id="server_epoch"><a class="viewcode-back" href="../../../api/evennia.utils.gametime.html#evennia.utils.gametime.server_epoch">[docs]</a><span class="k">def</span> <span class="nf">server_epoch</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the server epoch. We may need to calculate this on the fly.</span>
 
@@ -138,7 +135,7 @@
     <span class="k">return</span> <span class="n">_SERVER_EPOCH</span></div>
 
 
-<div class="viewcode-block" id="uptime"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.gametime.uptime">[docs]</a><span class="k">def</span> <span class="nf">uptime</span><span class="p">():</span>
+<div class="viewcode-block" id="uptime"><a class="viewcode-back" href="../../../api/evennia.utils.gametime.html#evennia.utils.gametime.uptime">[docs]</a><span class="k">def</span> <span class="nf">uptime</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the current uptime of the server since last reload</span>
 
@@ -153,7 +150,7 @@
     <span class="k">return</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">SERVER_START_TIME</span></div>
 
 
-<div class="viewcode-block" id="portal_uptime"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.gametime.portal_uptime">[docs]</a><span class="k">def</span> <span class="nf">portal_uptime</span><span class="p">():</span>
+<div class="viewcode-block" id="portal_uptime"><a class="viewcode-back" href="../../../api/evennia.utils.gametime.html#evennia.utils.gametime.portal_uptime">[docs]</a><span class="k">def</span> <span class="nf">portal_uptime</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the current uptime of the portal.</span>
 
@@ -165,7 +162,7 @@
     <span class="k">return</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">SESSIONS</span><span class="o">.</span><span class="n">portal_start_time</span></div>
 
 
-<div class="viewcode-block" id="game_epoch"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.gametime.game_epoch">[docs]</a><span class="k">def</span> <span class="nf">game_epoch</span><span class="p">():</span>
+<div class="viewcode-block" id="game_epoch"><a class="viewcode-back" href="../../../api/evennia.utils.gametime.html#evennia.utils.gametime.game_epoch">[docs]</a><span class="k">def</span> <span class="nf">game_epoch</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the game epoch.</span>
 
@@ -174,7 +171,7 @@
     <span class="k">return</span> <span class="n">game_epoch</span> <span class="k">if</span> <span class="n">game_epoch</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">server_epoch</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="gametime"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.gametime.gametime">[docs]</a><span class="k">def</span> <span class="nf">gametime</span><span class="p">(</span><span class="n">absolute</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="gametime"><a class="viewcode-back" href="../../../api/evennia.utils.gametime.html#evennia.utils.gametime.gametime">[docs]</a><span class="k">def</span> <span class="nf">gametime</span><span class="p">(</span><span class="n">absolute</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the total gametime of the server since first start (minus downtimes)</span>
 
@@ -200,7 +197,7 @@
     <span class="k">return</span> <span class="n">gtime</span></div>
 
 
-<div class="viewcode-block" id="real_seconds_until"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.gametime.real_seconds_until">[docs]</a><span class="k">def</span> <span class="nf">real_seconds_until</span><span class="p">(</span><span class="n">sec</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="real_seconds_until"><a class="viewcode-back" href="../../../api/evennia.utils.gametime.html#evennia.utils.gametime.real_seconds_until">[docs]</a><span class="k">def</span> <span class="nf">real_seconds_until</span><span class="p">(</span><span class="n">sec</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the real seconds until game time.</span>
 
@@ -254,7 +251,7 @@
     <span class="k">return</span> <span class="n">seconds</span> <span class="o">/</span> <span class="n">TIMEFACTOR</span></div>
 
 
-<div class="viewcode-block" id="schedule"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.gametime.schedule">[docs]</a><span class="k">def</span> <span class="nf">schedule</span><span class="p">(</span>
+<div class="viewcode-block" id="schedule"><a class="viewcode-back" href="../../../api/evennia.utils.gametime.html#evennia.utils.gametime.schedule">[docs]</a><span class="k">def</span> <span class="nf">schedule</span><span class="p">(</span>
     <span class="n">callback</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -301,7 +298,7 @@
     <span class="k">return</span> <span class="n">script</span></div>
 
 
-<div class="viewcode-block" id="reset_gametime"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.gametime.reset_gametime">[docs]</a><span class="k">def</span> <span class="nf">reset_gametime</span><span class="p">():</span>
+<div class="viewcode-block" id="reset_gametime"><a class="viewcode-back" href="../../../api/evennia.utils.gametime.html#evennia.utils.gametime.reset_gametime">[docs]</a><span class="k">def</span> <span class="nf">reset_gametime</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Resets the game time to make it start from the current time. Note that</span>
 <span class="sd">    the epoch set by `settings.TIME_GAME_EPOCH` will still apply.</span>
@@ -312,6 +309,7 @@
     <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;gametime_offset&quot;</span><span class="p">,</span> <span class="n">GAME_TIME_OFFSET</span><span class="p">)</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -349,17 +347,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.utils.gametime</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.gametime</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

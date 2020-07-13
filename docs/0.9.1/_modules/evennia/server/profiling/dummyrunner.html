@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.server.profiling.dummyrunner &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.server.profiling.dummyrunner</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.server.profiling.dummyrunner</a></li> 
       </ul>
     </div>  
 
@@ -220,7 +217,7 @@
 <span class="n">ICOUNT</span> <span class="o">=</span> <span class="mi">0</span>
 
 
-<div class="viewcode-block" id="idcounter"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.dummyrunner.idcounter">[docs]</a><span class="k">def</span> <span class="nf">idcounter</span><span class="p">():</span>
+<div class="viewcode-block" id="idcounter"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.idcounter">[docs]</a><span class="k">def</span> <span class="nf">idcounter</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Makes unique ids.</span>
 
@@ -236,7 +233,7 @@
 <span class="n">GCOUNT</span> <span class="o">=</span> <span class="mi">0</span>
 
 
-<div class="viewcode-block" id="gidcounter"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.dummyrunner.gidcounter">[docs]</a><span class="k">def</span> <span class="nf">gidcounter</span><span class="p">():</span>
+<div class="viewcode-block" id="gidcounter"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.gidcounter">[docs]</a><span class="k">def</span> <span class="nf">gidcounter</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Makes globally unique ids.</span>
 
@@ -249,7 +246,7 @@
     <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">DATESTRING</span><span class="p">),</span> <span class="n">GCOUNT</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="makeiter"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.dummyrunner.makeiter">[docs]</a><span class="k">def</span> <span class="nf">makeiter</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="makeiter"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.makeiter">[docs]</a><span class="k">def</span> <span class="nf">makeiter</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Makes everything iterable.</span>
 
@@ -267,7 +264,7 @@
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="DummyClient"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.dummyrunner.DummyClient">[docs]</a><span class="k">class</span> <span class="nc">DummyClient</span><span class="p">(</span><span class="n">telnet</span><span class="o">.</span><span class="n">StatefulTelnetProtocol</span><span class="p">):</span>
+<div class="viewcode-block" id="DummyClient"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyClient">[docs]</a><span class="k">class</span> <span class="nc">DummyClient</span><span class="p">(</span><span class="n">telnet</span><span class="o">.</span><span class="n">StatefulTelnetProtocol</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Handles connection to a running Evennia server,</span>
 <span class="sd">    mimicking a real account by sending commands on</span>
@@ -275,7 +272,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="DummyClient.connectionMade"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.dummyrunner.DummyClient.connectionMade">[docs]</a>    <span class="k">def</span> <span class="nf">connectionMade</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DummyClient.connectionMade"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyClient.connectionMade">[docs]</a>    <span class="k">def</span> <span class="nf">connectionMade</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when connection is first established.</span>
 
@@ -299,7 +296,7 @@
 
         <span class="n">reactor</span><span class="o">.</span><span class="n">addSystemEventTrigger</span><span class="p">(</span><span class="s2">&quot;before&quot;</span><span class="p">,</span> <span class="s2">&quot;shutdown&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logout</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DummyClient.dataReceived"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.dummyrunner.DummyClient.dataReceived">[docs]</a>    <span class="k">def</span> <span class="nf">dataReceived</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<div class="viewcode-block" id="DummyClient.dataReceived"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyClient.dataReceived">[docs]</a>    <span class="k">def</span> <span class="nf">dataReceived</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when data comes in over the protocol. We wait to start</span>
 <span class="sd">        stepping until the server actually responds</span>
@@ -318,7 +315,7 @@
             <span class="n">timestep</span> <span class="o">=</span> <span class="n">TIMESTEP</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">+</span> <span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">))</span>
             <span class="n">d</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">timestep</span><span class="p">,</span> <span class="n">now</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DummyClient.connectionLost"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.dummyrunner.DummyClient.connectionLost">[docs]</a>    <span class="k">def</span> <span class="nf">connectionLost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
+<div class="viewcode-block" id="DummyClient.connectionLost"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyClient.connectionLost">[docs]</a>    <span class="k">def</span> <span class="nf">connectionLost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when loosing the connection.</span>
 
@@ -329,7 +326,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logging_out</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;client </span><span class="si">%s</span><span class="s2">(</span><span class="si">%s</span><span class="s2">) lost connection (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid</span><span class="p">,</span> <span class="n">reason</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="DummyClient.error"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.dummyrunner.DummyClient.error">[docs]</a>    <span class="k">def</span> <span class="nf">error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">err</span><span class="p">):</span>
+<div class="viewcode-block" id="DummyClient.error"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyClient.error">[docs]</a>    <span class="k">def</span> <span class="nf">error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">err</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Error callback.</span>
 
@@ -338,7 +335,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DummyClient.counter"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.dummyrunner.DummyClient.counter">[docs]</a>    <span class="k">def</span> <span class="nf">counter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DummyClient.counter"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyClient.counter">[docs]</a>    <span class="k">def</span> <span class="nf">counter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Produces a unique id, also between clients.</span>
 
@@ -348,7 +345,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">gidcounter</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="DummyClient.logout"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.dummyrunner.DummyClient.logout">[docs]</a>    <span class="k">def</span> <span class="nf">logout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DummyClient.logout"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyClient.logout">[docs]</a>    <span class="k">def</span> <span class="nf">logout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Causes the client to log out of the server. Triggered by ctrl-c signal.</span>
 
@@ -358,7 +355,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;client </span><span class="si">%s</span><span class="s2">(</span><span class="si">%s</span><span class="s2">) logout (</span><span class="si">%s</span><span class="s2"> actions)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">istep</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sendLine</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DummyClient.step"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.dummyrunner.DummyClient.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DummyClient.step"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyClient.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform a step. This is called repeatedly by the runner and</span>
 <span class="sd">        causes the client to issue commands to the server.  This holds</span>
@@ -395,10 +392,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">istep</span> <span class="o">+=</span> <span class="mi">1</span></div></div>
 
 
-<div class="viewcode-block" id="DummyFactory"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.dummyrunner.DummyFactory">[docs]</a><span class="k">class</span> <span class="nc">DummyFactory</span><span class="p">(</span><span class="n">protocol</span><span class="o">.</span><span class="n">ClientFactory</span><span class="p">):</span>
+<div class="viewcode-block" id="DummyFactory"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyFactory">[docs]</a><span class="k">class</span> <span class="nc">DummyFactory</span><span class="p">(</span><span class="n">protocol</span><span class="o">.</span><span class="n">ClientFactory</span><span class="p">):</span>
     <span class="n">protocol</span> <span class="o">=</span> <span class="n">DummyClient</span>
 
-<div class="viewcode-block" id="DummyFactory.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.dummyrunner.DummyFactory.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+<div class="viewcode-block" id="DummyFactory.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyFactory.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
         <span class="s2">&quot;Setup the factory base (shared by all clients)&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">actions</span> <span class="o">=</span> <span class="n">actions</span></div></div>
 
@@ -409,7 +406,7 @@
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="start_all_dummy_clients"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.html#evennia.server.profiling.dummyrunner.start_all_dummy_clients">[docs]</a><span class="k">def</span> <span class="nf">start_all_dummy_clients</span><span class="p">(</span><span class="n">nclients</span><span class="p">):</span>
+<div class="viewcode-block" id="start_all_dummy_clients"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.start_all_dummy_clients">[docs]</a><span class="k">def</span> <span class="nf">start_all_dummy_clients</span><span class="p">(</span><span class="n">nclients</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Initialize all clients, connect them and start to step them</span>
 
@@ -478,6 +475,7 @@
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;... dummy client runner stopped after </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">time_format</span><span class="p">(</span><span class="n">ttot</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="mi">3</span><span class="p">))</span>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -515,17 +513,15 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.server.profiling.dummyrunner</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.server.profiling.dummyrunner</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

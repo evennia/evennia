@@ -2,6 +2,6 @@ evennia
 =======
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 6
 
    evennia

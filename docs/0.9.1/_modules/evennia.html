@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -27,11 +26,9 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia</a></li> 
       </ul>
     </div>  
 
@@ -48,7 +45,7 @@
 <span class="sd">by accessing evennia.&lt;subpackage&gt; directly. From inside the game you can read</span>
 <span class="sd">docs of all object by viewing its `__doc__` string, such as through</span>
 
-<span class="sd">    @py evennia.ObjectDB.__doc__</span>
+<span class="sd">    py evennia.ObjectDB.__doc__</span>
 
 <span class="sd">For full functionality you should explore this module via a django-</span>
 <span class="sd">aware shell. Go to your game directory and use the command</span>
@@ -63,27 +60,13 @@
 <span class="c1"># docstring header</span>
 
 <span class="n">DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">|cEvennia|n &#39;flat&#39; API (use |wevennia.&lt;component&gt;.__doc__|n to read doc-strings</span>
-<span class="s2">                        and |wdict(evennia.component)|n or</span>
-<span class="s2">                        |wevennia.component.__dict__ to see contents)</span>
-<span class="s2">|cTypeclass-bases:|n                      |cDatabase models|n:</span>
-<span class="s2">   DefaultAccount     DefaultObject          AccountDB     ObjectDB</span>
-<span class="s2">     DefaultGuest       DefaultCharacter     ChannelDB</span>
-<span class="s2">                        DefaultRoom          ScriptDB</span>
-<span class="s2">   DefaultChannel       DefaultExit          Msg</span>
-<span class="s2">   DefaultScript</span>
-<span class="s2">|cSearch functions:|n                     |cCommand parents and helpers:|n</span>
-<span class="s2">   search_account       search_object        default_cmds</span>
-<span class="s2">   search_script        search_channel       Command       InterruptCommand</span>
-<span class="s2">   search_help          search_message       CmdSet</span>
-<span class="s2">   search_tag           managers          |cUtilities:|n</span>
-<span class="s2">|cCreate functions:|n                        settings       lockfuncs</span>
-<span class="s2">   create_account       create_object        logger         gametime</span>
-<span class="s2">   create_script        create_channel       ansi           spawn</span>
-<span class="s2">   create_help_entry    create_message       contrib        managers</span>
-<span class="s2">|cGlobal handlers:|n                         set_trace</span>
-<span class="s2">   TICKER_HANDLER       TASK_HANDLER         EvMenu         EvTable</span>
-<span class="s2">   SESSION_HANDLER      CHANNEL_HANDLER      EvForm         EvEditor &quot;&quot;&quot;</span>
+<span class="s2">Evennia MU* creation system.</span>
+
+<span class="s2">Online manual and API docs are found at http://www.evennia.com.</span>
+
+<span class="s2">Flat-API shortcut names:</span>
+<span class="si">{}</span><span class="s2"></span>
+<span class="s2">&quot;&quot;&quot;</span>
 
 <span class="c1"># Delayed loading of properties</span>
 
@@ -200,7 +183,7 @@
 <span class="k">del</span> <span class="n">_create_version</span>
 
 
-<div class="viewcode-block" id="_init"><a class="viewcode-back" href="../api/evennia.html#evennia._init">[docs]</a><span class="k">def</span> <span class="nf">_init</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">_init</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function is called automatically by the launcher only after</span>
 <span class="sd">    Evennia has fully initialized all its models. It sets up the API</span>
@@ -290,10 +273,6 @@
     <span class="c1"># containers</span>
     <span class="kn">from</span> <span class="nn">.utils.containers</span> <span class="k">import</span> <span class="n">GLOBAL_SCRIPTS</span>
     <span class="kn">from</span> <span class="nn">.utils.containers</span> <span class="k">import</span> <span class="n">OPTION_CLASSES</span>
-
-    <span class="c1"># initialize the doc string</span>
-    <span class="k">global</span> <span class="vm">__doc__</span>
-    <span class="vm">__doc__</span> <span class="o">=</span> <span class="n">ansi</span><span class="o">.</span><span class="n">parse_ansi</span><span class="p">(</span><span class="n">DOCSTRING</span><span class="p">)</span>
 
     <span class="c1"># API containers</span>
 
@@ -454,7 +433,7 @@
     <span class="k">del</span> <span class="n">class_from_module</span>
 
     <span class="c1"># delayed starts</span>
-    <span class="n">GLOBAL_SCRIPTS</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+    <span class="n">GLOBAL_SCRIPTS</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="set_trace"><a class="viewcode-back" href="../api/evennia.html#evennia.set_trace">[docs]</a><span class="k">def</span> <span class="nf">set_trace</span><span class="p">(</span><span class="n">term_size</span><span class="o">=</span><span class="p">(</span><span class="mi">140</span><span class="p">,</span> <span class="mi">80</span><span class="p">),</span> <span class="n">debugger</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">):</span>
@@ -504,14 +483,23 @@
         <span class="n">dbg</span> <span class="o">=</span> <span class="n">pdb</span><span class="o">.</span><span class="n">Pdb</span><span class="p">(</span><span class="n">stdout</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">__stdout__</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="c1"># Start debugger, forcing it up one stack frame (otherwise `set_trace` will start debugger</span>
-        <span class="c1"># this point, not the actual code location)</span>
+        <span class="c1"># Start debugger, forcing it up one stack frame (otherwise `set_trace`</span>
+        <span class="c1"># will start debugger this point, not the actual code location)</span>
         <span class="n">dbg</span><span class="o">.</span><span class="n">set_trace</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_back</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
         <span class="c1"># Stopped at breakpoint. Press &#39;n&#39; to continue into the code.</span>
         <span class="n">dbg</span><span class="o">.</span><span class="n">set_trace</span><span class="p">()</span></div>
+
+<span class="c1"># initialize the doc string</span>
+<span class="k">global</span> <span class="vm">__doc__</span>
+<span class="vm">__doc__</span> <span class="o">=</span> <span class="n">DOCSTRING</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">f</span><span class="s2">&quot;evennia.</span><span class="si">{key}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">globals</span><span class="p">())</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;DOCSTRING&quot;</span><span class="p">,</span> <span class="p">)))</span>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -549,16 +537,14 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

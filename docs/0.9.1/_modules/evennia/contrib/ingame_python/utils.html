@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.ingame_python.utils &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.ingame_python.utils</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.ingame_python.utils</a></li> 
       </ul>
     </div>  
 
@@ -65,7 +62,7 @@
 <span class="n">EVENTS</span> <span class="o">=</span> <span class="p">[]</span>
 
 
-<div class="viewcode-block" id="get_event_handler"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.utils.get_event_handler">[docs]</a><span class="k">def</span> <span class="nf">get_event_handler</span><span class="p">():</span>
+<div class="viewcode-block" id="get_event_handler"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.utils.html#evennia.contrib.ingame_python.utils.get_event_handler">[docs]</a><span class="k">def</span> <span class="nf">get_event_handler</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Return the event handler or None.&quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">script</span> <span class="o">=</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">db_key</span><span class="o">=</span><span class="s2">&quot;event_handler&quot;</span><span class="p">)</span>
@@ -76,7 +73,7 @@
     <span class="k">return</span> <span class="n">script</span></div>
 
 
-<div class="viewcode-block" id="register_events"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.utils.register_events">[docs]</a><span class="k">def</span> <span class="nf">register_events</span><span class="p">(</span><span class="n">path_or_typeclass</span><span class="p">):</span>
+<div class="viewcode-block" id="register_events"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.utils.html#evennia.contrib.ingame_python.utils.register_events">[docs]</a><span class="k">def</span> <span class="nf">register_events</span><span class="p">(</span><span class="n">path_or_typeclass</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Register the events in this typeclass.</span>
 
@@ -133,7 +130,7 @@
 <span class="c1"># Custom callbacks for specific event types</span>
 
 
-<div class="viewcode-block" id="get_next_wait"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.utils.get_next_wait">[docs]</a><span class="k">def</span> <span class="nf">get_next_wait</span><span class="p">(</span><span class="nb">format</span><span class="p">):</span>
+<div class="viewcode-block" id="get_next_wait"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.utils.html#evennia.contrib.ingame_python.utils.get_next_wait">[docs]</a><span class="k">def</span> <span class="nf">get_next_wait</span><span class="p">(</span><span class="nb">format</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the length of time in seconds before format.</span>
 
@@ -207,7 +204,7 @@
     <span class="k">return</span> <span class="n">until</span><span class="p">,</span> <span class="n">usual</span><span class="p">,</span> <span class="n">details</span></div>
 
 
-<div class="viewcode-block" id="time_event"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.utils.time_event">[docs]</a><span class="k">def</span> <span class="nf">time_event</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">event_name</span><span class="p">,</span> <span class="n">number</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
+<div class="viewcode-block" id="time_event"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.utils.html#evennia.contrib.ingame_python.utils.time_event">[docs]</a><span class="k">def</span> <span class="nf">time_event</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">event_name</span><span class="p">,</span> <span class="n">number</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a time-related event.</span>
 
@@ -229,7 +226,7 @@
     <span class="n">script</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">usual</span> <span class="o">=</span> <span class="n">usual</span></div>
 
 
-<div class="viewcode-block" id="keyword_event"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.utils.keyword_event">[docs]</a><span class="k">def</span> <span class="nf">keyword_event</span><span class="p">(</span><span class="n">callbacks</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
+<div class="viewcode-block" id="keyword_event"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.utils.html#evennia.contrib.ingame_python.utils.keyword_event">[docs]</a><span class="k">def</span> <span class="nf">keyword_event</span><span class="p">(</span><span class="n">callbacks</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Custom call for events with keywords (like push, or pull, or turn...).</span>
 
@@ -258,7 +255,7 @@
     <span class="k">return</span> <span class="n">to_call</span></div>
 
 
-<div class="viewcode-block" id="phrase_event"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.utils.phrase_event">[docs]</a><span class="k">def</span> <span class="nf">phrase_event</span><span class="p">(</span><span class="n">callbacks</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
+<div class="viewcode-block" id="phrase_event"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.utils.html#evennia.contrib.ingame_python.utils.phrase_event">[docs]</a><span class="k">def</span> <span class="nf">phrase_event</span><span class="p">(</span><span class="n">callbacks</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Custom call for events with keywords in sentences (like say or whisper).</span>
 
@@ -294,7 +291,7 @@
     <span class="k">return</span> <span class="n">to_call</span></div>
 
 
-<div class="viewcode-block" id="InterruptEvent"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.utils.InterruptEvent">[docs]</a><span class="k">class</span> <span class="nc">InterruptEvent</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+<div class="viewcode-block" id="InterruptEvent"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.utils.html#evennia.contrib.ingame_python.utils.InterruptEvent">[docs]</a><span class="k">class</span> <span class="nc">InterruptEvent</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Interrupt the current event.</span>
@@ -307,6 +304,7 @@
     <span class="k">pass</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -344,17 +342,15 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.ingame_python.utils</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.ingame_python.utils</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

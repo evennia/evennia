@@ -1,7 +1,7 @@
 # Parsing command arguments, theory and best practices
 
 
-This tutorial will elaborate on the many ways one can parse command arguments.  The first step after [adding a command](Adding-Command-Tutorial) usually is to parse its arguments.  There are lots of ways to do it, but some are indeed better than others and this tutorial will try to present them.
+This tutorial will elaborate on the many ways one can parse command arguments.  The first step after [adding a command](./Adding-Command-Tutorial) usually is to parse its arguments.  There are lots of ways to do it, but some are indeed better than others and this tutorial will try to present them.
 
 If you're a Python beginner, this tutorial might help you a lot.  If you're already familiar with Python syntax, this tutorial might still contain useful information.  There are still a lot of things I find in the standard library that come as a surprise, though they were there all along.  This might be true for others.
 
@@ -544,7 +544,7 @@ After this quick tour of some `str` methods, we'll take a look at some Evennia-s
 
 One very common task is to convert a `str` into an Evennia object.  Take the previous example: having `"book"`  in a variable is great, but we would prefer to know what the user is talking about... what is this `"book"`?
 
-To get an object from a string, we perform an Evennia search.  Evennia provides a `search` method on all typeclassed objects (you will most likely use the one on characters or accounts).  This method supports a very wide array of arguments and has [its own tutorial](Tutorial-Searching-For-Objects).  Some examples of useful cases follow:
+To get an object from a string, we perform an Evennia search.  Evennia provides a `search` method on all typeclassed objects (you will most likely use the one on characters or accounts).  This method supports a very wide array of arguments and has [its own tutorial](./Tutorial-Searching-For-Objects).  Some examples of useful cases follow:
 
 ### Local searches
 

@@ -1,0 +1,218 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>evennia.contrib.ingame_python.utils &#8212; Evennia 0.9.1 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.ingame_python.utils</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-evennia.contrib.ingame_python.utils">
+<span id="evennia-contrib-ingame-python-utils"></span><h1>evennia.contrib.ingame_python.utils<a class="headerlink" href="#module-evennia.contrib.ingame_python.utils" title="Permalink to this headline">¶</a></h1>
+<p>Functions to extend the event system.</p>
+<p>These functions are to be used by developers to customize events and callbacks.</p>
+<dl class="py function">
+<dt id="evennia.contrib.ingame_python.utils.get_event_handler">
+<code class="sig-prename descclassname">evennia.contrib.ingame_python.utils.</code><code class="sig-name descname">get_event_handler</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/utils.html#get_event_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.utils.get_event_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the event handler or None.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.ingame_python.utils.register_events">
+<code class="sig-prename descclassname">evennia.contrib.ingame_python.utils.</code><code class="sig-name descname">register_events</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path_or_typeclass</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/utils.html#register_events"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.utils.register_events" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register the events in this typeclass.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path_or_typeclass</strong> (<em>str</em><em> or </em><em>type</em>) – the Python path leading to the
+class containing events, or the class itself.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The typeclass itself.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function will read events from the <strong>_events</strong> class variable
+defined in the typeclass given in parameters.  It will add
+the events, either to the script if it exists, or to some
+temporary storage, waiting for the script to be initialized.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.ingame_python.utils.get_next_wait">
+<code class="sig-prename descclassname">evennia.contrib.ingame_python.utils.</code><code class="sig-name descname">get_next_wait</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">format</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/utils.html#get_next_wait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.utils.get_next_wait" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the length of time in seconds before format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>format</strong> (<em>str</em>) – a time format matching the set calendar.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>until (int or float)</em> – the number of seconds until the event.
+usual (int or float): the usual number of seconds between events.
+format (str): a string format representing the time.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The time format could be something like “2018-01-08 12:00”.  The
+number of units set in the calendar affects the way seconds are
+calculated.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.ingame_python.utils.time_event">
+<code class="sig-prename descclassname">evennia.contrib.ingame_python.utils.</code><code class="sig-name descname">time_event</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">event_name</span></em>, <em class="sig-param"><span class="n">number</span></em>, <em class="sig-param"><span class="n">parameters</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/utils.html#time_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.utils.time_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a time-related event.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> (<em>Object</em>) – the object on which sits the event.</p></li>
+<li><p><strong>event_name</strong> (<em>str</em>) – the event’s name.</p></li>
+<li><p><strong>number</strong> (<em>int</em>) – the number of the event.</p></li>
+<li><p><strong>parameters</strong> (<em>str</em>) – the parameter of the event.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.ingame_python.utils.keyword_event">
+<code class="sig-prename descclassname">evennia.contrib.ingame_python.utils.</code><code class="sig-name descname">keyword_event</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">callbacks</span></em>, <em class="sig-param"><span class="n">parameters</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/utils.html#keyword_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.utils.keyword_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Custom call for events with keywords (like push, or pull, or turn…).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>callbacks</strong> (<em>list of dict</em>) – the list of callbacks to be called.</p></li>
+<li><p><strong>parameters</strong> (<em>str</em>) – the actual parameters entered to trigger the callback.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list containing the callback dictionaries to be called.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function should be imported and added as a custom_call
+parameter to add the event when the event supports keywords
+as parameters.  Keywords in parameters are one or more words
+separated by a comma.  For instance, a ‘push 1, one’ callback can
+be set to trigger when the player ‘push 1’ or ‘push one’.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.ingame_python.utils.phrase_event">
+<code class="sig-prename descclassname">evennia.contrib.ingame_python.utils.</code><code class="sig-name descname">phrase_event</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">callbacks</span></em>, <em class="sig-param"><span class="n">parameters</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/utils.html#phrase_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.utils.phrase_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Custom call for events with keywords in sentences (like say or whisper).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>callbacks</strong> (<em>list of dict</em>) – the list of callbacks to be called.</p></li>
+<li><p><strong>parameters</strong> (<em>str</em>) – the actual parameters entered to trigger the callback.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list containing the callback dictionaries to be called.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function should be imported and added as a custom_call
+parameter to add the event when the event supports keywords
+in phrases as parameters.  Keywords in parameters are one or more
+words separated by a comma.  For instance, a ‘say yes, okay’ callback
+can be set to trigger when the player says something containing
+either “yes” or “okay” (maybe ‘say I don’t like it, but okay’).</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.ingame_python.utils.InterruptEvent">
+<em class="property">exception </em><code class="sig-prename descclassname">evennia.contrib.ingame_python.utils.</code><code class="sig-name descname">InterruptEvent</code><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/utils.html#InterruptEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.utils.InterruptEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></p>
+<p>Interrupt the current event.</p>
+<p>You shouldn’t have to use this exception directly, probably use the
+<strong>deny()</strong> function that handles it instead.</p>
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.ingame_python.utils.rst.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../1.0-dev/api/evennia.contrib.ingame_python.utils.html">1.0-dev (develop branch)</a></li>
+  <li><a href="evennia.contrib.ingame_python.utils.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.ingame_python.utils</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+    </div>
+  </body>
+</html>

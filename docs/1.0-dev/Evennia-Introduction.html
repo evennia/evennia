@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Evennia Introduction &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -27,10 +26,8 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">Evennia Introduction</a></li>
-
-
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Evennia Introduction</a></li> 
       </ul>
     </div>  
 
@@ -73,17 +70,16 @@ in the same high-level language that you code it in allows for very powerful and
 implementations indeed.</p>
 <p>The server ships with a default set of player commands that are similar to the MUX command set. We
 <em>do not</em> aim specifically to be a MUX server, but we had to pick some default to go with (see
-<a class="reference internal" href="Soft-Code.html"><span class="doc">this</span></a> for more about our original motivations).  It’s easy to remove or add commands, or
+<a class="reference internal" href="Concepts/Soft-Code.html"><span class="doc">this</span></a> for more about our original motivations).  It’s easy to remove or add commands, or
 to have the command syntax mimic other systems, like Diku, LP, MOO and so on. Or why not create a
 new and better command system of your own design.</p>
 <div class="section" id="can-i-test-it-somewhere">
 <h2>Can I test it somewhere?<a class="headerlink" href="#can-i-test-it-somewhere" title="Permalink to this headline">¶</a></h2>
 <p>Evennia’s demo server can be found at <a class="reference external" href="http://demo.evennia.com">demo.evennia.com</a>. If you prefer to
-connect to the demo via your own telnet client you can do so at <code class="docutils literal notranslate"><span class="pre">silvren.com</span></code>, port <code class="docutils literal notranslate"><span class="pre">4280</span></code>. Here is
-a <a class="reference internal" href="Screenshot.html"><span class="doc">screenshot</span></a>.</p>
+connect to the demo via your own telnet client you can do so at <code class="docutils literal notranslate"><span class="pre">silvren.com</span></code>, port <code class="docutils literal notranslate"><span class="pre">4280</span></code>.</p>
 <p>Once you installed Evennia yourself it comes with its own tutorial - this shows off some of the
 possibilities <em>and</em> gives you a small single-player quest to play. The tutorial takes only one
-single in-game command to install as explained <a class="reference internal" href="Tutorial-World-Introduction.html"><span class="doc">here</span></a>.</p>
+single in-game command to install as explained <a class="reference internal" href="Howto/Starting/Part1/Tutorial-World-Introduction.html"><span class="doc">here</span></a>.</p>
 </div>
 <div class="section" id="brief-summary-of-features">
 <h2>Brief summary of features<a class="headerlink" href="#brief-summary-of-features" title="Permalink to this headline">¶</a></h2>
@@ -141,12 +137,12 @@ generation and more</p></li>
 <li><p>RSS feeds can be echoed to in-game channels (things like Twitter can easily be added)</p></li>
 <li><p>Several different databases supported (SQLite3, MySQL, PostgreSQL, …)</p></li>
 </ul>
-<p>For more extensive feature information, see the <a class="reference internal" href="Developer-Central.html"><span class="doc">Developer Central</span></a>.</p>
+<p>For more extensive feature information, see the <a class="reference internal" href="Components/Components-Overview.html"><span class="doc">Evennia Component overview</span></a>.</p>
 </div>
 </div>
 <div class="section" id="what-you-need-to-know-to-work-with-evennia">
 <h2>What you need to know to work with Evennia<a class="headerlink" href="#what-you-need-to-know-to-work-with-evennia" title="Permalink to this headline">¶</a></h2>
-<p>Assuming you have Evennia working (see the <a class="reference internal" href="Getting-Started.html"><span class="doc">quick start instructions</span></a>) and have
+<p>Assuming you have Evennia working (see the <a class="reference internal" href="Setup/Setup-Quickstart.html"><span class="doc">quick start instructions</span></a>) and have
 gotten as far as to start the server and connect to it with the client of your choice, here’s what
 you need to know depending on your skills and needs.</p>
 <div class="section" id="i-don-t-know-or-don-t-want-to-do-any-programming-i-just-want-to-run-a-game">
@@ -183,8 +179,8 @@ programming</a>, using
 <a class="reference external" href="http://docs.python.org/tutorial/classes.html">Classes</a>, their methods and properties</p></li>
 </ul>
 <p>Obviously, the more things you feel comfortable with, the easier time you’ll have to find your way.
-With just basic knowledge you should be able to define your own <a class="reference internal" href="Commands.html"><span class="doc">Commands</span></a>, create custom
-<a class="reference internal" href="Objects.html"><span class="doc">Objects</span></a> as well as make your world come alive with basic <a class="reference internal" href="Scripts.html"><span class="doc">Scripts</span></a>. You can
+With just basic knowledge you should be able to define your own <a class="reference internal" href="Components/Commands.html"><span class="doc">Commands</span></a>, create custom
+<a class="reference internal" href="Components/Objects.html"><span class="doc">Objects</span></a> as well as make your world come alive with basic <a class="reference internal" href="Components/Scripts.html"><span class="doc">Scripts</span></a>. You can
 definitely build a whole advanced and customized game from extending Evennia’s examples only.</p>
 </div>
 <div class="section" id="i-know-my-python-stuff-and-i-am-willing-to-use-it">
@@ -200,8 +196,8 @@ presence (a website and a mud web client) to play around with …</p>
 </div>
 <div class="section" id="where-to-from-here">
 <h3>Where to from here?<a class="headerlink" href="#where-to-from-here" title="Permalink to this headline">¶</a></h3>
-<p>From here you can continue browsing the [online documentation](<a class="reference internal" href="index.html"><span class="doc">online documentation</span></a>) to
-find more info about Evennia. Or you can jump into the <a class="reference internal" href="Tutorials.html"><span class="doc">Tutorials</span></a> and get your hands
+<p>From here you can continue browsing the [online documentation](<a class="reference external" href="index:Evennia-documentation">online documentation</a>) to
+find more info about Evennia. Or you can jump into the <a class="reference internal" href="Howto/Howto-Overview.html"><span class="doc">Tutorials</span></a> and get your hands
 dirty with code right away. You can also read the developer’s <a class="reference external" href="https://evennia.blogspot.com/">dev
 blog</a> for many tidbits and snippets about Evennia’s development and
 structure.</p>
@@ -214,10 +210,10 @@ chat</a>
 on IRC. This allows you to chat directly with other developers new and old as well as with the devs
 of Evennia itself. This chat is logged (you can find links on http://www.evennia.com) and can also
 be searched from the same place for discussion topics you are interested in.</p></li>
-<li><p>Read the <a class="reference internal" href="Game-Planning.html"><span class="doc">Game Planning</span></a> wiki page. It gives some ideas for your work flow and the
+<li><p>Read the <a class="reference internal" href="Howto/Starting/Part2/Game-Planning.html"><span class="doc">Game Planning</span></a> wiki page. It gives some ideas for your work flow and the
 state of mind you should aim for - including cutting down the scope of your game for its first
 release.</p></li>
-<li><p>Do the <a class="reference internal" href="Tutorial-for-basic-MUSH-like-game.html"><span class="doc">Tutorial for basic MUSH-like game</span></a> carefully from
+<li><p>Do the <a class="reference internal" href="Howto/Starting/Part3/Tutorial-for-basic-MUSH-like-game.html"><span class="doc">Tutorial for basic MUSH-like game</span></a> carefully from
 beginning to end and try to understand what does what. Even if you are not interested in a MUSH for
 your own game, you will end up with a small (very small) game that you can build or learn from.</p></li>
 </ol>
@@ -226,6 +222,7 @@ your own game, you will end up with a small (very small) game that you can build
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -291,15 +288,13 @@ your own game, you will end up with a small (very small) game that you can build
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev documentation</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">Evennia Introduction</a></li>
-
-
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Evennia Introduction</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

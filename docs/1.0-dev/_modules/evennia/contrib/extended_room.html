@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.extended_room &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.extended_room</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.extended_room</a></li> 
       </ul>
     </div>  
 
@@ -166,14 +163,14 @@
 <span class="c1"># implements the Extended Room</span>
 
 
-<div class="viewcode-block" id="ExtendedRoom"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.extended_room.ExtendedRoom">[docs]</a><span class="k">class</span> <span class="nc">ExtendedRoom</span><span class="p">(</span><span class="n">DefaultRoom</span><span class="p">):</span>
+<div class="viewcode-block" id="ExtendedRoom"><a class="viewcode-back" href="../../../api/evennia.contrib.extended_room.html#evennia.contrib.extended_room.ExtendedRoom">[docs]</a><span class="k">class</span> <span class="nc">ExtendedRoom</span><span class="p">(</span><span class="n">DefaultRoom</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This room implements a more advanced `look` functionality depending on</span>
 <span class="sd">    time. It also allows for &quot;details&quot;, together with a slightly modified</span>
 <span class="sd">    look command.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ExtendedRoom.at_object_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.extended_room.ExtendedRoom.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ExtendedRoom.at_object_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.extended_room.html#evennia.contrib.extended_room.ExtendedRoom.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Called when room is first created only.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">spring_desc</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">summer_desc</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -191,7 +188,7 @@
         <span class="c1"># detail storage</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">details</span> <span class="o">=</span> <span class="p">{}</span></div>
 
-<div class="viewcode-block" id="ExtendedRoom.get_time_and_season"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.extended_room.ExtendedRoom.get_time_and_season">[docs]</a>    <span class="k">def</span> <span class="nf">get_time_and_season</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ExtendedRoom.get_time_and_season"><a class="viewcode-back" href="../../../api/evennia.contrib.extended_room.html#evennia.contrib.extended_room.ExtendedRoom.get_time_and_season">[docs]</a>    <span class="k">def</span> <span class="nf">get_time_and_season</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the current time and season ids.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -224,7 +221,7 @@
 
         <span class="k">return</span> <span class="n">curr_season</span><span class="p">,</span> <span class="n">curr_timeslot</span></div>
 
-<div class="viewcode-block" id="ExtendedRoom.replace_timeslots"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.extended_room.ExtendedRoom.replace_timeslots">[docs]</a>    <span class="k">def</span> <span class="nf">replace_timeslots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_desc</span><span class="p">,</span> <span class="n">curr_time</span><span class="p">):</span>
+<div class="viewcode-block" id="ExtendedRoom.replace_timeslots"><a class="viewcode-back" href="../../../api/evennia.contrib.extended_room.html#evennia.contrib.extended_room.ExtendedRoom.replace_timeslots">[docs]</a>    <span class="k">def</span> <span class="nf">replace_timeslots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_desc</span><span class="p">,</span> <span class="n">curr_time</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter so that only time markers `&lt;timeslot&gt;...&lt;/timeslot&gt;` of</span>
 <span class="sd">        the correct timeslot remains in the description.</span>
@@ -245,7 +242,7 @@
             <span class="k">return</span> <span class="n">regextuple</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">raw_desc</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">raw_desc</span></div>
 
-<div class="viewcode-block" id="ExtendedRoom.return_detail"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.extended_room.ExtendedRoom.return_detail">[docs]</a>    <span class="k">def</span> <span class="nf">return_detail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<div class="viewcode-block" id="ExtendedRoom.return_detail"><a class="viewcode-back" href="../../../api/evennia.contrib.extended_room.html#evennia.contrib.extended_room.ExtendedRoom.return_detail">[docs]</a>    <span class="k">def</span> <span class="nf">return_detail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This will attempt to match a &quot;detail&quot; to look for in the room.</span>
 
@@ -277,7 +274,7 @@
             <span class="k">return</span> <span class="n">detail</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="ExtendedRoom.set_detail"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.extended_room.ExtendedRoom.set_detail">[docs]</a>    <span class="k">def</span> <span class="nf">set_detail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">detailkey</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
+<div class="viewcode-block" id="ExtendedRoom.set_detail"><a class="viewcode-back" href="../../../api/evennia.contrib.extended_room.html#evennia.contrib.extended_room.ExtendedRoom.set_detail">[docs]</a>    <span class="k">def</span> <span class="nf">set_detail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">detailkey</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This sets a new detail, using an Attribute &quot;details&quot;.</span>
 
@@ -294,7 +291,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">details</span> <span class="o">=</span> <span class="p">{</span><span class="n">detailkey</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">description</span><span class="p">}</span></div>
 
-<div class="viewcode-block" id="ExtendedRoom.del_detail"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.extended_room.ExtendedRoom.del_detail">[docs]</a>    <span class="k">def</span> <span class="nf">del_detail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">detailkey</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
+<div class="viewcode-block" id="ExtendedRoom.del_detail"><a class="viewcode-back" href="../../../api/evennia.contrib.extended_room.html#evennia.contrib.extended_room.ExtendedRoom.del_detail">[docs]</a>    <span class="k">def</span> <span class="nf">del_detail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">detailkey</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Delete a detail.</span>
 
@@ -312,7 +309,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">details</span> <span class="ow">and</span> <span class="n">detailkey</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">details</span><span class="p">:</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">details</span><span class="p">[</span><span class="n">detailkey</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span></div>
 
-<div class="viewcode-block" id="ExtendedRoom.return_appearance"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.extended_room.ExtendedRoom.return_appearance">[docs]</a>    <span class="k">def</span> <span class="nf">return_appearance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ExtendedRoom.return_appearance"><a class="viewcode-back" href="../../../api/evennia.contrib.extended_room.html#evennia.contrib.extended_room.ExtendedRoom.return_appearance">[docs]</a>    <span class="k">def</span> <span class="nf">return_appearance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called when e.g. the look command wants to retrieve</span>
 <span class="sd">        the description of this object.</span>
@@ -331,7 +328,7 @@
         <span class="c1"># run the normal return_appearance method, now that desc is updated.</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">ExtendedRoom</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">return_appearance</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ExtendedRoom.update_current_description"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.extended_room.ExtendedRoom.update_current_description">[docs]</a>    <span class="k">def</span> <span class="nf">update_current_description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ExtendedRoom.update_current_description"><a class="viewcode-back" href="../../../api/evennia.contrib.extended_room.html#evennia.contrib.extended_room.ExtendedRoom.update_current_description">[docs]</a>    <span class="k">def</span> <span class="nf">update_current_description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This will update the description of the room if the time or season</span>
 <span class="sd">        has changed since last checked.</span>
@@ -368,7 +365,7 @@
 <span class="c1"># the Default cmdset to use.</span>
 
 
-<div class="viewcode-block" id="CmdExtendedRoomLook"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.extended_room.CmdExtendedRoomLook">[docs]</a><span class="k">class</span> <span class="nc">CmdExtendedRoomLook</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdExtendedRoomLook"><a class="viewcode-back" href="../../../api/evennia.contrib.extended_room.html#evennia.contrib.extended_room.CmdExtendedRoomLook">[docs]</a><span class="k">class</span> <span class="nc">CmdExtendedRoomLook</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdLook</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    look</span>
 
@@ -381,7 +378,7 @@
 <span class="sd">    Observes your location, details at your location or objects in your vicinity.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="CmdExtendedRoomLook.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.extended_room.CmdExtendedRoomLook.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdExtendedRoomLook.func"><a class="viewcode-back" href="../../../api/evennia.contrib.extended_room.html#evennia.contrib.extended_room.CmdExtendedRoomLook.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Handle the looking - add fallback to details.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -436,7 +433,7 @@
 <span class="c1"># and detailing extended rooms.</span>
 
 
-<div class="viewcode-block" id="CmdExtendedRoomDesc"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.extended_room.CmdExtendedRoomDesc">[docs]</a><span class="k">class</span> <span class="nc">CmdExtendedRoomDesc</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdDesc</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdExtendedRoomDesc"><a class="viewcode-back" href="../../../api/evennia.contrib.extended_room.html#evennia.contrib.extended_room.CmdExtendedRoomDesc">[docs]</a><span class="k">class</span> <span class="nc">CmdExtendedRoomDesc</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdDesc</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `desc` - describe an object or room.</span>
 
@@ -469,12 +466,12 @@
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;describe&quot;</span><span class="p">]</span>
     <span class="n">switch_options</span> <span class="o">=</span> <span class="p">()</span>  <span class="c1"># Inherits from default_cmds.CmdDesc, but unused here</span>
 
-<div class="viewcode-block" id="CmdExtendedRoomDesc.reset_times"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.extended_room.CmdExtendedRoomDesc.reset_times">[docs]</a>    <span class="k">def</span> <span class="nf">reset_times</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdExtendedRoomDesc.reset_times"><a class="viewcode-back" href="../../../api/evennia.contrib.extended_room.html#evennia.contrib.extended_room.CmdExtendedRoomDesc.reset_times">[docs]</a>    <span class="k">def</span> <span class="nf">reset_times</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;By deleteting the caches we force a re-load.&quot;&quot;&quot;</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">last_season</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">last_timeslot</span> <span class="o">=</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="CmdExtendedRoomDesc.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.extended_room.CmdExtendedRoomDesc.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdExtendedRoomDesc.func"><a class="viewcode-back" href="../../../api/evennia.contrib.extended_room.html#evennia.contrib.extended_room.CmdExtendedRoomDesc.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Define extended command&quot;&quot;&quot;</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="n">location</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">location</span>
@@ -528,7 +525,7 @@
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The description was set on </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdExtendedRoomDetail"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.extended_room.CmdExtendedRoomDetail">[docs]</a><span class="k">class</span> <span class="nc">CmdExtendedRoomDetail</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdExtendedRoomDetail"><a class="viewcode-back" href="../../../api/evennia.contrib.extended_room.html#evennia.contrib.extended_room.CmdExtendedRoomDetail">[docs]</a><span class="k">class</span> <span class="nc">CmdExtendedRoomDetail</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    sets a detail on a room</span>
@@ -558,7 +555,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
-<div class="viewcode-block" id="CmdExtendedRoomDetail.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.extended_room.CmdExtendedRoomDetail.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdExtendedRoomDetail.func"><a class="viewcode-back" href="../../../api/evennia.contrib.extended_room.html#evennia.contrib.extended_room.CmdExtendedRoomDetail.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="n">details</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">details</span>
@@ -594,7 +591,7 @@
 <span class="c1"># Simple command to view the current time and season</span>
 
 
-<div class="viewcode-block" id="CmdExtendedRoomGameTime"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.extended_room.CmdExtendedRoomGameTime">[docs]</a><span class="k">class</span> <span class="nc">CmdExtendedRoomGameTime</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdExtendedRoomGameTime"><a class="viewcode-back" href="../../../api/evennia.contrib.extended_room.html#evennia.contrib.extended_room.CmdExtendedRoomGameTime">[docs]</a><span class="k">class</span> <span class="nc">CmdExtendedRoomGameTime</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check the game time</span>
 
@@ -608,7 +605,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;General&quot;</span>
 
-<div class="viewcode-block" id="CmdExtendedRoomGameTime.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.extended_room.CmdExtendedRoomGameTime.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdExtendedRoomGameTime.func"><a class="viewcode-back" href="../../../api/evennia.contrib.extended_room.html#evennia.contrib.extended_room.CmdExtendedRoomGameTime.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Reads time info from current room&quot;&quot;&quot;</span>
         <span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">location</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="s2">&quot;get_time_and_season&quot;</span><span class="p">):</span>
@@ -624,19 +621,20 @@
 <span class="c1"># CmdSet for easily install all commands</span>
 
 
-<div class="viewcode-block" id="ExtendedRoomCmdSet"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.extended_room.ExtendedRoomCmdSet">[docs]</a><span class="k">class</span> <span class="nc">ExtendedRoomCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<div class="viewcode-block" id="ExtendedRoomCmdSet"><a class="viewcode-back" href="../../../api/evennia.contrib.extended_room.html#evennia.contrib.extended_room.ExtendedRoomCmdSet">[docs]</a><span class="k">class</span> <span class="nc">ExtendedRoomCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Groups the extended-room commands.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ExtendedRoomCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.extended_room.ExtendedRoomCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ExtendedRoomCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.extended_room.html#evennia.contrib.extended_room.ExtendedRoomCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdExtendedRoomLook</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdExtendedRoomDesc</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdExtendedRoomDetail</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdExtendedRoomGameTime</span><span class="p">)</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -674,17 +672,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.extended_room</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.extended_room</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

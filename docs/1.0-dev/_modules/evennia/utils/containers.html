@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.utils.containers &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.utils.containers</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.containers</a></li> 
       </ul>
     </div>  
 
@@ -63,7 +60,7 @@
 <span class="n">SCRIPTDB</span> <span class="o">=</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="Container"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.containers.Container">[docs]</a><span class="k">class</span> <span class="nc">Container</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Container"><a class="viewcode-back" href="../../../api/evennia.utils.containers.html#evennia.utils.containers.Container">[docs]</a><span class="k">class</span> <span class="nc">Container</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base container class. A container is simply a storage object whose</span>
 <span class="sd">    properties can be acquired as a property on it. This is generally</span>
@@ -75,14 +72,14 @@
 
     <span class="n">storage_modules</span> <span class="o">=</span> <span class="p">[]</span>
 
-<div class="viewcode-block" id="Container.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.containers.Container.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Container.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.containers.html#evennia.utils.containers.Container.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Read data from module.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loaded_data</span> <span class="o">=</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="Container.load_data"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.containers.Container.load_data">[docs]</a>    <span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Container.load_data"><a class="viewcode-back" href="../../../api/evennia.utils.containers.html#evennia.utils.containers.Container.load_data">[docs]</a>    <span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Delayed import to avoid eventual circular imports from inside</span>
 <span class="sd">        the storage modules.</span>
@@ -96,7 +93,7 @@
     <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Container.get"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.containers.Container.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Container.get"><a class="viewcode-back" href="../../../api/evennia.utils.containers.html#evennia.utils.containers.Container.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrive data by key (in case of not knowing it beforehand).</span>
 
@@ -111,7 +108,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Container.all"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.containers.Container.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Container.all"><a class="viewcode-back" href="../../../api/evennia.utils.containers.html#evennia.utils.containers.Container.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all stored data</span>
 
@@ -123,7 +120,7 @@
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loaded_data</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div></div>
 
 
-<div class="viewcode-block" id="OptionContainer"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.containers.OptionContainer">[docs]</a><span class="k">class</span> <span class="nc">OptionContainer</span><span class="p">(</span><span class="n">Container</span><span class="p">):</span>
+<div class="viewcode-block" id="OptionContainer"><a class="viewcode-back" href="../../../api/evennia.utils.containers.html#evennia.utils.containers.OptionContainer">[docs]</a><span class="k">class</span> <span class="nc">OptionContainer</span><span class="p">(</span><span class="n">Container</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Loads and stores the final list of OPTION CLASSES.</span>
 
@@ -133,7 +130,7 @@
     <span class="n">storage_modules</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">OPTION_CLASS_MODULES</span></div>
 
 
-<div class="viewcode-block" id="GlobalScriptContainer"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.containers.GlobalScriptContainer">[docs]</a><span class="k">class</span> <span class="nc">GlobalScriptContainer</span><span class="p">(</span><span class="n">Container</span><span class="p">):</span>
+<div class="viewcode-block" id="GlobalScriptContainer"><a class="viewcode-back" href="../../../api/evennia.utils.containers.html#evennia.utils.containers.GlobalScriptContainer">[docs]</a><span class="k">class</span> <span class="nc">GlobalScriptContainer</span><span class="p">(</span><span class="n">Container</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Simple Handler object loaded by the Evennia API to contain and manage a</span>
 <span class="sd">    game&#39;s Global Scripts. This will list global Scripts created on their own</span>
@@ -149,7 +146,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="GlobalScriptContainer.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.containers.GlobalScriptContainer.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GlobalScriptContainer.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.containers.html#evennia.utils.containers.GlobalScriptContainer.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Note: We must delay loading of typeclasses since this module may get</span>
 <span class="sd">        initialized before Scripts are actually initialized.</span>
@@ -160,7 +157,7 @@
             <span class="n">key</span><span class="p">:</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">data</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">GLOBAL_SCRIPTS</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="p">}</span></div>
 
-<div class="viewcode-block" id="GlobalScriptContainer._get_scripts"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.containers.GlobalScriptContainer._get_scripts">[docs]</a>    <span class="k">def</span> <span class="nf">_get_scripts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_scripts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">global</span> <span class="n">SCRIPTDB</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">SCRIPTDB</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="k">import</span> <span class="n">ScriptDB</span> <span class="k">as</span> <span class="n">SCRIPTDB</span>
@@ -170,9 +167,9 @@
             <span class="k">except</span> <span class="n">SCRIPTDB</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">default</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">SCRIPTDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_obj__isnull</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">SCRIPTDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_obj__isnull</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<div class="viewcode-block" id="GlobalScriptContainer._load_script"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.containers.GlobalScriptContainer._load_script">[docs]</a>    <span class="k">def</span> <span class="nf">_load_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_load_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
 
         <span class="n">typeclass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">typeclass_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
@@ -207,9 +204,9 @@
             <span class="n">found</span><span class="o">.</span><span class="n">restart</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="n">start_delay</span><span class="p">,</span> <span class="n">repeats</span><span class="o">=</span><span class="n">repeats</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">found</span><span class="o">.</span><span class="n">desc</span> <span class="o">!=</span> <span class="n">desc</span><span class="p">:</span>
             <span class="n">found</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">desc</span>
-        <span class="k">return</span> <span class="n">found</span></div>
+        <span class="k">return</span> <span class="n">found</span>
 
-<div class="viewcode-block" id="GlobalScriptContainer.start"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.containers.GlobalScriptContainer.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GlobalScriptContainer.start"><a class="viewcode-back" href="../../../api/evennia.utils.containers.html#evennia.utils.containers.GlobalScriptContainer.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called last in evennia.__init__ to initialize the container late</span>
 <span class="sd">        (after script typeclasses have finished loading).</span>
@@ -225,7 +222,7 @@
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded_data</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_load_script</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="GlobalScriptContainer.load_data"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.containers.GlobalScriptContainer.load_data">[docs]</a>    <span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GlobalScriptContainer.load_data"><a class="viewcode-back" href="../../../api/evennia.utils.containers.html#evennia.utils.containers.GlobalScriptContainer.load_data">[docs]</a>    <span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This delayed import avoids trying to load Scripts before they are</span>
 <span class="sd">        initialized.</span>
@@ -242,7 +239,7 @@
                         <span class="n">f</span><span class="s2">&quot;GlobalScriptContainer could not start global script </span><span class="si">{key}</span><span class="s2">: </span><span class="si">{err}</span><span class="s2">&quot;</span>
                     <span class="p">)</span></div>
 
-<div class="viewcode-block" id="GlobalScriptContainer.get"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.containers.GlobalScriptContainer.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="GlobalScriptContainer.get"><a class="viewcode-back" href="../../../api/evennia.utils.containers.html#evennia.utils.containers.GlobalScriptContainer.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrive data by key (in case of not knowing it beforehand). Any</span>
 <span class="sd">        scripts that are in settings.GLOBAL_SCRIPTS that are not found</span>
@@ -264,7 +261,7 @@
             <span class="k">return</span> <span class="n">default</span>
         <span class="k">return</span> <span class="n">res</span></div>
 
-<div class="viewcode-block" id="GlobalScriptContainer.all"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.containers.GlobalScriptContainer.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GlobalScriptContainer.all"><a class="viewcode-back" href="../../../api/evennia.utils.containers.html#evennia.utils.containers.GlobalScriptContainer.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all global scripts. Note that this will not auto-start</span>
 <span class="sd">        scripts defined in settings.</span>
@@ -286,6 +283,7 @@
 <span class="n">OPTION_CLASSES</span> <span class="o">=</span> <span class="n">OptionContainer</span><span class="p">()</span>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -323,17 +321,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.utils.containers</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.containers</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

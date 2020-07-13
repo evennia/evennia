@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.objects.objects &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.objects.objects</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.objects.objects</a></li> 
       </ul>
     </div>  
 
@@ -88,13 +85,13 @@
 <span class="n">_SESSID_MAX</span> <span class="o">=</span> <span class="mi">16</span> <span class="k">if</span> <span class="n">_MULTISESSION_MODE</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="k">else</span> <span class="mi">1</span>
 
 
-<div class="viewcode-block" id="ObjectSessionHandler"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.ObjectSessionHandler">[docs]</a><span class="k">class</span> <span class="nc">ObjectSessionHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectSessionHandler"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.ObjectSessionHandler">[docs]</a><span class="k">class</span> <span class="nc">ObjectSessionHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Handles the get/setting of the sessid</span>
 <span class="sd">    comma-separated integer field</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ObjectSessionHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.ObjectSessionHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectSessionHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.ObjectSessionHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes the handler.</span>
 
@@ -106,7 +103,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_sessid_cache</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_recache</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ObjectSessionHandler._recache"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.ObjectSessionHandler._recache">[docs]</a>    <span class="k">def</span> <span class="nf">_recache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_recache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">global</span> <span class="n">_SESSIONS</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_SESSIONS</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="k">import</span> <span class="n">SESSIONS</span> <span class="k">as</span> <span class="n">_SESSIONS</span>
@@ -117,9 +114,9 @@
             <span class="c1"># cache is out of sync with sessionhandler! Only retain the ones in the handler.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_sessid_cache</span> <span class="o">=</span> <span class="p">[</span><span class="n">sessid</span> <span class="k">for</span> <span class="n">sessid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sessid_cache</span> <span class="k">if</span> <span class="n">sessid</span> <span class="ow">in</span> <span class="n">_SESSIONS</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db_sessid</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sessid_cache</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;db_sessid&quot;</span><span class="p">])</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;db_sessid&quot;</span><span class="p">])</span>
 
-<div class="viewcode-block" id="ObjectSessionHandler.get"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.ObjectSessionHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sessid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectSessionHandler.get"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.ObjectSessionHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sessid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the sessions linked to this Object.</span>
 
@@ -153,7 +150,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">sessid</span><span class="o">=</span><span class="n">sessid</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">sessions</span></div>
 
-<div class="viewcode-block" id="ObjectSessionHandler.all"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.ObjectSessionHandler.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectSessionHandler.all"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.ObjectSessionHandler.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Alias to get(), returning all sessions.</span>
 
@@ -163,7 +160,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ObjectSessionHandler.add"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.ObjectSessionHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectSessionHandler.add"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.ObjectSessionHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add session to handler.</span>
 
@@ -191,7 +188,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db_sessid</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">sessid_cache</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;db_sessid&quot;</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="ObjectSessionHandler.remove"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.ObjectSessionHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectSessionHandler.remove"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.ObjectSessionHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove session from handler.</span>
 
@@ -210,7 +207,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db_sessid</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">sessid_cache</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;db_sessid&quot;</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="ObjectSessionHandler.clear"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.ObjectSessionHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectSessionHandler.clear"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.ObjectSessionHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clear all handled sessids.</span>
 
@@ -219,7 +216,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db_sessid</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;db_sessid&quot;</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="ObjectSessionHandler.count"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.ObjectSessionHandler.count">[docs]</a>    <span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectSessionHandler.count"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.ObjectSessionHandler.count">[docs]</a>    <span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get amount of sessions connected.</span>
 
@@ -234,7 +231,7 @@
 <span class="c1"># Base class to inherit from.</span>
 
 
-<div class="viewcode-block" id="DefaultObject"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject">[docs]</a><span class="k">class</span> <span class="nc">DefaultObject</span><span class="p">(</span><span class="n">ObjectDB</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">TypeclassBase</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject">[docs]</a><span class="k">class</span> <span class="nc">DefaultObject</span><span class="p">(</span><span class="n">ObjectDB</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">TypeclassBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the root typeclass object, representing all entities that</span>
 <span class="sd">    have an actual presence in-game. DefaultObjects generally have a</span>
@@ -259,19 +256,19 @@
 
     <span class="c1"># on-object properties</span>
 
-<div class="viewcode-block" id="DefaultObject.cmdset"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.cmdset">[docs]</a>    <span class="nd">@lazy_property</span>
+<div class="viewcode-block" id="DefaultObject.cmdset"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.cmdset">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">cmdset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">CmdSetHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DefaultObject.scripts"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.scripts">[docs]</a>    <span class="nd">@lazy_property</span>
+<div class="viewcode-block" id="DefaultObject.scripts"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.scripts">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">scripts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">ScriptHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DefaultObject.nicks"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.nicks">[docs]</a>    <span class="nd">@lazy_property</span>
+<div class="viewcode-block" id="DefaultObject.nicks"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.nicks">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">nicks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">NickHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ModelAttributeBackend</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DefaultObject.sessions"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.sessions">[docs]</a>    <span class="nd">@lazy_property</span>
+<div class="viewcode-block" id="DefaultObject.sessions"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.sessions">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">sessions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">ObjectSessionHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
@@ -304,7 +301,7 @@
             <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_account</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_quell&quot;</span><span class="p">)</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="DefaultObject.contents_get"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.contents_get">[docs]</a>    <span class="k">def</span> <span class="nf">contents_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.contents_get"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.contents_get">[docs]</a>    <span class="k">def</span> <span class="nf">contents_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the contents of this object, i.e. all</span>
 <span class="sd">        objects that has this object set as its location.</span>
@@ -326,7 +323,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="n">content_type</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DefaultObject.contents_set"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.contents_set">[docs]</a>    <span class="k">def</span> <span class="nf">contents_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.contents_set"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.contents_set">[docs]</a>    <span class="k">def</span> <span class="nf">contents_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="s2">&quot;You cannot replace this property&quot;</span>
         <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
             <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.contents is read-only. Use obj.move_to or &quot;</span>
@@ -345,7 +342,7 @@
 
     <span class="c1"># main methods</span>
 
-<div class="viewcode-block" id="DefaultObject.get_display_name"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.get_display_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.get_display_name"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_display_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Displays the name of the object in a viewer-aware manner.</span>
 
@@ -370,7 +367,7 @@
             <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(#</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
 
-<div class="viewcode-block" id="DefaultObject.get_numbered_name"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.get_numbered_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_numbered_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.get_numbered_name"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_numbered_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_numbered_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the numbered (singular, plural) forms of this object&#39;s key. This is by default called</span>
 <span class="sd">        by return_appearance and is used for grouping multiple same-named of this object. Note that</span>
@@ -381,7 +378,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            count (int): Number of objects of this type</span>
 <span class="sd">            looker (Object): Onlooker. Not used by default.</span>
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            key (str): Optional key to pluralize, if given, use this instead of the object&#39;s key.</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            singular (str): The singular form to display.</span>
@@ -405,7 +402,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">singular</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;plural_key&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">singular</span><span class="p">,</span> <span class="n">plural</span></div>
 
-<div class="viewcode-block" id="DefaultObject.search"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span>
+<div class="viewcode-block" id="DefaultObject.search"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">searchdata</span><span class="p">,</span>
         <span class="n">global_search</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -556,7 +553,7 @@
             <span class="n">multimatch_string</span><span class="o">=</span><span class="n">multimatch_string</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="DefaultObject.search_account"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.search_account">[docs]</a>    <span class="k">def</span> <span class="nf">search_account</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">searchdata</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.search_account"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.search_account">[docs]</a>    <span class="k">def</span> <span class="nf">search_account</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">searchdata</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Simple shortcut wrapper to search for accounts, not characters.</span>
 
@@ -591,7 +588,7 @@
             <span class="k">return</span> <span class="n">results</span>
         <span class="k">return</span> <span class="n">_AT_SEARCH_RESULT</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">searchdata</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DefaultObject.execute_cmd"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.execute_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">execute_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.execute_cmd"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.execute_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">execute_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do something as this object. This is never called normally,</span>
 <span class="sd">        it&#39;s only used when wanting specifically to let an object be</span>
@@ -603,7 +600,7 @@
 <span class="sd">            session (Session, optional): Session to</span>
 <span class="sd">                return results to</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            Other keyword arguments will be added to the found command</span>
 <span class="sd">            object instace as variables before it executes.  This is</span>
 <span class="sd">            unused by default Evennia but may be used to set flags and</span>
@@ -630,7 +627,7 @@
             <span class="bp">self</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">callertype</span><span class="o">=</span><span class="s2">&quot;object&quot;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="DefaultObject.msg"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.msg"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Emits something to a session attached to the object.</span>
 
@@ -649,7 +646,7 @@
 <span class="sd">                depends on the MULTISESSION_MODE.</span>
 <span class="sd">            options (dict, optional): Message-specific option-value</span>
 <span class="sd">                pairs. These will be applied at the protocol level.</span>
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            any (string or tuples): All kwarg keys not listed above</span>
 <span class="sd">                will be treated as send-command names and their arguments</span>
 <span class="sd">                (which can be a string or a tuple).</span>
@@ -688,7 +685,7 @@
         <span class="k">for</span> <span class="n">session</span> <span class="ow">in</span> <span class="n">sessions</span><span class="p">:</span>
             <span class="n">session</span><span class="o">.</span><span class="n">data_out</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DefaultObject.for_contents"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.for_contents">[docs]</a>    <span class="k">def</span> <span class="nf">for_contents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.for_contents"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.for_contents">[docs]</a>    <span class="k">def</span> <span class="nf">for_contents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Runs a function on every object contained within this one.</span>
 
@@ -700,7 +697,7 @@
 <span class="sd">            exclude (list, optional): A list of object not to call the</span>
 <span class="sd">                function on.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            Keyword arguments will be passed to the function for all objects.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">contents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents</span>
@@ -710,7 +707,7 @@
         <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">contents</span><span class="p">:</span>
             <span class="n">func</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DefaultObject.msg_contents"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.msg_contents">[docs]</a>    <span class="k">def</span> <span class="nf">msg_contents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.msg_contents"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.msg_contents">[docs]</a>    <span class="k">def</span> <span class="nf">msg_contents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Emits a message to all objects inside this object.</span>
 
@@ -732,7 +729,7 @@
 <span class="sd">                for every looker in contents that receives the</span>
 <span class="sd">                message. This allows for every object to potentially</span>
 <span class="sd">                get its own customized string.</span>
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            Keyword arguments will be passed on to `obj.msg()` for all</span>
 <span class="sd">            messaged objects.</span>
 
@@ -777,7 +774,7 @@
                 <span class="n">outmessage</span> <span class="o">=</span> <span class="n">inmessage</span>
             <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">outmessage</span><span class="p">,</span> <span class="n">outkwargs</span><span class="p">),</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">from_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DefaultObject.move_to"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.move_to">[docs]</a>    <span class="k">def</span> <span class="nf">move_to</span><span class="p">(</span>
+<div class="viewcode-block" id="DefaultObject.move_to"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.move_to">[docs]</a>    <span class="k">def</span> <span class="nf">move_to</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">destination</span><span class="p">,</span>
         <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -807,7 +804,7 @@
 <span class="sd">                (at_before/after_move etc) with quiet=True, this is as quiet a move</span>
 <span class="sd">                as can be done.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">          Passed on to announce_move_to and announce_move_from hooks.</span>
 
 <span class="sd">        Returns:</span>
@@ -915,7 +912,7 @@
                 <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="DefaultObject.clear_exits"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.clear_exits">[docs]</a>    <span class="k">def</span> <span class="nf">clear_exits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.clear_exits"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.clear_exits">[docs]</a>    <span class="k">def</span> <span class="nf">clear_exits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Destroys all of the exits and any exits pointing to this</span>
 <span class="sd">        object as a destination.</span>
@@ -925,7 +922,7 @@
         <span class="k">for</span> <span class="n">in_exit</span> <span class="ow">in</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_destination</span><span class="o">=</span><span class="bp">self</span><span class="p">):</span>
             <span class="n">in_exit</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="DefaultObject.clear_contents"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.clear_contents">[docs]</a>    <span class="k">def</span> <span class="nf">clear_contents</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.clear_contents"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.clear_contents">[docs]</a>    <span class="k">def</span> <span class="nf">clear_contents</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Moves all objects (accounts/things) to their home location or</span>
 <span class="sd">        to default home.</span>
@@ -969,7 +966,7 @@
                     <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="n">string</span><span class="p">))</span>
             <span class="n">obj</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">home</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DefaultObject.create"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.create">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="DefaultObject.create"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.create">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">account</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a basic object with default parameters, unless otherwise</span>
@@ -981,7 +978,7 @@
 <span class="sd">            key (str): Name of the new object.</span>
 <span class="sd">            account (Account): Account to attribute this object to.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            description (str): Brief description for this object.</span>
 <span class="sd">            ip (str): IP address of creator (for object auditing).</span>
 
@@ -1032,7 +1029,7 @@
 
         <span class="k">return</span> <span class="n">obj</span><span class="p">,</span> <span class="n">errors</span></div>
 
-<div class="viewcode-block" id="DefaultObject.copy"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.copy"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Makes an identical copy of this object, identical except for a</span>
 <span class="sd">        new dbref in the database. If you want to customize the copy</span>
@@ -1067,7 +1064,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">at_object_post_copy</span><span class="p">(</span><span class="n">new_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">new_obj</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_object_post_copy"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_object_post_copy">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_post_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_object_post_copy"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_object_post_copy">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_post_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by DefaultObject.copy(). Meant to be overloaded. In case there&#39;s extra data not covered by</span>
 <span class="sd">        .copy(), this can be used to deal with it.</span>
@@ -1080,7 +1077,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultObject.delete"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.delete"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Deletes this object.  Before deletion, this method makes sure</span>
 <span class="sd">        to move all contained objects to their respective home</span>
@@ -1133,7 +1130,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="DefaultObject.access"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.access">[docs]</a>    <span class="k">def</span> <span class="nf">access</span><span class="p">(</span>
+<div class="viewcode-block" id="DefaultObject.access"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.access">[docs]</a>    <span class="k">def</span> <span class="nf">access</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;read&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">no_superuser_bypass</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1147,7 +1144,7 @@
 <span class="sd">          no_superuser_bypass (bool, optional): If `True`, don&#39;t skip</span>
 <span class="sd">            lock check for superuser (be careful with this one).</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">          Passed on to the at_access hook along with the result of the access check.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1164,7 +1161,7 @@
     <span class="c1"># Hook methods</span>
     <span class="c1">#</span>
 
-<div class="viewcode-block" id="DefaultObject.at_first_save"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_first_save">[docs]</a>    <span class="k">def</span> <span class="nf">at_first_save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_first_save"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_first_save">[docs]</a>    <span class="k">def</span> <span class="nf">at_first_save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called by the typeclass system whenever an instance of</span>
 <span class="sd">        this class is saved for the first time. It is a generic hook</span>
@@ -1227,7 +1224,7 @@
 
     <span class="c1"># hooks called by the game engine #</span>
 
-<div class="viewcode-block" id="DefaultObject.basetype_setup"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.basetype_setup">[docs]</a>    <span class="k">def</span> <span class="nf">basetype_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.basetype_setup"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.basetype_setup">[docs]</a>    <span class="k">def</span> <span class="nf">basetype_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This sets up the default properties of an Object, just before</span>
 <span class="sd">        the more general at_object_creation.</span>
@@ -1258,7 +1255,7 @@
             <span class="p">)</span>
         <span class="p">)</span>  <span class="c1"># lock down puppeting only to staff by default</span></div>
 
-<div class="viewcode-block" id="DefaultObject.basetype_posthook_setup"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.basetype_posthook_setup">[docs]</a>    <span class="k">def</span> <span class="nf">basetype_posthook_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.basetype_posthook_setup"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.basetype_posthook_setup">[docs]</a>    <span class="k">def</span> <span class="nf">basetype_posthook_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called once, after basetype_setup and at_object_creation. This</span>
 <span class="sd">        should generally not be overloaded unless you are redefining</span>
@@ -1270,7 +1267,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_object_creation"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_object_creation"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called once, when this object is first created. This is the</span>
 <span class="sd">        normal hook to overload for most object types.</span>
@@ -1278,7 +1275,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_object_delete"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_object_delete">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_object_delete"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_object_delete">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called just before the database object is permanently</span>
 <span class="sd">        delete()d from the database. If this method returns False,</span>
@@ -1287,7 +1284,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_init"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_init">[docs]</a>    <span class="k">def</span> <span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_init"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_init">[docs]</a>    <span class="k">def</span> <span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is always called whenever this object is initiated --</span>
 <span class="sd">        that is, whenever it its typeclass is cached from memory. This</span>
@@ -1298,7 +1295,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_cmdset_get"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_cmdset_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_cmdset_get"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_cmdset_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called just before cmdsets on this object are requested by the</span>
 <span class="sd">        command handler. If changes need to be done on the fly to the</span>
@@ -1306,14 +1303,14 @@
 <span class="sd">        place to do it. This is called also if the object currently</span>
 <span class="sd">        have no cmdsets.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            caller (Session, Object or Account): The caller requesting</span>
 <span class="sd">                this cmdset.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_pre_puppet"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_pre_puppet">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_puppet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_pre_puppet"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_pre_puppet">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_puppet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called just before an Account connects to this object to puppet</span>
 <span class="sd">        it.</span>
@@ -1327,7 +1324,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_post_puppet"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_post_puppet">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_puppet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_post_puppet"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_post_puppet">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_puppet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called just after puppeting has been completed and all</span>
 <span class="sd">        Account&lt;-&gt;Object links have been established.</span>
@@ -1345,7 +1342,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;You become |w</span><span class="si">{self.key}</span><span class="s2">|n.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_last_puppet</span> <span class="o">=</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_pre_unpuppet"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_pre_unpuppet">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_unpuppet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_pre_unpuppet"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_pre_unpuppet">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_unpuppet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called just before beginning to un-connect a puppeting from</span>
 <span class="sd">        this Account.</span>
@@ -1362,7 +1359,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_post_unpuppet"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_post_unpuppet">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_unpuppet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_post_unpuppet"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_post_unpuppet">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_unpuppet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called just after the Account successfully disconnected from</span>
 <span class="sd">        this object, severing all connections.</span>
@@ -1378,7 +1375,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_server_reload"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_server_reload">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_server_reload"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_server_reload">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This hook is called whenever the server is shutting down for</span>
 <span class="sd">        restart/reboot. If you want to, for example, save non-persistent</span>
@@ -1387,7 +1384,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_server_shutdown"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_server_shutdown">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_server_shutdown"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_server_shutdown">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This hook is called whenever the server is shutting down fully</span>
 <span class="sd">        (i.e. not for a restart).</span>
@@ -1395,7 +1392,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_access"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_access">[docs]</a>    <span class="k">def</span> <span class="nf">at_access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="p">,</span> <span class="n">access_type</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_access"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_access">[docs]</a>    <span class="k">def</span> <span class="nf">at_access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="p">,</span> <span class="n">access_type</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called with the result of an access call, along with</span>
 <span class="sd">        any kwargs used for that call. The return of this method does</span>
@@ -1408,7 +1405,7 @@
 <span class="sd">            accessing_obj (Object or Account): The entity trying to gain access.</span>
 <span class="sd">            access_type (str): The type of access that was requested.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            Not used by default, added for possible expandability in a</span>
 <span class="sd">            game.</span>
 
@@ -1417,7 +1414,7 @@
 
     <span class="c1"># hooks called when moving the object</span>
 
-<div class="viewcode-block" id="DefaultObject.at_before_move"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_before_move">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_before_move"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_before_move">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called just before starting to move this object to</span>
 <span class="sd">        destination.</span>
@@ -1438,7 +1435,7 @@
         <span class="c1"># return has_perm(self, destination, &quot;can_move&quot;)</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="DefaultObject.announce_move_from"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.announce_move_from">[docs]</a>    <span class="k">def</span> <span class="nf">announce_move_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.announce_move_from"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.announce_move_from">[docs]</a>    <span class="k">def</span> <span class="nf">announce_move_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called if the move is to be announced. This is</span>
 <span class="sd">        called while we are still standing in the old</span>
@@ -1485,7 +1482,7 @@
 
         <span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="p">,),</span> <span class="n">mapping</span><span class="o">=</span><span class="n">mapping</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DefaultObject.announce_move_to"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.announce_move_to">[docs]</a>    <span class="k">def</span> <span class="nf">announce_move_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.announce_move_to"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.announce_move_to">[docs]</a>    <span class="k">def</span> <span class="nf">announce_move_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called after the move if the move was not quiet. At this point</span>
 <span class="sd">        we are standing in the new location.</span>
@@ -1547,7 +1544,7 @@
 
         <span class="n">destination</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="p">,),</span> <span class="n">mapping</span><span class="o">=</span><span class="n">mapping</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_after_move"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_after_move">[docs]</a>    <span class="k">def</span> <span class="nf">at_after_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_after_move"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_after_move">[docs]</a>    <span class="k">def</span> <span class="nf">at_after_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called after move has completed, regardless of quiet mode or</span>
 <span class="sd">        not.  Allows changes to the object due to the location it is</span>
@@ -1561,7 +1558,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_object_leave"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_object_leave">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_obj</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_object_leave"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_object_leave">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_obj</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called just before an object leaves from inside this object</span>
 
@@ -1574,7 +1571,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_object_receive"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_object_receive">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_obj</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_object_receive"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_object_receive">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_obj</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called after an object has been moved into this object.</span>
 
@@ -1588,7 +1585,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_traverse"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_traverse">[docs]</a>    <span class="k">def</span> <span class="nf">at_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_traverse"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_traverse">[docs]</a>    <span class="k">def</span> <span class="nf">at_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This hook is responsible for handling the actual traversal,</span>
 <span class="sd">        normally by calling</span>
@@ -1607,7 +1604,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_after_traverse"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_after_traverse">[docs]</a>    <span class="k">def</span> <span class="nf">at_after_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_after_traverse"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_after_traverse">[docs]</a>    <span class="k">def</span> <span class="nf">at_after_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called just after an object successfully used this object to</span>
 <span class="sd">        traverse to another object (i.e. this object is a type of</span>
@@ -1624,7 +1621,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_failed_traverse"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_failed_traverse">[docs]</a>    <span class="k">def</span> <span class="nf">at_failed_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_failed_traverse"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_failed_traverse">[docs]</a>    <span class="k">def</span> <span class="nf">at_failed_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called if an object fails to traverse this object for</span>
 <span class="sd">        some reason.</span>
@@ -1642,7 +1639,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_msg_receive"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_msg_receive">[docs]</a>    <span class="k">def</span> <span class="nf">at_msg_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_msg_receive"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_msg_receive">[docs]</a>    <span class="k">def</span> <span class="nf">at_msg_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This hook is called whenever someone sends a message to this</span>
 <span class="sd">        object using the `msg` method.</span>
@@ -1659,7 +1656,7 @@
 <span class="sd">            text (str, optional): The message received.</span>
 <span class="sd">            from_obj (any, optional): The object sending the message.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            This includes any keywords sent to the `msg` method.</span>
 
 <span class="sd">        Returns:</span>
@@ -1672,7 +1669,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_msg_send"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_msg_send">[docs]</a>    <span class="k">def</span> <span class="nf">at_msg_send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">to_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_msg_send"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_msg_send">[docs]</a>    <span class="k">def</span> <span class="nf">at_msg_send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">to_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is a hook that is called when *this* object sends a</span>
 <span class="sd">        message to another object with `obj.msg(text, to_obj=obj)`.</span>
@@ -1681,7 +1678,7 @@
 <span class="sd">            text (str, optional): Text to send.</span>
 <span class="sd">            to_obj (any, optional): The object to send to.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            Keywords passed from msg()</span>
 
 <span class="sd">        Notes:</span>
@@ -1694,7 +1691,7 @@
 
     <span class="c1"># hooks called by the default cmdset.</span>
 
-<div class="viewcode-block" id="DefaultObject.return_appearance"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.return_appearance">[docs]</a>    <span class="k">def</span> <span class="nf">return_appearance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.return_appearance"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.return_appearance">[docs]</a>    <span class="k">def</span> <span class="nf">return_appearance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This formats a description. It is the hook a &#39;look&#39; command</span>
 <span class="sd">        should call.</span>
@@ -1748,7 +1745,7 @@
 
         <span class="k">return</span> <span class="n">string</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_look"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_look">[docs]</a>    <span class="k">def</span> <span class="nf">at_look</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_look"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_look">[docs]</a>    <span class="k">def</span> <span class="nf">at_look</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when this object performs a look. It allows to</span>
 <span class="sd">        customize just what this means. It will not itself</span>
@@ -1782,7 +1779,7 @@
 
         <span class="k">return</span> <span class="n">description</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_desc"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_desc">[docs]</a>    <span class="k">def</span> <span class="nf">at_desc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_desc"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_desc">[docs]</a>    <span class="k">def</span> <span class="nf">at_desc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called whenever someone looks at this object.</span>
 
@@ -1794,7 +1791,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_before_get"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_before_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_before_get"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_before_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the default `get` command before this object has been</span>
 <span class="sd">        picked up.</span>
@@ -1813,7 +1810,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_get"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_get"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the default `get` command when this object has been</span>
 <span class="sd">        picked up.</span>
@@ -1830,7 +1827,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_before_give"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_before_give">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_give</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">giver</span><span class="p">,</span> <span class="n">getter</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_before_give"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_before_give">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_give</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">giver</span><span class="p">,</span> <span class="n">getter</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the default `give` command before this object has been</span>
 <span class="sd">        given.</span>
@@ -1851,7 +1848,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_give"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_give">[docs]</a>    <span class="k">def</span> <span class="nf">at_give</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">giver</span><span class="p">,</span> <span class="n">getter</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_give"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_give">[docs]</a>    <span class="k">def</span> <span class="nf">at_give</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">giver</span><span class="p">,</span> <span class="n">getter</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the default `give` command when this object has been</span>
 <span class="sd">        given.</span>
@@ -1869,7 +1866,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_before_drop"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_before_drop">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_drop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dropper</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_before_drop"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_before_drop">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_drop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dropper</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the default `drop` command before this object has been</span>
 <span class="sd">        dropped.</span>
@@ -1895,7 +1892,7 @@
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_drop"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_drop">[docs]</a>    <span class="k">def</span> <span class="nf">at_drop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dropper</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_drop"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_drop">[docs]</a>    <span class="k">def</span> <span class="nf">at_drop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dropper</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the default `drop` command when this object has been</span>
 <span class="sd">        dropped.</span>
@@ -1912,7 +1909,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_before_say"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_before_say">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_say</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_before_say"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_before_say">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_say</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Before the object says something.</span>
 
@@ -1923,7 +1920,7 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            message (str): The suggested say/whisper text spoken by self.</span>
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            whisper (bool): If True, this is a whisper rather than</span>
 <span class="sd">                a say. This is sent by the whisper command by default.</span>
 <span class="sd">                Other verbal commands could use this hook in similar</span>
@@ -1936,7 +1933,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">message</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_say"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultObject.at_say">[docs]</a>    <span class="k">def</span> <span class="nf">at_say</span><span class="p">(</span>
+<div class="viewcode-block" id="DefaultObject.at_say"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_say">[docs]</a>    <span class="k">def</span> <span class="nf">at_say</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">message</span><span class="p">,</span>
         <span class="n">msg_self</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1963,7 +1960,7 @@
 <span class="sd">                (by default only used by whispers).</span>
 <span class="sd">            msg_receivers(str): Specific message to pass to the receiver(s). This will parsed</span>
 <span class="sd">                with the {receiver} placeholder replaced with the given receiver.</span>
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            whisper (bool): If this is a whisper rather than a say. Kwargs</span>
 <span class="sd">                can be used by other verbal commands in a similar way.</span>
 <span class="sd">            mapping (dict): Pass an additional mapping to the message.</span>
@@ -2074,7 +2071,7 @@
 <span class="c1">#</span>
 
 
-<div class="viewcode-block" id="DefaultCharacter"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultCharacter">[docs]</a><span class="k">class</span> <span class="nc">DefaultCharacter</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultCharacter"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter">[docs]</a><span class="k">class</span> <span class="nc">DefaultCharacter</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This implements an Object puppeted by a Session - that is,</span>
 <span class="sd">    a character avatar controlled by an account.</span>
@@ -2088,7 +2085,7 @@
     <span class="c1"># Will be formatted with the appropriate attributes.</span>
     <span class="n">lockstring</span> <span class="o">=</span> <span class="s2">&quot;puppet:id(</span><span class="si">{character_id}</span><span class="s2">) or pid(</span><span class="si">{account_id}</span><span class="s2">) or perm(Developer) or pperm(Developer);delete:id(</span><span class="si">{account_id}</span><span class="s2">) or perm(Admin)&quot;</span>
 
-<div class="viewcode-block" id="DefaultCharacter.create"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultCharacter.create">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="DefaultCharacter.create"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.create">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a basic Character with default parameters, unless otherwise</span>
@@ -2102,7 +2099,7 @@
 <span class="sd">                an argument, but one can fake it out by supplying None-- it will</span>
 <span class="sd">                change the default lockset and skip creator attribution.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            description (str): Brief description for this object.</span>
 <span class="sd">            ip (str): IP address of creator (for object auditing).</span>
 <span class="sd">            All other kwargs will be passed into the create_object call.</span>
@@ -2176,7 +2173,7 @@
 
         <span class="k">return</span> <span class="n">obj</span><span class="p">,</span> <span class="n">errors</span></div>
 
-<div class="viewcode-block" id="DefaultCharacter.normalize_name"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultCharacter.normalize_name">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="DefaultCharacter.normalize_name"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.normalize_name">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">normalize_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Normalize the character name prior to creating. Note that this should be refactored</span>
@@ -2195,7 +2192,7 @@
         <span class="n">latin_name</span> <span class="o">=</span> <span class="n">latinify</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;X&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">latin_name</span></div>
 
-<div class="viewcode-block" id="DefaultCharacter.validate_name"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultCharacter.validate_name">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="DefaultCharacter.validate_name"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.validate_name">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">validate_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Validate the character name prior to creating. Overload this function to add custom validators</span>
 
@@ -2208,7 +2205,7 @@
 
         <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># Default validator does not perform any operations</span></div>
 
-<div class="viewcode-block" id="DefaultCharacter.basetype_setup"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultCharacter.basetype_setup">[docs]</a>    <span class="k">def</span> <span class="nf">basetype_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultCharacter.basetype_setup"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.basetype_setup">[docs]</a>    <span class="k">def</span> <span class="nf">basetype_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Setup character-specific security.</span>
 
@@ -2225,7 +2222,7 @@
         <span class="c1"># add the default cmdset</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">CMDSET_CHARACTER</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DefaultCharacter.at_after_move"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultCharacter.at_after_move">[docs]</a>    <span class="k">def</span> <span class="nf">at_after_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultCharacter.at_after_move"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.at_after_move">[docs]</a>    <span class="k">def</span> <span class="nf">at_after_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        We make sure to look around after a move.</span>
 
@@ -2233,7 +2230,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">at_look</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="DefaultCharacter.at_pre_puppet"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultCharacter.at_pre_puppet">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_puppet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultCharacter.at_pre_puppet"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.at_pre_puppet">[docs]</a>    <span class="k">def</span> <span class="nf">at_pre_puppet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the character from storage in None location in `at_post_unpuppet`.</span>
 <span class="sd">        Args:</span>
@@ -2255,7 +2252,7 @@
                 <span class="s2">&quot;|r</span><span class="si">%s</span><span class="s2"> has no location and no home is set.|n&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span>
             <span class="p">)</span>  <span class="c1"># Note to set home.</span></div>
 
-<div class="viewcode-block" id="DefaultCharacter.at_post_puppet"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultCharacter.at_post_puppet">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_puppet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultCharacter.at_post_puppet"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.at_post_puppet">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_puppet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called just after puppeting has been completed and all</span>
 <span class="sd">        Account&lt;-&gt;Object links have been established.</span>
@@ -2278,7 +2275,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">for_contents</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="p">],</span> <span class="n">from_obj</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DefaultCharacter.at_post_unpuppet"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultCharacter.at_post_unpuppet">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_unpuppet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultCharacter.at_post_unpuppet"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.at_post_unpuppet">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_unpuppet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        We stove away the character when the account goes ooc/logs off,</span>
 <span class="sd">        otherwise the character object will remain in the room also</span>
@@ -2330,7 +2327,7 @@
 <span class="c1"># Base Room object</span>
 
 
-<div class="viewcode-block" id="DefaultRoom"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultRoom">[docs]</a><span class="k">class</span> <span class="nc">DefaultRoom</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultRoom"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultRoom">[docs]</a><span class="k">class</span> <span class="nc">DefaultRoom</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the base room object. It&#39;s just like any Object except its</span>
 <span class="sd">    location is always `None`.</span>
@@ -2348,7 +2345,7 @@
         <span class="s2">&quot;edit:id(</span><span class="si">{id}</span><span class="s2">) or perm(Admin)&quot;</span>
     <span class="p">)</span>
 
-<div class="viewcode-block" id="DefaultRoom.create"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultRoom.create">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="DefaultRoom.create"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultRoom.create">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a basic Room with default parameters, unless otherwise</span>
@@ -2360,7 +2357,7 @@
 <span class="sd">            key (str): Name of the new Room.</span>
 <span class="sd">            account (obj): Account to associate this Room with.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            description (str): Brief description for this object.</span>
 <span class="sd">            ip (str): IP address of creator (for object auditing).</span>
 
@@ -2411,7 +2408,7 @@
 
         <span class="k">return</span> <span class="n">obj</span><span class="p">,</span> <span class="n">errors</span></div>
 
-<div class="viewcode-block" id="DefaultRoom.basetype_setup"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultRoom.basetype_setup">[docs]</a>    <span class="k">def</span> <span class="nf">basetype_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultRoom.basetype_setup"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultRoom.basetype_setup">[docs]</a>    <span class="k">def</span> <span class="nf">basetype_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Simple room setup setting locks to make sure the room</span>
 <span class="sd">        cannot be picked up.</span>
@@ -2430,7 +2427,7 @@
 <span class="c1">#</span>
 
 
-<div class="viewcode-block" id="ExitCommand"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.ExitCommand">[docs]</a><span class="k">class</span> <span class="nc">ExitCommand</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="ExitCommand"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.ExitCommand">[docs]</a><span class="k">class</span> <span class="nc">ExitCommand</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a command that simply cause the caller to traverse</span>
 <span class="sd">    the object it is attached to.</span>
@@ -2439,7 +2436,7 @@
 
     <span class="n">obj</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="ExitCommand.func"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.ExitCommand.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ExitCommand.func"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.ExitCommand.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Default exit traverse if no syscommand is defined.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2456,7 +2453,7 @@
                 <span class="c1"># No shorthand error message. Call hook.</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">at_failed_traverse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ExitCommand.get_extra_info"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.ExitCommand.get_extra_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_extra_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ExitCommand.get_extra_info"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.ExitCommand.get_extra_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_extra_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shows a bit of information on where the exit leads.</span>
 
@@ -2478,7 +2475,7 @@
 <span class="c1"># Base Exit object</span>
 
 
-<div class="viewcode-block" id="DefaultExit"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultExit">[docs]</a><span class="k">class</span> <span class="nc">DefaultExit</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultExit"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultExit">[docs]</a><span class="k">class</span> <span class="nc">DefaultExit</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the base exit object - it connects a location to another.</span>
 <span class="sd">    This is done by the exit assigning a &quot;command&quot; on itself with the</span>
@@ -2506,7 +2503,7 @@
     <span class="c1"># be overloaded unless one want to change the foundation for how</span>
     <span class="c1"># Exits work. See the end of the class for hook methods to overload.</span>
 
-<div class="viewcode-block" id="DefaultExit.create_exit_cmdset"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultExit.create_exit_cmdset">[docs]</a>    <span class="k">def</span> <span class="nf">create_exit_cmdset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exidbobj</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultExit.create_exit_cmdset"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultExit.create_exit_cmdset">[docs]</a>    <span class="k">def</span> <span class="nf">create_exit_cmdset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exidbobj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper function for creating an exit command set + command.</span>
 
@@ -2542,7 +2539,7 @@
 
     <span class="c1"># Command hooks</span>
 
-<div class="viewcode-block" id="DefaultExit.create"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultExit.create">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="DefaultExit.create"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultExit.create">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a basic Exit with default parameters, unless otherwise</span>
@@ -2557,7 +2554,7 @@
 <span class="sd">            source (Room): The room to create this exit in.</span>
 <span class="sd">            dest (Room): The room to which this exit should go.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            description (str): Brief description for this object.</span>
 <span class="sd">            ip (str): IP address of creator (for object auditing).</span>
 
@@ -2611,7 +2608,7 @@
 
         <span class="k">return</span> <span class="n">obj</span><span class="p">,</span> <span class="n">errors</span></div>
 
-<div class="viewcode-block" id="DefaultExit.basetype_setup"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultExit.basetype_setup">[docs]</a>    <span class="k">def</span> <span class="nf">basetype_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultExit.basetype_setup"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultExit.basetype_setup">[docs]</a>    <span class="k">def</span> <span class="nf">basetype_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Setup exit-security</span>
 
@@ -2636,7 +2633,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span></div>
 
-<div class="viewcode-block" id="DefaultExit.at_cmdset_get"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultExit.at_cmdset_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultExit.at_cmdset_get"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultExit.at_cmdset_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called just before cmdsets on this object are requested by the</span>
 <span class="sd">        command handler. If changes need to be done on the fly to the</span>
@@ -2644,7 +2641,7 @@
 <span class="sd">        place to do it. This is called also if the object currently</span>
 <span class="sd">        has no cmdsets.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">          force_init (bool): If `True`, force a re-build of the cmdset</span>
 <span class="sd">            (for example to update aliases).</span>
 
@@ -2654,7 +2651,7 @@
             <span class="c1"># we are resetting, or no exit-cmdset was set. Create one dynamically.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_exit_cmdset</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DefaultExit.at_init"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultExit.at_init">[docs]</a>    <span class="k">def</span> <span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultExit.at_init"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultExit.at_init">[docs]</a>    <span class="k">def</span> <span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called when this objects is re-loaded from cache. When</span>
 <span class="sd">        that happens, we make sure to remove any old ExitCmdSet cmdset</span>
@@ -2662,7 +2659,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">remove_default</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="DefaultExit.at_traverse"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultExit.at_traverse">[docs]</a>    <span class="k">def</span> <span class="nf">at_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultExit.at_traverse"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultExit.at_traverse">[docs]</a>    <span class="k">def</span> <span class="nf">at_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This implements the actual traversal. The traverse lock has</span>
 <span class="sd">        already been checked (in the Exit command) at this point.</span>
@@ -2685,7 +2682,7 @@
                 <span class="c1"># No shorthand error message. Call hook.</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">at_failed_traverse</span><span class="p">(</span><span class="n">traversing_object</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DefaultExit.at_failed_traverse"><a class="viewcode-back" href="../../../api/evennia.objects.html#evennia.objects.objects.DefaultExit.at_failed_traverse">[docs]</a>    <span class="k">def</span> <span class="nf">at_failed_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultExit.at_failed_traverse"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultExit.at_failed_traverse">[docs]</a>    <span class="k">def</span> <span class="nf">at_failed_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Overloads the default hook to implement a simple default error message.</span>
 
@@ -2703,6 +2700,7 @@
         <span class="n">traversing_object</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You cannot go there.&quot;</span><span class="p">)</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -2740,17 +2738,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.objects.objects</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.objects.objects</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

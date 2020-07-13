@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.rpsystem &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.rpsystem</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.rpsystem</a></li> 
       </ul>
     </div>  
 
@@ -208,31 +205,31 @@
 <span class="c1">#     intermediary form into the one valid for that char.</span>
 
 
-<div class="viewcode-block" id="EmoteError"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.EmoteError">[docs]</a><span class="k">class</span> <span class="nc">EmoteError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="EmoteError"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.EmoteError">[docs]</a><span class="k">class</span> <span class="nc">EmoteError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="SdescError"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.SdescError">[docs]</a><span class="k">class</span> <span class="nc">SdescError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="SdescError"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.SdescError">[docs]</a><span class="k">class</span> <span class="nc">SdescError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="RecogError"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.RecogError">[docs]</a><span class="k">class</span> <span class="nc">RecogError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="RecogError"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.RecogError">[docs]</a><span class="k">class</span> <span class="nc">RecogError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="LanguageError"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.LanguageError">[docs]</a><span class="k">class</span> <span class="nc">LanguageError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="LanguageError"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.LanguageError">[docs]</a><span class="k">class</span> <span class="nc">LanguageError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="_dummy_process"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem._dummy_process">[docs]</a><span class="k">def</span> <span class="nf">_dummy_process</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_dummy_process</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="s2">&quot;Pass-through processor&quot;</span>
-    <span class="k">return</span> <span class="n">text</span></div>
+    <span class="k">return</span> <span class="n">text</span>
 
 
 <span class="c1"># emoting mechanisms</span>
 
 
-<div class="viewcode-block" id="ordered_permutation_regex"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.ordered_permutation_regex">[docs]</a><span class="k">def</span> <span class="nf">ordered_permutation_regex</span><span class="p">(</span><span class="n">sentence</span><span class="p">):</span>
+<div class="viewcode-block" id="ordered_permutation_regex"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.ordered_permutation_regex">[docs]</a><span class="k">def</span> <span class="nf">ordered_permutation_regex</span><span class="p">(</span><span class="n">sentence</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Builds a regex that matches &#39;ordered permutations&#39; of a sentence&#39;s</span>
 <span class="sd">    words.</span>
@@ -284,7 +281,7 @@
     <span class="k">return</span> <span class="n">regex</span></div>
 
 
-<div class="viewcode-block" id="regex_tuple_from_key_alias"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.regex_tuple_from_key_alias">[docs]</a><span class="k">def</span> <span class="nf">regex_tuple_from_key_alias</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="regex_tuple_from_key_alias"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.regex_tuple_from_key_alias">[docs]</a><span class="k">def</span> <span class="nf">regex_tuple_from_key_alias</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This will build a regex tuple for any object, not just from those</span>
 <span class="sd">    with sdesc/recog handlers. It&#39;s used as a legacy mechanism for</span>
@@ -308,7 +305,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="parse_language"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.parse_language">[docs]</a><span class="k">def</span> <span class="nf">parse_language</span><span class="p">(</span><span class="n">speaker</span><span class="p">,</span> <span class="n">emote</span><span class="p">):</span>
+<div class="viewcode-block" id="parse_language"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.parse_language">[docs]</a><span class="k">def</span> <span class="nf">parse_language</span><span class="p">(</span><span class="n">speaker</span><span class="p">,</span> <span class="n">emote</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse the emote for language. This is</span>
 <span class="sd">    used with a plugin for handling languages.</span>
@@ -327,7 +324,8 @@
 <span class="sd">            the markers and a tuple (langname, saytext), where</span>
 <span class="sd">            langname can be None.</span>
 <span class="sd">    Raises:</span>
-<span class="sd">        LanguageError: If an invalid language was specified.</span>
+<span class="sd">        evennia.contrib.rpsystem.LanguageError: If an invalid language was</span>
+<span class="sd">        specified.</span>
 
 <span class="sd">    Notes:</span>
 <span class="sd">        Note that no errors are raised if the wrong language identifier</span>
@@ -366,7 +364,7 @@
     <span class="k">return</span> <span class="n">emote</span><span class="p">,</span> <span class="n">mapping</span></div>
 
 
-<div class="viewcode-block" id="parse_sdescs_and_recogs"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.parse_sdescs_and_recogs">[docs]</a><span class="k">def</span> <span class="nf">parse_sdescs_and_recogs</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">search_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="parse_sdescs_and_recogs"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.parse_sdescs_and_recogs">[docs]</a><span class="k">def</span> <span class="nf">parse_sdescs_and_recogs</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">search_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Read a raw emote and parse it into an intermediary</span>
 <span class="sd">    format for distributing to all observers.</span>
@@ -524,7 +522,7 @@
     <span class="k">return</span> <span class="n">string</span><span class="p">,</span> <span class="n">mapping</span></div>
 
 
-<div class="viewcode-block" id="send_emote"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.send_emote">[docs]</a><span class="k">def</span> <span class="nf">send_emote</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">receivers</span><span class="p">,</span> <span class="n">emote</span><span class="p">,</span> <span class="n">anonymous_add</span><span class="o">=</span><span class="s2">&quot;first&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="send_emote"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.send_emote">[docs]</a><span class="k">def</span> <span class="nf">send_emote</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">receivers</span><span class="p">,</span> <span class="n">emote</span><span class="p">,</span> <span class="n">anonymous_add</span><span class="o">=</span><span class="s2">&quot;first&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Main access function for distribute an emote.</span>
 
@@ -618,7 +616,7 @@
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="SdescHandler"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.SdescHandler">[docs]</a><span class="k">class</span> <span class="nc">SdescHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="SdescHandler"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.SdescHandler">[docs]</a><span class="k">class</span> <span class="nc">SdescHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This Handler wraps all operations with sdescs. We</span>
 <span class="sd">    need to use this since we do a lot preparations on</span>
@@ -632,7 +630,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="SdescHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.SdescHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="SdescHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.SdescHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the handler</span>
 
@@ -645,16 +643,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sdesc_regex</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="SdescHandler._cache"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.SdescHandler._cache">[docs]</a>    <span class="k">def</span> <span class="nf">_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Cache data from storage</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sdesc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_sdesc&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="n">sdesc_regex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_sdesc_regex&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sdesc_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">sdesc_regex</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sdesc_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">sdesc_regex</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">)</span>
 
-<div class="viewcode-block" id="SdescHandler.add"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.SdescHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sdesc</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">60</span><span class="p">):</span>
+<div class="viewcode-block" id="SdescHandler.add"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.SdescHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sdesc</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">60</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a new sdesc to object, replacing the old one.</span>
 
@@ -702,7 +700,7 @@
 
         <span class="k">return</span> <span class="n">sdesc</span></div>
 
-<div class="viewcode-block" id="SdescHandler.get"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.SdescHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SdescHandler.get"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.SdescHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Simple getter. The sdesc should never be allowed to</span>
 <span class="sd">        be empty, but if it is we must fall back to the key.</span>
@@ -710,7 +708,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sdesc</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span></div>
 
-<div class="viewcode-block" id="SdescHandler.get_regex_tuple"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.SdescHandler.get_regex_tuple">[docs]</a>    <span class="k">def</span> <span class="nf">get_regex_tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SdescHandler.get_regex_tuple"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.SdescHandler.get_regex_tuple">[docs]</a>    <span class="k">def</span> <span class="nf">get_regex_tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return data for sdesc/recog handling</span>
 
@@ -721,7 +719,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sdesc_regex</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sdesc</span></div></div>
 
 
-<div class="viewcode-block" id="RecogHandler"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.RecogHandler">[docs]</a><span class="k">class</span> <span class="nc">RecogHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="RecogHandler"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.RecogHandler">[docs]</a><span class="k">class</span> <span class="nc">RecogHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This handler manages the recognition mapping</span>
 <span class="sd">    of an Object.</span>
@@ -735,7 +733,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="RecogHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.RecogHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="RecogHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.RecogHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the handler</span>
 
@@ -750,7 +748,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">obj2recog</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="RecogHandler._cache"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.RecogHandler._cache">[docs]</a>    <span class="k">def</span> <span class="nf">_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load data to handler cache</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -760,9 +758,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">obj2regex</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
             <span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regex</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">))</span> <span class="k">for</span> <span class="n">obj</span><span class="p">,</span> <span class="n">regex</span> <span class="ow">in</span> <span class="n">obj2regex</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">obj</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">obj2recog</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">obj</span><span class="p">,</span> <span class="n">recog</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span><span class="p">,</span> <span class="n">recog</span> <span class="ow">in</span> <span class="n">obj2recog</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">obj</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj2recog</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">obj</span><span class="p">,</span> <span class="n">recog</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span><span class="p">,</span> <span class="n">recog</span> <span class="ow">in</span> <span class="n">obj2recog</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">obj</span><span class="p">)</span>
 
-<div class="viewcode-block" id="RecogHandler.add"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.RecogHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">recog</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">60</span><span class="p">):</span>
+<div class="viewcode-block" id="RecogHandler.add"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.RecogHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">recog</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">60</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Assign a custom recog (nick) to the given object.</span>
 
@@ -818,7 +816,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">obj2regex</span><span class="p">[</span><span class="n">obj</span><span class="p">]</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regex</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">recog</span></div>
 
-<div class="viewcode-block" id="RecogHandler.get"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.RecogHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="RecogHandler.get"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.RecogHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get recog replacement string, if one exists, otherwise</span>
 <span class="sd">        get sdesc and as a last resort, the object&#39;s key.</span>
@@ -842,7 +840,7 @@
             <span class="c1"># recog_mask log not passed, disable recog</span>
             <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;sdesc&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">obj</span><span class="o">.</span><span class="n">key</span></div>
 
-<div class="viewcode-block" id="RecogHandler.all"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.RecogHandler.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RecogHandler.all"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.RecogHandler.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a mapping of the recogs stored in handler.</span>
 
@@ -852,7 +850,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj2recog</span><span class="p">[</span><span class="n">obj</span><span class="p">]:</span> <span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2recog</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span></div>
 
-<div class="viewcode-block" id="RecogHandler.remove"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.RecogHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="RecogHandler.remove"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.RecogHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clear recog for a given object.</span>
 
@@ -865,7 +863,7 @@
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_recog_ref2recog</span><span class="p">[</span><span class="s2">&quot;#</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="RecogHandler.get_regex_tuple"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.RecogHandler.get_regex_tuple">[docs]</a>    <span class="k">def</span> <span class="nf">get_regex_tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="RecogHandler.get_regex_tuple"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.RecogHandler.get_regex_tuple">[docs]</a>    <span class="k">def</span> <span class="nf">get_regex_tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            rec (tuple): Tuple (recog_regex, obj, recog)</span>
@@ -880,15 +878,15 @@
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="RPCommand"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.RPCommand">[docs]</a><span class="k">class</span> <span class="nc">RPCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="RPCommand"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.RPCommand">[docs]</a><span class="k">class</span> <span class="nc">RPCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="s2">&quot;simple parent&quot;</span>
 
-<div class="viewcode-block" id="RPCommand.parse"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.RPCommand.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RPCommand.parse"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.RPCommand.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;strip extra whitespace&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="CmdEmote"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.CmdEmote">[docs]</a><span class="k">class</span> <span class="nc">CmdEmote</span><span class="p">(</span><span class="n">RPCommand</span><span class="p">):</span>  <span class="c1"># replaces the main emote</span>
+<div class="viewcode-block" id="CmdEmote"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.CmdEmote">[docs]</a><span class="k">class</span> <span class="nc">CmdEmote</span><span class="p">(</span><span class="n">RPCommand</span><span class="p">):</span>  <span class="c1"># replaces the main emote</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Emote an action, allowing dynamic replacement of</span>
 <span class="sd">    text in the emote.</span>
@@ -914,7 +912,7 @@
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;:&quot;</span><span class="p">]</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
 
-<div class="viewcode-block" id="CmdEmote.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.CmdEmote.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdEmote.func"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.CmdEmote.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Perform the emote.&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;What do you want to do?&quot;</span><span class="p">)</span>
@@ -927,7 +925,7 @@
             <span class="n">send_emote</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">emote</span><span class="p">,</span> <span class="n">anonymous_add</span><span class="o">=</span><span class="s2">&quot;first&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdSay"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.CmdSay">[docs]</a><span class="k">class</span> <span class="nc">CmdSay</span><span class="p">(</span><span class="n">RPCommand</span><span class="p">):</span>  <span class="c1"># replaces standard say</span>
+<div class="viewcode-block" id="CmdSay"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.CmdSay">[docs]</a><span class="k">class</span> <span class="nc">CmdSay</span><span class="p">(</span><span class="n">RPCommand</span><span class="p">):</span>  <span class="c1"># replaces standard say</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    speak as your character</span>
 
@@ -941,7 +939,7 @@
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">]</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
 
-<div class="viewcode-block" id="CmdSay.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.CmdSay.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSay.func"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.CmdSay.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Run the say command&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
@@ -957,7 +955,7 @@
         <span class="n">send_emote</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">speech</span><span class="p">,</span> <span class="n">anonymous_add</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdSdesc"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.CmdSdesc">[docs]</a><span class="k">class</span> <span class="nc">CmdSdesc</span><span class="p">(</span><span class="n">RPCommand</span><span class="p">):</span>  <span class="c1"># set/look at own sdesc</span>
+<div class="viewcode-block" id="CmdSdesc"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.CmdSdesc">[docs]</a><span class="k">class</span> <span class="nc">CmdSdesc</span><span class="p">(</span><span class="n">RPCommand</span><span class="p">):</span>  <span class="c1"># set/look at own sdesc</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Assign yourself a short description (sdesc).</span>
 
@@ -971,7 +969,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;sdesc&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
 
-<div class="viewcode-block" id="CmdSdesc.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.CmdSdesc.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSdesc.func"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.CmdSdesc.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Assign the sdesc&quot;</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
@@ -991,7 +989,7 @@
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&#39;s sdesc was set to &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">sdesc</span><span class="p">))</span></div></div>
 
 
-<div class="viewcode-block" id="CmdPose"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.CmdPose">[docs]</a><span class="k">class</span> <span class="nc">CmdPose</span><span class="p">(</span><span class="n">RPCommand</span><span class="p">):</span>  <span class="c1"># set current pose and default pose</span>
+<div class="viewcode-block" id="CmdPose"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.CmdPose">[docs]</a><span class="k">class</span> <span class="nc">CmdPose</span><span class="p">(</span><span class="n">RPCommand</span><span class="p">):</span>  <span class="c1"># set current pose and default pose</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set a static pose</span>
 
@@ -1019,7 +1017,7 @@
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;pose&quot;</span>
 
-<div class="viewcode-block" id="CmdPose.parse"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.CmdPose.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdPose.parse"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.CmdPose.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extract the &quot;default&quot; alternative to the pose.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1039,7 +1037,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="n">default</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="CmdPose.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.CmdPose.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdPose.func"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.CmdPose.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Create the pose&quot;</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="n">pose</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
@@ -1092,7 +1090,7 @@
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Pose will read &#39;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">target_name</span><span class="p">,</span> <span class="n">pose</span><span class="p">))</span></div></div>
 
 
-<div class="viewcode-block" id="CmdRecog"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.CmdRecog">[docs]</a><span class="k">class</span> <span class="nc">CmdRecog</span><span class="p">(</span><span class="n">RPCommand</span><span class="p">):</span>  <span class="c1"># assign personal alias to object in room</span>
+<div class="viewcode-block" id="CmdRecog"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.CmdRecog">[docs]</a><span class="k">class</span> <span class="nc">CmdRecog</span><span class="p">(</span><span class="n">RPCommand</span><span class="p">):</span>  <span class="c1"># assign personal alias to object in room</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Recognize another person in the same room.</span>
 
@@ -1113,7 +1111,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;recog&quot;</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;recognize&quot;</span><span class="p">,</span> <span class="s2">&quot;forget&quot;</span><span class="p">]</span>
 
-<div class="viewcode-block" id="CmdRecog.parse"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.CmdRecog.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdRecog.parse"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.CmdRecog.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Parse for the sdesc as alias structure&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sdesc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alias</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
         <span class="k">if</span> <span class="s2">&quot; as &quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
@@ -1125,7 +1123,7 @@
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">sdesc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alias</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span></div>
 
-<div class="viewcode-block" id="CmdRecog.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.CmdRecog.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdRecog.func"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.CmdRecog.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Assign the recog&quot;</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="n">alias</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alias</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;.?!&quot;</span><span class="p">)</span>
@@ -1201,7 +1199,7 @@
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> will now remember |w</span><span class="si">%s</span><span class="s2">|n as |w</span><span class="si">%s</span><span class="s2">|n.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">sdesc</span><span class="p">,</span> <span class="n">alias</span><span class="p">))</span></div></div>
 
 
-<div class="viewcode-block" id="CmdMask"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.CmdMask">[docs]</a><span class="k">class</span> <span class="nc">CmdMask</span><span class="p">(</span><span class="n">RPCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdMask"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.CmdMask">[docs]</a><span class="k">class</span> <span class="nc">CmdMask</span><span class="p">(</span><span class="n">RPCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wear a mask</span>
 
@@ -1218,7 +1216,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;mask&quot;</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;unmask&quot;</span><span class="p">]</span>
 
-<div class="viewcode-block" id="CmdMask.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.CmdMask.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdMask.func"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.CmdMask.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdstring</span> <span class="o">==</span> <span class="s2">&quot;mask&quot;</span><span class="p">:</span>
             <span class="c1"># wear a mask</span>
@@ -1249,12 +1247,12 @@
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You remove your mask and are again &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="n">old_sdesc</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="RPSystemCmdSet"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.RPSystemCmdSet">[docs]</a><span class="k">class</span> <span class="nc">RPSystemCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+<div class="viewcode-block" id="RPSystemCmdSet"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.RPSystemCmdSet">[docs]</a><span class="k">class</span> <span class="nc">RPSystemCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mix-in for adding rp-commands to default cmdset.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="RPSystemCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.RPSystemCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RPSystemCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.RPSystemCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdEmote</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdSay</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdSdesc</span><span class="p">())</span>
@@ -1268,13 +1266,13 @@
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="ContribRPObject"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.ContribRPObject">[docs]</a><span class="k">class</span> <span class="nc">ContribRPObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+<div class="viewcode-block" id="ContribRPObject"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.ContribRPObject">[docs]</a><span class="k">class</span> <span class="nc">ContribRPObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class is meant as a mix-in or parent for objects in an</span>
 <span class="sd">    rp-heavy game. It implements the base functionality for poses.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ContribRPObject.at_object_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.ContribRPObject.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ContribRPObject.at_object_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.ContribRPObject.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called at initial creation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1284,7 +1282,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">pose</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">pose_default</span> <span class="o">=</span> <span class="s2">&quot;is here.&quot;</span></div>
 
-<div class="viewcode-block" id="ContribRPObject.search"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.ContribRPObject.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span>
+<div class="viewcode-block" id="ContribRPObject.search"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.ContribRPObject.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">searchdata</span><span class="p">,</span>
         <span class="n">global_search</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -1456,7 +1454,7 @@
             <span class="n">multimatch_string</span><span class="o">=</span><span class="n">multimatch_string</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="ContribRPObject.get_display_name"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.ContribRPObject.get_display_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ContribRPObject.get_display_name"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.ContribRPObject.get_display_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Displays the name of the object in a viewer-aware manner.</span>
 
@@ -1464,7 +1462,7 @@
 <span class="sd">            looker (TypedObject): The object or account that is looking</span>
 <span class="sd">                at/getting inforamtion for this object.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            pose (bool): Include the pose (if available) in the return.</span>
 
 <span class="sd">        Returns:</span>
@@ -1489,7 +1487,7 @@
         <span class="n">pose</span> <span class="o">=</span> <span class="s2">&quot; </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">pose</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pose&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sdesc</span><span class="p">,</span> <span class="n">idstr</span><span class="p">,</span> <span class="n">pose</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ContribRPObject.return_appearance"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.ContribRPObject.return_appearance">[docs]</a>    <span class="k">def</span> <span class="nf">return_appearance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">):</span>
+<div class="viewcode-block" id="ContribRPObject.return_appearance"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.ContribRPObject.return_appearance">[docs]</a>    <span class="k">def</span> <span class="nf">return_appearance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This formats a description. It is the hook a &#39;look&#39; command</span>
 <span class="sd">        should call.</span>
@@ -1522,7 +1520,7 @@
         <span class="k">return</span> <span class="n">string</span></div></div>
 
 
-<div class="viewcode-block" id="ContribRPRoom"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.ContribRPRoom">[docs]</a><span class="k">class</span> <span class="nc">ContribRPRoom</span><span class="p">(</span><span class="n">ContribRPObject</span><span class="p">):</span>
+<div class="viewcode-block" id="ContribRPRoom"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.ContribRPRoom">[docs]</a><span class="k">class</span> <span class="nc">ContribRPRoom</span><span class="p">(</span><span class="n">ContribRPObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Dummy inheritance for rooms.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1530,21 +1528,21 @@
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="ContribRPCharacter"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.ContribRPCharacter">[docs]</a><span class="k">class</span> <span class="nc">ContribRPCharacter</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">ContribRPObject</span><span class="p">):</span>
+<div class="viewcode-block" id="ContribRPCharacter"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.ContribRPCharacter">[docs]</a><span class="k">class</span> <span class="nc">ContribRPCharacter</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">ContribRPObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a character class that has poses, sdesc and recog.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Handlers</span>
-<div class="viewcode-block" id="ContribRPCharacter.sdesc"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.ContribRPCharacter.sdesc">[docs]</a>    <span class="nd">@lazy_property</span>
+<div class="viewcode-block" id="ContribRPCharacter.sdesc"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.ContribRPCharacter.sdesc">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">sdesc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">SdescHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ContribRPCharacter.recog"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.ContribRPCharacter.recog">[docs]</a>    <span class="nd">@lazy_property</span>
+<div class="viewcode-block" id="ContribRPCharacter.recog"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.ContribRPCharacter.recog">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">recog</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">RecogHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ContribRPCharacter.get_display_name"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.ContribRPCharacter.get_display_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ContribRPCharacter.get_display_name"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.ContribRPCharacter.get_display_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Displays the name of the object in a viewer-aware manner.</span>
 
@@ -1552,7 +1550,7 @@
 <span class="sd">            looker (TypedObject): The object or account that is looking</span>
 <span class="sd">                at/getting inforamtion for this object.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            pose (bool): Include the pose (if available) in the return.</span>
 
 <span class="sd">        Returns:</span>
@@ -1578,7 +1576,7 @@
         <span class="n">pose</span> <span class="o">=</span> <span class="s2">&quot; </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">pose</span> <span class="ow">or</span> <span class="s2">&quot;is here.&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pose&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;|c</span><span class="si">%s</span><span class="s2">|n</span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sdesc</span><span class="p">,</span> <span class="n">idstr</span><span class="p">,</span> <span class="n">pose</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ContribRPCharacter.at_object_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.ContribRPCharacter.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ContribRPCharacter.at_object_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.ContribRPCharacter.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called at initial creation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1595,13 +1593,13 @@
         <span class="c1"># initializing sdesc</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;A normal person&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ContribRPCharacter.at_before_say"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.ContribRPCharacter.at_before_say">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_say</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ContribRPCharacter.at_before_say"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.ContribRPCharacter.at_before_say">[docs]</a>    <span class="k">def</span> <span class="nf">at_before_say</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called before the object says or whispers anything, return modified message.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            message (str): The suggested say/whisper text spoken by self.</span>
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            whisper (bool): If True, this is a whisper rather than a say.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1609,7 +1607,7 @@
             <span class="k">return</span> <span class="n">f</span><span class="s1">&#39;/me whispers &quot;</span><span class="si">{message}</span><span class="s1">&quot;&#39;</span>
         <span class="k">return</span> <span class="n">f</span><span class="s1">&#39;/me says, &quot;</span><span class="si">{message}</span><span class="s1">&quot;&#39;</span></div>
 
-<div class="viewcode-block" id="ContribRPCharacter.process_sdesc"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.ContribRPCharacter.process_sdesc">[docs]</a>    <span class="k">def</span> <span class="nf">process_sdesc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sdesc</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ContribRPCharacter.process_sdesc"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.ContribRPCharacter.process_sdesc">[docs]</a>    <span class="k">def</span> <span class="nf">process_sdesc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sdesc</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Allows to customize how your sdesc is displayed (primarily by</span>
 <span class="sd">        changing colors).</span>
@@ -1628,7 +1626,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;|b</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="n">sdesc</span></div>
 
-<div class="viewcode-block" id="ContribRPCharacter.process_recog"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.ContribRPCharacter.process_recog">[docs]</a>    <span class="k">def</span> <span class="nf">process_recog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recog</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ContribRPCharacter.process_recog"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.ContribRPCharacter.process_recog">[docs]</a>    <span class="k">def</span> <span class="nf">process_recog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recog</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Allows to customize how a recog string is displayed.</span>
 
@@ -1644,7 +1642,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_sdesc</span><span class="p">(</span><span class="n">recog</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ContribRPCharacter.process_language"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.rpsystem.ContribRPCharacter.process_language">[docs]</a>    <span class="k">def</span> <span class="nf">process_language</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">speaker</span><span class="p">,</span> <span class="n">language</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ContribRPCharacter.process_language"><a class="viewcode-back" href="../../../api/evennia.contrib.rpsystem.html#evennia.contrib.rpsystem.ContribRPCharacter.process_language">[docs]</a>    <span class="k">def</span> <span class="nf">process_language</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">speaker</span><span class="p">,</span> <span class="n">language</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Allows to process the spoken text, for example</span>
 <span class="sd">        by obfuscating language based on your and the</span>
@@ -1668,6 +1666,7 @@
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">|w</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;|W(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">language</span> <span class="k">if</span> <span class="n">language</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -1705,17 +1704,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.rpsystem</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.rpsystem</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

@@ -111,7 +111,7 @@ Each command tested should have its own `TestCase` class. Inherit this class fro
 
 ### Unit testing contribs with custom models
 
-A special case is if you were to create a contribution to go to the `evennia/contrib` folder that uses its [own database models](New-Models). The problem with this is that Evennia (and Django) will only recognize models in `settings.INSTALLED_APPS`. If a user wants to use your contrib, they will be required to add your models to their settings file. But since contribs are optional you cannot add the model to Evennia's central `settings_default.py` file - this would always create your optional models regardless of if the user wants them. But at the same time a contribution is a part of the Evennia distribution and its unit tests should be run with all other Evennia tests using `evennia test evennia`.
+A special case is if you were to create a contribution to go to the `evennia/contrib` folder that uses its [own database models](./New-Models). The problem with this is that Evennia (and Django) will only recognize models in `settings.INSTALLED_APPS`. If a user wants to use your contrib, they will be required to add your models to their settings file. But since contribs are optional you cannot add the model to Evennia's central `settings_default.py` file - this would always create your optional models regardless of if the user wants them. But at the same time a contribution is a part of the Evennia distribution and its unit tests should be run with all other Evennia tests using `evennia test evennia`.
 
 The way to do this is to only temporarily add your models to the `INSTALLED_APPS` directory when the test runs. here is an example of how to do it.
 
@@ -252,7 +252,7 @@ We specified the `commands` package to the evennia test command since that's whe
 
 ### Testing commands
 
-This section will test the proper execution of the 'abilities' command, as described in the [First Steps Coding](First-Steps-Coding) page.  Follow this tutorial to create the 'abilities' command, we will need it to test it.
+This section will test the proper execution of the 'abilities' command, as described in the [First Steps Coding](./First-Steps-Coding) page.  Follow this tutorial to create the 'abilities' command, we will need it to test it.
 
 Testing commands in Evennia is a bit more complex than the simple testing example we have seen. Luckily, Evennia supplies a special test class to do just that ... we just need to inherit from it and use it properly. This class is called 'CommandTest' and is defined in the 'evennia.commands.default.tests' package.  To create a test for our 'abilities' command, we just need to create a class that inherits from 'CommandTest' and add methods.
 

@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.prototypes.protfuncs &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.prototypes.protfuncs</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.prototypes.protfuncs</a></li> 
       </ul>
     </div>  
 
@@ -94,7 +91,7 @@
 <span class="c1"># default protfuncs</span>
 
 
-<div class="viewcode-block" id="random"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.protfuncs.random">[docs]</a><span class="k">def</span> <span class="nf">random</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="random"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.random">[docs]</a><span class="k">def</span> <span class="nf">random</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage: $random()</span>
 <span class="sd">    Returns a random value in the interval [0, 1)</span>
@@ -103,7 +100,7 @@
     <span class="k">return</span> <span class="n">base_random</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="randint"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.protfuncs.randint">[docs]</a><span class="k">def</span> <span class="nf">randint</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="randint"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.randint">[docs]</a><span class="k">def</span> <span class="nf">randint</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage: $randint(start, end)</span>
 <span class="sd">    Returns random integer in interval [start, end]</span>
@@ -115,7 +112,7 @@
     <span class="k">return</span> <span class="n">base_randint</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="left_justify"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.protfuncs.left_justify">[docs]</a><span class="k">def</span> <span class="nf">left_justify</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="left_justify"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.left_justify">[docs]</a><span class="k">def</span> <span class="nf">left_justify</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage: $left_justify(&lt;text&gt;)</span>
 <span class="sd">    Returns &lt;text&gt; left-justified.</span>
@@ -126,7 +123,7 @@
     <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="right_justify"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.protfuncs.right_justify">[docs]</a><span class="k">def</span> <span class="nf">right_justify</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="right_justify"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.right_justify">[docs]</a><span class="k">def</span> <span class="nf">right_justify</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage: $right_justify(&lt;text&gt;)</span>
 <span class="sd">    Returns &lt;text&gt; right-justified across screen width.</span>
@@ -137,7 +134,7 @@
     <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="center_justify"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.protfuncs.center_justify">[docs]</a><span class="k">def</span> <span class="nf">center_justify</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="center_justify"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.center_justify">[docs]</a><span class="k">def</span> <span class="nf">center_justify</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage: $center_justify(&lt;text&gt;)</span>
@@ -149,7 +146,7 @@
     <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="choice"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.protfuncs.choice">[docs]</a><span class="k">def</span> <span class="nf">choice</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="choice"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.choice">[docs]</a><span class="k">def</span> <span class="nf">choice</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage: $choice(val, val, val, ...)</span>
 <span class="sd">    Returns one of the values randomly</span>
@@ -159,7 +156,7 @@
     <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="full_justify"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.protfuncs.full_justify">[docs]</a><span class="k">def</span> <span class="nf">full_justify</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="full_justify"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.full_justify">[docs]</a><span class="k">def</span> <span class="nf">full_justify</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage: $full_justify(&lt;text&gt;)</span>
@@ -171,7 +168,7 @@
     <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="protkey"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.protfuncs.protkey">[docs]</a><span class="k">def</span> <span class="nf">protkey</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="protkey"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.protkey">[docs]</a><span class="k">def</span> <span class="nf">protkey</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage: $protkey(&lt;key&gt;)</span>
 <span class="sd">    Returns the value of another key in this prototoype. Will raise an error if</span>
@@ -183,7 +180,7 @@
         <span class="k">return</span> <span class="n">prototype</span><span class="p">[</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span></div>
 
 
-<div class="viewcode-block" id="add"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.protfuncs.add">[docs]</a><span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="add"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.add">[docs]</a><span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage: $add(val1, val2)</span>
 <span class="sd">    Returns the result of val1 + val2. Values must be</span>
@@ -206,7 +203,7 @@
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;$add requires two arguments.&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="sub"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.protfuncs.sub">[docs]</a><span class="k">def</span> <span class="nf">sub</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="sub"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.sub">[docs]</a><span class="k">def</span> <span class="nf">sub</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage: $del(val1, val2)</span>
 <span class="sd">    Returns the value of val1 - val2. Values must be</span>
@@ -229,7 +226,7 @@
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;$sub requires two arguments.&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="mult"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.protfuncs.mult">[docs]</a><span class="k">def</span> <span class="nf">mult</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="mult"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.mult">[docs]</a><span class="k">def</span> <span class="nf">mult</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage: $mul(val1, val2)</span>
 <span class="sd">    Returns the value of val1 * val2. The values must be</span>
@@ -252,7 +249,7 @@
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;$mul requires two arguments.&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="div"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.protfuncs.div">[docs]</a><span class="k">def</span> <span class="nf">div</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="div"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.div">[docs]</a><span class="k">def</span> <span class="nf">div</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage: $div(val1, val2)</span>
 <span class="sd">    Returns the value of val1 / val2. Values must be numbers and</span>
@@ -274,7 +271,7 @@
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;$mult requires two arguments.&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="toint"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.protfuncs.toint">[docs]</a><span class="k">def</span> <span class="nf">toint</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="toint"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.toint">[docs]</a><span class="k">def</span> <span class="nf">toint</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage: $toint(&lt;number&gt;)</span>
 <span class="sd">    Returns &lt;number&gt; as an integer.</span>
@@ -288,7 +285,7 @@
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;$toint requires one argument.&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="eval"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.protfuncs.eval">[docs]</a><span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="eval"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.eval">[docs]</a><span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage $eval(&lt;expression&gt;)</span>
 <span class="sd">    Returns evaluation of a simple Python expression. The string may *only* consist of the following</span>
@@ -315,7 +312,7 @@
     <span class="k">return</span> <span class="n">struct</span></div>
 
 
-<div class="viewcode-block" id="_obj_search"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.protfuncs._obj_search">[docs]</a><span class="k">def</span> <span class="nf">_obj_search</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_obj_search</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="s2">&quot;Helper function to search for an object&quot;</span>
 
     <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
@@ -355,10 +352,10 @@
                         <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">dbref</span><span class="o">=</span><span class="n">target</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">account</span><span class="o">=</span><span class="n">account</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
-        <span class="k">return</span> <span class="n">target</span></div>
+        <span class="k">return</span> <span class="n">target</span>
 
 
-<div class="viewcode-block" id="obj"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.protfuncs.obj">[docs]</a><span class="k">def</span> <span class="nf">obj</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="obj"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.obj">[docs]</a><span class="k">def</span> <span class="nf">obj</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage $obj(&lt;query&gt;)</span>
 <span class="sd">    Returns one Object searched globally by key, alias or #dbref. Error if more than one.</span>
@@ -370,7 +367,7 @@
     <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="objlist"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.protfuncs.objlist">[docs]</a><span class="k">def</span> <span class="nf">objlist</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="objlist"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.objlist">[docs]</a><span class="k">def</span> <span class="nf">objlist</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage $objlist(&lt;query&gt;)</span>
 <span class="sd">    Returns list with one or more Objects searched globally by key, alias or #dbref.</span>
@@ -379,7 +376,7 @@
     <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;#</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">_obj_search</span><span class="p">(</span><span class="n">return_list</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)]</span></div>
 
 
-<div class="viewcode-block" id="dbref"><a class="viewcode-back" href="../../../api/evennia.prototypes.html#evennia.prototypes.protfuncs.dbref">[docs]</a><span class="k">def</span> <span class="nf">dbref</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="dbref"><a class="viewcode-back" href="../../../api/evennia.prototypes.protfuncs.html#evennia.prototypes.protfuncs.dbref">[docs]</a><span class="k">def</span> <span class="nf">dbref</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage $dbref(&lt;#dbref&gt;)</span>
 <span class="sd">    Validate that a #dbref input is valid.</span>
@@ -390,6 +387,7 @@
     <span class="k">return</span> <span class="n">obj</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -427,17 +425,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.prototypes.protfuncs</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.prototypes.protfuncs</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

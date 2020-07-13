@@ -1,0 +1,241 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>evennia.contrib.chargen &#8212; Evennia 0.9.1 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.chargen</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-evennia.contrib.chargen">
+<span id="evennia-contrib-chargen"></span><h1>evennia.contrib.chargen<a class="headerlink" href="#module-evennia.contrib.chargen" title="Permalink to this headline">¶</a></h1>
+<p>Contribution - Griatch 2011</p>
+<p>&gt; Note - with the advent of MULTISESSION_MODE=2, this is not really as
+necessary anymore - the ooclook and &#64;charcreate commands in that mode
+replaces this module with better functionality. This remains here for
+inspiration.</p>
+<p>This is a simple character creation commandset for the Account level.
+It shows some more info and gives the Account the option to create a
+character without any more customizations than their name (further
+options are unique for each game anyway).</p>
+<p>In MULTISESSION_MODEs 0 and 1, you will automatically log into an
+existing Character. When using <strong>&#64;ooc</strong> you will then end up in this
+cmdset.</p>
+<p>Installation:</p>
+<p>Import this module to <strong>mygame/commands/default_cmdsets.py</strong> and
+add <strong>chargen.OOCCMdSetCharGen</strong> to the <strong>AccountCmdSet</strong> class
+(it says where to add it). Reload.</p>
+<dl class="py class">
+<dt id="evennia.contrib.chargen.CmdOOCLook">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.chargen.</code><code class="sig-name descname">CmdOOCLook</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/chargen.html#CmdOOCLook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.chargen.CmdOOCLook" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.general.html#evennia.commands.default.general.CmdLook" title="evennia.commands.default.general.CmdLook"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.general.CmdLook</span></code></a></p>
+<p>ooc look</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>look
+look &lt;character&gt;</p>
+</dd>
+</dl>
+<p>This is an OOC version of the look command. Since an Account doesn’t
+have an in-game existence, there is no concept of location or
+“self”.</p>
+<p>If any characters are available for you to control, you may look
+at them with this command.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.chargen.CmdOOCLook.key">
+<code class="sig-name descname">key</code><em class="property"> = 'look'</em><a class="headerlink" href="#evennia.contrib.chargen.CmdOOCLook.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.chargen.CmdOOCLook.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['l', 'ls']</em><a class="headerlink" href="#evennia.contrib.chargen.CmdOOCLook.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.chargen.CmdOOCLook.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.chargen.CmdOOCLook.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.chargen.CmdOOCLook.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.chargen.CmdOOCLook.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.chargen.CmdOOCLook.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/chargen.html#CmdOOCLook.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.chargen.CmdOOCLook.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implements the ooc look command</p>
+<p>We use an attribute _character_dbrefs on the account in order
+to figure out which characters are “theirs”. A drawback of this
+is that only the CmdCharacterCreate command adds this attribute,
+and thus e.g. account #1 will not be listed (although it will work).
+Existence in this list does not depend on puppeting rights though,
+that is checked by the &#64;ic command directly.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.chargen.CmdOOCLook.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.chargen.CmdOOCLook.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.chargen.CmdOOCLook.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'l ls', 'category': 'general', 'key': 'look', 'tags': '', 'text': '\n    ooc look\n\n    Usage:\n      look\n      look &lt;character&gt;\n\n    This is an OOC version of the look command. Since an Account doesn\'t\n    have an in-game existence, there is no concept of location or\n    &quot;self&quot;.\n\n    If any characters are available for you to control, you may look\n    at them with this command.\n    '}</em><a class="headerlink" href="#evennia.contrib.chargen.CmdOOCLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.chargen.CmdOOCCharacterCreate">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.chargen.</code><code class="sig-name descname">CmdOOCCharacterCreate</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/chargen.html#CmdOOCCharacterCreate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.chargen.CmdOOCCharacterCreate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
+<p>creates a character</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>create &lt;character name&gt;</p>
+</dd>
+</dl>
+<p>This will create a new character, assuming
+the given character name does not already exist.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.chargen.CmdOOCCharacterCreate.key">
+<code class="sig-name descname">key</code><em class="property"> = 'create'</em><a class="headerlink" href="#evennia.contrib.chargen.CmdOOCCharacterCreate.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.chargen.CmdOOCCharacterCreate.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.chargen.CmdOOCCharacterCreate.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.chargen.CmdOOCCharacterCreate.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/chargen.html#CmdOOCCharacterCreate.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.chargen.CmdOOCCharacterCreate.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tries to create the Character object. We also put an
+attribute on ourselves to remember it.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.chargen.CmdOOCCharacterCreate.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.chargen.CmdOOCCharacterCreate.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.chargen.CmdOOCCharacterCreate.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.chargen.CmdOOCCharacterCreate.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.chargen.CmdOOCCharacterCreate.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.chargen.CmdOOCCharacterCreate.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.chargen.CmdOOCCharacterCreate.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'create', 'tags': '', 'text': '\n    creates a character\n\n    Usage:\n      create &lt;character name&gt;\n\n    This will create a new character, assuming\n    the given character name does not already exist.\n    '}</em><a class="headerlink" href="#evennia.contrib.chargen.CmdOOCCharacterCreate.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.chargen.OOCCmdSetCharGen">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.chargen.</code><code class="sig-name descname">OOCCmdSetCharGen</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/chargen.html#OOCCmdSetCharGen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.chargen.OOCCmdSetCharGen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.cmdset_account.html#evennia.commands.default.cmdset_account.AccountCmdSet" title="evennia.commands.default.cmdset_account.AccountCmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.cmdset_account.AccountCmdSet</span></code></a></p>
+<p>Extends the default OOC cmdset.</p>
+<dl class="py method">
+<dt id="evennia.contrib.chargen.OOCCmdSetCharGen.at_cmdset_creation">
+<code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/chargen.html#OOCCmdSetCharGen.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.chargen.OOCCmdSetCharGen.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install everything from the default set, then overload</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.chargen.OOCCmdSetCharGen.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.chargen.OOCCmdSetCharGen'</em><a class="headerlink" href="#evennia.contrib.chargen.OOCCmdSetCharGen.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.chargen.rst.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../1.0-dev/api/evennia.contrib.chargen.html">1.0-dev (develop branch)</a></li>
+  <li><a href="evennia.contrib.chargen.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.chargen</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+    </div>
+  </body>
+</html>

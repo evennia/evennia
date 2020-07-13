@@ -3,7 +3,7 @@
 
 This tutorial lets you code a small but complete and functioning MUSH-like game in Evennia. A [MUSH](http://en.wikipedia.org/wiki/MUSH) is, for our purposes, a class of roleplay-centric games focused on free form storytelling. Even if you are not interested in MUSH:es, this is still a good first game-type to try since it's not so code heavy. You will be able to use the same principles for building other types of games.  
 
-The tutorial starts from scratch. If you did the [First Steps Coding](First-Steps-Coding) tutorial already you should have some ideas about how to do some of the steps already. 
+The tutorial starts from scratch. If you did the [First Steps Coding](./First-Steps-Coding) tutorial already you should have some ideas about how to do some of the steps already. 
 
 The following are the (very simplistic and cut-down) features we will implement (this was taken from a feature request from a MUSH user new to Evennia). A Character in this system should: 
 
@@ -43,7 +43,7 @@ class Character(DefaultCharacter):
         self.db.combat_score = 1
 ```
 
-We defined two new [Attributes](Attributes) `power` and `combat_score` and set them to default values. Make sure to `@reload` the server if you had it already running (you need to reload every time you update your python code, don't worry, no accounts will be disconnected by the reload). 
+We defined two new [Attributes](./Attributes) `power` and `combat_score` and set them to default values. Make sure to `@reload` the server if you had it already running (you need to reload every time you update your python code, don't worry, no accounts will be disconnected by the reload). 
 
 Note that only *new* characters will see your new Attributes (since the `at_object_creation` hook is called when the object is first created, existing Characters won't have it).  To update yourself, run 
 
@@ -63,8 +63,8 @@ Note that this again is made so as to be easy to expand to a full-fledged game. 
 
 What we need are the following:
 
-- One character generation [Command](Commands) to set the "Power" on the `Character`.  
-- A chargen [CmdSet](Command-Sets) to hold this command. Lets call it `ChargenCmdset`.  
+- One character generation [Command](./Commands) to set the "Power" on the `Character`.  
+- A chargen [CmdSet](./Command-Sets) to hold this command. Lets call it `ChargenCmdset`.  
 - A custom `ChargenRoom` type that makes this set of commands available to players in such rooms.  
 - One such room to test things in.  
 
@@ -72,7 +72,7 @@ What we need are the following:
 
 For this tutorial we will add all our new commands to `mygame/commands/command.py` but you could split your commands into multiple module if you prefered.
 
-For this tutorial character generation will only consist of one [Command](Commands) to set the Character s "power" stat. It will be called on the following MUSH-like form: 
+For this tutorial character generation will only consist of one [Command](./Commands) to set the Character s "power" stat. It will be called on the following MUSH-like form: 
 
      +setpower 4
 
@@ -118,7 +118,7 @@ class CmdSetPower(Command):
 ```
 This is a pretty straightforward command. We do some error checking, then set the power on ourself. We use a `help_category` of "mush" for all our commands, just so they are easy to find and separate in the help list.
 
-Save the file. We will now add it to a new [CmdSet](Command-Sets) so it can be accessed (in a full chargen system you would of course have more than one command here).
+Save the file. We will now add it to a new [CmdSet](./Command-Sets) so it can be accessed (in a full chargen system you would of course have more than one command here).
 
 Open `mygame/commands/default_cmdsets.py` and import your `command.py` module at the top. We also import the default `CmdSet` class for the next step: 
 
@@ -163,7 +163,7 @@ class ChargenRoom(Room):
         "this is called only at first creation"
         self.cmdset.add(ChargenCmdset, permanent=True)
 ```
-Note how new rooms created with this typeclass will always start with `ChargenCmdset` on themselves. Don't forget the `permanent=True` keyword or you will lose the cmdset after a server reload. For more information about [Command Sets](Command-Sets) and [Commands](Commands), see the respective links. 
+Note how new rooms created with this typeclass will always start with `ChargenCmdset` on themselves. Don't forget the `permanent=True` keyword or you will lose the cmdset after a server reload. For more information about [Command Sets](./Command-Sets) and [Commands](./Commands), see the respective links. 
 
 ### Testing chargen
 
@@ -180,7 +180,7 @@ between fixes. Don't continue until the creation seems to have worked okay.
 
      chargen
 
-This should bring you to the chargen room. Being in there you should now have the `+setpower` command available, so test it out. When you leave (via the `finish` exit), the command will go away and trying `+setpower` should now give you a command-not-found error. Use `ex me` (as a privileged user) to check so the `Power` [Attribute](Attributes) has been set correctly.
+This should bring you to the chargen room. Being in there you should now have the `+setpower` command available, so test it out. When you leave (via the `finish` exit), the command will go away and trying `+setpower` should now give you a command-not-found error. Use `ex me` (as a privileged user) to check so the `Power` [Attribute](./Attributes) has been set correctly.
 
 If things are not working, make sure your typeclasses and commands are free of bugs and that you have entered the paths to the various command sets and commands correctly. Check the logs or command line for tracebacks and errors. 
 
@@ -294,7 +294,7 @@ What we do is to simply let the default `return_appearance` do its thing (`super
 
 Here we will re-use the Character class by introducing a command that can create NPC objects. We should also be able to set its Power and order it around.  
 
-There are a few ways to define the NPC class. We could in theory create a custom typeclass for it and put a custom NPC-specific cmdset on all NPCs. This cmdset could hold all manipulation commands. Since we expect NPC manipulation to be a common occurrence among the user base however, we will instead put all relevant NPC commands in the default command set and limit eventual access with [Permissions and Locks](Locks#Permissions).
+There are a few ways to define the NPC class. We could in theory create a custom typeclass for it and put a custom NPC-specific cmdset on all NPCs. This cmdset could hold all manipulation commands. Since we expect NPC manipulation to be a common occurrence among the user base however, we will instead put all relevant NPC commands in the default command set and limit eventual access with [Permissions and Locks](./Locks#Permissions).
 
 ### Creating an NPC with +createNPC
 
@@ -345,9 +345,9 @@ class CmdCreateNPC(Command):
         caller.location.msg_contents(message % (caller.key, name), 
                                                 exclude=caller)        
 ```
-Here we define a `+createnpc` (`+createNPC` works too) that is callable by everyone *not* having the `nonpcs` "[permission](Locks#Permissions)" (in Evennia, a "permission" can just as well be used to block access, it depends on the lock we define). We create the NPC object in the caller's current location, using our custom `Character` typeclass to do so. 
+Here we define a `+createnpc` (`+createNPC` works too) that is callable by everyone *not* having the `nonpcs` "[permission](./Locks#Permissions)" (in Evennia, a "permission" can just as well be used to block access, it depends on the lock we define). We create the NPC object in the caller's current location, using our custom `Character` typeclass to do so. 
 
-We set an extra lock condition on the NPC, which we will use to check who may edit the NPC later -- we allow the creator to do so, and anyone with the Builders permission (or higher). See [Locks](Locks) for more information about the lock system.
+We set an extra lock condition on the NPC, which we will use to check who may edit the NPC later -- we allow the creator to do so, and anyone with the Builders permission (or higher). See [Locks](./Locks) for more information about the lock system.
 
 Note that we just give the object default permissions (by not specifying the `permissions` keyword to the `create_object()` call).  In some games one might want to give the NPC the same permissions as the Character creating them, this might be a security risk though.
 
@@ -357,7 +357,7 @@ Add this command to your default cmdset the same way you did the `+attack` comma
 
 Since we re-used our custom character typeclass, our new NPC already has a *Power* value - it defaults to 1. How do we change this? 
 
-There are a few ways we can do this. The easiest is to remember that the `power` attribute is just a simple [Attribute](Attributes) stored on the NPC object. So as a Builder or Admin we could set this right away with the default `@set` command: 
+There are a few ways we can do this. The easiest is to remember that the `power` attribute is just a simple [Attribute](./Attributes) stored on the NPC object. So as a Builder or Admin we could set this right away with the default `@set` command: 
 
      @set mynpc/power = 6
 
@@ -516,5 +516,5 @@ From here on you could build a few more ChargenRooms and link that to a bigger g
 
 The simple "Power" game mechanic should be easily expandable to something more full-fledged and useful, same is true for the combat score principle. The `+attack` could be made to target a specific player (or npc) and automatically compare their relevant attributes to determine a result.
 
-To continue from here, you can take a look at the [Tutorial World](Tutorial-World-Introduction). For more specific ideas, see the [other tutorials and hints](Tutorials) as well 
-as the [Developer Central](Developer-Central).
+To continue from here, you can take a look at the [Tutorial World](./Tutorial-World-Introduction). For more specific ideas, see the [other tutorials and hints](./Tutorials) as well 
+as the [Developer Central](./Developer-Central).

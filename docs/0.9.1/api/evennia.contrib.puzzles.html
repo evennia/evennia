@@ -1,0 +1,563 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>evennia.contrib.puzzles &#8212; Evennia 0.9.1 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.puzzles</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-evennia.contrib.puzzles">
+<span id="evennia-contrib-puzzles"></span><h1>evennia.contrib.puzzles<a class="headerlink" href="#module-evennia.contrib.puzzles" title="Permalink to this headline">¶</a></h1>
+<p>Puzzles System - Provides a typeclass and commands for
+objects that can be combined (i.e. ‘use’d) to produce
+new objects.</p>
+<p>Evennia contribution - Henddher 2018</p>
+<p>A Puzzle is a recipe of what objects (aka parts) must
+be combined by a player so a new set of objects
+(aka results) are automatically created.</p>
+<p>Consider this simple Puzzle:</p>
+<blockquote>
+<div><p>orange, mango, yogurt, blender = fruit smoothie</p>
+</div></blockquote>
+<p>As a Builder:</p>
+<blockquote>
+<div><p>&#64;create/drop orange
+&#64;create/drop mango
+&#64;create/drop yogurt
+&#64;create/drop blender
+&#64;create/drop fruit smoothie</p>
+<p>&#64;puzzle smoothie, orange, mango, yogurt, blender = fruit smoothie
+…
+Puzzle smoothie(#1234) created successfuly.</p>
+<p>&#64;destroy/force orange, mango, yogurt, blender, fruit smoothie</p>
+<p>&#64;armpuzzle #1234
+Part orange is spawned at …
+Part mango is spawned at …
+….
+Puzzle smoothie(#1234) has been armed successfully</p>
+</div></blockquote>
+<p>As Player:</p>
+<blockquote>
+<div><p>use orange, mango, yogurt, blender
+…
+Genius, you blended all fruits to create a fruit smoothie!</p>
+</div></blockquote>
+<p>Details:</p>
+<p>Puzzles are created from existing objects. The given
+objects are introspected to create prototypes for the
+puzzle parts and results. These prototypes become the
+puzzle recipe. (See PuzzleRecipe and &#64;puzzle
+command). Once the recipe is created, all parts and result
+can be disposed (i.e. destroyed).</p>
+<p>At a later time, a Builder or a Script can arm the puzzle
+and spawn all puzzle parts in their respective
+locations (See &#64;armpuzzle).</p>
+<p>A regular player can collect the puzzle parts and combine
+them (See use command). If player has specified
+all pieces, the puzzle is considered solved and all
+its puzzle parts are destroyed while the puzzle results
+are spawened on their corresponding location.</p>
+<p>Installation:</p>
+<p>Add the PuzzleSystemCmdSet to all players.
+Alternatively:</p>
+<blockquote>
+<div><p>&#64;py self.cmdset.add(‘evennia.contrib.puzzles.PuzzleSystemCmdSet’)</p>
+</div></blockquote>
+<dl class="py function">
+<dt id="evennia.contrib.puzzles.proto_def">
+<code class="sig-prename descclassname">evennia.contrib.puzzles.</code><code class="sig-name descname">proto_def</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">with_tags</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/puzzles.html#proto_def"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.puzzles.proto_def" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basic properties needed to spawn
+and compare recipe with candidate part</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.puzzles.maskout_protodef">
+<code class="sig-prename descclassname">evennia.contrib.puzzles.</code><code class="sig-name descname">maskout_protodef</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">protodef</span></em>, <em class="sig-param"><span class="n">mask</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/puzzles.html#maskout_protodef"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.puzzles.maskout_protodef" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new protodef after removing protodef values based on mask</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.puzzles.PuzzleRecipe">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.puzzles.</code><code class="sig-name descname">PuzzleRecipe</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/puzzles.html#PuzzleRecipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.puzzles.PuzzleRecipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript" title="evennia.scripts.scripts.DefaultScript"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript</span></code></a></p>
+<p>Definition of a Puzzle Recipe</p>
+<dl class="py method">
+<dt id="evennia.contrib.puzzles.PuzzleRecipe.save_recipe">
+<code class="sig-name descname">save_recipe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">puzzle_name</span></em>, <em class="sig-param"><span class="n">parts</span></em>, <em class="sig-param"><span class="n">results</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/puzzles.html#PuzzleRecipe.save_recipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.puzzles.PuzzleRecipe.save_recipe" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.puzzles.PuzzleRecipe.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.puzzles.PuzzleRecipe.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.DoesNotExist" title="evennia.scripts.scripts.DefaultScript.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.puzzles.PuzzleRecipe.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.puzzles.PuzzleRecipe.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned" title="evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.PuzzleRecipe.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.puzzles.PuzzleRecipe'</em><a class="headerlink" href="#evennia.contrib.puzzles.PuzzleRecipe.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.PuzzleRecipe.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'PuzzleRecipe'</em><a class="headerlink" href="#evennia.contrib.puzzles.PuzzleRecipe.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.puzzles.CmdCreatePuzzleRecipe">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.puzzles.</code><code class="sig-name descname">CmdCreatePuzzleRecipe</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/puzzles.html#CmdCreatePuzzleRecipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.puzzles.CmdCreatePuzzleRecipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>Creates a puzzle recipe. A puzzle consists of puzzle-parts that
+the player can ‘use’ together to create a specified result.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>&#64;puzzle name,&lt;part1[,part2,…&gt;] = &lt;result1[,result2,…]&gt;</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>create/drop balloon
+create/drop glass of water
+create/drop water balloon
+&#64;puzzle waterballon,balloon,glass of water = water balloon
+&#64;del ballon, glass of water, water balloon
+&#64;armpuzzle #1</p>
+<p>Notes:
+Each part and result are objects that must (temporarily) exist and be placed in their
+corresponding location in order to create the puzzle. After the creation of the puzzle,
+these objects are not needed anymore and can be deleted. Components of the puzzle
+will be re-created by use of the <strong>&#64;armpuzzle</strong> command later.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdCreatePuzzleRecipe.key">
+<code class="sig-name descname">key</code><em class="property"> = '&#64;puzzle'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdCreatePuzzleRecipe.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdCreatePuzzleRecipe.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;puzzlerecipe']</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdCreatePuzzleRecipe.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdCreatePuzzleRecipe.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(puzzle) or perm(Builder)'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdCreatePuzzleRecipe.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdCreatePuzzleRecipe.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'puzzles'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdCreatePuzzleRecipe.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdCreatePuzzleRecipe.confirm">
+<code class="sig-name descname">confirm</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdCreatePuzzleRecipe.confirm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdCreatePuzzleRecipe.default_confirm">
+<code class="sig-name descname">default_confirm</code><em class="property"> = 'no'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdCreatePuzzleRecipe.default_confirm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.puzzles.CmdCreatePuzzleRecipe.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/puzzles.html#CmdCreatePuzzleRecipe.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.puzzles.CmdCreatePuzzleRecipe.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the hook function that actually does all the work. It is called
+by the cmdhandler right after self.parser() finishes, and so has access
+to all the variables defined therein.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdCreatePuzzleRecipe.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(puzzle) or perm(Builder)'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdCreatePuzzleRecipe.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdCreatePuzzleRecipe.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;puzzlerecipe', 'category': 'puzzles', 'key': '&#64;puzzle', 'tags': '', 'text': &quot;\n    Creates a puzzle recipe. A puzzle consists of puzzle-parts that\n    the player can 'use' together to create a specified result.\n\n    Usage:\n        &#64;puzzle name,&lt;part1[,part2,...&gt;] = &lt;result1[,result2,...]&gt;\n\n    Example:\n        create/drop balloon\n        create/drop glass of water\n        create/drop water balloon\n        &#64;puzzle waterballon,balloon,glass of water = water balloon\n        &#64;del ballon, glass of water, water balloon\n        &#64;armpuzzle #1\n\n    Notes:\n    Each part and result are objects that must (temporarily) exist and be placed in their\n    corresponding location in order to create the puzzle. After the creation of the puzzle,\n    these objects are not needed anymore and can be deleted. Components of the puzzle\n    will be re-created by use of the `&#64;armpuzzle` command later.\n\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdCreatePuzzleRecipe.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.puzzles.CmdEditPuzzle">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.puzzles.</code><code class="sig-name descname">CmdEditPuzzle</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/puzzles.html#CmdEditPuzzle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.puzzles.CmdEditPuzzle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>Edits puzzle properties</p>
+<dl>
+<dt>Usage:</dt><dd><p>&#64;puzzleedit[/delete] &lt;#dbref&gt;
+&#64;puzzleedit &lt;#dbref&gt;/use_success_message = &lt;Custom message&gt;
+&#64;puzzleedit &lt;#dbref&gt;/use_success_location_message = &lt;Custom message from {caller} producing {result_names}&gt;
+&#64;puzzleedit &lt;#dbref&gt;/mask = attr1[,attr2,…]&gt;
+&#64;puzzleedit[/addpart] &lt;#dbref&gt; = &lt;obj[,obj2,…]&gt;
+&#64;puzzleedit[/delpart] &lt;#dbref&gt; = &lt;obj[,obj2,…]&gt;
+&#64;puzzleedit[/addresult] &lt;#dbref&gt; = &lt;obj[,obj2,…]&gt;
+&#64;puzzleedit[/delresult] &lt;#dbref&gt; = &lt;obj[,obj2,…]&gt;</p>
+</dd>
+<dt>Switches:</dt><dd><p>addpart - adds parts to the puzzle
+delpart - removes parts from the puzzle
+addresult - adds results to the puzzle
+delresult - removes results from the puzzle
+delete - deletes the recipe. Existing parts and results aren’t modified</p>
+<p>mask - attributes to exclude during matching (e.g. location, desc, etc.)
+use_success_location_message containing {result_names} and {caller} will</p>
+<blockquote>
+<div><p>automatically be replaced with correct values. Both are optional.</p>
+</div></blockquote>
+<p>When removing parts/results, it’s possible to remove all.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdEditPuzzle.key">
+<code class="sig-name descname">key</code><em class="property"> = '&#64;puzzleedit'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdEditPuzzle.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdEditPuzzle.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(puzzleedit) or perm(Builder)'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdEditPuzzle.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdEditPuzzle.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'puzzles'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdEditPuzzle.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.puzzles.CmdEditPuzzle.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/puzzles.html#CmdEditPuzzle.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.puzzles.CmdEditPuzzle.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the hook function that actually does all the work. It is called
+by the cmdhandler right after self.parser() finishes, and so has access
+to all the variables defined therein.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdEditPuzzle.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdEditPuzzle.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdEditPuzzle.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(puzzleedit) or perm(Builder)'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdEditPuzzle.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdEditPuzzle.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'puzzles', 'key': '&#64;puzzleedit', 'tags': '', 'text': &quot;\n    Edits puzzle properties\n\n    Usage:\n        &#64;puzzleedit[/delete] &lt;#dbref&gt;\n        &#64;puzzleedit &lt;#dbref&gt;/use_success_message = &lt;Custom message&gt;\n        &#64;puzzleedit &lt;#dbref&gt;/use_success_location_message = &lt;Custom message from {caller} producing {result_names}&gt;\n        &#64;puzzleedit &lt;#dbref&gt;/mask = attr1[,attr2,...]&gt;\n        &#64;puzzleedit[/addpart] &lt;#dbref&gt; = &lt;obj[,obj2,...]&gt;\n        &#64;puzzleedit[/delpart] &lt;#dbref&gt; = &lt;obj[,obj2,...]&gt;\n        &#64;puzzleedit[/addresult] &lt;#dbref&gt; = &lt;obj[,obj2,...]&gt;\n        &#64;puzzleedit[/delresult] &lt;#dbref&gt; = &lt;obj[,obj2,...]&gt;\n\n    Switches:\n      addpart - adds parts to the puzzle\n      delpart - removes parts from the puzzle\n      addresult - adds results to the puzzle\n      delresult - removes results from the puzzle\n      delete - deletes the recipe. Existing parts and results aren't modified\n\n      mask - attributes to exclude during matching (e.g. location, desc, etc.)\n      use_success_location_message containing {result_names} and {caller} will\n        automatically be replaced with correct values. Both are optional.\n\n      When removing parts/results, it's possible to remove all.\n\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdEditPuzzle.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.puzzles.CmdArmPuzzle">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.puzzles.</code><code class="sig-name descname">CmdArmPuzzle</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/puzzles.html#CmdArmPuzzle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.puzzles.CmdArmPuzzle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>Arms a puzzle by spawning all its parts.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>&#64;armpuzzle &lt;puzzle #dbref&gt;</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Create puzzles with <strong>&#64;puzzle</strong>; get list of
+defined puzzles using <strong>&#64;lspuzzlerecipes</strong>.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdArmPuzzle.key">
+<code class="sig-name descname">key</code><em class="property"> = '&#64;armpuzzle'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdArmPuzzle.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdArmPuzzle.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(armpuzzle) or perm(Builder)'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdArmPuzzle.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdArmPuzzle.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'puzzles'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdArmPuzzle.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.puzzles.CmdArmPuzzle.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/puzzles.html#CmdArmPuzzle.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.puzzles.CmdArmPuzzle.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the hook function that actually does all the work. It is called
+by the cmdhandler right after self.parser() finishes, and so has access
+to all the variables defined therein.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdArmPuzzle.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdArmPuzzle.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdArmPuzzle.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(armpuzzle) or perm(Builder)'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdArmPuzzle.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdArmPuzzle.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'puzzles', 'key': '&#64;armpuzzle', 'tags': '', 'text': '\n    Arms a puzzle by spawning all its parts.\n\n    Usage:\n      &#64;armpuzzle &lt;puzzle #dbref&gt;\n\n    Notes:\n        Create puzzles with `&#64;puzzle`; get list of\n        defined puzzles using `&#64;lspuzzlerecipes`.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdArmPuzzle.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.puzzles.CmdUsePuzzleParts">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.puzzles.</code><code class="sig-name descname">CmdUsePuzzleParts</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/puzzles.html#CmdUsePuzzleParts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.puzzles.CmdUsePuzzleParts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>Use an object, or a group of objects at once.</p>
+<p class="rubric">Example</p>
+<p>You look around you and see a pole, a long string, and a needle.</p>
+<p>use pole, long string, needle</p>
+<p>Genius! You built a fishing pole.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>use &lt;obj1&gt; [,obj2,…]</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdUsePuzzleParts.key">
+<code class="sig-name descname">key</code><em class="property"> = 'use'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdUsePuzzleParts.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdUsePuzzleParts.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['combine']</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdUsePuzzleParts.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdUsePuzzleParts.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:pperm(use) or pperm(Player)'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdUsePuzzleParts.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdUsePuzzleParts.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'puzzles'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdUsePuzzleParts.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.puzzles.CmdUsePuzzleParts.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/puzzles.html#CmdUsePuzzleParts.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.puzzles.CmdUsePuzzleParts.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the hook function that actually does all the work. It is called
+by the cmdhandler right after self.parser() finishes, and so has access
+to all the variables defined therein.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdUsePuzzleParts.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:pperm(use) or pperm(Player)'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdUsePuzzleParts.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdUsePuzzleParts.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'combine', 'category': 'puzzles', 'key': 'use', 'tags': '', 'text': '\n    Use an object, or a group of objects at once.\n\n\n    Example:\n      You look around you and see a pole, a long string, and a needle.\n\n      use pole, long string, needle\n\n      Genius! You built a fishing pole.\n\n\n    Usage:\n        use &lt;obj1&gt; [,obj2,...]\n    '}</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdUsePuzzleParts.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.puzzles.CmdListPuzzleRecipes">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.puzzles.</code><code class="sig-name descname">CmdListPuzzleRecipes</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/puzzles.html#CmdListPuzzleRecipes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.puzzles.CmdListPuzzleRecipes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>Searches for all puzzle recipes</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>&#64;lspuzzlerecipes</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdListPuzzleRecipes.key">
+<code class="sig-name descname">key</code><em class="property"> = '&#64;lspuzzlerecipes'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdListPuzzleRecipes.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdListPuzzleRecipes.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(lspuzzlerecipes) or perm(Builder)'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdListPuzzleRecipes.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdListPuzzleRecipes.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'puzzles'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdListPuzzleRecipes.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.puzzles.CmdListPuzzleRecipes.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/puzzles.html#CmdListPuzzleRecipes.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.puzzles.CmdListPuzzleRecipes.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the hook function that actually does all the work. It is called
+by the cmdhandler right after self.parser() finishes, and so has access
+to all the variables defined therein.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdListPuzzleRecipes.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdListPuzzleRecipes.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdListPuzzleRecipes.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(lspuzzlerecipes) or perm(Builder)'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdListPuzzleRecipes.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdListPuzzleRecipes.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'puzzles', 'key': '&#64;lspuzzlerecipes', 'tags': '', 'text': '\n    Searches for all puzzle recipes\n\n    Usage:\n        &#64;lspuzzlerecipes\n    '}</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdListPuzzleRecipes.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.puzzles.CmdListArmedPuzzles">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.puzzles.</code><code class="sig-name descname">CmdListArmedPuzzles</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/puzzles.html#CmdListArmedPuzzles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.puzzles.CmdListArmedPuzzles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>Searches for all armed puzzles</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>&#64;lsarmedpuzzles</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdListArmedPuzzles.key">
+<code class="sig-name descname">key</code><em class="property"> = '&#64;lsarmedpuzzles'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdListArmedPuzzles.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdListArmedPuzzles.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(lsarmedpuzzles) or perm(Builder)'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdListArmedPuzzles.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdListArmedPuzzles.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'puzzles'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdListArmedPuzzles.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.puzzles.CmdListArmedPuzzles.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/puzzles.html#CmdListArmedPuzzles.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.puzzles.CmdListArmedPuzzles.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the hook function that actually does all the work. It is called
+by the cmdhandler right after self.parser() finishes, and so has access
+to all the variables defined therein.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdListArmedPuzzles.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdListArmedPuzzles.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdListArmedPuzzles.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(lsarmedpuzzles) or perm(Builder)'</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdListArmedPuzzles.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.CmdListArmedPuzzles.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'puzzles', 'key': '&#64;lsarmedpuzzles', 'tags': '', 'text': '\n    Searches for all armed puzzles\n\n    Usage:\n        &#64;lsarmedpuzzles\n    '}</em><a class="headerlink" href="#evennia.contrib.puzzles.CmdListArmedPuzzles.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.puzzles.PuzzleSystemCmdSet">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.puzzles.</code><code class="sig-name descname">PuzzleSystemCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/puzzles.html#PuzzleSystemCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.puzzles.PuzzleSystemCmdSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
+<p>CmdSet to create, arm and resolve Puzzles</p>
+<dl class="py method">
+<dt id="evennia.contrib.puzzles.PuzzleSystemCmdSet.at_cmdset_creation">
+<code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/puzzles.html#PuzzleSystemCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.puzzles.PuzzleSystemCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method - this should be overloaded in the inheriting
+class, and should take care of populating the cmdset by use of
+self.add().</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.puzzles.PuzzleSystemCmdSet.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.puzzles.PuzzleSystemCmdSet'</em><a class="headerlink" href="#evennia.contrib.puzzles.PuzzleSystemCmdSet.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.puzzles.rst.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../1.0-dev/api/evennia.contrib.puzzles.html">1.0-dev (develop branch)</a></li>
+  <li><a href="evennia.contrib.puzzles.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.puzzles</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+    </div>
+  </body>
+</html>

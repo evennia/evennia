@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.ingame_python.callbackhandler &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.ingame_python.callbackhandler</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.ingame_python.callbackhandler</a></li> 
       </ul>
     </div>  
 
@@ -49,7 +46,7 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
 
 
-<div class="viewcode-block" id="CallbackHandler"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.callbackhandler.CallbackHandler">[docs]</a><span class="k">class</span> <span class="nc">CallbackHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="CallbackHandler"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.callbackhandler.html#evennia.contrib.ingame_python.callbackhandler.CallbackHandler">[docs]</a><span class="k">class</span> <span class="nc">CallbackHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The callback handler for a specific object.</span>
@@ -64,10 +61,10 @@
 
     <span class="n">script</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="CallbackHandler.__init__"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="CallbackHandler.__init__"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.callbackhandler.html#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span></div>
 
-<div class="viewcode-block" id="CallbackHandler.all"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CallbackHandler.all"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.callbackhandler.html#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return all callbacks linked to this object.</span>
 
@@ -91,7 +88,7 @@
 
         <span class="k">return</span> <span class="n">callbacks</span></div>
 
-<div class="viewcode-block" id="CallbackHandler.get"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">):</span>
+<div class="viewcode-block" id="CallbackHandler.get"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.callbackhandler.html#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the callbacks associated with this name.</span>
 
@@ -109,7 +106,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">callback_name</span><span class="p">,</span> <span class="p">[])</span></div>
 
-<div class="viewcode-block" id="CallbackHandler.get_variable"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.get_variable">[docs]</a>    <span class="k">def</span> <span class="nf">get_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">):</span>
+<div class="viewcode-block" id="CallbackHandler.get_variable"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.callbackhandler.html#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.get_variable">[docs]</a>    <span class="k">def</span> <span class="nf">get_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the variable value or None.</span>
 
@@ -126,7 +123,7 @@
 
         <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="CallbackHandler.add"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="CallbackHandler.add"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.callbackhandler.html#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a new callback for this object.</span>
 
@@ -149,7 +146,7 @@
                 <span class="p">)</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="CallbackHandler.edit"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.edit">[docs]</a>    <span class="k">def</span> <span class="nf">edit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">number</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="CallbackHandler.edit"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.callbackhandler.html#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.edit">[docs]</a>    <span class="k">def</span> <span class="nf">edit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">number</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Edit an existing callback bound to this object.</span>
 
@@ -175,7 +172,7 @@
                 <span class="p">)</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="CallbackHandler.remove"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
+<div class="viewcode-block" id="CallbackHandler.remove"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.callbackhandler.html#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Delete the specified callback bound to this object.</span>
 
@@ -191,7 +188,7 @@
         <span class="k">if</span> <span class="n">handler</span><span class="p">:</span>
             <span class="n">handler</span><span class="o">.</span><span class="n">del_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">number</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CallbackHandler.call"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.call">[docs]</a>    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="CallbackHandler.call"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.callbackhandler.html#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.call">[docs]</a>    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Call the specified callback(s) bound to this object.</span>
 
@@ -199,7 +196,7 @@
 <span class="sd">            callback_name (str): the callback name to call.</span>
 <span class="sd">            *args: additional variables for this callback.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            number (int, optional): call just a specific callback.</span>
 <span class="sd">            parameters (str, optional): call a callback with parameters.</span>
 <span class="sd">            locals (dict, optional): a locals replacement.</span>
@@ -216,7 +213,7 @@
 
         <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="CallbackHandler.format_callback"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.html#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.format_callback">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="CallbackHandler.format_callback"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.callbackhandler.html#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.format_callback">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">format_callback</span><span class="p">(</span><span class="n">callback</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the callback namedtuple to represent the specified callback.</span>
@@ -269,6 +266,7 @@
 <span class="p">)</span>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -306,17 +304,15 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.ingame_python.callbackhandler</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.ingame_python.callbackhandler</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

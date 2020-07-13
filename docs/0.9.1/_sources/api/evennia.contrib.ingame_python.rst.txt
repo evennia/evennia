@@ -1,4 +1,4 @@
-evennia.contrib.ingame\_python package
+evennia.contrib.ingame\_python 
 ======================================
 
 .. automodule:: evennia.contrib.ingame_python
@@ -9,59 +9,13 @@ evennia.contrib.ingame\_python package
 Submodules
 ----------
 
-evennia.contrib.ingame\_python.callbackhandler module
------------------------------------------------------
+.. toctree::
+   :maxdepth: 6
 
-.. automodule:: evennia.contrib.ingame_python.callbackhandler
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.contrib.ingame\_python.commands module
-----------------------------------------------
-
-.. automodule:: evennia.contrib.ingame_python.commands
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.contrib.ingame\_python.eventfuncs module
-------------------------------------------------
-
-.. automodule:: evennia.contrib.ingame_python.eventfuncs
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.contrib.ingame\_python.scripts module
----------------------------------------------
-
-.. automodule:: evennia.contrib.ingame_python.scripts
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.contrib.ingame\_python.tests module
--------------------------------------------
-
-.. automodule:: evennia.contrib.ingame_python.tests
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.contrib.ingame\_python.typeclasses module
--------------------------------------------------
-
-.. automodule:: evennia.contrib.ingame_python.typeclasses
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-evennia.contrib.ingame\_python.utils module
--------------------------------------------
-
-.. automodule:: evennia.contrib.ingame_python.utils
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
+   evennia.contrib.ingame_python.callbackhandler
+   evennia.contrib.ingame_python.commands
+   evennia.contrib.ingame_python.eventfuncs
+   evennia.contrib.ingame_python.scripts
+   evennia.contrib.ingame_python.tests
+   evennia.contrib.ingame_python.typeclasses
+   evennia.contrib.ingame_python.utils

@@ -1,0 +1,913 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>evennia.utils.optionclasses &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.optionclasses</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-evennia.utils.optionclasses">
+<span id="evennia-utils-optionclasses"></span><h1>evennia.utils.optionclasses<a class="headerlink" href="#module-evennia.utils.optionclasses" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="evennia.utils.optionclasses.BaseOption">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.optionclasses.</code><code class="sig-name descname">BaseOption</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">description</span></em>, <em class="sig-param"><span class="n">default</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#BaseOption"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.BaseOption" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Abstract Class to deal with encapsulating individual Options. An Option has
+a name/key, a description to display in relevant commands and menus, and a
+default value. It saves to the owner’s Attributes using its Handler’s save
+category.</p>
+<p>Designed to be extremely overloadable as some options can be cantankerous.</p>
+<dl class="simple">
+<dt>Properties:</dt><dd><p>valid: Shortcut to the loaded VALID_HANDLER.
+validator_key (str): The key of the Validator this uses.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.BaseOption.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">description</span></em>, <em class="sig-param"><span class="n">default</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#BaseOption.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.BaseOption.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>handler</strong> (<a class="reference internal" href="evennia.utils.optionhandler.html#evennia.utils.optionhandler.OptionHandler" title="evennia.utils.optionhandler.OptionHandler"><em>OptionHandler</em></a>) – The OptionHandler that ‘owns’ this Option.</p></li>
+<li><p><strong>key</strong> (<em>str</em>) – The name this will be used for storage in a dictionary.
+Must be unique per OptionHandler.</p></li>
+<li><p><strong>description</strong> (<em>str</em>) – What this Option’s text will show in commands and menus.</p></li>
+<li><p><strong>default</strong> – A default value for this Option.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.BaseOption.changed">
+<em class="property">property </em><code class="sig-name descname">changed</code><a class="headerlink" href="#evennia.utils.optionclasses.BaseOption.changed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.BaseOption.default">
+<em class="property">property </em><code class="sig-name descname">default</code><a class="headerlink" href="#evennia.utils.optionclasses.BaseOption.default" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.BaseOption.value">
+<em class="property">property </em><code class="sig-name descname">value</code><a class="headerlink" href="#evennia.utils.optionclasses.BaseOption.value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.BaseOption.set">
+<code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#BaseOption.set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.BaseOption.set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes user input and stores appropriately. This method allows for
+passing extra instructions into the validator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<em>str</em>) – The new value of this Option.</p></li>
+<li><p><strong>kwargs</strong> (<em>any</em>) – Any kwargs will be passed into
+<strong>self.validate(value, **kwargs)</strong> and <strong>self.save(**kwargs)</strong>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.BaseOption.load">
+<code class="sig-name descname">load</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#BaseOption.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.BaseOption.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes the provided save data, validates it, and gets this Option ready to use.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>Boolean</em> – Whether loading was successful.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.BaseOption.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#BaseOption.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.BaseOption.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stores the current value using <strong>.handler.save_handler(self.key, value, **kwargs)</strong>
+where <strong>kwargs</strong> are a combination of those passed into this function and
+the ones specified by the <strong>OptionHandler</strong>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><p><strong>any</strong> (<em>any</em>) – Not used by default. These are passed in from self.set
+and allows the option to let the caller customize saving by
+overriding or extend the default save kwargs</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.BaseOption.deserialize">
+<code class="sig-name descname">deserialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">save_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#BaseOption.deserialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.BaseOption.deserialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform sanity-checking on the save data as it is loaded from storage.
+This isn’t the same as what validator-functions provide (those work on
+user input). For example, save data might be a timedelta or a list or
+some other object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>save_data</strong> – The data to check.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>any (any)</em> –</p>
+<dl class="simple">
+<dt>Whatever the Option needs to track, like a string or a</dt><dd><p>datetime. The display hook is responsible for what is actually
+displayed to user.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.BaseOption.serialize">
+<code class="sig-name descname">serialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#BaseOption.serialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.BaseOption.serialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Serializes the save data for Attribute storage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>any (any)</em> – Whatever is best for storage.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.BaseOption.validate">
+<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#BaseOption.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.BaseOption.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate user input, which is presumed to be a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<em>str</em>) – User input.</p></li>
+<li><p><strong>account</strong> (<a class="reference internal" href="evennia.accounts.models.html#evennia.accounts.models.AccountDB" title="evennia.accounts.models.AccountDB"><em>AccountDB</em></a>) – The Account that is performing the validation.
+This is necessary because of other settings which may affect the
+check, such as an Account’s timezone affecting how their datetime
+entries are processed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>any (any)</em> – The results of the validation.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.ValidationError" title="evennia.prototypes.prototypes.ValidationError"><strong>ValidationError</strong></a> – If input value failed validation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.BaseOption.display">
+<code class="sig-name descname">display</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#BaseOption.display"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.BaseOption.display" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renders the Option’s value as something pretty to look at.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><p><strong>any</strong> (<em>any</em>) – These are options passed by the caller to potentially
+customize display dynamically.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>str</em> –</p>
+<dl class="simple">
+<dt>How the stored value should be projected to users (e.g. a raw</dt><dd><p>timedelta is pretty ugly).</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.optionclasses.Text">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.optionclasses.</code><code class="sig-name descname">Text</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">description</span></em>, <em class="sig-param"><span class="n">default</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.utils.optionclasses.BaseOption" title="evennia.utils.optionclasses.BaseOption"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.optionclasses.BaseOption</span></code></a></p>
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.Text.deserialize">
+<code class="sig-name descname">deserialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">save_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Text.deserialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Text.deserialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform sanity-checking on the save data as it is loaded from storage.
+This isn’t the same as what validator-functions provide (those work on
+user input). For example, save data might be a timedelta or a list or
+some other object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>save_data</strong> – The data to check.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>any (any)</em> –</p>
+<dl class="simple">
+<dt>Whatever the Option needs to track, like a string or a</dt><dd><p>datetime. The display hook is responsible for what is actually
+displayed to user.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.optionclasses.Email">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.optionclasses.</code><code class="sig-name descname">Email</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">description</span></em>, <em class="sig-param"><span class="n">default</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Email"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Email" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.utils.optionclasses.BaseOption" title="evennia.utils.optionclasses.BaseOption"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.optionclasses.BaseOption</span></code></a></p>
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.Email.validate">
+<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Email.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Email.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate user input, which is presumed to be a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<em>str</em>) – User input.</p></li>
+<li><p><strong>account</strong> (<a class="reference internal" href="evennia.accounts.models.html#evennia.accounts.models.AccountDB" title="evennia.accounts.models.AccountDB"><em>AccountDB</em></a>) – The Account that is performing the validation.
+This is necessary because of other settings which may affect the
+check, such as an Account’s timezone affecting how their datetime
+entries are processed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>any (any)</em> – The results of the validation.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.ValidationError" title="evennia.prototypes.prototypes.ValidationError"><strong>ValidationError</strong></a> – If input value failed validation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.Email.deserialize">
+<code class="sig-name descname">deserialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">save_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Email.deserialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Email.deserialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform sanity-checking on the save data as it is loaded from storage.
+This isn’t the same as what validator-functions provide (those work on
+user input). For example, save data might be a timedelta or a list or
+some other object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>save_data</strong> – The data to check.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>any (any)</em> –</p>
+<dl class="simple">
+<dt>Whatever the Option needs to track, like a string or a</dt><dd><p>datetime. The display hook is responsible for what is actually
+displayed to user.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.optionclasses.Boolean">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.optionclasses.</code><code class="sig-name descname">Boolean</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">description</span></em>, <em class="sig-param"><span class="n">default</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Boolean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Boolean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.utils.optionclasses.BaseOption" title="evennia.utils.optionclasses.BaseOption"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.optionclasses.BaseOption</span></code></a></p>
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.Boolean.validate">
+<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Boolean.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Boolean.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate user input, which is presumed to be a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<em>str</em>) – User input.</p></li>
+<li><p><strong>account</strong> (<a class="reference internal" href="evennia.accounts.models.html#evennia.accounts.models.AccountDB" title="evennia.accounts.models.AccountDB"><em>AccountDB</em></a>) – The Account that is performing the validation.
+This is necessary because of other settings which may affect the
+check, such as an Account’s timezone affecting how their datetime
+entries are processed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>any (any)</em> – The results of the validation.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.ValidationError" title="evennia.prototypes.prototypes.ValidationError"><strong>ValidationError</strong></a> – If input value failed validation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.Boolean.display">
+<code class="sig-name descname">display</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Boolean.display"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Boolean.display" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renders the Option’s value as something pretty to look at.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><p><strong>any</strong> (<em>any</em>) – These are options passed by the caller to potentially
+customize display dynamically.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>str</em> –</p>
+<dl class="simple">
+<dt>How the stored value should be projected to users (e.g. a raw</dt><dd><p>timedelta is pretty ugly).</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.Boolean.serialize">
+<code class="sig-name descname">serialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Boolean.serialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Boolean.serialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Serializes the save data for Attribute storage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>any (any)</em> – Whatever is best for storage.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.Boolean.deserialize">
+<code class="sig-name descname">deserialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">save_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Boolean.deserialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Boolean.deserialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform sanity-checking on the save data as it is loaded from storage.
+This isn’t the same as what validator-functions provide (those work on
+user input). For example, save data might be a timedelta or a list or
+some other object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>save_data</strong> – The data to check.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>any (any)</em> –</p>
+<dl class="simple">
+<dt>Whatever the Option needs to track, like a string or a</dt><dd><p>datetime. The display hook is responsible for what is actually
+displayed to user.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.optionclasses.Color">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.optionclasses.</code><code class="sig-name descname">Color</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">description</span></em>, <em class="sig-param"><span class="n">default</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Color"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Color" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.utils.optionclasses.BaseOption" title="evennia.utils.optionclasses.BaseOption"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.optionclasses.BaseOption</span></code></a></p>
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.Color.validate">
+<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Color.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Color.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate user input, which is presumed to be a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<em>str</em>) – User input.</p></li>
+<li><p><strong>account</strong> (<a class="reference internal" href="evennia.accounts.models.html#evennia.accounts.models.AccountDB" title="evennia.accounts.models.AccountDB"><em>AccountDB</em></a>) – The Account that is performing the validation.
+This is necessary because of other settings which may affect the
+check, such as an Account’s timezone affecting how their datetime
+entries are processed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>any (any)</em> – The results of the validation.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.ValidationError" title="evennia.prototypes.prototypes.ValidationError"><strong>ValidationError</strong></a> – If input value failed validation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.Color.display">
+<code class="sig-name descname">display</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Color.display"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Color.display" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renders the Option’s value as something pretty to look at.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><p><strong>any</strong> (<em>any</em>) – These are options passed by the caller to potentially
+customize display dynamically.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>str</em> –</p>
+<dl class="simple">
+<dt>How the stored value should be projected to users (e.g. a raw</dt><dd><p>timedelta is pretty ugly).</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.Color.deserialize">
+<code class="sig-name descname">deserialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">save_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Color.deserialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Color.deserialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform sanity-checking on the save data as it is loaded from storage.
+This isn’t the same as what validator-functions provide (those work on
+user input). For example, save data might be a timedelta or a list or
+some other object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>save_data</strong> – The data to check.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>any (any)</em> –</p>
+<dl class="simple">
+<dt>Whatever the Option needs to track, like a string or a</dt><dd><p>datetime. The display hook is responsible for what is actually
+displayed to user.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.optionclasses.Timezone">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.optionclasses.</code><code class="sig-name descname">Timezone</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">description</span></em>, <em class="sig-param"><span class="n">default</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Timezone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Timezone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.utils.optionclasses.BaseOption" title="evennia.utils.optionclasses.BaseOption"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.optionclasses.BaseOption</span></code></a></p>
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.Timezone.validate">
+<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Timezone.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Timezone.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate user input, which is presumed to be a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<em>str</em>) – User input.</p></li>
+<li><p><strong>account</strong> (<a class="reference internal" href="evennia.accounts.models.html#evennia.accounts.models.AccountDB" title="evennia.accounts.models.AccountDB"><em>AccountDB</em></a>) – The Account that is performing the validation.
+This is necessary because of other settings which may affect the
+check, such as an Account’s timezone affecting how their datetime
+entries are processed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>any (any)</em> – The results of the validation.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.ValidationError" title="evennia.prototypes.prototypes.ValidationError"><strong>ValidationError</strong></a> – If input value failed validation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.Timezone.default">
+<em class="property">property </em><code class="sig-name descname">default</code><a class="headerlink" href="#evennia.utils.optionclasses.Timezone.default" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.Timezone.deserialize">
+<code class="sig-name descname">deserialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">save_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Timezone.deserialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Timezone.deserialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform sanity-checking on the save data as it is loaded from storage.
+This isn’t the same as what validator-functions provide (those work on
+user input). For example, save data might be a timedelta or a list or
+some other object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>save_data</strong> – The data to check.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>any (any)</em> –</p>
+<dl class="simple">
+<dt>Whatever the Option needs to track, like a string or a</dt><dd><p>datetime. The display hook is responsible for what is actually
+displayed to user.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.Timezone.serialize">
+<code class="sig-name descname">serialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Timezone.serialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Timezone.serialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Serializes the save data for Attribute storage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>any (any)</em> – Whatever is best for storage.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.optionclasses.UnsignedInteger">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.optionclasses.</code><code class="sig-name descname">UnsignedInteger</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">description</span></em>, <em class="sig-param"><span class="n">default</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#UnsignedInteger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.UnsignedInteger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.utils.optionclasses.BaseOption" title="evennia.utils.optionclasses.BaseOption"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.optionclasses.BaseOption</span></code></a></p>
+<dl class="py attribute">
+<dt id="evennia.utils.optionclasses.UnsignedInteger.validator_key">
+<code class="sig-name descname">validator_key</code><em class="property"> = 'unsigned_integer'</em><a class="headerlink" href="#evennia.utils.optionclasses.UnsignedInteger.validator_key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.UnsignedInteger.validate">
+<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#UnsignedInteger.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.UnsignedInteger.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate user input, which is presumed to be a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<em>str</em>) – User input.</p></li>
+<li><p><strong>account</strong> (<a class="reference internal" href="evennia.accounts.models.html#evennia.accounts.models.AccountDB" title="evennia.accounts.models.AccountDB"><em>AccountDB</em></a>) – The Account that is performing the validation.
+This is necessary because of other settings which may affect the
+check, such as an Account’s timezone affecting how their datetime
+entries are processed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>any (any)</em> – The results of the validation.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.ValidationError" title="evennia.prototypes.prototypes.ValidationError"><strong>ValidationError</strong></a> – If input value failed validation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.UnsignedInteger.deserialize">
+<code class="sig-name descname">deserialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">save_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#UnsignedInteger.deserialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.UnsignedInteger.deserialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform sanity-checking on the save data as it is loaded from storage.
+This isn’t the same as what validator-functions provide (those work on
+user input). For example, save data might be a timedelta or a list or
+some other object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>save_data</strong> – The data to check.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>any (any)</em> –</p>
+<dl class="simple">
+<dt>Whatever the Option needs to track, like a string or a</dt><dd><p>datetime. The display hook is responsible for what is actually
+displayed to user.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.optionclasses.SignedInteger">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.optionclasses.</code><code class="sig-name descname">SignedInteger</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">description</span></em>, <em class="sig-param"><span class="n">default</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#SignedInteger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.SignedInteger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.utils.optionclasses.BaseOption" title="evennia.utils.optionclasses.BaseOption"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.optionclasses.BaseOption</span></code></a></p>
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.SignedInteger.validate">
+<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#SignedInteger.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.SignedInteger.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate user input, which is presumed to be a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<em>str</em>) – User input.</p></li>
+<li><p><strong>account</strong> (<a class="reference internal" href="evennia.accounts.models.html#evennia.accounts.models.AccountDB" title="evennia.accounts.models.AccountDB"><em>AccountDB</em></a>) – The Account that is performing the validation.
+This is necessary because of other settings which may affect the
+check, such as an Account’s timezone affecting how their datetime
+entries are processed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>any (any)</em> – The results of the validation.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.ValidationError" title="evennia.prototypes.prototypes.ValidationError"><strong>ValidationError</strong></a> – If input value failed validation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.SignedInteger.deserialize">
+<code class="sig-name descname">deserialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">save_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#SignedInteger.deserialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.SignedInteger.deserialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform sanity-checking on the save data as it is loaded from storage.
+This isn’t the same as what validator-functions provide (those work on
+user input). For example, save data might be a timedelta or a list or
+some other object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>save_data</strong> – The data to check.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>any (any)</em> –</p>
+<dl class="simple">
+<dt>Whatever the Option needs to track, like a string or a</dt><dd><p>datetime. The display hook is responsible for what is actually
+displayed to user.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.optionclasses.PositiveInteger">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.optionclasses.</code><code class="sig-name descname">PositiveInteger</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">description</span></em>, <em class="sig-param"><span class="n">default</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#PositiveInteger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.PositiveInteger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.utils.optionclasses.BaseOption" title="evennia.utils.optionclasses.BaseOption"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.optionclasses.BaseOption</span></code></a></p>
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.PositiveInteger.validate">
+<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#PositiveInteger.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.PositiveInteger.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate user input, which is presumed to be a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<em>str</em>) – User input.</p></li>
+<li><p><strong>account</strong> (<a class="reference internal" href="evennia.accounts.models.html#evennia.accounts.models.AccountDB" title="evennia.accounts.models.AccountDB"><em>AccountDB</em></a>) – The Account that is performing the validation.
+This is necessary because of other settings which may affect the
+check, such as an Account’s timezone affecting how their datetime
+entries are processed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>any (any)</em> – The results of the validation.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.ValidationError" title="evennia.prototypes.prototypes.ValidationError"><strong>ValidationError</strong></a> – If input value failed validation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.PositiveInteger.deserialize">
+<code class="sig-name descname">deserialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">save_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#PositiveInteger.deserialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.PositiveInteger.deserialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform sanity-checking on the save data as it is loaded from storage.
+This isn’t the same as what validator-functions provide (those work on
+user input). For example, save data might be a timedelta or a list or
+some other object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>save_data</strong> – The data to check.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>any (any)</em> –</p>
+<dl class="simple">
+<dt>Whatever the Option needs to track, like a string or a</dt><dd><p>datetime. The display hook is responsible for what is actually
+displayed to user.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.optionclasses.Duration">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.optionclasses.</code><code class="sig-name descname">Duration</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">description</span></em>, <em class="sig-param"><span class="n">default</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Duration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Duration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.utils.optionclasses.BaseOption" title="evennia.utils.optionclasses.BaseOption"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.optionclasses.BaseOption</span></code></a></p>
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.Duration.validate">
+<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Duration.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Duration.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate user input, which is presumed to be a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<em>str</em>) – User input.</p></li>
+<li><p><strong>account</strong> (<a class="reference internal" href="evennia.accounts.models.html#evennia.accounts.models.AccountDB" title="evennia.accounts.models.AccountDB"><em>AccountDB</em></a>) – The Account that is performing the validation.
+This is necessary because of other settings which may affect the
+check, such as an Account’s timezone affecting how their datetime
+entries are processed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>any (any)</em> – The results of the validation.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.ValidationError" title="evennia.prototypes.prototypes.ValidationError"><strong>ValidationError</strong></a> – If input value failed validation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.Duration.deserialize">
+<code class="sig-name descname">deserialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">save_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Duration.deserialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Duration.deserialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform sanity-checking on the save data as it is loaded from storage.
+This isn’t the same as what validator-functions provide (those work on
+user input). For example, save data might be a timedelta or a list or
+some other object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>save_data</strong> – The data to check.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>any (any)</em> –</p>
+<dl class="simple">
+<dt>Whatever the Option needs to track, like a string or a</dt><dd><p>datetime. The display hook is responsible for what is actually
+displayed to user.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.Duration.serialize">
+<code class="sig-name descname">serialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Duration.serialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Duration.serialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Serializes the save data for Attribute storage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>any (any)</em> – Whatever is best for storage.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.optionclasses.Datetime">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.optionclasses.</code><code class="sig-name descname">Datetime</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">description</span></em>, <em class="sig-param"><span class="n">default</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Datetime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Datetime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.utils.optionclasses.BaseOption" title="evennia.utils.optionclasses.BaseOption"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.optionclasses.BaseOption</span></code></a></p>
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.Datetime.validate">
+<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Datetime.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Datetime.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate user input, which is presumed to be a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<em>str</em>) – User input.</p></li>
+<li><p><strong>account</strong> (<a class="reference internal" href="evennia.accounts.models.html#evennia.accounts.models.AccountDB" title="evennia.accounts.models.AccountDB"><em>AccountDB</em></a>) – The Account that is performing the validation.
+This is necessary because of other settings which may affect the
+check, such as an Account’s timezone affecting how their datetime
+entries are processed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>any (any)</em> – The results of the validation.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.ValidationError" title="evennia.prototypes.prototypes.ValidationError"><strong>ValidationError</strong></a> – If input value failed validation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.Datetime.deserialize">
+<code class="sig-name descname">deserialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">save_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Datetime.deserialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Datetime.deserialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform sanity-checking on the save data as it is loaded from storage.
+This isn’t the same as what validator-functions provide (those work on
+user input). For example, save data might be a timedelta or a list or
+some other object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>save_data</strong> – The data to check.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>any (any)</em> –</p>
+<dl class="simple">
+<dt>Whatever the Option needs to track, like a string or a</dt><dd><p>datetime. The display hook is responsible for what is actually
+displayed to user.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.Datetime.serialize">
+<code class="sig-name descname">serialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Datetime.serialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Datetime.serialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Serializes the save data for Attribute storage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>any (any)</em> – Whatever is best for storage.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.optionclasses.Future">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.optionclasses.</code><code class="sig-name descname">Future</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">description</span></em>, <em class="sig-param"><span class="n">default</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Future"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Future" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.utils.optionclasses.Datetime" title="evennia.utils.optionclasses.Datetime"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.optionclasses.Datetime</span></code></a></p>
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.Future.validate">
+<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Future.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Future.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate user input, which is presumed to be a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<em>str</em>) – User input.</p></li>
+<li><p><strong>account</strong> (<a class="reference internal" href="evennia.accounts.models.html#evennia.accounts.models.AccountDB" title="evennia.accounts.models.AccountDB"><em>AccountDB</em></a>) – The Account that is performing the validation.
+This is necessary because of other settings which may affect the
+check, such as an Account’s timezone affecting how their datetime
+entries are processed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>any (any)</em> – The results of the validation.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.ValidationError" title="evennia.prototypes.prototypes.ValidationError"><strong>ValidationError</strong></a> – If input value failed validation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.optionclasses.Lock">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.optionclasses.</code><code class="sig-name descname">Lock</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">description</span></em>, <em class="sig-param"><span class="n">default</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Lock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Lock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.utils.optionclasses.Text" title="evennia.utils.optionclasses.Text"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.optionclasses.Text</span></code></a></p>
+<dl class="py method">
+<dt id="evennia.utils.optionclasses.Lock.validate">
+<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/optionclasses.html#Lock.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.optionclasses.Lock.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate user input, which is presumed to be a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<em>str</em>) – User input.</p></li>
+<li><p><strong>account</strong> (<a class="reference internal" href="evennia.accounts.models.html#evennia.accounts.models.AccountDB" title="evennia.accounts.models.AccountDB"><em>AccountDB</em></a>) – The Account that is performing the validation.
+This is necessary because of other settings which may affect the
+check, such as an Account’s timezone affecting how their datetime
+entries are processed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>any (any)</em> – The results of the validation.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.ValidationError" title="evennia.prototypes.prototypes.ValidationError"><strong>ValidationError</strong></a> – If input value failed validation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.utils.optionclasses.rst.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.utils.optionclasses.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.1/api/evennia.utils.optionclasses.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.optionclasses</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+    </div>
+  </body>
+</html>

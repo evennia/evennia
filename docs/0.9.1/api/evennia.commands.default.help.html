@@ -1,0 +1,333 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>evennia.commands.default.help &#8212; Evennia 0.9.1 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.help</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-evennia.commands.default.help">
+<span id="evennia-commands-default-help"></span><h1>evennia.commands.default.help<a class="headerlink" href="#module-evennia.commands.default.help" title="Permalink to this headline">¶</a></h1>
+<p>The help command. The basic idea is that help texts for commands
+are best written by those that write the commands - the admins. So
+command-help is all auto-loaded and searched from the current command
+set. The normal, database-tied help system is used for collaborative
+creation of other help topics such as RP help or game-world aides.</p>
+<dl class="py class">
+<dt id="evennia.commands.default.help.CmdHelp">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.help.</code><code class="sig-name descname">CmdHelp</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/help.html#CmdHelp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.help.CmdHelp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
+<p>View help or a list of topics</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>help &lt;topic or command&gt;
+help list
+help all</p>
+</dd>
+</dl>
+<p>This will search for help on commands and other
+topics related to the game.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.help.CmdHelp.key">
+<code class="sig-name descname">key</code><em class="property"> = 'help'</em><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.help.CmdHelp.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['?']</em><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.help.CmdHelp.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.help.CmdHelp.arg_regex">
+<code class="sig-name descname">arg_regex</code><em class="property"> = re.compile('\\s|$', re.IGNORECASE)</em><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.arg_regex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.help.CmdHelp.return_cmdset">
+<code class="sig-name descname">return_cmdset</code><em class="property"> = True</em><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.return_cmdset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.help.CmdHelp.help_more">
+<code class="sig-name descname">help_more</code><em class="property"> = True</em><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.help_more" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.help.CmdHelp.suggestion_cutoff">
+<code class="sig-name descname">suggestion_cutoff</code><em class="property"> = 0.6</em><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.suggestion_cutoff" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.help.CmdHelp.suggestion_maxnum">
+<code class="sig-name descname">suggestion_maxnum</code><em class="property"> = 5</em><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.suggestion_maxnum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.help.CmdHelp.msg_help">
+<code class="sig-name descname">msg_help</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/help.html#CmdHelp.msg_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.msg_help" title="Permalink to this definition">¶</a></dt>
+<dd><p>messages text to the caller, adding an extra oob argument to indicate
+that this is a help command result and could be rendered in a separate
+help window</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.help.CmdHelp.format_help_entry">
+<em class="property">static </em><code class="sig-name descname">format_help_entry</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">title</span></em>, <em class="sig-param"><span class="n">help_text</span></em>, <em class="sig-param"><span class="n">aliases</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">suggested</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/help.html#CmdHelp.format_help_entry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.format_help_entry" title="Permalink to this definition">¶</a></dt>
+<dd><p>This visually formats the help entry.
+This method can be overriden to customize the way a help
+entry is displayed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>title</strong> (<em>str</em>) – the title of the help entry.</p></li>
+<li><p><strong>help_text</strong> (<em>str</em>) – the text of the help entry.</p></li>
+<li><p><strong>aliases</strong> (<em>list of str</em><em> or </em><em>None</em>) – the list of aliases.</p></li>
+<li><p><strong>suggested</strong> (<em>list of str</em><em> or </em><em>None</em>) – suggested reading.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns the formatted string, ready to be sent.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.help.CmdHelp.format_help_list">
+<code class="sig-name descname">format_help_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">hdict_cmds</span></em>, <em class="sig-param"><span class="n">hdict_db</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/help.html#CmdHelp.format_help_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.format_help_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Output a category-ordered list. The input are the
+pre-loaded help files for commands and database-helpfiles
+respectively.  You can override this method to return a
+custom display of the list of commands and topics.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.help.CmdHelp.check_show_help">
+<code class="sig-name descname">check_show_help</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmd</span></em>, <em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/help.html#CmdHelp.check_show_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.check_show_help" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper method. If this return True, the given cmd
+auto-help will be viewable in the help listing.
+Override this to easily select what is shown to
+the account. Note that only commands available
+in the caller’s merged cmdset are available.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cmd</strong> (<a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><em>Command</em></a>) – Command class from the merged cmdset</p></li>
+<li><p><strong>caller</strong> (<em>Character</em><em>, </em><em>Account</em><em> or </em><a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a>) – The current caller
+executing the help command.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.help.CmdHelp.should_list_cmd">
+<code class="sig-name descname">should_list_cmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmd</span></em>, <em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/help.html#CmdHelp.should_list_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.should_list_cmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should the specified command appear in the help table?</p>
+<p>This method only checks whether a specified command should
+appear in the table of topics/commands.  The command can be
+used by the caller (see the ‘check_show_help’ method) and
+the command will still be available, for instance, if a
+character type ‘help name of the command’.  However, if
+you return False, the specified command will not appear in
+the table.  This is sometimes useful to “hide” commands in
+the table, but still access them through the help system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cmd</strong> – the command to be tested.</p></li>
+<li><p><strong>caller</strong> – the caller of the help system.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>True</em> – the command should appear in the table.
+False: the command shouldn’t appear in the table.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.help.CmdHelp.parse">
+<code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/help.html#CmdHelp.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>input is a string containing the command or topic to match.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.help.CmdHelp.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/help.html#CmdHelp.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the dynamic help entry creator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.help.CmdHelp.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.help.CmdHelp.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.help.CmdHelp.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '?', 'category': 'general', 'key': 'help', 'tags': '', 'text': '\n    View help or a list of topics\n\n    Usage:\n      help &lt;topic or command&gt;\n      help list\n      help all\n\n    This will search for help on commands and other\n    topics related to the game.\n    '}</em><a class="headerlink" href="#evennia.commands.default.help.CmdHelp.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.commands.default.help.CmdSetHelp">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.help.</code><code class="sig-name descname">CmdSetHelp</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/help.html#CmdSetHelp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.help.CmdSetHelp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>Edit the help database.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>help[/switches] &lt;topic&gt;[[;alias;alias][,category[,locks]] [= &lt;text&gt;]</p>
+</dd>
+<dt>Switches:</dt><dd><p>edit - open a line editor to edit the topic’s help text.
+replace - overwrite existing help topic.
+append - add text to the end of existing topic with a newline between.
+extend - as append, but don’t add a newline.
+delete - remove help topic.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>sethelp throw = This throws something at …
+sethelp/append pickpocketing,Thievery = This steals …
+sethelp/replace pickpocketing, ,attr(is_thief) = This steals …
+sethelp/edit thievery</p>
+<p>This command manipulates the help database. A help entry can be created,
+appended/merged to and deleted. If you don’t assign a category, the
+“General” category will be used. If no lockstring is specified, default
+is to let everyone read the help file.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.help.CmdSetHelp.key">
+<code class="sig-name descname">key</code><em class="property"> = 'sethelp'</em><a class="headerlink" href="#evennia.commands.default.help.CmdSetHelp.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.help.CmdSetHelp.switch_options">
+<code class="sig-name descname">switch_options</code><em class="property"> = ('edit', 'replace', 'append', 'extend', 'delete')</em><a class="headerlink" href="#evennia.commands.default.help.CmdSetHelp.switch_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.help.CmdSetHelp.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(Helper)'</em><a class="headerlink" href="#evennia.commands.default.help.CmdSetHelp.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.help.CmdSetHelp.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.help.CmdSetHelp.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.help.CmdSetHelp.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/help.html#CmdSetHelp.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.help.CmdSetHelp.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implement the function</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.help.CmdSetHelp.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.help.CmdSetHelp.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.help.CmdSetHelp.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(Helper)'</em><a class="headerlink" href="#evennia.commands.default.help.CmdSetHelp.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.help.CmdSetHelp.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'building', 'key': 'sethelp', 'tags': '', 'text': '\n    Edit the help database.\n\n    Usage:\n      help[/switches] &lt;topic&gt;[[;alias;alias][,category[,locks]] [= &lt;text&gt;]\n\n    Switches:\n      edit - open a line editor to edit the topic\'s help text.\n      replace - overwrite existing help topic.\n      append - add text to the end of existing topic with a newline between.\n      extend - as append, but don\'t add a newline.\n      delete - remove help topic.\n\n    Examples:\n      sethelp throw = This throws something at ...\n      sethelp/append pickpocketing,Thievery = This steals ...\n      sethelp/replace pickpocketing, ,attr(is_thief) = This steals ...\n      sethelp/edit thievery\n\n    This command manipulates the help database. A help entry can be created,\n    appended/merged to and deleted. If you don\'t assign a category, the\n    &quot;General&quot; category will be used. If no lockstring is specified, default\n    is to let everyone read the help file.\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.help.CmdSetHelp.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.commands.default.help.rst.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../1.0-dev/api/evennia.commands.default.help.html">1.0-dev (develop branch)</a></li>
+  <li><a href="evennia.commands.default.help.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.1</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.help</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+    </div>
+  </body>
+</html>

@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.web.website.views &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.web.website.views</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.web.website.views</a></li> 
       </ul>
     </div>  
 
@@ -77,7 +74,7 @@
 <span class="n">_BASE_CHAR_TYPECLASS</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span>
 
 
-<div class="viewcode-block" id="_gamestats"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views._gamestats">[docs]</a><span class="k">def</span> <span class="nf">_gamestats</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">_gamestats</span><span class="p">():</span>
     <span class="c1"># Some misc. configurable stuff.</span>
     <span class="c1"># TODO: Move this to either SQL or settings.py based configuration.</span>
     <span class="n">fpage_account_limit</span> <span class="o">=</span> <span class="mi">4</span>
@@ -113,10 +110,10 @@
         <span class="s2">&quot;num_characters&quot;</span><span class="p">:</span> <span class="n">nchars</span> <span class="ow">or</span> <span class="s2">&quot;no&quot;</span><span class="p">,</span>
         <span class="s2">&quot;num_others&quot;</span><span class="p">:</span> <span class="n">nothers</span> <span class="ow">or</span> <span class="s2">&quot;no&quot;</span><span class="p">,</span>
     <span class="p">}</span>
-    <span class="k">return</span> <span class="n">pagevars</span></div>
+    <span class="k">return</span> <span class="n">pagevars</span>
 
 
-<div class="viewcode-block" id="to_be_implemented"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.to_be_implemented">[docs]</a><span class="k">def</span> <span class="nf">to_be_implemented</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<div class="viewcode-block" id="to_be_implemented"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.to_be_implemented">[docs]</a><span class="k">def</span> <span class="nf">to_be_implemented</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A notice letting the user know that this particular feature hasn&#39;t been</span>
 <span class="sd">    implemented yet.</span>
@@ -127,7 +124,7 @@
     <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;tbi.html&quot;</span><span class="p">,</span> <span class="n">pagevars</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="evennia_admin"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.evennia_admin">[docs]</a><span class="nd">@staff_member_required</span>
+<div class="viewcode-block" id="evennia_admin"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.evennia_admin">[docs]</a><span class="nd">@staff_member_required</span>
 <span class="k">def</span> <span class="nf">evennia_admin</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helpful Evennia-specific admin page.</span>
@@ -135,7 +132,7 @@
     <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;evennia_admin.html&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;accountdb&quot;</span><span class="p">:</span> <span class="n">AccountDB</span><span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="admin_wrapper"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.admin_wrapper">[docs]</a><span class="k">def</span> <span class="nf">admin_wrapper</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<div class="viewcode-block" id="admin_wrapper"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.admin_wrapper">[docs]</a><span class="k">def</span> <span class="nf">admin_wrapper</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper that allows us to properly use the base Django admin site, if needed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -147,7 +144,7 @@
 <span class="c1">#</span>
 
 
-<div class="viewcode-block" id="EvenniaIndexView"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.EvenniaIndexView">[docs]</a><span class="k">class</span> <span class="nc">EvenniaIndexView</span><span class="p">(</span><span class="n">TemplateView</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaIndexView"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.EvenniaIndexView">[docs]</a><span class="k">class</span> <span class="nc">EvenniaIndexView</span><span class="p">(</span><span class="n">TemplateView</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a basic example of a Django class-based view, which are functionally</span>
 <span class="sd">    very similar to Evennia Commands but differ in structure. Commands are used</span>
@@ -172,7 +169,7 @@
     <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;website/index.html&quot;</span>
 
     <span class="c1"># This method tells the view what data should be displayed on the template.</span>
-<div class="viewcode-block" id="EvenniaIndexView.get_context_data"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.EvenniaIndexView.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaIndexView.get_context_data"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.EvenniaIndexView.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is a common Django method. Think of this as the website</span>
 <span class="sd">        equivalent of the Evennia Command.func() method.</span>
@@ -189,7 +186,7 @@
 <span class="sd">        You can do whatever you want to it, but it must be returned at the end</span>
 <span class="sd">        of this method.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            any (any): Passed through.</span>
 
 <span class="sd">        Returns:</span>
@@ -205,7 +202,7 @@
         <span class="k">return</span> <span class="n">context</span></div></div>
 
 
-<div class="viewcode-block" id="TypeclassMixin"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.TypeclassMixin">[docs]</a><span class="k">class</span> <span class="nc">TypeclassMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TypeclassMixin"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.TypeclassMixin">[docs]</a><span class="k">class</span> <span class="nc">TypeclassMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a &quot;mixin&quot;, a modifier of sorts.</span>
 
@@ -228,7 +225,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="EvenniaCreateView"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.EvenniaCreateView">[docs]</a><span class="k">class</span> <span class="nc">EvenniaCreateView</span><span class="p">(</span><span class="n">CreateView</span><span class="p">,</span> <span class="n">TypeclassMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaCreateView"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.EvenniaCreateView">[docs]</a><span class="k">class</span> <span class="nc">EvenniaCreateView</span><span class="p">(</span><span class="n">CreateView</span><span class="p">,</span> <span class="n">TypeclassMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This view extends Django&#39;s default CreateView.</span>
 
@@ -243,7 +240,7 @@
         <span class="k">return</span> <span class="s2">&quot;Create </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">typeclass</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">verbose_name</span><span class="o">.</span><span class="n">title</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="EvenniaDetailView"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.EvenniaDetailView">[docs]</a><span class="k">class</span> <span class="nc">EvenniaDetailView</span><span class="p">(</span><span class="n">DetailView</span><span class="p">,</span> <span class="n">TypeclassMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaDetailView"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.EvenniaDetailView">[docs]</a><span class="k">class</span> <span class="nc">EvenniaDetailView</span><span class="p">(</span><span class="n">DetailView</span><span class="p">,</span> <span class="n">TypeclassMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This view extends Django&#39;s default DetailView.</span>
 
@@ -258,7 +255,7 @@
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> Detail&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">typeclass</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">verbose_name</span><span class="o">.</span><span class="n">title</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="EvenniaUpdateView"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.EvenniaUpdateView">[docs]</a><span class="k">class</span> <span class="nc">EvenniaUpdateView</span><span class="p">(</span><span class="n">UpdateView</span><span class="p">,</span> <span class="n">TypeclassMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaUpdateView"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.EvenniaUpdateView">[docs]</a><span class="k">class</span> <span class="nc">EvenniaUpdateView</span><span class="p">(</span><span class="n">UpdateView</span><span class="p">,</span> <span class="n">TypeclassMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This view extends Django&#39;s default UpdateView.</span>
 
@@ -273,7 +270,7 @@
         <span class="k">return</span> <span class="s2">&quot;Update </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">typeclass</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">verbose_name</span><span class="o">.</span><span class="n">title</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="EvenniaDeleteView"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.EvenniaDeleteView">[docs]</a><span class="k">class</span> <span class="nc">EvenniaDeleteView</span><span class="p">(</span><span class="n">DeleteView</span><span class="p">,</span> <span class="n">TypeclassMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="EvenniaDeleteView"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.EvenniaDeleteView">[docs]</a><span class="k">class</span> <span class="nc">EvenniaDeleteView</span><span class="p">(</span><span class="n">DeleteView</span><span class="p">,</span> <span class="n">TypeclassMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This view extends Django&#39;s default DeleteView.</span>
 
@@ -293,7 +290,7 @@
 <span class="c1">#</span>
 
 
-<div class="viewcode-block" id="ObjectDetailView"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.ObjectDetailView">[docs]</a><span class="k">class</span> <span class="nc">ObjectDetailView</span><span class="p">(</span><span class="n">EvenniaDetailView</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectDetailView"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.ObjectDetailView">[docs]</a><span class="k">class</span> <span class="nc">ObjectDetailView</span><span class="p">(</span><span class="n">EvenniaDetailView</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is an important view.</span>
 
@@ -329,7 +326,7 @@
     <span class="c1"># The order you specify here will be followed.</span>
     <span class="n">attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;desc&quot;</span><span class="p">]</span>
 
-<div class="viewcode-block" id="ObjectDetailView.get_context_data"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.ObjectDetailView.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectDetailView.get_context_data"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.ObjectDetailView.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds an &#39;attributes&#39; list to the request context consisting of the</span>
 <span class="sd">        attributes specified at the class level, and in the order provided.</span>
@@ -366,7 +363,7 @@
         <span class="c1"># Return the comprehensive context object</span>
         <span class="k">return</span> <span class="n">context</span></div>
 
-<div class="viewcode-block" id="ObjectDetailView.get_object"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.ObjectDetailView.get_object">[docs]</a>    <span class="k">def</span> <span class="nf">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queryset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectDetailView.get_object"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.ObjectDetailView.get_object">[docs]</a>    <span class="k">def</span> <span class="nf">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queryset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Override of Django hook that provides some important Evennia-specific</span>
 <span class="sd">        functionality.</span>
@@ -405,7 +402,7 @@
         <span class="k">return</span> <span class="n">obj</span></div></div>
 
 
-<div class="viewcode-block" id="ObjectCreateView"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.ObjectCreateView">[docs]</a><span class="k">class</span> <span class="nc">ObjectCreateView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">EvenniaCreateView</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectCreateView"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.ObjectCreateView">[docs]</a><span class="k">class</span> <span class="nc">ObjectCreateView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">EvenniaCreateView</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is an important view.</span>
 
@@ -419,7 +416,7 @@
     <span class="n">model</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ObjectDeleteView"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.ObjectDeleteView">[docs]</a><span class="k">class</span> <span class="nc">ObjectDeleteView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">ObjectDetailView</span><span class="p">,</span> <span class="n">EvenniaDeleteView</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectDeleteView"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.ObjectDeleteView">[docs]</a><span class="k">class</span> <span class="nc">ObjectDeleteView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">ObjectDetailView</span><span class="p">,</span> <span class="n">EvenniaDeleteView</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is an important view for obvious reasons!</span>
 
@@ -437,7 +434,7 @@
     <span class="c1"># -- Evennia constructs --</span>
     <span class="n">access_type</span> <span class="o">=</span> <span class="s2">&quot;delete&quot;</span>
 
-<div class="viewcode-block" id="ObjectDeleteView.delete"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.ObjectDeleteView.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectDeleteView.delete"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.ObjectDeleteView.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calls the delete() method on the fetched object and then</span>
 <span class="sd">        redirects to the success URL.</span>
@@ -459,7 +456,7 @@
         <span class="k">return</span> <span class="n">response</span></div></div>
 
 
-<div class="viewcode-block" id="ObjectUpdateView"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.ObjectUpdateView">[docs]</a><span class="k">class</span> <span class="nc">ObjectUpdateView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">ObjectDetailView</span><span class="p">,</span> <span class="n">EvenniaUpdateView</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectUpdateView"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.ObjectUpdateView">[docs]</a><span class="k">class</span> <span class="nc">ObjectUpdateView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">ObjectDetailView</span><span class="p">,</span> <span class="n">EvenniaUpdateView</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is an important view.</span>
 
@@ -479,7 +476,7 @@
     <span class="c1"># -- Evennia constructs --</span>
     <span class="n">access_type</span> <span class="o">=</span> <span class="s2">&quot;edit&quot;</span>
 
-<div class="viewcode-block" id="ObjectUpdateView.get_success_url"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.ObjectUpdateView.get_success_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_success_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectUpdateView.get_success_url"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.ObjectUpdateView.get_success_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_success_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Django hook.</span>
 
@@ -492,7 +489,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">success_url</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">web_get_detail_url</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ObjectUpdateView.get_initial"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.ObjectUpdateView.get_initial">[docs]</a>    <span class="k">def</span> <span class="nf">get_initial</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectUpdateView.get_initial"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.ObjectUpdateView.get_initial">[docs]</a>    <span class="k">def</span> <span class="nf">get_initial</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Django hook, modified for Evennia.</span>
 
@@ -514,7 +511,7 @@
 
         <span class="k">return</span> <span class="n">data</span></div>
 
-<div class="viewcode-block" id="ObjectUpdateView.form_valid"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.ObjectUpdateView.form_valid">[docs]</a>    <span class="k">def</span> <span class="nf">form_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectUpdateView.form_valid"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.ObjectUpdateView.form_valid">[docs]</a>    <span class="k">def</span> <span class="nf">form_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Override of Django hook.</span>
 
@@ -547,7 +544,7 @@
 <span class="c1">#</span>
 
 
-<div class="viewcode-block" id="AccountMixin"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.AccountMixin">[docs]</a><span class="k">class</span> <span class="nc">AccountMixin</span><span class="p">(</span><span class="n">TypeclassMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountMixin"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.AccountMixin">[docs]</a><span class="k">class</span> <span class="nc">AccountMixin</span><span class="p">(</span><span class="n">TypeclassMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a &quot;mixin&quot;, a modifier of sorts.</span>
 
@@ -561,7 +558,7 @@
     <span class="n">form_class</span> <span class="o">=</span> <span class="n">website_forms</span><span class="o">.</span><span class="n">AccountForm</span></div>
 
 
-<div class="viewcode-block" id="AccountCreateView"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.AccountCreateView">[docs]</a><span class="k">class</span> <span class="nc">AccountCreateView</span><span class="p">(</span><span class="n">AccountMixin</span><span class="p">,</span> <span class="n">EvenniaCreateView</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountCreateView"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.AccountCreateView">[docs]</a><span class="k">class</span> <span class="nc">AccountCreateView</span><span class="p">(</span><span class="n">AccountMixin</span><span class="p">,</span> <span class="n">EvenniaCreateView</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Account creation view.</span>
 
@@ -571,7 +568,7 @@
     <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;website/registration/register.html&quot;</span>
     <span class="n">success_url</span> <span class="o">=</span> <span class="n">reverse_lazy</span><span class="p">(</span><span class="s2">&quot;login&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="AccountCreateView.form_valid"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.AccountCreateView.form_valid">[docs]</a>    <span class="k">def</span> <span class="nf">form_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+<div class="viewcode-block" id="AccountCreateView.form_valid"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.AccountCreateView.form_valid">[docs]</a>    <span class="k">def</span> <span class="nf">form_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Django hook, modified for Evennia.</span>
 
@@ -612,7 +609,7 @@
 <span class="c1">#</span>
 
 
-<div class="viewcode-block" id="CharacterMixin"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.CharacterMixin">[docs]</a><span class="k">class</span> <span class="nc">CharacterMixin</span><span class="p">(</span><span class="n">TypeclassMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="CharacterMixin"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.CharacterMixin">[docs]</a><span class="k">class</span> <span class="nc">CharacterMixin</span><span class="p">(</span><span class="n">TypeclassMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a &quot;mixin&quot;, a modifier of sorts.</span>
 
@@ -626,7 +623,7 @@
     <span class="n">form_class</span> <span class="o">=</span> <span class="n">website_forms</span><span class="o">.</span><span class="n">CharacterForm</span>
     <span class="n">success_url</span> <span class="o">=</span> <span class="n">reverse_lazy</span><span class="p">(</span><span class="s2">&quot;character-manage&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="CharacterMixin.get_queryset"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.CharacterMixin.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CharacterMixin.get_queryset"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.CharacterMixin.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method will override the Django get_queryset method to only</span>
 <span class="sd">        return a list of characters associated with the current authenticated</span>
@@ -644,7 +641,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">typeclass</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">id__in</span><span class="o">=</span><span class="n">ids</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Lower</span><span class="p">(</span><span class="s2">&quot;db_key&quot;</span><span class="p">))</span></div></div>
 
 
-<div class="viewcode-block" id="CharacterListView"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.CharacterListView">[docs]</a><span class="k">class</span> <span class="nc">CharacterListView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">CharacterMixin</span><span class="p">,</span> <span class="n">ListView</span><span class="p">):</span>
+<div class="viewcode-block" id="CharacterListView"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.CharacterListView">[docs]</a><span class="k">class</span> <span class="nc">CharacterListView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">CharacterMixin</span><span class="p">,</span> <span class="n">ListView</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This view provides a mechanism by which a logged-in player can view a list</span>
 <span class="sd">    of all other characters.</span>
@@ -662,7 +659,7 @@
     <span class="n">page_title</span> <span class="o">=</span> <span class="s2">&quot;Character List&quot;</span>
     <span class="n">access_type</span> <span class="o">=</span> <span class="s2">&quot;view&quot;</span>
 
-<div class="viewcode-block" id="CharacterListView.get_queryset"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.CharacterListView.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CharacterListView.get_queryset"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.CharacterListView.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method will override the Django get_queryset method to return a</span>
 <span class="sd">        list of all characters (filtered/sorted) instead of just those limited</span>
@@ -683,7 +680,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">typeclass</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">id__in</span><span class="o">=</span><span class="n">ids</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Lower</span><span class="p">(</span><span class="s2">&quot;db_key&quot;</span><span class="p">))</span></div></div>
 
 
-<div class="viewcode-block" id="CharacterPuppetView"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.CharacterPuppetView">[docs]</a><span class="k">class</span> <span class="nc">CharacterPuppetView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">CharacterMixin</span><span class="p">,</span> <span class="n">RedirectView</span><span class="p">,</span> <span class="n">ObjectDetailView</span><span class="p">):</span>
+<div class="viewcode-block" id="CharacterPuppetView"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.CharacterPuppetView">[docs]</a><span class="k">class</span> <span class="nc">CharacterPuppetView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">CharacterMixin</span><span class="p">,</span> <span class="n">RedirectView</span><span class="p">,</span> <span class="n">ObjectDetailView</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This view provides a mechanism by which a logged-in player can &quot;puppet&quot; one</span>
 <span class="sd">    of their characters within the context of the website.</span>
@@ -693,7 +690,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="CharacterPuppetView.get_redirect_url"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.CharacterPuppetView.get_redirect_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_redirect_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="CharacterPuppetView.get_redirect_url"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.CharacterPuppetView.get_redirect_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_redirect_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Django hook.</span>
 
@@ -724,7 +721,7 @@
         <span class="k">return</span> <span class="n">next_page</span></div></div>
 
 
-<div class="viewcode-block" id="CharacterManageView"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.CharacterManageView">[docs]</a><span class="k">class</span> <span class="nc">CharacterManageView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">CharacterMixin</span><span class="p">,</span> <span class="n">ListView</span><span class="p">):</span>
+<div class="viewcode-block" id="CharacterManageView"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.CharacterManageView">[docs]</a><span class="k">class</span> <span class="nc">CharacterManageView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">CharacterMixin</span><span class="p">,</span> <span class="n">ListView</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This view provides a mechanism by which a logged-in player can browse,</span>
 <span class="sd">    edit, or delete their own characters.</span>
@@ -739,7 +736,7 @@
     <span class="n">page_title</span> <span class="o">=</span> <span class="s2">&quot;Manage Characters&quot;</span></div>
 
 
-<div class="viewcode-block" id="CharacterUpdateView"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.CharacterUpdateView">[docs]</a><span class="k">class</span> <span class="nc">CharacterUpdateView</span><span class="p">(</span><span class="n">CharacterMixin</span><span class="p">,</span> <span class="n">ObjectUpdateView</span><span class="p">):</span>
+<div class="viewcode-block" id="CharacterUpdateView"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.CharacterUpdateView">[docs]</a><span class="k">class</span> <span class="nc">CharacterUpdateView</span><span class="p">(</span><span class="n">CharacterMixin</span><span class="p">,</span> <span class="n">ObjectUpdateView</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This view provides a mechanism by which a logged-in player (enforced by</span>
 <span class="sd">    ObjectUpdateView) can edit the attributes of a character they own.</span>
@@ -751,7 +748,7 @@
     <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;website/character_form.html&quot;</span></div>
 
 
-<div class="viewcode-block" id="CharacterDetailView"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.CharacterDetailView">[docs]</a><span class="k">class</span> <span class="nc">CharacterDetailView</span><span class="p">(</span><span class="n">CharacterMixin</span><span class="p">,</span> <span class="n">ObjectDetailView</span><span class="p">):</span>
+<div class="viewcode-block" id="CharacterDetailView"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.CharacterDetailView">[docs]</a><span class="k">class</span> <span class="nc">CharacterDetailView</span><span class="p">(</span><span class="n">CharacterMixin</span><span class="p">,</span> <span class="n">ObjectDetailView</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This view provides a mechanism by which a user can view the attributes of</span>
 <span class="sd">    a character, owned by them or not.</span>
@@ -766,7 +763,7 @@
     <span class="n">attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;desc&quot;</span><span class="p">]</span>
     <span class="n">access_type</span> <span class="o">=</span> <span class="s2">&quot;view&quot;</span>
 
-<div class="viewcode-block" id="CharacterDetailView.get_queryset"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.CharacterDetailView.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CharacterDetailView.get_queryset"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.CharacterDetailView.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method will override the Django get_queryset method to return a</span>
 <span class="sd">        list of all characters the user may access.</span>
@@ -786,7 +783,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">typeclass</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">id__in</span><span class="o">=</span><span class="n">ids</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Lower</span><span class="p">(</span><span class="s2">&quot;db_key&quot;</span><span class="p">))</span></div></div>
 
 
-<div class="viewcode-block" id="CharacterDeleteView"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.CharacterDeleteView">[docs]</a><span class="k">class</span> <span class="nc">CharacterDeleteView</span><span class="p">(</span><span class="n">CharacterMixin</span><span class="p">,</span> <span class="n">ObjectDeleteView</span><span class="p">):</span>
+<div class="viewcode-block" id="CharacterDeleteView"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.CharacterDeleteView">[docs]</a><span class="k">class</span> <span class="nc">CharacterDeleteView</span><span class="p">(</span><span class="n">CharacterMixin</span><span class="p">,</span> <span class="n">ObjectDeleteView</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This view provides a mechanism by which a logged-in player (enforced by</span>
 <span class="sd">    ObjectDeleteView) can delete a character they own.</span>
@@ -796,7 +793,7 @@
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="CharacterCreateView"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.CharacterCreateView">[docs]</a><span class="k">class</span> <span class="nc">CharacterCreateView</span><span class="p">(</span><span class="n">CharacterMixin</span><span class="p">,</span> <span class="n">ObjectCreateView</span><span class="p">):</span>
+<div class="viewcode-block" id="CharacterCreateView"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.CharacterCreateView">[docs]</a><span class="k">class</span> <span class="nc">CharacterCreateView</span><span class="p">(</span><span class="n">CharacterMixin</span><span class="p">,</span> <span class="n">ObjectCreateView</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This view provides a mechanism by which a logged-in player (enforced by</span>
 <span class="sd">    ObjectCreateView) can create a new character.</span>
@@ -806,7 +803,7 @@
     <span class="c1"># -- Django constructs --</span>
     <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;website/character_form.html&quot;</span>
 
-<div class="viewcode-block" id="CharacterCreateView.form_valid"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.CharacterCreateView.form_valid">[docs]</a>    <span class="k">def</span> <span class="nf">form_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+<div class="viewcode-block" id="CharacterCreateView.form_valid"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.CharacterCreateView.form_valid">[docs]</a>    <span class="k">def</span> <span class="nf">form_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Django hook, modified for Evennia.</span>
 
@@ -851,7 +848,7 @@
 <span class="c1">#</span>
 
 
-<div class="viewcode-block" id="ChannelMixin"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.ChannelMixin">[docs]</a><span class="k">class</span> <span class="nc">ChannelMixin</span><span class="p">(</span><span class="n">TypeclassMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelMixin"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.ChannelMixin">[docs]</a><span class="k">class</span> <span class="nc">ChannelMixin</span><span class="p">(</span><span class="n">TypeclassMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a &quot;mixin&quot;, a modifier of sorts.</span>
 
@@ -870,7 +867,7 @@
     <span class="c1"># https://github.com/evennia/evennia/wiki/Locks#valid-access_types</span>
     <span class="n">access_type</span> <span class="o">=</span> <span class="s2">&quot;listen&quot;</span>
 
-<div class="viewcode-block" id="ChannelMixin.get_queryset"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.ChannelMixin.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelMixin.get_queryset"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.ChannelMixin.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Django hook; here we want to return a list of only those Channels</span>
 <span class="sd">        and other documentation that the current user is allowed to see.</span>
@@ -893,7 +890,7 @@
         <span class="k">return</span> <span class="n">filtered</span></div></div>
 
 
-<div class="viewcode-block" id="ChannelListView"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.ChannelListView">[docs]</a><span class="k">class</span> <span class="nc">ChannelListView</span><span class="p">(</span><span class="n">ChannelMixin</span><span class="p">,</span> <span class="n">ListView</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelListView"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.ChannelListView">[docs]</a><span class="k">class</span> <span class="nc">ChannelListView</span><span class="p">(</span><span class="n">ChannelMixin</span><span class="p">,</span> <span class="n">ListView</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a list of channels that can be viewed by a user, authenticated</span>
 <span class="sd">    or not.</span>
@@ -909,7 +906,7 @@
 
     <span class="n">max_popular</span> <span class="o">=</span> <span class="mi">10</span>
 
-<div class="viewcode-block" id="ChannelListView.get_context_data"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.ChannelListView.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelListView.get_context_data"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.ChannelListView.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Django hook; we override it to calculate the most popular channels.</span>
 
@@ -929,7 +926,7 @@
         <span class="k">return</span> <span class="n">context</span></div></div>
 
 
-<div class="viewcode-block" id="ChannelDetailView"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.ChannelDetailView">[docs]</a><span class="k">class</span> <span class="nc">ChannelDetailView</span><span class="p">(</span><span class="n">ChannelMixin</span><span class="p">,</span> <span class="n">ObjectDetailView</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelDetailView"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.ChannelDetailView">[docs]</a><span class="k">class</span> <span class="nc">ChannelDetailView</span><span class="p">(</span><span class="n">ChannelMixin</span><span class="p">,</span> <span class="n">ObjectDetailView</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the log entries for a given channel.</span>
 
@@ -947,7 +944,7 @@
     <span class="c1"># How many log entries to read and display.</span>
     <span class="n">max_num_lines</span> <span class="o">=</span> <span class="mi">10000</span>
 
-<div class="viewcode-block" id="ChannelDetailView.get_context_data"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.ChannelDetailView.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelDetailView.get_context_data"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.ChannelDetailView.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Django hook; before we can display the channel logs, we need to recall</span>
 <span class="sd">        the logfile and read its lines.</span>
@@ -982,7 +979,7 @@
 
         <span class="k">return</span> <span class="n">context</span></div>
 
-<div class="viewcode-block" id="ChannelDetailView.get_object"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.ChannelDetailView.get_object">[docs]</a>    <span class="k">def</span> <span class="nf">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queryset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelDetailView.get_object"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.ChannelDetailView.get_object">[docs]</a>    <span class="k">def</span> <span class="nf">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queryset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Override of Django hook that retrieves an object by slugified channel</span>
 <span class="sd">        name.</span>
@@ -1014,7 +1011,7 @@
 <span class="c1">#</span>
 
 
-<div class="viewcode-block" id="HelpMixin"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.HelpMixin">[docs]</a><span class="k">class</span> <span class="nc">HelpMixin</span><span class="p">(</span><span class="n">TypeclassMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="HelpMixin"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.HelpMixin">[docs]</a><span class="k">class</span> <span class="nc">HelpMixin</span><span class="p">(</span><span class="n">TypeclassMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a &quot;mixin&quot;, a modifier of sorts.</span>
 
@@ -1029,7 +1026,7 @@
     <span class="c1"># -- Evennia constructs --</span>
     <span class="n">page_title</span> <span class="o">=</span> <span class="s2">&quot;Help&quot;</span>
 
-<div class="viewcode-block" id="HelpMixin.get_queryset"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.HelpMixin.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="HelpMixin.get_queryset"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.HelpMixin.get_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Django hook; here we want to return a list of only those HelpEntries</span>
 <span class="sd">        and other documentation that the current user is allowed to see.</span>
@@ -1056,7 +1053,7 @@
         <span class="k">return</span> <span class="n">filtered</span></div></div>
 
 
-<div class="viewcode-block" id="HelpListView"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.HelpListView">[docs]</a><span class="k">class</span> <span class="nc">HelpListView</span><span class="p">(</span><span class="n">HelpMixin</span><span class="p">,</span> <span class="n">ListView</span><span class="p">):</span>
+<div class="viewcode-block" id="HelpListView"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.HelpListView">[docs]</a><span class="k">class</span> <span class="nc">HelpListView</span><span class="p">(</span><span class="n">HelpMixin</span><span class="p">,</span> <span class="n">ListView</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a list of help entries that can be viewed by a user, authenticated</span>
 <span class="sd">    or not.</span>
@@ -1071,7 +1068,7 @@
     <span class="n">page_title</span> <span class="o">=</span> <span class="s2">&quot;Help Index&quot;</span></div>
 
 
-<div class="viewcode-block" id="HelpDetailView"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.HelpDetailView">[docs]</a><span class="k">class</span> <span class="nc">HelpDetailView</span><span class="p">(</span><span class="n">HelpMixin</span><span class="p">,</span> <span class="n">EvenniaDetailView</span><span class="p">):</span>
+<div class="viewcode-block" id="HelpDetailView"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.HelpDetailView">[docs]</a><span class="k">class</span> <span class="nc">HelpDetailView</span><span class="p">(</span><span class="n">HelpMixin</span><span class="p">,</span> <span class="n">EvenniaDetailView</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the detail page for a given help entry.</span>
 
@@ -1080,7 +1077,7 @@
     <span class="c1"># -- Django constructs --</span>
     <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;website/help_detail.html&quot;</span>
 
-<div class="viewcode-block" id="HelpDetailView.get_context_data"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.HelpDetailView.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="HelpDetailView.get_context_data"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.HelpDetailView.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds navigational data to the template to let browsers go to the next</span>
 <span class="sd">        or previous entry in the help list.</span>
@@ -1130,7 +1127,7 @@
 
         <span class="k">return</span> <span class="n">context</span></div>
 
-<div class="viewcode-block" id="HelpDetailView.get_object"><a class="viewcode-back" href="../../../../api/evennia.web.website.html#evennia.web.website.views.HelpDetailView.get_object">[docs]</a>    <span class="k">def</span> <span class="nf">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queryset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="HelpDetailView.get_object"><a class="viewcode-back" href="../../../../api/evennia.web.website.views.html#evennia.web.website.views.HelpDetailView.get_object">[docs]</a>    <span class="k">def</span> <span class="nf">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queryset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Override of Django hook that retrieves an object by category and topic</span>
 <span class="sd">        instead of pk and slug.</span>
@@ -1165,6 +1162,7 @@
         <span class="k">return</span> <span class="n">obj</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -1202,17 +1200,15 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.web.website.views</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.web.website.views</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

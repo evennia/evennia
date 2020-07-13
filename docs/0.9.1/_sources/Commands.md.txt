@@ -1,18 +1,18 @@
 # Commands
 
 
-Commands are intimately linked to [Command Sets](Command-Sets) and you need to read that page too to be familiar with how the command system works. The two pages were split for easy reading.
+Commands are intimately linked to [Command Sets](./Command-Sets) and you need to read that page too to be familiar with how the command system works. The two pages were split for easy reading.
 
 The basic way for users to communicate with the game is through *Commands*. These can be commands directly related to the game world such as *look*, *get*, *drop* and so on, or administrative commands such as *examine* or *@dig*.
 
-The [default commands](Default-Command-Help) coming with Evennia are 'MUX-like' in that they use @ for admin commands, support things like switches, syntax with the '=' symbol etc, but there is nothing that prevents you from implementing a completely different command scheme for your game. You can find the default commands in `evennia/commands/default`. You should not edit these directly - they will be updated by the Evennia team as new features are added. Rather you should look to them for inspiration and inherit your own designs from them.
+The [default commands](./Default-Command-Help) coming with Evennia are 'MUX-like' in that they use @ for admin commands, support things like switches, syntax with the '=' symbol etc, but there is nothing that prevents you from implementing a completely different command scheme for your game. You can find the default commands in `evennia/commands/default`. You should not edit these directly - they will be updated by the Evennia team as new features are added. Rather you should look to them for inspiration and inherit your own designs from them.
 
-There are two components to having a command running - the *Command* class and the [Command Set](Command-Sets) (command sets were split into a separate wiki page for ease of reading).
+There are two components to having a command running - the *Command* class and the [Command Set](./Command-Sets) (command sets were split into a separate wiki page for ease of reading).
 
 1. A *Command* is a python class containing all the functioning code for what a command does - for example, a *get* command would contain code for picking up objects.
 1. A *Command Set* (often referred to as a CmdSet or cmdset) is like a container for one or more Commands. A given Command can go into any number of different command sets. Only by putting the command set on a character object you will make all the commands therein available to use by that character. You can also store command sets on normal objects if you want users to be able to use the object in various ways. Consider a "Tree" object with a cmdset defining the commands *climb* and *chop down*. Or a "Clock" with a cmdset containing the single command *check time*.
 
-This page goes into full detail about how to use Commands. To fully use them you must also read the page detailing [Command Sets](Command-Sets).  There is also a step-by-step [Adding Command Tutorial](Adding-Command-Tutorial) that will get you started quickly without the extra explanations.
+This page goes into full detail about how to use Commands. To fully use them you must also read the page detailing [Command Sets](./Command-Sets).  There is also a step-by-step [Adding Command Tutorial](./Adding-Command-Tutorial) that will get you started quickly without the extra explanations.
 
 ## Defining Commands
 
@@ -53,17 +53,17 @@ You define a new command by assigning a few class-global properties on your inhe
 
 In Evennia there are three types of objects that may call the command.  It is important to be aware of this since this will also assign appropriate `caller`, `session`, `sessid` and `account` properties on the command body at runtime. Most often the calling type is `Session`.
 
-* A [Session](Sessions). This is by far the most common case when a user is entering a command in their client.
-    * `caller` - this is set to the puppeted [Object](Objects) if such an object exists. If no puppet is found, `caller` is set equal to `account`. Only if an Account is not found either (such as before being logged in) will this be set to the Session object itself.
-    * `session` - a reference to the [Session](Sessions) object itself.
+* A [Session](./Sessions). This is by far the most common case when a user is entering a command in their client.
+    * `caller` - this is set to the puppeted [Object](./Objects) if such an object exists. If no puppet is found, `caller` is set equal to `account`. Only if an Account is not found either (such as before being logged in) will this be set to the Session object itself.
+    * `session` - a reference to the [Session](./Sessions) object itself.
     * `sessid` - `sessid.id`, a unique integer identifier of the session.
-    * `account` - the [Account](Accounts) object connected to this Session. None if not logged in.
-* An [Account](Accounts). This only happens if `account.execute_cmd()` was used. No Session information can be obtained in this case.
+    * `account` - the [Account](./Accounts) object connected to this Session. None if not logged in.
+* An [Account](./Accounts). This only happens if `account.execute_cmd()` was used. No Session information can be obtained in this case.
     * `caller` - this is set to the puppeted Object if such an object can be determined (without Session info this can only be determined in `MULTISESSION_MODE=0` or `1`). If no puppet is found, this is equal to `account`.
     * `session` - `None*`
     * `sessid` - `None*`
     * `account` - Set to the Account object.
-* An [Object](Objects). This only happens if `object.execute_cmd()` was used (for example by an NPC).
+* An [Object](./Objects). This only happens if `object.execute_cmd()` was used (for example by an NPC).
     * `caller` - This is set to the calling Object in question.
     * `session` - `None*`
     * `sessid` - `None*`
@@ -76,13 +76,13 @@ In Evennia there are three types of objects that may call the command.  It is im
 Let's say account *Bob* with a character *BigGuy* enters the command *look at sword*. After the system having successfully identified this as the "look" command and determined that BigGuy really has access to a command named `look`, it chugs the `look` command class out of storage and either loads an existing Command instance from cache or creates one. After some more checks it then assigns it the following properties:
 
 - `caller` - The character BigGuy, in this example. This is a reference to the object executing the command. The value of this depends on what type of object is calling the command; see the previous section.
-- `session` - the [Session](Sessions) Bob uses to connect to the game and control BigGuy (see also previous section).
+- `session` - the [Session](./Sessions) Bob uses to connect to the game and control BigGuy (see also previous section).
 - `sessid` - the unique id of `self.session`, for quick lookup.
-- `account` - the [Account](Accounts) Bob (see previous section).
+- `account` - the [Account](./Accounts) Bob (see previous section).
 - `cmdstring` - the matched key for the command. This would be *look* in our example.
 - `args` - this is the rest of the string, except the command name. So if the string entered was *look at sword*, `args` would be " *at sword*". Note the space kept - Evennia would correctly interpret `lookat sword` too. This is useful for things like `/switches` that should not use space. In the `MuxCommand` class used for default commands, this space is stripped. Also see the `arg_regex` property if you want to enforce a space to make `lookat sword` give a command-not-found error.
-- `obj` - the game [Object](Objects) on which this command is defined.  This need not be the caller, but since `look` is a common (default) command, this is probably defined directly on *BigGuy* - so `obj` will point to BigGuy.  Otherwise `obj` could be an Account or any interactive object with commands defined on it, like in the example of the "check time" command defined on a "Clock" object.
-- `cmdset` - this is a reference to the merged CmdSet (see below) from which this command was matched. This variable is rarely used, it's main use is for the [auto-help system](Help-System#command-auto-help-system) (*Advanced note: the merged cmdset need NOT be the same as `BigGuy.cmdset`.  The merged set can be a combination of the cmdsets from other objects in the room, for example*).
+- `obj` - the game [Object](./Objects) on which this command is defined.  This need not be the caller, but since `look` is a common (default) command, this is probably defined directly on *BigGuy* - so `obj` will point to BigGuy.  Otherwise `obj` could be an Account or any interactive object with commands defined on it, like in the example of the "check time" command defined on a "Clock" object.
+- `cmdset` - this is a reference to the merged CmdSet (see below) from which this command was matched. This variable is rarely used, it's main use is for the [auto-help system](./Help-System#command-auto-help-system) (*Advanced note: the merged cmdset need NOT be the same as `BigGuy.cmdset`.  The merged set can be a combination of the cmdsets from other objects in the room, for example*).
 - `raw_string` - this is the raw input coming from the user, without stripping any surrounding whitespace. The only thing that is stripped is the ending newline marker.
 
 #### Other useful utility methods: 
@@ -102,11 +102,11 @@ Beyond the properties Evennia always assigns to the command at run-time (listed 
 
 - `key` (string) - the identifier for the command, like `look`.  This should (ideally) be unique. A key can consist of more than one word, like "press button" or "pull left lever". Note that *both* `key` and `aliases` below determine the identity of a command. So two commands are considered if either matches. This is important for merging cmdsets described below.
 - `aliases` (optional list) - a list of alternate names for the command (`["glance", "see", "l"]`). Same name rules as for `key` applies.
-- `locks` (string) - a [lock definition](Locks), usually on the form `cmd:<lockfuncs>`. Locks is a rather big topic, so until you learn more about locks, stick to giving the lockstring `"cmd:all()"` to make the command available to everyone (if you don't provide a lock string, this will be assigned for you).
+- `locks` (string) - a [lock definition](./Locks), usually on the form `cmd:<lockfuncs>`. Locks is a rather big topic, so until you learn more about locks, stick to giving the lockstring `"cmd:all()"` to make the command available to everyone (if you don't provide a lock string, this will be assigned for you).
 - `help_category` (optional string) - setting this helps to structure the auto-help into categories. If none is set, this will be set to *General*.
 - `save_for_next` (optional boolean). This defaults to `False`. If `True`, a copy of this command object (along with any changes you have done to it) will be stored by the system and can be accessed by the next command by retrieving `self.caller.ndb.last_cmd`. The next run command will either clear or replace the storage.
-- `arg_regex` (optional raw string): Used to force the parser to limit itself and tell it when the command-name ends and arguments begin (such as requiring this to be a space or a /switch). This is done with a regular expression. [See the arg_regex section](Commands#on-arg_regex) for the details.
-- `auto_help` (optional boolean). Defaults to `True`. This allows for turning off the [auto-help system](Help-System#command-auto-help-system) on a per-command basis. This could be useful if you either want to write your help entries manually or hide the existence of a command from `help`'s generated list.
+- `arg_regex` (optional raw string): Used to force the parser to limit itself and tell it when the command-name ends and arguments begin (such as requiring this to be a space or a /switch). This is done with a regular expression. [See the arg_regex section](./Commands#on-arg_regex) for the details.
+- `auto_help` (optional boolean). Defaults to `True`. This allows for turning off the [auto-help system](./Help-System#command-auto-help-system) on a per-command basis. This could be useful if you either want to write your help entries manually or hide the existence of a command from `help`'s generated list.
 - `is_exit` (bool) - this marks the command as being used for an in-game exit. This is, by default, set by all Exit objects and you should not need to set it manually unless you make your own Exit system. It is used for optimization and allows the cmdhandler to easily disregard this command when the cmdset has its `no_exits` flag set.
 - `is_channel` (bool)- this marks the command as being used for an in-game channel. This is, by default, set by all Channel objects and you should not need to set it manually unless you make your own Channel system.  is used for optimization and allows the cmdhandler to easily disregard this command when its cmdset has its `no_channels` flag set.
 - `msg_all_sessions` (bool): This affects the behavior of the `Command.msg` method. If unset (default), calling `self.msg(text)` from the Command will always only send text to the Session that actually triggered this Command. If set however, `self.msg(text)` will send to all Sessions relevant to the object this Command sits on. Just which Sessions receives the text depends on the object and the server's `MULTISESSION_MODE`.
@@ -118,7 +118,7 @@ You should also implement at least two methods, `parse()` and `func()` (You coul
 - `func()` is called right after `parse()` and should make use of the pre-parsed input to actually do whatever the command is supposed to do. This is the main body of the command. The return value from this method will be returned from the execution as a Twisted Deferred.
 - `at_post_cmd()` is called after `func()` to handle eventual cleanup.
 
-Finally, you should always make an informative [doc string](http://www.python.org/dev/peps/pep-0257/#what-is-a-docstring) (`__doc__`) at the top of your class. This string is dynamically read by the [Help System](Help-System) to create the help entry for this command. You should decide on a way to format your help and stick to that.
+Finally, you should always make an informative [doc string](http://www.python.org/dev/peps/pep-0257/#what-is-a-docstring) (`__doc__`) at the top of your class. This string is dynamically read by the [Help System](./Help-System) to create the help entry for this command. You should decide on a way to format your help and stick to that.
 
 Below is how you define a simple alternative "`smile`" command:
 
@@ -175,7 +175,7 @@ default commands thus need to implement `parse()` at all, but can assume the
 incoming string is already split up and parsed in suitable ways by its parent.
 
 Before you can actually use the command in your game, you must now store it
-within a *command set*. See the [Command Sets](Command-Sets) page.
+within a *command set*. See the [Command Sets](./Command-Sets) page.
 
 ### On arg_regex
 
@@ -286,7 +286,7 @@ class CmdConfirm(Command):
 
 This time, when the user enters the 'confirm' command, she will be asked if she wants to go on. Entering 'yes' or "y" (regardless of case) will give the first reply, otherwise the second reply will show.
 
-> Note again that the `yield` keyword does not store state.  If the game reloads while waiting for the user to answer, the user will have to start over. It is not a good idea to use `yield` for important or complex choices, a persistent [EvMenu](EvMenu) might be more appropriate in this case.
+> Note again that the `yield` keyword does not store state.  If the game reloads while waiting for the user to answer, the user will have to start over. It is not a good idea to use `yield` for important or complex choices, a persistent [EvMenu](./EvMenu) might be more appropriate in this case.
 
 ## System commands
 
@@ -302,7 +302,7 @@ Here are the exceptional situations that triggers system commands. You can find 
 - Command not found (`syscmdkeys.CMD_NOMATCH`) - No matching command was found. Default is to display the "Huh?" error message.
 - Several matching commands where found (`syscmdkeys.CMD_MULTIMATCH`) - Default is to show a list of matches.
 - User is not allowed to execute the command (`syscmdkeys.CMD_NOPERM`) - Default is to display the "Huh?" error message.
-- Channel (`syscmdkeys.CMD_CHANNEL`) - This is a [Channel](Communications) name of a channel you are subscribing to - Default is to relay the command's argument to that channel. Such commands are created by the Comm system on the fly depending on your subscriptions.
+- Channel (`syscmdkeys.CMD_CHANNEL`) - This is a [Channel](./Communications) name of a channel you are subscribing to - Default is to relay the command's argument to that channel. Such commands are created by the Comm system on the fly depending on your subscriptions.
 - New session connection (`syscmdkeys.CMD_LOGINSTART`). This command name should be put in the `settings.CMDSET_UNLOGGEDIN`. Whenever a new connection is established, this command is always called on the server (default is to show the login screen).
 
 Below is an example of redefining what happens when the account doesn't provide any input (e.g. just presses return). Of course the new system command must be added to a cmdset as well before it will work.
@@ -321,7 +321,7 @@ Below is an example of redefining what happens when the account doesn't provide 
 
 *Note: This is an advanced topic.*
 
-Normally Commands are created as fixed classes and used without modification. There are however situations when the exact key, alias or other properties is not possible (or impractical) to pre-code ([Exits](Commands#Exits) is an example of this).
+Normally Commands are created as fixed classes and used without modification. There are however situations when the exact key, alias or other properties is not possible (or impractical) to pre-code ([Exits](./Commands#Exits) is an example of this).
 
 To create a command with a dynamic call signature, first define the command body normally in a class (set your `key`, `aliases` to default values), then use the following call (assuming the command class you created is named `MyCommand`):
 
@@ -340,9 +340,9 @@ Normally you would define your class and only overload things like `key` and `al
 
 *Note: This is an advanced topic.*
 
-Exits are examples of the use of a [Dynamic Command](Commands#Dynamic_Commands).
+Exits are examples of the use of a [Dynamic Command](./Commands#Dynamic_Commands).
 
-The functionality of [Exit](Objects) objects in Evennia is not hard-coded in the engine. Instead Exits are normal [typeclassed](Typeclasses) objects that auto-create a [CmdSet](Commands#CmdSets) on themselves when they load. This cmdset has a single dynamically created Command with the same properties (key, aliases and locks) as the Exit object itself. When entering the name of the exit, this dynamic exit-command is triggered and (after access checks) moves the Character to the exit's destination.
+The functionality of [Exit](./Objects) objects in Evennia is not hard-coded in the engine. Instead Exits are normal [typeclassed](./Typeclasses) objects that auto-create a [CmdSet](./Commands#CmdSets) on themselves when they load. This cmdset has a single dynamically created Command with the same properties (key, aliases and locks) as the Exit object itself. When entering the name of the exit, this dynamic exit-command is triggered and (after access checks) moves the Character to the exit's destination.
 Whereas you could customize the Exit object and its command to achieve completely different behaviour, you will usually be fine just using the appropriate `traverse_*` hooks on the Exit object. But if you are interested in really changing how things work under the hood, check out `evennia/objects/objects.py` for how the `Exit` typeclass is set up.
 
 ## Command instances are re-used
@@ -415,8 +415,8 @@ Any time the user sends text to Evennia, the server tries to figure out if the t
     - The caller's own currently active CmdSet.
     - CmdSets defined on the current account, if caller is a puppeted object.
     - CmdSets defined on the Session itself.
-    - The active CmdSets of eventual objects in the same location (if any). This includes commands on [Exits](Objects#Exits).
-    - Sets of dynamically created *System commands* representing available [Communications](Communications#Channels).
+    - The active CmdSets of eventual objects in the same location (if any). This includes commands on [Exits](./Objects#Exits).
+    - Sets of dynamically created *System commands* representing available [Communications](./Communications#Channels).
 7. All CmdSets *of the same priority* are merged together in groups.  Grouping avoids order-dependent issues of merging multiple same-prio sets onto lower ones.
 8. All the grouped CmdSets are *merged* in reverse priority into one combined CmdSet according to each set's merge rules.
 9. Evennia's *command parser* takes the merged cmdset and matches each of its commands (using its key and aliases) against the beginning of the string entered by *caller*. This produces a set of candidates.

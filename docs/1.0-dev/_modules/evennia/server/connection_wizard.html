@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.server.connection_wizard &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.server.connection_wizard</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.server.connection_wizard</a></li> 
       </ul>
     </div>  
 
@@ -53,20 +50,20 @@
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">list_to_string</span><span class="p">,</span> <span class="n">mod_import</span>
 
 
-<div class="viewcode-block" id="ConnectionWizard"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.connection_wizard.ConnectionWizard">[docs]</a><span class="k">class</span> <span class="nc">ConnectionWizard</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<div class="viewcode-block" id="ConnectionWizard.__init__"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.connection_wizard.ConnectionWizard.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ConnectionWizard"><a class="viewcode-back" href="../../../api/evennia.server.connection_wizard.html#evennia.server.connection_wizard.ConnectionWizard">[docs]</a><span class="k">class</span> <span class="nc">ConnectionWizard</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="ConnectionWizard.__init__"><a class="viewcode-back" href="../../../api/evennia.server.connection_wizard.html#evennia.server.connection_wizard.ConnectionWizard.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prev_node</span> <span class="o">=</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="ConnectionWizard.display"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.connection_wizard.ConnectionWizard.display">[docs]</a>    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+<div class="viewcode-block" id="ConnectionWizard.display"><a class="viewcode-back" href="../../../api/evennia.server.connection_wizard.html#evennia.server.connection_wizard.ConnectionWizard.display">[docs]</a>    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
         <span class="s2">&quot;Show text&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ConnectionWizard.ask_continue"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.connection_wizard.ConnectionWizard.ask_continue">[docs]</a>    <span class="k">def</span> <span class="nf">ask_continue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ConnectionWizard.ask_continue"><a class="viewcode-back" href="../../../api/evennia.server.connection_wizard.html#evennia.server.connection_wizard.ConnectionWizard.ask_continue">[docs]</a>    <span class="k">def</span> <span class="nf">ask_continue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;&#39;Press return to continue&#39;-prompt&quot;</span>
         <span class="nb">input</span><span class="p">(</span><span class="s2">&quot; (Press return to continue)&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ConnectionWizard.ask_node"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.connection_wizard.ConnectionWizard.ask_node">[docs]</a>    <span class="k">def</span> <span class="nf">ask_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;Enter choice: &quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ConnectionWizard.ask_node"><a class="viewcode-back" href="../../../api/evennia.server.connection_wizard.html#evennia.server.connection_wizard.ConnectionWizard.ask_node">[docs]</a>    <span class="k">def</span> <span class="nf">ask_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;Enter choice: &quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve options and jump to different menu nodes</span>
 
@@ -97,11 +94,11 @@
                 <span class="c1"># input, but nothing was recognized</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="s2">&quot; Choose one of: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">list_to_string</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">options</span><span class="p">))))</span></div>
 
-<div class="viewcode-block" id="ConnectionWizard.ask_yesno"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.connection_wizard.ConnectionWizard.ask_yesno">[docs]</a>    <span class="k">def</span> <span class="nf">ask_yesno</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;yes&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="ConnectionWizard.ask_yesno"><a class="viewcode-back" href="../../../api/evennia.server.connection_wizard.html#evennia.server.connection_wizard.ConnectionWizard.ask_yesno">[docs]</a>    <span class="k">def</span> <span class="nf">ask_yesno</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;yes&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ask a yes/no question inline.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            prompt (str): The prompt to ask.</span>
 <span class="sd">            default (str): &quot;yes&quot; or &quot;no&quot;, used if pressing return.</span>
 <span class="sd">        Returns:</span>
@@ -123,11 +120,11 @@
             <span class="k">elif</span> <span class="n">resp</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;quit&quot;</span><span class="p">,</span> <span class="s2">&quot;q&quot;</span><span class="p">):</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ConnectionWizard.ask_choice"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.connection_wizard.ConnectionWizard.ask_choice">[docs]</a>    <span class="k">def</span> <span class="nf">ask_choice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot; &gt; &quot;</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ConnectionWizard.ask_choice"><a class="viewcode-back" href="../../../api/evennia.server.connection_wizard.html#evennia.server.connection_wizard.ConnectionWizard.ask_choice">[docs]</a>    <span class="k">def</span> <span class="nf">ask_choice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot; &gt; &quot;</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ask multiple-choice question, get response inline.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            prompt (str): Input prompt.</span>
 <span class="sd">            options (list): List of options. Will be indexable by sequence number 1...</span>
 <span class="sd">            default (int): The list index+1 of the default choice, if any</span>
@@ -154,11 +151,11 @@
                     <span class="k">return</span> <span class="n">selection</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="s2">&quot; Select one of the given options.&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ConnectionWizard.ask_input"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.connection_wizard.ConnectionWizard.ask_input">[docs]</a>    <span class="k">def</span> <span class="nf">ask_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot; &gt; &quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ConnectionWizard.ask_input"><a class="viewcode-back" href="../../../api/evennia.server.connection_wizard.html#evennia.server.connection_wizard.ConnectionWizard.ask_input">[docs]</a>    <span class="k">def</span> <span class="nf">ask_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot; &gt; &quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get arbitrary input inline.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            prompt (str): The display prompt.</span>
 <span class="sd">            default (str): If empty input, use this.</span>
 <span class="sd">            validator (callable): If given, the input will be passed</span>
@@ -203,7 +200,7 @@
             <span class="k">return</span> <span class="n">resp</span></div></div>
 
 
-<div class="viewcode-block" id="node_start"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.connection_wizard.node_start">[docs]</a><span class="k">def</span> <span class="nf">node_start</span><span class="p">(</span><span class="n">wizard</span><span class="p">):</span>
+<div class="viewcode-block" id="node_start"><a class="viewcode-back" href="../../../api/evennia.server.connection_wizard.html#evennia.server.connection_wizard.node_start">[docs]</a><span class="k">def</span> <span class="nf">node_start</span><span class="p">(</span><span class="n">wizard</span><span class="p">):</span>
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    This wizard helps activate external networks with Evennia. It will create</span>
 <span class="s2">    a config that will be attached to the bottom of the game settings file.</span>
@@ -232,7 +229,7 @@
 <span class="c1"># Evennia game index</span>
 
 
-<div class="viewcode-block" id="node_game_index_start"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.connection_wizard.node_game_index_start">[docs]</a><span class="k">def</span> <span class="nf">node_game_index_start</span><span class="p">(</span><span class="n">wizard</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="node_game_index_start"><a class="viewcode-back" href="../../../api/evennia.server.connection_wizard.html#evennia.server.connection_wizard.node_game_index_start">[docs]</a><span class="k">def</span> <span class="nf">node_game_index_start</span><span class="p">(</span><span class="n">wizard</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">text</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    The Evennia game index (http://games.evennia.com) lists both active Evennia</span>
 <span class="s2">    games as well as games in various stages of development.</span>
@@ -252,7 +249,7 @@
         <span class="n">node_start</span><span class="p">(</span><span class="n">wizard</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="node_game_index_fields"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.connection_wizard.node_game_index_fields">[docs]</a><span class="k">def</span> <span class="nf">node_game_index_fields</span><span class="p">(</span><span class="n">wizard</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="node_game_index_fields"><a class="viewcode-back" href="../../../api/evennia.server.connection_wizard.html#evennia.server.connection_wizard.node_game_index_fields">[docs]</a><span class="k">def</span> <span class="nf">node_game_index_fields</span><span class="p">(</span><span class="n">wizard</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
     <span class="c1"># reset the listing if needed</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">wizard</span><span class="p">,</span> <span class="s2">&quot;game_index_listing&quot;</span><span class="p">):</span>
@@ -430,7 +427,7 @@
 <span class="c1"># MSSP</span>
 
 
-<div class="viewcode-block" id="node_mssp_start"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.connection_wizard.node_mssp_start">[docs]</a><span class="k">def</span> <span class="nf">node_mssp_start</span><span class="p">(</span><span class="n">wizard</span><span class="p">):</span>
+<div class="viewcode-block" id="node_mssp_start"><a class="viewcode-back" href="../../../api/evennia.server.connection_wizard.html#evennia.server.connection_wizard.node_mssp_start">[docs]</a><span class="k">def</span> <span class="nf">node_mssp_start</span><span class="p">(</span><span class="n">wizard</span><span class="p">):</span>
 
     <span class="n">mssp_module</span> <span class="o">=</span> <span class="n">mod_import</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">MSSP_META_MODULE</span><span class="p">)</span>
     <span class="n">filename</span> <span class="o">=</span> <span class="n">mssp_module</span><span class="o">.</span><span class="vm">__file__</span>
@@ -460,7 +457,7 @@
 <span class="c1"># Admin</span>
 
 
-<div class="viewcode-block" id="_save_changes"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.connection_wizard._save_changes">[docs]</a><span class="k">def</span> <span class="nf">_save_changes</span><span class="p">(</span><span class="n">wizard</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_save_changes</span><span class="p">(</span><span class="n">wizard</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Perform the save</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -489,10 +486,10 @@
         <span class="p">)</span>
 
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">wizard</span><span class="o">.</span><span class="n">save_output</span><span class="p">)</span>
-        <span class="n">wizard</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;saving to </span><span class="si">{connect_settings_file}</span><span class="s2"> ...&quot;</span><span class="p">)</span></div>
+        <span class="n">wizard</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;saving to </span><span class="si">{connect_settings_file}</span><span class="s2"> ...&quot;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="node_view_and_apply_settings"><a class="viewcode-back" href="../../../api/evennia.server.html#evennia.server.connection_wizard.node_view_and_apply_settings">[docs]</a><span class="k">def</span> <span class="nf">node_view_and_apply_settings</span><span class="p">(</span><span class="n">wizard</span><span class="p">):</span>
+<div class="viewcode-block" id="node_view_and_apply_settings"><a class="viewcode-back" href="../../../api/evennia.server.connection_wizard.html#evennia.server.connection_wizard.node_view_and_apply_settings">[docs]</a><span class="k">def</span> <span class="nf">node_view_and_apply_settings</span><span class="p">(</span><span class="n">wizard</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inspect and save the data gathered in the other nodes</span>
 
@@ -525,6 +522,7 @@
     <span class="n">node_start</span><span class="p">(</span><span class="n">wizard</span><span class="p">)</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -562,17 +560,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.server.connection_wizard</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.server.connection_wizard</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

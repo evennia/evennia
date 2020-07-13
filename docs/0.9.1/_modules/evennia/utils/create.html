@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.utils.create &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.utils.create</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.create</a></li> 
       </ul>
     </div>  
 
@@ -43,27 +40,19 @@
             
   <h1>Source code for evennia.utils.create</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">This module gathers all the essential database-creation</span>
-<span class="sd">functions for the game engine&#39;s various object types.</span>
+<span class="sd">This module gathers all the essential database-creation functions for the game</span>
+<span class="sd">engine&#39;s various object types.</span>
 
-<span class="sd">Only objects created &#39;stand-alone&#39; are in here, e.g. object Attributes</span>
-<span class="sd">are always created directly through their respective objects.</span>
+<span class="sd">Only objects created &#39;stand-alone&#39; are in here. E.g. object Attributes are</span>
+<span class="sd">always created through their respective objects handlers.</span>
 
-<span class="sd">Each creation_* function also has an alias named for the entity being</span>
-<span class="sd">created, such as create_object() and object().  This is for</span>
-<span class="sd">consistency with the utils.search module and allows you to do the</span>
-<span class="sd">shorter &quot;create.object()&quot;.</span>
+<span class="sd">Each `creation_*` function also has an alias named for the entity being created,</span>
+<span class="sd">such as create_object() and object(). This is for consistency with the</span>
+<span class="sd">utils.search module and allows you to do the shorter `create.object()`.</span>
 
-<span class="sd">The respective object managers hold more methods for manipulating and</span>
-<span class="sd">searching objects already existing in the database.</span>
+<span class="sd">The respective object managers hold more methods for manipulating and searching</span>
+<span class="sd">objects already existing in the database.</span>
 
-<span class="sd">Models covered:</span>
-<span class="sd"> Objects</span>
-<span class="sd"> Scripts</span>
-<span class="sd"> Help</span>
-<span class="sd"> Message</span>
-<span class="sd"> Channel</span>
-<span class="sd"> Accounts</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">IntegrityError</span>
@@ -103,7 +92,7 @@
 <span class="c1"># Game Object creation</span>
 
 
-<div class="viewcode-block" id="create_object"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.create.create_object">[docs]</a><span class="k">def</span> <span class="nf">create_object</span><span class="p">(</span>
+<div class="viewcode-block" id="create_object"><a class="viewcode-back" href="../../../api/evennia.utils.create.html#evennia.utils.create.create_object">[docs]</a><span class="k">def</span> <span class="nf">create_object</span><span class="p">(</span>
     <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -122,24 +111,23 @@
 
 <span class="sd">    Create a new in-game object.</span>
 
-<span class="sd">    Kwargs:</span>
+<span class="sd">    Keyword args:</span>
 <span class="sd">        typeclass (class or str): Class or python path to a typeclass.</span>
 <span class="sd">        key (str): Name of the new object. If not set, a name of</span>
-<span class="sd">            #dbref will be set.</span>
+<span class="sd">            `#dbref` will be set.</span>
 <span class="sd">        home (Object or str): Obj or #dbref to use as the object&#39;s</span>
 <span class="sd">            home location.</span>
 <span class="sd">        permissions (list): A list of permission strings or tuples (permstring, category).</span>
 <span class="sd">        locks (str): one or more lockstrings, separated by semicolons.</span>
 <span class="sd">        aliases (list): A list of alternative keys or tuples (aliasstring, category).</span>
 <span class="sd">        tags (list): List of tag keys or tuples (tagkey, category) or (tagkey, category, data).</span>
-<span class="sd">        destination (Object or str): Obj or #dbref to use as an Exit&#39;s</span>
-<span class="sd">            target.</span>
+<span class="sd">        destination (Object or str): Obj or #dbref to use as an Exit&#39;s target.</span>
 <span class="sd">        report_to (Object): The object to return error messages to.</span>
 <span class="sd">        nohome (bool): This allows the creation of objects without a</span>
 <span class="sd">            default home location; only used when creating the default</span>
 <span class="sd">            location itself or during unittests.</span>
 <span class="sd">        attributes (list): Tuples on the form (key, value) or (key, value, category),</span>
-<span class="sd">           (key, value, lockstring) or (key, value, lockstring, default_access).</span>
+<span class="sd">            (key, value, lockstring) or (key, value, lockstring, default_access).</span>
 <span class="sd">            to set as Attributes on the new object.</span>
 <span class="sd">        nattributes (list): Non-persistent tuples on the form (key, value). Note that</span>
 <span class="sd">            adding this rarely makes sense since this data will not survive a reload.</span>
@@ -227,7 +215,7 @@
 <span class="c1"># Script creation</span>
 
 
-<div class="viewcode-block" id="create_script"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.create.create_script">[docs]</a><span class="k">def</span> <span class="nf">create_script</span><span class="p">(</span>
+<div class="viewcode-block" id="create_script"><a class="viewcode-back" href="../../../api/evennia.utils.create.html#evennia.utils.create.create_script">[docs]</a><span class="k">def</span> <span class="nf">create_script</span><span class="p">(</span>
     <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -250,7 +238,7 @@
 <span class="sd">    scripts.  It&#39;s behaviour is similar to the game objects except</span>
 <span class="sd">    scripts has a time component and are more limited in scope.</span>
 
-<span class="sd">    Kwargs:</span>
+<span class="sd">    Keyword args:</span>
 <span class="sd">        typeclass (class or str): Class or python path to a typeclass.</span>
 <span class="sd">        key (str): Name of the new object. If not set, a name of</span>
 <span class="sd">            #dbref will be set.</span>
@@ -357,7 +345,7 @@
 <span class="c1">#</span>
 
 
-<div class="viewcode-block" id="create_help_entry"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.create.create_help_entry">[docs]</a><span class="k">def</span> <span class="nf">create_help_entry</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">entrytext</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;General&quot;</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="create_help_entry"><a class="viewcode-back" href="../../../api/evennia.utils.create.html#evennia.utils.create.create_help_entry">[docs]</a><span class="k">def</span> <span class="nf">create_help_entry</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">entrytext</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;General&quot;</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a static help entry in the help database. Note that Command</span>
 <span class="sd">    help entries are dynamic and directly taken from the __doc__</span>
@@ -410,7 +398,7 @@
 <span class="c1"># Comm system methods</span>
 
 
-<div class="viewcode-block" id="create_message"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.create.create_message">[docs]</a><span class="k">def</span> <span class="nf">create_message</span><span class="p">(</span><span class="n">senderobj</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receivers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="create_message"><a class="viewcode-back" href="../../../api/evennia.utils.create.html#evennia.utils.create.create_message">[docs]</a><span class="k">def</span> <span class="nf">create_message</span><span class="p">(</span><span class="n">senderobj</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receivers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a new communication Msg. Msgs represent a unit of</span>
 <span class="sd">    database-persistent communication between entites.</span>
@@ -460,7 +448,7 @@
 <span class="n">create_msg</span> <span class="o">=</span> <span class="n">create_message</span>
 
 
-<div class="viewcode-block" id="create_channel"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.create.create_channel">[docs]</a><span class="k">def</span> <span class="nf">create_channel</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep_log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="create_channel"><a class="viewcode-back" href="../../../api/evennia.utils.create.html#evennia.utils.create.create_channel">[docs]</a><span class="k">def</span> <span class="nf">create_channel</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep_log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create A communication Channel. A Channel serves as a central hub</span>
 <span class="sd">    for distributing Msgs to groups of people without specifying the</span>
@@ -472,7 +460,7 @@
 <span class="sd">    Args:</span>
 <span class="sd">        key (str): This must be unique.</span>
 
-<span class="sd">    Kwargs:</span>
+<span class="sd">    Keyword args:</span>
 <span class="sd">        aliases (list of str): List of alternative (likely shorter) keynames.</span>
 <span class="sd">        desc (str): A description of the channel, for use in listings.</span>
 <span class="sd">        locks (str): Lockstring.</span>
@@ -516,7 +504,7 @@
 <span class="c1">#</span>
 
 
-<div class="viewcode-block" id="create_account"><a class="viewcode-back" href="../../../api/evennia.utils.html#evennia.utils.create.create_account">[docs]</a><span class="k">def</span> <span class="nf">create_account</span><span class="p">(</span>
+<div class="viewcode-block" id="create_account"><a class="viewcode-back" href="../../../api/evennia.utils.create.html#evennia.utils.create.create_account">[docs]</a><span class="k">def</span> <span class="nf">create_account</span><span class="p">(</span>
     <span class="n">key</span><span class="p">,</span>
     <span class="n">email</span><span class="p">,</span>
     <span class="n">password</span><span class="p">,</span>
@@ -537,7 +525,7 @@
 <span class="sd">            the empty string, will be set to None.</span>
 <span class="sd">        password (str): Password in cleartext.</span>
 
-<span class="sd">    Kwargs:</span>
+<span class="sd">    Keyword args:</span>
 <span class="sd">        typeclass (str): The typeclass to use for the account.</span>
 <span class="sd">        is_superuser (bool): Wether or not this account is to be a superuser</span>
 <span class="sd">        locks (str): Lockstring.</span>
@@ -625,6 +613,7 @@
 <span class="n">account</span> <span class="o">=</span> <span class="n">create_account</span>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -662,17 +651,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.utils.create</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.create</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

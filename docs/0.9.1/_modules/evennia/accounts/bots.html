@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.accounts.bots &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.accounts.bots</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.accounts.bots</a></li> 
       </ul>
     </div>  
 
@@ -69,7 +66,7 @@
 <span class="c1"># Bot helper utilities</span>
 
 
-<div class="viewcode-block" id="BotStarter"><a class="viewcode-back" href="../../../api/evennia.accounts.html#evennia.accounts.bots.BotStarter">[docs]</a><span class="k">class</span> <span class="nc">BotStarter</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<div class="viewcode-block" id="BotStarter"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.BotStarter">[docs]</a><span class="k">class</span> <span class="nc">BotStarter</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This non-repeating script has the</span>
 <span class="sd">    sole purpose of kicking its bot</span>
@@ -77,7 +74,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="BotStarter.at_script_creation"><a class="viewcode-back" href="../../../api/evennia.accounts.html#evennia.accounts.bots.BotStarter.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BotStarter.at_script_creation"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.BotStarter.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called once, when script is created.</span>
 
@@ -87,7 +84,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">persistent</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">started</span> <span class="o">=</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="BotStarter.at_start"><a class="viewcode-back" href="../../../api/evennia.accounts.html#evennia.accounts.bots.BotStarter.at_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BotStarter.at_start"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.BotStarter.at_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Kick bot into gear.</span>
 
@@ -96,7 +93,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">started</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="BotStarter.at_repeat"><a class="viewcode-back" href="../../../api/evennia.accounts.html#evennia.accounts.bots.BotStarter.at_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BotStarter.at_repeat"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.BotStarter.at_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called self.interval seconds to keep connection. We cannot use</span>
 <span class="sd">        the IDLE command from inside the game since the system will</span>
@@ -111,7 +108,7 @@
         <span class="k">for</span> <span class="n">session</span> <span class="ow">in</span> <span class="n">_SESSIONS</span><span class="o">.</span><span class="n">sessions_from_account</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">):</span>
             <span class="n">session</span><span class="o">.</span><span class="n">update_session_counters</span><span class="p">(</span><span class="n">idle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BotStarter.at_server_reload"><a class="viewcode-back" href="../../../api/evennia.accounts.html#evennia.accounts.bots.BotStarter.at_server_reload">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BotStarter.at_server_reload"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.BotStarter.at_server_reload">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If server reloads we don&#39;t need to reconnect the protocol</span>
 <span class="sd">        again, this is handled by the portal reconnect mechanism.</span>
@@ -119,7 +116,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">started</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="BotStarter.at_server_shutdown"><a class="viewcode-back" href="../../../api/evennia.accounts.html#evennia.accounts.bots.BotStarter.at_server_shutdown">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BotStarter.at_server_shutdown"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.BotStarter.at_server_shutdown">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make sure we are shutdown.</span>
 
@@ -131,7 +128,7 @@
 <span class="c1"># Bot base class</span>
 
 
-<div class="viewcode-block" id="Bot"><a class="viewcode-back" href="../../../api/evennia.accounts.html#evennia.accounts.bots.Bot">[docs]</a><span class="k">class</span> <span class="nc">Bot</span><span class="p">(</span><span class="n">DefaultAccount</span><span class="p">):</span>
+<div class="viewcode-block" id="Bot"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.Bot">[docs]</a><span class="k">class</span> <span class="nc">Bot</span><span class="p">(</span><span class="n">DefaultAccount</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A Bot will start itself when the server starts (it will generally</span>
 <span class="sd">    not do so on a reload - that will be handled by the normal Portal</span>
@@ -139,7 +136,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Bot.basetype_setup"><a class="viewcode-back" href="../../../api/evennia.accounts.html#evennia.accounts.bots.Bot.basetype_setup">[docs]</a>    <span class="k">def</span> <span class="nf">basetype_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Bot.basetype_setup"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.Bot.basetype_setup">[docs]</a>    <span class="k">def</span> <span class="nf">basetype_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This sets up the basic properties for the bot.</span>
 
@@ -157,28 +154,28 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">BotStarter</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">script_key</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_bot</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="Bot.start"><a class="viewcode-back" href="../../../api/evennia.accounts.html#evennia.accounts.bots.Bot.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Bot.start"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.Bot.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This starts the bot, whatever that may mean.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Bot.msg"><a class="viewcode-back" href="../../../api/evennia.accounts.html#evennia.accounts.bots.Bot.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Bot.msg"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.Bot.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Evennia -&gt; outgoing protocol</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">from_obj</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Bot.execute_cmd"><a class="viewcode-back" href="../../../api/evennia.accounts.html#evennia.accounts.bots.Bot.execute_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">execute_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Bot.execute_cmd"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.Bot.execute_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">execute_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Incoming protocol -&gt; Evennia</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">raw_string</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Bot.at_server_shutdown"><a class="viewcode-back" href="../../../api/evennia.accounts.html#evennia.accounts.bots.Bot.at_server_shutdown">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Bot.at_server_shutdown"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.Bot.at_server_shutdown">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        We need to handle this case manually since the shutdown may be</span>
 <span class="sd">        a reset.</span>
@@ -193,7 +190,7 @@
 <span class="c1"># IRC</span>
 
 
-<div class="viewcode-block" id="IRCBot"><a class="viewcode-back" href="../../../api/evennia.accounts.html#evennia.accounts.bots.IRCBot">[docs]</a><span class="k">class</span> <span class="nc">IRCBot</span><span class="p">(</span><span class="n">Bot</span><span class="p">):</span>
+<div class="viewcode-block" id="IRCBot"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.IRCBot">[docs]</a><span class="k">class</span> <span class="nc">IRCBot</span><span class="p">(</span><span class="n">Bot</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Bot for handling IRC connections.</span>
 
@@ -202,7 +199,7 @@
     <span class="c1"># override this on a child class to use custom factory</span>
     <span class="n">factory_path</span> <span class="o">=</span> <span class="s2">&quot;evennia.server.portal.irc.IRCBotFactory&quot;</span>
 
-<div class="viewcode-block" id="IRCBot.start"><a class="viewcode-back" href="../../../api/evennia.accounts.html#evennia.accounts.bots.IRCBot.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span>
+<div class="viewcode-block" id="IRCBot.start"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.IRCBot.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">ev_channel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">irc_botname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -270,11 +267,11 @@
         <span class="p">}</span>
         <span class="n">_SESSIONS</span><span class="o">.</span><span class="n">start_bot_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory_path</span><span class="p">,</span> <span class="n">configdict</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="IRCBot.at_msg_send"><a class="viewcode-back" href="../../../api/evennia.accounts.html#evennia.accounts.bots.IRCBot.at_msg_send">[docs]</a>    <span class="k">def</span> <span class="nf">at_msg_send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="IRCBot.at_msg_send"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.IRCBot.at_msg_send">[docs]</a>    <span class="k">def</span> <span class="nf">at_msg_send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="s2">&quot;Shortcut here or we can end up in infinite loop&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="IRCBot.get_nicklist"><a class="viewcode-back" href="../../../api/evennia.accounts.html#evennia.accounts.bots.IRCBot.get_nicklist">[docs]</a>    <span class="k">def</span> <span class="nf">get_nicklist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
+<div class="viewcode-block" id="IRCBot.get_nicklist"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.IRCBot.get_nicklist">[docs]</a>    <span class="k">def</span> <span class="nf">get_nicklist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrive the nick list from the connected channel.</span>
 
@@ -294,7 +291,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">request_nicklist</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="k">return</span></div>
 
-<div class="viewcode-block" id="IRCBot.ping"><a class="viewcode-back" href="../../../api/evennia.accounts.html#evennia.accounts.bots.IRCBot.ping">[docs]</a>    <span class="k">def</span> <span class="nf">ping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
+<div class="viewcode-block" id="IRCBot.ping"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.IRCBot.ping">[docs]</a>    <span class="k">def</span> <span class="nf">ping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fire a ping to the IRC server.</span>
 
@@ -307,7 +304,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_ping_callers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">ping</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="IRCBot.reconnect"><a class="viewcode-back" href="../../../api/evennia.accounts.html#evennia.accounts.bots.IRCBot.reconnect">[docs]</a>    <span class="k">def</span> <span class="nf">reconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="IRCBot.reconnect"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.IRCBot.reconnect">[docs]</a>    <span class="k">def</span> <span class="nf">reconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Force a protocol-side reconnect of the client without</span>
 <span class="sd">        having to destroy/recreate the bot &quot;account&quot;.</span>
@@ -315,14 +312,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">reconnect</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="IRCBot.msg"><a class="viewcode-back" href="../../../api/evennia.accounts.html#evennia.accounts.bots.IRCBot.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="IRCBot.msg"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.IRCBot.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Takes text from connected channel (only).</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            text (str, optional): Incoming text from channel.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            options (dict): Options dict with the following allowed keys:</span>
 <span class="sd">                - from_channel (str): dbid of a channel this text originated from.</span>
 <span class="sd">                - from_obj (list): list of objects sending this text.</span>
@@ -343,7 +340,7 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">from_obj</span> <span class="ow">or</span> <span class="n">from_obj</span> <span class="o">!=</span> <span class="p">[</span><span class="bp">self</span><span class="p">]:</span>
                 <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="n">text</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="IRCBot.execute_cmd"><a class="viewcode-back" href="../../../api/evennia.accounts.html#evennia.accounts.bots.IRCBot.execute_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">execute_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">txt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="IRCBot.execute_cmd"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.IRCBot.execute_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">execute_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">txt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Take incoming data and send it to connected channel. This is</span>
 <span class="sd">        triggered by the bot_data_in Inputfunc.</span>
@@ -352,7 +349,7 @@
 <span class="sd">            session (Session, optional): Session responsible for this</span>
 <span class="sd">                command. Note that this is the bot.</span>
 <span class="sd">            txt (str, optional):  Command string.</span>
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            user (str): The name of the user who sent the message.</span>
 <span class="sd">            channel (str): The name of channel the message was sent to.</span>
 <span class="sd">            type (str): Nature of message. Either &#39;msg&#39;, &#39;action&#39;, &#39;nicklist&#39;</span>
@@ -443,14 +440,14 @@
 <span class="c1"># RSS</span>
 
 
-<div class="viewcode-block" id="RSSBot"><a class="viewcode-back" href="../../../api/evennia.accounts.html#evennia.accounts.bots.RSSBot">[docs]</a><span class="k">class</span> <span class="nc">RSSBot</span><span class="p">(</span><span class="n">Bot</span><span class="p">):</span>
+<div class="viewcode-block" id="RSSBot"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.RSSBot">[docs]</a><span class="k">class</span> <span class="nc">RSSBot</span><span class="p">(</span><span class="n">Bot</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An RSS relayer. The RSS protocol itself runs a ticker to update</span>
 <span class="sd">    its feed at regular intervals.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="RSSBot.start"><a class="viewcode-back" href="../../../api/evennia.accounts.html#evennia.accounts.bots.RSSBot.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ev_channel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rss_url</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rss_rate</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="RSSBot.start"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.RSSBot.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ev_channel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rss_url</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rss_rate</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start by telling the portal to start a new RSS session</span>
 
@@ -488,7 +485,7 @@
         <span class="n">configdict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;uid&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbid</span><span class="p">,</span> <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rss_url</span><span class="p">,</span> <span class="s2">&quot;rate&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rss_rate</span><span class="p">}</span>
         <span class="n">_SESSIONS</span><span class="o">.</span><span class="n">start_bot_session</span><span class="p">(</span><span class="s2">&quot;evennia.server.portal.rss.RSSBotFactory&quot;</span><span class="p">,</span> <span class="n">configdict</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RSSBot.execute_cmd"><a class="viewcode-back" href="../../../api/evennia.accounts.html#evennia.accounts.bots.RSSBot.execute_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">execute_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">txt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="RSSBot.execute_cmd"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.RSSBot.execute_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">execute_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">txt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Take incoming data and send it to connected channel. This is</span>
 <span class="sd">        triggered by the bot_data_in Inputfunc.</span>
@@ -511,7 +508,7 @@
 <span class="c1"># Grapevine bot</span>
 
 
-<div class="viewcode-block" id="GrapevineBot"><a class="viewcode-back" href="../../../api/evennia.accounts.html#evennia.accounts.bots.GrapevineBot">[docs]</a><span class="k">class</span> <span class="nc">GrapevineBot</span><span class="p">(</span><span class="n">Bot</span><span class="p">):</span>
+<div class="viewcode-block" id="GrapevineBot"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.GrapevineBot">[docs]</a><span class="k">class</span> <span class="nc">GrapevineBot</span><span class="p">(</span><span class="n">Bot</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    g Grapevine (https://grapevine.haus) relayer. The channel to connect to is the first</span>
 <span class="sd">    name in the settings.GRAPEVINE_CHANNELS list.</span>
@@ -520,7 +517,7 @@
 
     <span class="n">factory_path</span> <span class="o">=</span> <span class="s2">&quot;evennia.server.portal.grapevine.RestartingWebsocketServerFactory&quot;</span>
 
-<div class="viewcode-block" id="GrapevineBot.start"><a class="viewcode-back" href="../../../api/evennia.accounts.html#evennia.accounts.bots.GrapevineBot.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ev_channel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">grapevine_channel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="GrapevineBot.start"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.GrapevineBot.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ev_channel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">grapevine_channel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start by telling the portal to connect to the grapevine network.</span>
 
@@ -551,18 +548,18 @@
 
         <span class="n">_SESSIONS</span><span class="o">.</span><span class="n">start_bot_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory_path</span><span class="p">,</span> <span class="n">configdict</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="GrapevineBot.at_msg_send"><a class="viewcode-back" href="../../../api/evennia.accounts.html#evennia.accounts.bots.GrapevineBot.at_msg_send">[docs]</a>    <span class="k">def</span> <span class="nf">at_msg_send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="GrapevineBot.at_msg_send"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.GrapevineBot.at_msg_send">[docs]</a>    <span class="k">def</span> <span class="nf">at_msg_send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="s2">&quot;Shortcut here or we can end up in infinite loop&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="GrapevineBot.msg"><a class="viewcode-back" href="../../../api/evennia.accounts.html#evennia.accounts.bots.GrapevineBot.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="GrapevineBot.msg"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.GrapevineBot.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Takes text from connected channel (only).</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            text (str, optional): Incoming text from channel.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            options (dict): Options dict with the following allowed keys:</span>
 <span class="sd">                - from_channel (str): dbid of a channel this text originated from.</span>
 <span class="sd">                - from_obj (list): list of objects sending this text.</span>
@@ -597,7 +594,7 @@
                     <span class="p">)</span>
                 <span class="p">)</span></div>
 
-<div class="viewcode-block" id="GrapevineBot.execute_cmd"><a class="viewcode-back" href="../../../api/evennia.accounts.html#evennia.accounts.bots.GrapevineBot.execute_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">execute_cmd</span><span class="p">(</span>
+<div class="viewcode-block" id="GrapevineBot.execute_cmd"><a class="viewcode-back" href="../../../api/evennia.accounts.bots.html#evennia.accounts.bots.GrapevineBot.execute_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">execute_cmd</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">txt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -623,6 +620,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">ev_channel</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">senders</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -660,17 +658,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.accounts.bots</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.accounts.bots</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

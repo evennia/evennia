@@ -1,6 +1,6 @@
 # Adding Command Tutorial
 
-This is a quick first-time tutorial expanding on the [Commands](Commands) documentation. 
+This is a quick first-time tutorial expanding on the [Commands](./Commands) documentation. 
 
 Let's assume you have just downloaded Evennia, installed it and created your game folder (let's call
 it just `mygame` here). Now you want to try to add a new command. This is the fastest way to do it. 
@@ -12,7 +12,7 @@ it just `mygame` here). Now you want to try to add a new command. This is the fa
    `CmdEcho` in this example.
 1. Set the class variable `key` to a good command name, like  `echo`.
 1. Give your class a useful _docstring_. A docstring is the string at the very top of a class or function/method. The docstring at the top of the command class is read by Evennia to become the help entry for the Command (see
-   [Command Auto-help](Help-System#command-auto-help-system)).
+   [Command Auto-help](./Help-System#command-auto-help-system)).
 1. Define a class method `func(self)` that echoes your input back to you. 
 
 Below is an example how this all could look for the echo command:
@@ -43,7 +43,7 @@ Below is an example how this all could look for the echo command:
 
 ## Step 2: Adding the Command to a default Cmdset
 
-The command is not available to use until it is part of a [Command Set](Command-Sets). In this
+The command is not available to use until it is part of a [Command Set](./Command-Sets). In this
 example we will go the easiest route and add it to the default Character commandset that already
 exists. 
 
@@ -80,13 +80,13 @@ If you have trouble, make sure to check the log for error messages (probably due
 your command definition).
 
 > Note: Typing `echotest` will also work. It will be handled as the command `echo` directly followed by
-its argument `test` (which will end up in `self.args). To change this behavior, you can add the `arg_regex` property alongside `key`, `help_category` etc. [See the arg_regex documentation](Commands#on-arg_regex) for more info. 
+its argument `test` (which will end up in `self.args). To change this behavior, you can add the `arg_regex` property alongside `key`, `help_category` etc. [See the arg_regex documentation](./Commands#on-arg_regex) for more info. 
 
 If you want to overload existing default commands (such as `look` or `get`), just add your new
 command with the same key as the old one - it will then replace it. Just remember that you must use
 `@reload` to see any changes. 
 
-See [Commands](Commands) for many more details and possibilities when defining Commands and using
+See [Commands](./Commands) for many more details and possibilities when defining Commands and using
 Cmdsets in various ways.
 
 
@@ -124,7 +124,7 @@ only make the new merged cmdset permanent on that *single* object. Often you wan
 this particular class to have this cmdset.
 
 To make sure all new created objects get your new merged set, put the `cmdset.add` call in your
-custom [Typeclasses](Typeclasses)' `at_object_creation` method: 
+custom [Typeclasses](./Typeclasses)' `at_object_creation` method: 
 
 ```python
     # e.g. in mygame/typeclasses/objects.py

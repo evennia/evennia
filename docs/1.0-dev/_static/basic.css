@@ -569,7 +569,7 @@ dd {
 }
 
 dt:target, span.highlighted {
-    background-color: #fbe54e;
+    background-color: #fffbde;
 }
 
 rect.highlighted {
@@ -704,7 +704,7 @@ div.literal-block-wrapper div.highlight {
 code.descname {
     background-color: transparent;
     font-weight: bold;
-    font-size: 1.2em;
+    font-size: 0.9em;
 }
 
 code.descclassname {

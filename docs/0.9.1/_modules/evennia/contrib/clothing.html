@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.clothing &#8212; Evennia 0.9.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.clothing</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.clothing</a></li> 
       </ul>
     </div>  
 
@@ -169,7 +166,7 @@
 <span class="c1"># HELPER FUNCTIONS START HERE</span>
 
 
-<div class="viewcode-block" id="order_clothes_list"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.clothing.order_clothes_list">[docs]</a><span class="k">def</span> <span class="nf">order_clothes_list</span><span class="p">(</span><span class="n">clothes_list</span><span class="p">):</span>
+<div class="viewcode-block" id="order_clothes_list"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.order_clothes_list">[docs]</a><span class="k">def</span> <span class="nf">order_clothes_list</span><span class="p">(</span><span class="n">clothes_list</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Orders a given clothes list by the order specified in CLOTHING_TYPE_ORDER.</span>
 
@@ -197,14 +194,14 @@
     <span class="k">return</span> <span class="n">ordered_clothes_list</span></div>
 
 
-<div class="viewcode-block" id="get_worn_clothes"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.clothing.get_worn_clothes">[docs]</a><span class="k">def</span> <span class="nf">get_worn_clothes</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="n">exclude_covered</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="get_worn_clothes"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.get_worn_clothes">[docs]</a><span class="k">def</span> <span class="nf">get_worn_clothes</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="n">exclude_covered</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a list of clothes worn by a given character.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        character (obj): The character to get a list of worn clothes from.</span>
 
-<span class="sd">    Kwargs:</span>
+<span class="sd">    Keyword args:</span>
 <span class="sd">        exclude_covered (bool): If True, excludes clothes covered by other</span>
 <span class="sd">                                clothing from the returned list.</span>
 
@@ -226,7 +223,7 @@
     <span class="k">return</span> <span class="n">ordered_clothes_list</span></div>
 
 
-<div class="viewcode-block" id="clothing_type_count"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.clothing.clothing_type_count">[docs]</a><span class="k">def</span> <span class="nf">clothing_type_count</span><span class="p">(</span><span class="n">clothes_list</span><span class="p">):</span>
+<div class="viewcode-block" id="clothing_type_count"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.clothing_type_count">[docs]</a><span class="k">def</span> <span class="nf">clothing_type_count</span><span class="p">(</span><span class="n">clothes_list</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a dictionary of the number of each clothing type</span>
 <span class="sd">    in a given list of clothing objects.</span>
@@ -252,7 +249,7 @@
     <span class="k">return</span> <span class="n">types_count</span></div>
 
 
-<div class="viewcode-block" id="single_type_count"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.clothing.single_type_count">[docs]</a><span class="k">def</span> <span class="nf">single_type_count</span><span class="p">(</span><span class="n">clothes_list</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+<div class="viewcode-block" id="single_type_count"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.single_type_count">[docs]</a><span class="k">def</span> <span class="nf">single_type_count</span><span class="p">(</span><span class="n">clothes_list</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns an integer value of the number of a given type of clothing in a list.</span>
 
@@ -272,8 +269,8 @@
     <span class="k">return</span> <span class="n">type_count</span></div>
 
 
-<div class="viewcode-block" id="Clothing"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.clothing.Clothing">[docs]</a><span class="k">class</span> <span class="nc">Clothing</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
-<div class="viewcode-block" id="Clothing.wear"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.clothing.Clothing.wear">[docs]</a>    <span class="k">def</span> <span class="nf">wear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wearer</span><span class="p">,</span> <span class="n">wearstyle</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Clothing"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.Clothing">[docs]</a><span class="k">class</span> <span class="nc">Clothing</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+<div class="viewcode-block" id="Clothing.wear"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.Clothing.wear">[docs]</a>    <span class="k">def</span> <span class="nf">wear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wearer</span><span class="p">,</span> <span class="n">wearstyle</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets clothes to &#39;worn&#39; and optionally echoes to the room.</span>
 
@@ -281,7 +278,7 @@
 <span class="sd">            wearer (obj): character object wearing this clothing object</span>
 <span class="sd">            wearstyle (True or str): string describing the style of wear or True for none</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            quiet (bool): If false, does not message the room</span>
 
 <span class="sd">        Notes:</span>
@@ -313,14 +310,14 @@
             <span class="n">message</span> <span class="o">=</span> <span class="n">message</span> <span class="o">+</span> <span class="s2">&quot;, covering </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">list_to_string</span><span class="p">(</span><span class="n">to_cover</span><span class="p">)</span>
         <span class="n">wearer</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">message</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Clothing.remove"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.clothing.Clothing.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wearer</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Clothing.remove"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.Clothing.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wearer</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Removes worn clothes and optionally echoes to the room.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            wearer (obj): character object wearing this clothing object</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            quiet (bool): If false, does not message the room</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span> <span class="o">=</span> <span class="kc">False</span>
@@ -343,7 +340,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">quiet</span><span class="p">:</span>
             <span class="n">wearer</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">remove_message</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Clothing.at_get"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.clothing.Clothing.at_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="p">):</span>
+<div class="viewcode-block" id="Clothing.at_get"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.Clothing.at_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Makes absolutely sure clothes aren&#39;t already set as &#39;worn&#39;</span>
 <span class="sd">        when they&#39;re picked up, in case they&#39;ve somehow had their</span>
@@ -352,14 +349,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span> <span class="o">=</span> <span class="kc">False</span></div></div>
 
 
-<div class="viewcode-block" id="ClothedCharacter"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.clothing.ClothedCharacter">[docs]</a><span class="k">class</span> <span class="nc">ClothedCharacter</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+<div class="viewcode-block" id="ClothedCharacter"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.ClothedCharacter">[docs]</a><span class="k">class</span> <span class="nc">ClothedCharacter</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Character that displays worn clothing when looked at. You can also</span>
 <span class="sd">    just copy the return_appearance hook defined below to your own game&#39;s</span>
 <span class="sd">    character typeclass.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ClothedCharacter.return_appearance"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.clothing.ClothedCharacter.return_appearance">[docs]</a>    <span class="k">def</span> <span class="nf">return_appearance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">):</span>
+<div class="viewcode-block" id="ClothedCharacter.return_appearance"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.ClothedCharacter.return_appearance">[docs]</a>    <span class="k">def</span> <span class="nf">return_appearance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This formats a description. It is the hook a &#39;look&#39; command</span>
 <span class="sd">        should call.</span>
@@ -402,7 +399,7 @@
 <span class="c1"># COMMANDS START HERE</span>
 
 
-<div class="viewcode-block" id="CmdWear"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.clothing.CmdWear">[docs]</a><span class="k">class</span> <span class="nc">CmdWear</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdWear"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.CmdWear">[docs]</a><span class="k">class</span> <span class="nc">CmdWear</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Puts on an item of clothing you are holding.</span>
 
@@ -421,7 +418,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;wear&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;clothing&quot;</span>
 
-<div class="viewcode-block" id="CmdWear.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.clothing.CmdWear.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdWear.func"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.CmdWear.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This performs the actual command.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -474,7 +471,7 @@
         <span class="n">clothing</span><span class="o">.</span><span class="n">wear</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">wearstyle</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdRemove"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.clothing.CmdRemove">[docs]</a><span class="k">class</span> <span class="nc">CmdRemove</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdRemove"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.CmdRemove">[docs]</a><span class="k">class</span> <span class="nc">CmdRemove</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Takes off an item of clothing.</span>
 
@@ -489,7 +486,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;remove&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;clothing&quot;</span>
 
-<div class="viewcode-block" id="CmdRemove.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.clothing.CmdRemove.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdRemove.func"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.CmdRemove.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This performs the actual command.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -506,7 +503,7 @@
         <span class="n">clothing</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdCover"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.clothing.CmdCover">[docs]</a><span class="k">class</span> <span class="nc">CmdCover</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdCover"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.CmdCover">[docs]</a><span class="k">class</span> <span class="nc">CmdCover</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Covers a worn item of clothing with another you&#39;re holding or wearing.</span>
 
@@ -521,7 +518,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;cover&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;clothing&quot;</span>
 
-<div class="viewcode-block" id="CmdCover.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.clothing.CmdCover.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdCover.func"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.CmdCover.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This performs the actual command.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -570,7 +567,7 @@
         <span class="n">to_cover</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">covered_by</span> <span class="o">=</span> <span class="n">cover_with</span></div></div>
 
 
-<div class="viewcode-block" id="CmdUncover"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.clothing.CmdUncover">[docs]</a><span class="k">class</span> <span class="nc">CmdUncover</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdUncover"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.CmdUncover">[docs]</a><span class="k">class</span> <span class="nc">CmdUncover</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reveals a worn item of clothing that&#39;s currently covered up.</span>
 
@@ -586,7 +583,7 @@
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;uncover&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;clothing&quot;</span>
 
-<div class="viewcode-block" id="CmdUncover.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.clothing.CmdUncover.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdUncover.func"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.CmdUncover.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This performs the actual command.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -612,7 +609,7 @@
         <span class="n">to_uncover</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">covered_by</span> <span class="o">=</span> <span class="kc">None</span></div></div>
 
 
-<div class="viewcode-block" id="CmdDrop"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.clothing.CmdDrop">[docs]</a><span class="k">class</span> <span class="nc">CmdDrop</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdDrop"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.CmdDrop">[docs]</a><span class="k">class</span> <span class="nc">CmdDrop</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    drop something</span>
 
@@ -627,7 +624,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
     <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\s|$&quot;</span>
 
-<div class="viewcode-block" id="CmdDrop.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.clothing.CmdDrop.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdDrop.func"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.CmdDrop.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Implement command&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
@@ -662,7 +659,7 @@
         <span class="n">obj</span><span class="o">.</span><span class="n">at_drop</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdGive"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.clothing.CmdGive">[docs]</a><span class="k">class</span> <span class="nc">CmdGive</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdGive"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.CmdGive">[docs]</a><span class="k">class</span> <span class="nc">CmdGive</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    give away something to someone</span>
 
@@ -677,7 +674,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
     <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\s|$&quot;</span>
 
-<div class="viewcode-block" id="CmdGive.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.clothing.CmdGive.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdGive.func"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.CmdGive.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Implement give&quot;&quot;&quot;</span>
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
@@ -717,7 +714,7 @@
         <span class="n">to_give</span><span class="o">.</span><span class="n">at_give</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CmdInventory"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.clothing.CmdInventory">[docs]</a><span class="k">class</span> <span class="nc">CmdInventory</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdInventory"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.CmdInventory">[docs]</a><span class="k">class</span> <span class="nc">CmdInventory</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    view inventory</span>
 
@@ -736,7 +733,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
     <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;$&quot;</span>
 
-<div class="viewcode-block" id="CmdInventory.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.clothing.CmdInventory.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdInventory.func"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.CmdInventory.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;check inventory&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">contents</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are not carrying or wearing anything.&quot;</span><span class="p">)</span>
@@ -761,7 +758,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="ClothedCharacterCmdSet"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.clothing.ClothedCharacterCmdSet">[docs]</a><span class="k">class</span> <span class="nc">ClothedCharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+<div class="viewcode-block" id="ClothedCharacterCmdSet"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.ClothedCharacterCmdSet">[docs]</a><span class="k">class</span> <span class="nc">ClothedCharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Command set for clothing, including new versions of &#39;give&#39; and &#39;drop&#39;</span>
 <span class="sd">    that take worn and covered clothing into account, as well as a new</span>
@@ -771,7 +768,7 @@
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultCharacter&quot;</span>
 
-<div class="viewcode-block" id="ClothedCharacterCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.clothing.ClothedCharacterCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ClothedCharacterCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.ClothedCharacterCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Populates the cmdset</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -788,6 +785,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdInventory</span><span class="p">())</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -825,17 +823,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.1</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.clothing</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.clothing</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

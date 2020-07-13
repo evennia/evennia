@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.multidescer &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.multidescer</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.multidescer</a></li> 
       </ul>
     </div>  
 
@@ -83,12 +80,12 @@
 <span class="c1"># Helper functions for the Command</span>
 
 
-<div class="viewcode-block" id="DescValidateError"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.multidescer.DescValidateError">[docs]</a><span class="k">class</span> <span class="nc">DescValidateError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+<div class="viewcode-block" id="DescValidateError"><a class="viewcode-back" href="../../../api/evennia.contrib.multidescer.html#evennia.contrib.multidescer.DescValidateError">[docs]</a><span class="k">class</span> <span class="nc">DescValidateError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
     <span class="s2">&quot;Used for tracebacks from desc systems&quot;</span>
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="_update_store"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.multidescer._update_store">[docs]</a><span class="k">def</span> <span class="nf">_update_store</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">swapkey</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_update_store</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">swapkey</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function for updating the database store.</span>
 
@@ -138,39 +135,39 @@
             <span class="c1"># insert new at the top of the stack</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">multidesc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">lokey</span><span class="p">,</span> <span class="n">desc</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">DescValidateError</span><span class="p">(</span><span class="s2">&quot;No description was set.&quot;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="n">DescValidateError</span><span class="p">(</span><span class="s2">&quot;No description was set.&quot;</span><span class="p">)</span>
 
 
 <span class="c1"># eveditor save/load/quit functions</span>
 
 
-<div class="viewcode-block" id="_save_editor"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.multidescer._save_editor">[docs]</a><span class="k">def</span> <span class="nf">_save_editor</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">buffer</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_save_editor</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">buffer</span><span class="p">):</span>
     <span class="s2">&quot;Called when the editor saves its contents&quot;</span>
     <span class="n">key</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_multidesc_editkey</span>
     <span class="n">_update_store</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">buffer</span><span class="p">)</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Saved description to key &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="n">key</span><span class="p">)</span>
-    <span class="k">return</span> <span class="kc">True</span></div>
+    <span class="k">return</span> <span class="kc">True</span>
 
 
-<div class="viewcode-block" id="_load_editor"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.multidescer._load_editor">[docs]</a><span class="k">def</span> <span class="nf">_load_editor</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_load_editor</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="s2">&quot;Called when the editor loads contents&quot;</span>
     <span class="n">key</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_multidesc_editkey</span>
     <span class="n">match</span> <span class="o">=</span> <span class="p">[</span><span class="n">ind</span> <span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="n">tup</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">multidesc</span><span class="p">)</span> <span class="k">if</span> <span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">key</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">multidesc</span><span class="p">[</span><span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="mi">1</span><span class="p">]</span>
-    <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="_quit_editor"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.multidescer._quit_editor">[docs]</a><span class="k">def</span> <span class="nf">_quit_editor</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_quit_editor</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
     <span class="s2">&quot;Called when the editor quits&quot;</span>
     <span class="k">del</span> <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_multidesc_editkey</span>
-    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Exited editor.&quot;</span><span class="p">)</span></div>
+    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Exited editor.&quot;</span><span class="p">)</span>
 
 
 <span class="c1"># The actual command class</span>
 
 
-<div class="viewcode-block" id="CmdMultiDesc"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.multidescer.CmdMultiDesc">[docs]</a><span class="k">class</span> <span class="nc">CmdMultiDesc</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdMultiDesc"><a class="viewcode-back" href="../../../api/evennia.contrib.multidescer.html#evennia.contrib.multidescer.CmdMultiDesc">[docs]</a><span class="k">class</span> <span class="nc">CmdMultiDesc</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Manage multiple descriptions</span>
 
@@ -197,7 +194,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;General&quot;</span>
 
-<div class="viewcode-block" id="CmdMultiDesc.func"><a class="viewcode-back" href="../../../api/evennia.contrib.html#evennia.contrib.multidescer.CmdMultiDesc.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdMultiDesc.func"><a class="viewcode-back" href="../../../api/evennia.contrib.multidescer.html#evennia.contrib.multidescer.CmdMultiDesc.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implements the multidescer.  We will use `db.desc` for the</span>
 <span class="sd">        description in use and `db.multidesc` to store all descriptions.</span>
@@ -314,6 +311,7 @@
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">err</span><span class="p">)</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -351,17 +349,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.multidescer</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.multidescer</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

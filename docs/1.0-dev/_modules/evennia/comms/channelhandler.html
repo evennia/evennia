@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.comms.channelhandler &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.comms.channelhandler</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.comms.channelhandler</a></li> 
       </ul>
     </div>  
 
@@ -81,7 +78,7 @@
 <span class="n">_CHANNELDB</span> <span class="o">=</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="ChannelCommand"><a class="viewcode-back" href="../../../api/evennia.comms.html#evennia.comms.channelhandler.ChannelCommand">[docs]</a><span class="k">class</span> <span class="nc">ChannelCommand</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">Command</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelCommand"><a class="viewcode-back" href="../../../api/evennia.comms.channelhandler.html#evennia.comms.channelhandler.ChannelCommand">[docs]</a><span class="k">class</span> <span class="nc">ChannelCommand</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    {channelkey} channel</span>
 
@@ -116,7 +113,7 @@
     <span class="n">obj</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\s.*?|/history.*?&quot;</span>
 
-<div class="viewcode-block" id="ChannelCommand.parse"><a class="viewcode-back" href="../../../api/evennia.comms.html#evennia.comms.channelhandler.ChannelCommand.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelCommand.parse"><a class="viewcode-back" href="../../../api/evennia.comms.channelhandler.html#evennia.comms.channelhandler.ChannelCommand.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Simple parser</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -132,7 +129,7 @@
                 <span class="k">pass</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">channelname</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">msg</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="ChannelCommand.func"><a class="viewcode-back" href="../../../api/evennia.comms.html#evennia.comms.channelhandler.ChannelCommand.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelCommand.func"><a class="viewcode-back" href="../../../api/evennia.comms.channelhandler.html#evennia.comms.channelhandler.ChannelCommand.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a new message and send it to channel, using</span>
 <span class="sd">        the already formatted input.</span>
@@ -192,7 +189,7 @@
                 <span class="k">return</span>
             <span class="n">channel</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">senders</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">online</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ChannelCommand.get_extra_info"><a class="viewcode-back" href="../../../api/evennia.comms.html#evennia.comms.channelhandler.ChannelCommand.get_extra_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_extra_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelCommand.get_extra_info"><a class="viewcode-back" href="../../../api/evennia.comms.channelhandler.html#evennia.comms.channelhandler.ChannelCommand.get_extra_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_extra_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Let users know that this command is for communicating on a channel.</span>
 
@@ -205,7 +202,7 @@
         <span class="k">return</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot; (channel)&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="ChannelHandler"><a class="viewcode-back" href="../../../api/evennia.comms.html#evennia.comms.channelhandler.ChannelHandler">[docs]</a><span class="k">class</span> <span class="nc">ChannelHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelHandler"><a class="viewcode-back" href="../../../api/evennia.comms.channelhandler.html#evennia.comms.channelhandler.ChannelHandler">[docs]</a><span class="k">class</span> <span class="nc">ChannelHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The ChannelHandler manages all active in-game channels and</span>
 <span class="sd">    dynamically creates channel commands for users so that they can</span>
@@ -217,7 +214,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ChannelHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.comms.html#evennia.comms.channelhandler.ChannelHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.comms.channelhandler.html#evennia.comms.channelhandler.ChannelHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes the channel handler&#39;s internal state.</span>
 
@@ -233,7 +230,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cached_channel_cmds</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ChannelHandler.clear"><a class="viewcode-back" href="../../../api/evennia.comms.html#evennia.comms.channelhandler.ChannelHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelHandler.clear"><a class="viewcode-back" href="../../../api/evennia.comms.channelhandler.html#evennia.comms.channelhandler.ChannelHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reset the cache storage.</span>
 
@@ -242,7 +239,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_cached_cmdsets</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cached_channels</span> <span class="o">=</span> <span class="p">{}</span></div>
 
-<div class="viewcode-block" id="ChannelHandler.add"><a class="viewcode-back" href="../../../api/evennia.comms.html#evennia.comms.channelhandler.ChannelHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelHandler.add"><a class="viewcode-back" href="../../../api/evennia.comms.channelhandler.html#evennia.comms.channelhandler.ChannelHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add an individual channel to the handler. This is called</span>
 <span class="sd">        whenever a new channel is created.</span>
@@ -283,7 +280,7 @@
 
     <span class="n">add_channel</span> <span class="o">=</span> <span class="n">add</span>  <span class="c1"># legacy alias</span>
 
-<div class="viewcode-block" id="ChannelHandler.remove"><a class="viewcode-back" href="../../../api/evennia.comms.html#evennia.comms.channelhandler.ChannelHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelHandler.remove"><a class="viewcode-back" href="../../../api/evennia.comms.channelhandler.html#evennia.comms.channelhandler.ChannelHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove channel from channelhandler. This will also delete it.</span>
 
@@ -295,7 +292,7 @@
             <span class="n">channel</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ChannelHandler.update"><a class="viewcode-back" href="../../../api/evennia.comms.html#evennia.comms.channelhandler.ChannelHandler.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelHandler.update"><a class="viewcode-back" href="../../../api/evennia.comms.channelhandler.html#evennia.comms.channelhandler.ChannelHandler.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Updates the handler completely, including removing old removed</span>
 <span class="sd">        Channel objects. This must be called after deleting a Channel.</span>
@@ -310,7 +307,7 @@
         <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="n">_CHANNELDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_all_channels</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ChannelHandler.get"><a class="viewcode-back" href="../../../api/evennia.comms.html#evennia.comms.channelhandler.ChannelHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channelname</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelHandler.get"><a class="viewcode-back" href="../../../api/evennia.comms.channelhandler.html#evennia.comms.channelhandler.ChannelHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channelname</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a channel from the handler, or all channels</span>
 
@@ -326,7 +323,7 @@
             <span class="k">return</span> <span class="p">[</span><span class="n">channel</span><span class="p">]</span> <span class="k">if</span> <span class="n">channel</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cached_channels</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="ChannelHandler.get_cmdset"><a class="viewcode-back" href="../../../api/evennia.comms.html#evennia.comms.channelhandler.ChannelHandler.get_cmdset">[docs]</a>    <span class="k">def</span> <span class="nf">get_cmdset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_object</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelHandler.get_cmdset"><a class="viewcode-back" href="../../../api/evennia.comms.channelhandler.html#evennia.comms.channelhandler.ChannelHandler.get_cmdset">[docs]</a>    <span class="k">def</span> <span class="nf">get_cmdset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_object</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve cmdset for channels this source_object has</span>
 <span class="sd">        access to send to.</span>
@@ -367,6 +364,7 @@
 <span class="n">CHANNELHANDLER</span> <span class="o">=</span> <span class="n">CHANNEL_HANDLER</span>  <span class="c1"># legacy</span>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -404,17 +402,15 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.comms.channelhandler</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.comms.channelhandler</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>

@@ -1,0 +1,197 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>evennia.contrib.ingame_python.commands &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.ingame_python.commands</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-evennia.contrib.ingame_python.commands">
+<span id="evennia-contrib-ingame-python-commands"></span><h1>evennia.contrib.ingame_python.commands<a class="headerlink" href="#module-evennia.contrib.ingame_python.commands" title="Permalink to this headline">¶</a></h1>
+<p>Module containing the commands of the in-game Python system.</p>
+<dl class="py class">
+<dt id="evennia.contrib.ingame_python.commands.CmdCallback">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.ingame_python.commands.</code><code class="sig-name descname">CmdCallback</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/commands.html#CmdCallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.commands.CmdCallback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>Command to edit callbacks.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.ingame_python.commands.CmdCallback.key">
+<code class="sig-name descname">key</code><em class="property"> = '&#64;call'</em><a class="headerlink" href="#evennia.contrib.ingame_python.commands.CmdCallback.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.ingame_python.commands.CmdCallback.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;callback', '&#64;calls', '&#64;callbacks']</em><a class="headerlink" href="#evennia.contrib.ingame_python.commands.CmdCallback.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.ingame_python.commands.CmdCallback.locks">
+<code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(developer)'</em><a class="headerlink" href="#evennia.contrib.ingame_python.commands.CmdCallback.locks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.ingame_python.commands.CmdCallback.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.contrib.ingame_python.commands.CmdCallback.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.ingame_python.commands.CmdCallback.get_help">
+<code class="sig-name descname">get_help</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">cmdset</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/commands.html#CmdCallback.get_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.commands.CmdCallback.get_help" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the help message for this command and this caller.</p>
+<p>The help text of this specific command will vary depending
+on user permission.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>caller</strong> (<em>Object</em><em> or </em><em>Account</em>) – the caller asking for help on the command.</p></li>
+<li><p><strong>cmdset</strong> (<a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><em>CmdSet</em></a>) – the command set (if you need additional commands).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>docstring (str)</em> – the help text to provide the caller for this command.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.ingame_python.commands.CmdCallback.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/commands.html#CmdCallback.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.commands.CmdCallback.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Command body.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.ingame_python.commands.CmdCallback.list_callbacks">
+<code class="sig-name descname">list_callbacks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/commands.html#CmdCallback.list_callbacks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.commands.CmdCallback.list_callbacks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display the list of callbacks connected to the object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.ingame_python.commands.CmdCallback.add_callback">
+<code class="sig-name descname">add_callback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/commands.html#CmdCallback.add_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.commands.CmdCallback.add_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a callback.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.ingame_python.commands.CmdCallback.edit_callback">
+<code class="sig-name descname">edit_callback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/commands.html#CmdCallback.edit_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.commands.CmdCallback.edit_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Edit a callback.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.ingame_python.commands.CmdCallback.del_callback">
+<code class="sig-name descname">del_callback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/commands.html#CmdCallback.del_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.commands.CmdCallback.del_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a callback.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.ingame_python.commands.CmdCallback.accept_callback">
+<code class="sig-name descname">accept_callback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/commands.html#CmdCallback.accept_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.commands.CmdCallback.accept_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accept a callback.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.ingame_python.commands.CmdCallback.list_tasks">
+<code class="sig-name descname">list_tasks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/commands.html#CmdCallback.list_tasks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.commands.CmdCallback.list_tasks" title="Permalink to this definition">¶</a></dt>
+<dd><p>List the active tasks.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.ingame_python.commands.CmdCallback.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(developer)'</em><a class="headerlink" href="#evennia.contrib.ingame_python.commands.CmdCallback.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.ingame_python.commands.CmdCallback.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;callback &#64;calls &#64;callbacks', 'category': 'building', 'key': '&#64;call', 'tags': '', 'text': '\n    Command to edit callbacks.\n    '}</em><a class="headerlink" href="#evennia.contrib.ingame_python.commands.CmdCallback.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.ingame_python.commands.rst.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.contrib.ingame_python.commands.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.1/api/evennia.contrib.ingame_python.commands.html">0.9.1 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.ingame_python.commands</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+    </div>
+  </body>
+</html>

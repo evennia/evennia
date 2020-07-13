@@ -1,19 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.security.auditing.server &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
-    
     <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
     <script src="../../../../../_static/jquery.js"></script>
     <script src="../../../../../_static/underscore.js"></script>
     <script src="../../../../../_static/doctools.js"></script>
     <script src="../../../../../_static/language_data.js"></script>
-    
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
@@ -27,12 +26,10 @@
         <li class="right" >
           <a href="../../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.security.auditing.server</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.security.auditing.server</a></li> 
       </ul>
     </div>  
 
@@ -93,7 +90,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="s2">&quot;Failed to activate Auditing module. </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="AuditedServerSession"><a class="viewcode-back" href="../../../../../api/evennia.contrib.security.auditing.html#evennia.contrib.security.auditing.server.AuditedServerSession">[docs]</a><span class="k">class</span> <span class="nc">AuditedServerSession</span><span class="p">(</span><span class="n">ServerSession</span><span class="p">):</span>
+<div class="viewcode-block" id="AuditedServerSession"><a class="viewcode-back" href="../../../../../api/evennia.contrib.security.auditing.server.html#evennia.contrib.security.auditing.server.AuditedServerSession">[docs]</a><span class="k">class</span> <span class="nc">AuditedServerSession</span><span class="p">(</span><span class="n">ServerSession</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This particular implementation parses all server inputs and/or outputs and</span>
 <span class="sd">    passes a dict containing the parsed metadata to a callback method of your</span>
@@ -109,12 +106,12 @@
 <span class="sd">    See README.md for installation/configuration instructions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="AuditedServerSession.audit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.security.auditing.html#evennia.contrib.security.auditing.server.AuditedServerSession.audit">[docs]</a>    <span class="k">def</span> <span class="nf">audit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="AuditedServerSession.audit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.security.auditing.server.html#evennia.contrib.security.auditing.server.AuditedServerSession.audit">[docs]</a>    <span class="k">def</span> <span class="nf">audit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extracts messages and system data from a Session object upon message</span>
 <span class="sd">        send or receive.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            src (str): Source of data; &#39;client&#39; or &#39;server&#39;. Indicates direction.</span>
 <span class="sd">            text (str or list): Client sends messages to server in the form of</span>
 <span class="sd">                lists. Server sends messages to client as string.</span>
@@ -211,7 +208,7 @@
 
         <span class="k">return</span> <span class="n">log</span></div>
 
-<div class="viewcode-block" id="AuditedServerSession.mask"><a class="viewcode-back" href="../../../../../api/evennia.contrib.security.auditing.html#evennia.contrib.security.auditing.server.AuditedServerSession.mask">[docs]</a>    <span class="k">def</span> <span class="nf">mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="AuditedServerSession.mask"><a class="viewcode-back" href="../../../../../api/evennia.contrib.security.auditing.server.html#evennia.contrib.security.auditing.server.AuditedServerSession.mask">[docs]</a>    <span class="k">def</span> <span class="nf">mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Masks potentially sensitive user information within messages before</span>
 <span class="sd">        writing to log. Recording cleartext password attempts is bad policy.</span>
@@ -256,11 +253,11 @@
 
         <span class="k">return</span> <span class="n">_msg</span></div>
 
-<div class="viewcode-block" id="AuditedServerSession.data_out"><a class="viewcode-back" href="../../../../../api/evennia.contrib.security.auditing.html#evennia.contrib.security.auditing.server.AuditedServerSession.data_out">[docs]</a>    <span class="k">def</span> <span class="nf">data_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="AuditedServerSession.data_out"><a class="viewcode-back" href="../../../../../api/evennia.contrib.security.auditing.server.html#evennia.contrib.security.auditing.server.AuditedServerSession.data_out">[docs]</a>    <span class="k">def</span> <span class="nf">data_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generic hook for sending data out through the protocol.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            kwargs (any): Other data to the protocol.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -274,11 +271,11 @@
 
         <span class="nb">super</span><span class="p">(</span><span class="n">AuditedServerSession</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">data_out</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="AuditedServerSession.data_in"><a class="viewcode-back" href="../../../../../api/evennia.contrib.security.auditing.html#evennia.contrib.security.auditing.server.AuditedServerSession.data_in">[docs]</a>    <span class="k">def</span> <span class="nf">data_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="AuditedServerSession.data_in"><a class="viewcode-back" href="../../../../../api/evennia.contrib.security.auditing.server.html#evennia.contrib.security.auditing.server.AuditedServerSession.data_in">[docs]</a>    <span class="k">def</span> <span class="nf">data_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hook for protocols to send incoming data to the engine.</span>
 
-<span class="sd">        Kwargs:</span>
+<span class="sd">        Keyword args:</span>
 <span class="sd">            kwargs (any): Other data from the protocol.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -293,6 +290,7 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">AuditedServerSession</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -330,17 +328,15 @@
         <li class="right" >
           <a href="../../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
-<li class="nav-item nav-item-last"><a href="#">evennia.contrib.security.auditing.server</a></li>
-
-
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.security.auditing.server</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
     </div>
   </body>
 </html>
