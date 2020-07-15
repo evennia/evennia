@@ -17,6 +17,7 @@
   initial game database state. (volund)
 - Added new Traits contrib, converted and expanded from Ainneve project.
 - Added new `requirements_extra.txt` file for easily getting all optional dependencies.
+- Change default multimatch syntax from 1-obj, 2-obj to obj-1, obj-2. 
 
 ### Already in master
 - Renamed Tutorial classes "Weapon" and "WeaponRack" to "TutorialWeapon" and
