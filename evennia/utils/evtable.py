@@ -117,7 +117,7 @@ appear on both sides of the table string.
 from django.conf import settings
 from textwrap import TextWrapper
 from copy import deepcopy, copy
-from evennia.utils.utils import m_len, is_iter
+from evennia.utils.utils import is_iter, display_len as d_len
 from evennia.utils.ansi import ANSIString
 
 _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
@@ -231,7 +231,7 @@ class ANSITextWrapper(TextWrapper):
                 indent = self.initial_indent
 
             # Maximum width for this line.
-            width = self.width - m_len(indent)
+            width = self.width - d_len(indent)
 
             # First chunk on line is whitespace -- drop it, unless this
             # is the very beginning of the text (ie. no lines started yet).
@@ -239,7 +239,7 @@ class ANSITextWrapper(TextWrapper):
                 del chunks[-1]
 
             while chunks:
-                l = m_len(chunks[-1])
+                l = d_len(chunks[-1])
 
                 # Can at least squeeze this chunk onto the current line.
                 if cur_len + l <= width:
@@ -252,7 +252,7 @@ class ANSITextWrapper(TextWrapper):
 
             # The current line is full, and the next chunk is too big to
             # fit on *any* line (not just this one).
-            if chunks and m_len(chunks[-1]) > width:
+            if chunks and d_len(chunks[-1]) > width:
                 self._handle_long_word(chunks, cur_line, cur_len, width)
 
             # If the last chunk on this line is all whitespace, drop it.
@@ -442,7 +442,7 @@ class EvCell(object):
         self.valign = kwargs.get("valign", "c")
 
         self.data = self._split_lines(_to_ansi(data))
-        self.raw_width = max(m_len(line) for line in self.data)
+        self.raw_width = max(d_len(line) for line in self.data)
         self.raw_height = len(self.data)
 
         # this is extra trimming required for cels in the middle of a table only
@@ -481,9 +481,9 @@ class EvCell(object):
             width (int): The width to crop `text` to.
 
         """
-        if m_len(text) > width:
+        if d_len(text) > width:
             crop_string = self.crop_string
-            return text[: width - m_len(crop_string)] + crop_string
+            return text[: width - d_len(crop_string)] + crop_string
         return text
 
     def _reformat(self):
@@ -524,7 +524,7 @@ class EvCell(object):
         width = self.width
         adjusted_data = []
         for line in data:
-            if 0 < width < m_len(line):
+            if 0 < width < d_len(line):
                 # replace_whitespace=False, expand_tabs=False is a
                 # fix for ANSIString not supporting expand_tabs/translate
                 adjusted_data.extend(
@@ -567,7 +567,7 @@ class EvCell(object):
             text (str): Centered text.
 
         """
-        excess = width - m_len(text)
+        excess = width - d_len(text)
         if excess <= 0:
             return text
         if excess % 2:
@@ -606,13 +606,13 @@ class EvCell(object):
                     if line.startswith(" ") and not line.startswith("  ")
                     else line
                 )
-                + hfill_char * (width - m_len(line))
+                + hfill_char * (width - d_len(line))
                 for line in data
             ]
             return lines
         elif align == "r":
             return [
-                hfill_char * (width - m_len(line))
+                hfill_char * (width - d_len(line))
                 + (
                     " " + line.rstrip(" ")
                     if line.endswith(" ") and not line.endswith("  ")
@@ -753,7 +753,7 @@ class EvCell(object):
             natural_width (int): Width of cell.
 
         """
-        return m_len(self.formatted[0])  # if self.formatted else 0
+        return d_len(self.formatted[0])  # if self.formatted else 0
 
     def replace_data(self, data, **kwargs):
         """
@@ -768,7 +768,7 @@ class EvCell(object):
 
         """
         self.data = self._split_lines(_to_ansi(data))
-        self.raw_width = max(m_len(line) for line in self.data)
+        self.raw_width = max(d_len(line) for line in self.data)
         self.raw_height = len(self.data)
         self.reformat(**kwargs)
 
