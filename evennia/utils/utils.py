@@ -9,6 +9,7 @@ be of use when designing your own game.
 import os
 import gc
 import sys
+import copy 
 import types
 import math
 import re
@@ -29,6 +30,8 @@ from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.apps import apps
+from django.core.validators import validate_email as django_validate_email
+from django.core.exceptions import ValidationError as DjangoValidationError
 from evennia.utils import logger
 
 _MULTIMATCH_TEMPLATE = settings.SEARCH_MULTIMATCH_TEMPLATE
@@ -340,14 +343,16 @@ def columnize(string, columns=2, spacing=4, align="l", width=None):
     return "\n".join(rows)
 
 
-def list_to_string(inlist, endsep="and", addquote=False):
+def iter_to_string(initer, endsep="and", addquote=False):
     """
-    This pretty-formats a list as string output, adding an optional
+    This pretty-formats an iterable list as string output, adding an optional
     alternative separator to the second to last entry.  If `addquote`
     is `True`, the outgoing strings will be surrounded by quotes.
 
     Args:
-        inlist (list): The list to print.
+        initer (any): Usually an iterable to print. Each element must be possible to
+            present with a string. Note that if this is a generator, it will be
+            consumed by this operation.
         endsep (str, optional): If set, the last item separator will
             be replaced with this value.
         addquote (bool, optional): This will surround all outgoing
@@ -372,16 +377,20 @@ def list_to_string(inlist, endsep="and", addquote=False):
         endsep = ","
     else:
         endsep = " " + endsep
-    if not inlist:
+    if not initer:
         return ""
+    initer = tuple(str(val) for val in make_iter(initer))
     if addquote:
-        if len(inlist) == 1:
-            return '"%s"' % inlist[0]
-        return ", ".join('"%s"' % v for v in inlist[:-1]) + "%s %s" % (endsep, '"%s"' % inlist[-1])
+        if len(initer) == 1:
+            return '"%s"' % initer[0]
+        return ", ".join('"%s"' % v for v in initer[:-1]) + "%s %s" % (endsep, '"%s"' % initer[-1])
     else:
-        if len(inlist) == 1:
-            return str(inlist[0])
-        return ", ".join(str(v) for v in inlist[:-1]) + "%s %s" % (endsep, inlist[-1])
+        if len(initer) == 1:
+            return str(initer[0])
+        return ", ".join(str(v) for v in initer[:-1]) + "%s %s" % (endsep, initer[-1])
+
+# legacy alias
+list_to_string = iter_to_string
 
 
 def wildcard_to_regexp(instring):
@@ -906,69 +915,25 @@ def to_str(text, session=None):
 
 def validate_email_address(emailaddress):
     """
-    Checks if an email address is syntactically correct.
+    Checks if an email address is syntactically correct. Makes use
+    of the django email-validator for consistency.
 
     Args:
         emailaddress (str): Email address to validate.
 
     Returns:
-        is_valid (bool): If this is a valid email or not.
-
-    Notes.
-        (This snippet was adapted from
-        http://commandline.org.uk/python/email-syntax-check.)
+        bool: If this is a valid email or not.
 
     """
-
-    emailaddress = r"%s" % emailaddress
-
-    domains = (
-        "aero",
-        "asia",
-        "biz",
-        "cat",
-        "com",
-        "coop",
-        "edu",
-        "gov",
-        "info",
-        "int",
-        "jobs",
-        "mil",
-        "mobi",
-        "museum",
-        "name",
-        "net",
-        "org",
-        "pro",
-        "tel",
-        "travel",
-    )
-
-    # Email address must be more than 7 characters in total.
-    if len(emailaddress) < 7:
-        return False  # Address too short.
-
-    # Split up email address into parts.
     try:
-        localpart, domainname = emailaddress.rsplit("@", 1)
-        host, toplevel = domainname.rsplit(".", 1)
-    except ValueError:
-        return False  # Address does not have enough parts.
-
-    # Check for Country code or Generic Domain.
-    if len(toplevel) != 2 and toplevel not in domains:
-        return False  # Not a domain name.
-
-    for i in "-_.%+.":
-        localpart = localpart.replace(i, "")
-    for i in "-_.":
-        host = host.replace(i, "")
-
-    if localpart.isalnum() and host.isalnum():
-        return True  # Email address is fine.
+        django_validate_email(str(emailaddress))
+    except DjangoValidationError:
+        return False
+    except Exception:
+        logger.log_trace()
+        return False
     else:
-        return False  # Email address has funny characters.
+        return True
 
 
 def inherits_from(obj, parent):

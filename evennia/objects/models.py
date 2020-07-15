@@ -25,7 +25,7 @@ from evennia.utils import logger
 from evennia.utils.utils import make_iter, dbref, lazy_property
 
 
-class ContentsHandler(object):
+class ContentsHandler:
     """
     Handles and caches the contents of an object to avoid excessive
     lookups (this is done very often due to cmdhandler needing to look

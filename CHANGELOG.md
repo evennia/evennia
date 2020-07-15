@@ -73,6 +73,9 @@ without arguments starts a full interactive Python console.
   required by Django.
 - Fixes to `spawn`, make updating an existing prototype/object work better. Add `/raw` switch
   to `spawn` command to extract the raw prototype dict for manual editing.
+- `list_to_string` is now `iter_to_string` (but old name still works as legacy alias). It will 
+  now accept any input, including generators and single values. 
+   
 
 
 ## Evennia 0.9 (2018-2019)

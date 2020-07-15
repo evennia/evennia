@@ -11,10 +11,8 @@ They can employ more paramters at your leisure.
 import re as _re
 import pytz as _pytz
 import datetime as _dt
-from django.core.exceptions import ValidationError as _error
-from django.core.validators import validate_email as _val_email
 from evennia.utils.ansi import strip_ansi
-from evennia.utils.utils import string_partial_matching as _partial
+from evennia.utils.utils import string_partial_matching as _partial, validate_email_address
 from django.utils.translation import gettext as _
 
 _TZ_DICT = {str(tz): _pytz.timezone(tz) for tz in _pytz.common_timezones}
@@ -214,9 +212,8 @@ def timezone(entry, option_key="Timezone", **kwargs):
 def email(entry, option_key="Email Address", **kwargs):
     if not entry:
         raise ValueError("Email address field empty!")
-    try:
-        _val_email(str(entry))  # offloading the hard work to Django!
-    except _error:
+    valid = validate_email_address(entry)
+    if not valid:
         raise ValueError(f"That isn't a valid {option_key}!")
     return entry
 
