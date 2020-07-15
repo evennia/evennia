@@ -249,6 +249,8 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
                 return
         else:
             return
+        # just to be sure
+        text = to_str(text)
 
         flags = self.protocol_flags
 

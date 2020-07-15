@@ -1407,6 +1407,7 @@ class CmdOpen(ObjManipCommand):
     locks = "cmd:perm(open) or perm(Builder)"
     help_category = "Building"
 
+    new_obj_lockstring = "control:id({id}) or perm(Admin);delete:id({id}) or perm(Admin)"
     # a custom member method to chug out exits and do checks
     def create_exit(self, exit_name, location, destination, exit_aliases=None, typeclass=None):
         """
@@ -1452,10 +1453,11 @@ class CmdOpen(ObjManipCommand):
 
         else:
             # exit does not exist before. Create a new one.
+            lockstring = self.new_obj_lockstring.format(id=caller.id)
             if not typeclass:
                 typeclass = settings.BASE_EXIT_TYPECLASS
             exit_obj = create.create_object(
-                typeclass, key=exit_name, location=location, aliases=exit_aliases, report_to=caller
+                typeclass, key=exit_name, location=location, aliases=exit_aliases, locks=lockstring, report_to=caller
             )
             if exit_obj:
                 # storing a destination is what makes it an exit!

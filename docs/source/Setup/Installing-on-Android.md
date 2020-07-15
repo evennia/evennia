@@ -120,7 +120,7 @@ $ cd ~ && source evenv/bin/activate
 (evenv) $ evennia start
 ```
 
-You may wish to look at the [Linux Instructions](Getting-Started#linux-install) for more.
+You may wish to look at the [Linux Instructions](./Getting-Started#linux-install) for more.
 
 ## Caveats
 
