@@ -62,7 +62,7 @@ without arguments starts a full interactive Python console.
   now accept any input, including generators and single values. 
 - EvTable should now correctly handle columns with wider asian-characters in them.
 - Update Twisted requirement to >=2.3.0 to close security vulnerability
-   
+- Add `$random` inlinefunc, supports minval,maxval arguments that can be ints and floats.
 
 
 ## Evennia 0.9 (2018-2019)

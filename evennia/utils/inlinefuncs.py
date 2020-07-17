@@ -62,12 +62,60 @@ Error handling:
 
 import re
 import fnmatch
+import random as base_random
 from django.conf import settings
 
 from evennia.utils import utils, logger
 
 
 # example/testing inline functions
+
+def random(*args, **kwargs):
+    """
+    Inlinefunc. Returns a random number between
+    0 and 1, from 0 to a maximum value, or within a given range (inclusive).
+
+    Args:
+        minval (str, optional): Minimum value. If not given, assumed 0.
+        maxval (str, optional): Maximum value.
+
+    Keyword argumuents:
+        session (Session): Session getting the string.
+
+    Notes:
+        If either of the min/maxvalue has a '.' in it, a floating-point random
+        value will be returned. Otherwise it will be an integer value in the
+        given range.
+
+    Example:
+        `$random()`
+        `$random(5)`
+        `$random(5, 10)`
+
+    """
+    nargs = len(args)
+    if nargs == 1:
+        # only maxval given
+        minval, maxval = '0', args[0]
+    elif nargs > 1:
+        minval, maxval = args[:2]
+    else:
+        minval, maxval = ('0', '1')
+
+    if "." in minval or "." in maxval:
+        # float mode
+        try:
+            minval, maxval = float(minval), float(maxval)
+        except ValueError:
+            minval, maxval = 0, 1
+        return "{:.2f}".format(minval + maxval * base_random.random())
+    else:
+        # int mode
+        try:
+            minval, maxval = int(minval), int(maxval)
+        except ValueError:
+            minval, maxval = 0, 1
+        return str(base_random.randint(minval, maxval))
 
 
 def pad(*args, **kwargs):
@@ -79,7 +127,8 @@ def pad(*args, **kwargs):
         width (str, optional): Will be converted to integer. Width
             of padding.
         align (str, optional): Alignment of padding; one of 'c', 'l' or 'r'.
-        fillchar (str, optional): Character used for padding. Defaults to a space.
+        fillchar (str, optional): Character used for padding. Defaults to a
+            space.
 
     Kwargs:
         session (Session): Session performing the pad.
