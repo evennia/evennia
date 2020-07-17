@@ -2406,7 +2406,13 @@ class CmdExamine(ObjManipCommand):
         """
         Helper function that creates a nice report about an object.
 
-        returns a string.
+        Args:
+            obj (any): Object to analyze.
+            avail_cmdset (CmdSet): Current cmdset for object.
+
+        Returns:
+            str: The formatted string.
+
         """
         string = "\n|wName/key|n: |c%s|n (%s)" % (obj.name, obj.dbref)
         if hasattr(obj, "aliases") and obj.aliases.all():
@@ -2633,7 +2639,7 @@ class CmdExamine(ObjManipCommand):
             if obj_attrs:
                 for attrname in obj_attrs:
                     # we are only interested in specific attributes
-                    caller.msg(self.format_attributes(obj, attrname, crop=False))
+                    caller.msg(self.format_attributes(obj, attrname, crop=False), options={"raw": True})
             else:
                 session = None
                 if obj.sessions.count():
