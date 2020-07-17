@@ -61,6 +61,7 @@ without arguments starts a full interactive Python console.
 - `list_to_string` is now `iter_to_string` (but old name still works as legacy alias). It will 
   now accept any input, including generators and single values. 
 - EvTable should now correctly handle columns with wider asian-characters in them.
+- Update Twisted requirement to >=2.3.0 to close security vulnerability
    
 
 
