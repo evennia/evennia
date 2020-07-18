@@ -125,14 +125,14 @@ CURLY_COLOR_ANSI_EXTRA_MAP = [
     (r"{c", _ANSI_HILITE + _ANSI_CYAN),
     (r"{w", _ANSI_HILITE + _ANSI_WHITE),  # pure white
     (r"{x", _ANSI_HILITE + _ANSI_BLACK),  # dark grey
-    (r"{R", _ANSI_HILITE + _ANSI_RED),
-    (r"{G", _ANSI_HILITE + _ANSI_GREEN),
-    (r"{Y", _ANSI_HILITE + _ANSI_YELLOW),
-    (r"{B", _ANSI_HILITE + _ANSI_BLUE),
-    (r"{M", _ANSI_HILITE + _ANSI_MAGENTA),
-    (r"{C", _ANSI_HILITE + _ANSI_CYAN),
-    (r"{W", _ANSI_HILITE + _ANSI_WHITE),  # light grey
-    (r"{X", _ANSI_HILITE + _ANSI_BLACK),  # pure black
+    (r"{R", _ANSI_UNHILITE + _ANSI_RED),
+    (r"{G", _ANSI_UNHILITE + _ANSI_GREEN),
+    (r"{Y", _ANSI_UNHILITE + _ANSI_YELLOW),
+    (r"{B", _ANSI_UNHILITE + _ANSI_BLUE),
+    (r"{M", _ANSI_UNHILITE + _ANSI_MAGENTA),
+    (r"{C", _ANSI_UNHILITE + _ANSI_CYAN),
+    (r"{W", _ANSI_UNHILITE + _ANSI_WHITE),  # light grey
+    (r"{X", _ANSI_UNHILITE + _ANSI_BLACK),  # pure black
     # hilight-able colors
     (r"{h", _ANSI_HILITE),
     (r"{H", _ANSI_UNHILITE),

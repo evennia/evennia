@@ -203,7 +203,9 @@ class SessionHandler(dict):
             elif isinstance(data, (str, bytes)):
                 data = _utf8(data)
 
-                if _INLINEFUNC_ENABLED and not raw and isinstance(self, ServerSessionHandler):
+                if (_INLINEFUNC_ENABLED
+                        and not raw
+                        and isinstance(self, ServerSessionHandler)):
                     # only parse inlinefuncs on the outgoing path (sessionhandler->)
                     data = parse_inlinefunc(data, strip=strip_inlinefunc, session=session)
 

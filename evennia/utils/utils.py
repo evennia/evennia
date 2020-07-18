@@ -2025,8 +2025,8 @@ def display_len(target):
     strip MXP patterns.
 
     Args:
-        target (string): A string with potential MXP components
-            to search.
+        target (any): Something to measure the length of. If a string, it will be
+            measured keeping asian-character and MXP links in mind.
 
     Return:
         int: The visible width of the target.
