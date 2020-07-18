@@ -298,7 +298,7 @@ class EvMore(object):
         nsize = len(inp)
         self._npages = nsize // self.height + (0 if nsize % self.height == 0 else 1)
         self._data = inp
-        self._paginator_slice
+        self._paginator = self.paginator_slice
 
     def init_f_str(self, text):
         """
