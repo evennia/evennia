@@ -449,8 +449,8 @@ class TagHandler(object):
         Batch-add tags from a list of tuples.
 
         Args:
-            tuples (tuple or str): Any number of `tagstr` keys, `(keystr, category)` or
-                `(keystr, category, data)` tuples.
+            *args (tuple or str): Each argument should be a `tagstr` keys or tuple `(keystr, category)` or
+                `(keystr, category, data)`. It's possible to mix input types.
 
         Notes:
             This will generate a mimimal number of self.add calls,
