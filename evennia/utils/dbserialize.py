@@ -229,6 +229,13 @@ class _SaverMutable(object):
     def __ne__(self, other):
         return self._data != other
 
+    def __lt__(self, other):
+        return self._data < other
+
+    def __gt__(self, other):
+        return self._data > other
+
+
     @_save
     def __setitem__(self, key, value):
         self._data.__setitem__(key, self._convert_mutables(value))
@@ -273,6 +280,13 @@ class _SaverList(_SaverMutable, MutableSequence):
 
     def index(self, value, *args):
         return self._data.index(value, *args)
+
+    @_save
+    def sort(self, *, key=None, reverse=False):
+        self._data.sort(key=key, reverse=reverse)
+
+    def copy(self):
+        return self._data.copy()
 
 
 class _SaverDict(_SaverMutable, MutableMapping):
