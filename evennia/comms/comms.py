@@ -51,6 +51,8 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
                 self.attributes.add("keep_log", cdict["keep_log"])
             if cdict.get("desc"):
                 self.attributes.add("desc", cdict["desc"])
+            if cdict.get("tags"):
+                self.tags.batch_add(*cdict["tags"])
 
     def basetype_setup(self):
         # delayed import of the channelhandler
