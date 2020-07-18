@@ -36,7 +36,7 @@ class Tag(models.Model):
     indexed for efficient lookup in the database. Tags are shared
     between objects - a new tag is only created if the key+category
     combination did not previously exist, making them unsuitable for
-    storing object-related data (for this a full tag should be
+    storing object-related data (for this a regular Attribute should be
     used).
 
     The 'db_data' field is intended as a documentation field for the
@@ -449,8 +449,8 @@ class TagHandler(object):
         Batch-add tags from a list of tuples.
 
         Args:
-            tuples (tuple or str): Any number of `tagstr` keys, `(keystr, category)` or
-                `(keystr, category, data)` tuples.
+            *args (tuple or str): Each argument should be a `tagstr` keys or tuple `(keystr, category)` or
+                `(keystr, category, data)`. It's possible to mix input types.
 
         Notes:
             This will generate a mimimal number of self.add calls,

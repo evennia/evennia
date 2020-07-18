@@ -209,7 +209,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     # lockstring of newly created objects, for easy overloading.
     # Will be formatted with the appropriate attributes.
-    lockstring = "control:id({account_id}) or perm(Admin);" "delete:id({account_id}) or perm(Admin)"
+    lockstring = "control:id({account_id}) or perm(Admin);delete:id({account_id}) or perm(Admin)"
 
     objects = ObjectManager()
 
@@ -2042,10 +2042,11 @@ class DefaultCharacter(DefaultObject):
     _content_types = ("character",)
     # lockstring of newly created rooms, for easy overloading.
     # Will be formatted with the appropriate attributes.
-    lockstring = "puppet:id({character_id}) or pid({account_id}) or perm(Developer) or pperm(Developer);delete:id({account_id}) or perm(Admin)"
+    lockstring = ("puppet:id({character_id}) or pid({account_id}) or perm(Developer) or pperm(Developer);"
+                  "delete:id({account_id}) or perm(Admin)")
 
     @classmethod
-    def create(cls, key, account, **kwargs):
+    def create(cls, key, account=None, **kwargs):
         """
         Creates a basic Character with default parameters, unless otherwise
         specified or extended.
@@ -2054,8 +2055,8 @@ class DefaultCharacter(DefaultObject):
 
         Args:
             key (str): Name of the new Character.
-            account (obj): Account to associate this Character with. Required as
-                an argument, but one can fake it out by supplying None-- it will
+            account (obj, optional): Account to associate this Character with.
+                If unset supplying None-- it will
                 change the default lockset and skip creator attribution.
 
         Keyword args:
@@ -2305,7 +2306,7 @@ class DefaultRoom(DefaultObject):
     )
 
     @classmethod
-    def create(cls, key, account, **kwargs):
+    def create(cls, key, account=None, **kwargs):
         """
         Creates a basic Room with default parameters, unless otherwise
         specified or extended.
@@ -2314,7 +2315,9 @@ class DefaultRoom(DefaultObject):
 
         Args:
             key (str): Name of the new Room.
-            account (obj): Account to associate this Room with.
+            account (obj, optional): Account to associate this Room with. If
+                given, it will be given specific control/edit permissions to this
+                object (along with normal Admin perms). If not given, default
 
         Keyword args:
             description (str): Brief description for this object.
@@ -2343,13 +2346,20 @@ class DefaultRoom(DefaultObject):
         # Get description, if provided
         description = kwargs.pop("description", "")
 
+        # get locks if provided
+        locks = kwargs.pop("locks", "")
+
         try:
             # Create the Room
             obj = create.create_object(**kwargs)
 
-            # Set appropriate locks
-            lockstring = kwargs.get("locks", cls.lockstring.format(id=account.id))
-            obj.locks.add(lockstring)
+            # Add locks
+            if not locks and account:
+                locks = cls.lockstring.format(**{"id": account.id})
+            elif not locks and not account:
+                locks = cls.lockstring(**{"id": obj.id})
+
+            obj.locks.add(locks)
 
             # Record creator id and creation IP
             if ip:
@@ -2499,7 +2509,7 @@ class DefaultExit(DefaultObject):
     # Command hooks
 
     @classmethod
-    def create(cls, key, account, source, dest, **kwargs):
+    def create(cls, key, source, dest, account=None, **kwargs):
         """
         Creates a basic Exit with default parameters, unless otherwise
         specified or extended.
@@ -2543,13 +2553,18 @@ class DefaultExit(DefaultObject):
 
         description = kwargs.pop("description", "")
 
+        locks = kwargs.get("locks", "")
+
         try:
             # Create the Exit
             obj = create.create_object(**kwargs)
 
             # Set appropriate locks
-            lockstring = kwargs.get("locks", cls.lockstring.format(id=account.id))
-            obj.locks.add(lockstring)
+            if not locks and account:
+                locks = cls.lockstring.format(**{"id": account.id})
+            elif not locks and not account:
+                locks = cls.lockstring.format(**{"id": obj.id})
+            obj.locks.add(locks)
 
             # Record creator id and creation IP
             if ip:

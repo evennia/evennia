@@ -51,6 +51,8 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
                 self.attributes.add("keep_log", cdict["keep_log"])
             if cdict.get("desc"):
                 self.attributes.add("desc", cdict["desc"])
+            if cdict.get("tags"):
+                self.tags.batch_add(*cdict["tags"])
 
     def basetype_setup(self):
         # delayed import of the channelhandler
@@ -394,7 +396,8 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
                 to build senders for the message.
             sender_strings (list, optional): Name strings of senders. Used for external
                 connections where the sender is not an account or object.
-                When this is defined, external will be assumed.
+                When this is defined, external will be assumed. The list will be 
+                filtered so each sender-string only occurs once.
             keep_log (bool or None, optional): This allows to temporarily change the logging status of
                 this channel message. If `None`, the Channel's `keep_log` Attribute will
                 be used. If `True` or `False`, that logging status will be used for this
@@ -425,6 +428,8 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         msgobj = self.pre_send_message(msgobj)
         if not msgobj:
             return False
+        if sender_strings:
+            sender_strings = list(set(make_iter(sender_strings)))
         msgobj = self.message_transform(
             msgobj, emit=emit, sender_strings=sender_strings, external=external
         )

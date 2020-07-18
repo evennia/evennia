@@ -1094,13 +1094,13 @@ class AttributeHandler:
         repeat-calling add when having many Attributes to add.
 
         Args:
-            *args (tuple): Tuples of varying length representing the
-                Attribute to add to this object. Supported tuples are
-
-                - (key, value)
-                - (key, value, category)
-                - (key, value, category, lockstring)
-                - (key, value, category, lockstring, default_access)
+            *args (tuple): Each argument should be a tuples (can be of varying
+                length) representing the Attribute to add to this object.
+                Supported tuples are
+                    - `(key, value)`
+                    - `(key, value, category)`
+                    - `(key, value, category, lockstring)`
+                    - `(key, value, category, lockstring, default_access)`
 
         Keyword args:
             strattr (bool): If `True`, value must be a string. This
