@@ -593,8 +593,9 @@ class AttributeHandler(object):
         repeat-calling add when having many Attributes to add.
 
         Args:
-            indata (list): List of tuples of varying length representing the
-                Attribute to add to this object. Supported tuples are
+            *args (tuple): Each argument should be a tuples (can be of varying
+                length) representing the Attribute to add to this object.
+                Supported tuples are
                     - `(key, value)`
                     - `(key, value, category)`
                     - `(key, value, category, lockstring)`

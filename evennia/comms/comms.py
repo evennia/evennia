@@ -428,8 +428,10 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         msgobj = self.pre_send_message(msgobj)
         if not msgobj:
             return False
+        if sender_strings:
+            sender_strings = list(set(make_iter(sender_strings)))
         msgobj = self.message_transform(
-            msgobj, emit=emit, sender_strings=list(set(sender_strings)), external=external
+            msgobj, emit=emit, sender_strings=sender_strings, external=external
         )
         self.distribute_message(msgobj, online=online)
         self.post_send_message(msgobj)
