@@ -206,7 +206,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     # lockstring of newly created objects, for easy overloading.
     # Will be formatted with the appropriate attributes.
-    lockstring = "control:id({account_id}) or perm(Admin);" "delete:id({account_id}) or perm(Admin)"
+    lockstring = "control:id({account_id}) or perm(Admin);delete:id({account_id}) or perm(Admin)"
 
     objects = ObjectManager()
 
