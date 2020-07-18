@@ -426,11 +426,14 @@ class CmdGet(COMMAND_DEFAULT_CLASS):
         if not obj.at_before_get(caller):
             return
 
-        obj.move_to(caller, quiet=True)
-        caller.msg("You pick up %s." % obj.name)
-        caller.location.msg_contents("%s picks up %s." % (caller.name, obj.name), exclude=caller)
-        # calling at_get hook method
-        obj.at_get(caller)
+        success = obj.move_to(caller, quiet=True)
+        if not success:
+            caller.msg("This can't be picked up.")
+        else:
+            caller.msg("You pick up %s." % obj.name)
+            caller.location.msg_contents("%s picks up %s." % (caller.name, obj.name), exclude=caller)
+            # calling at_get hook method
+            obj.at_get(caller)
 
 
 class CmdDrop(COMMAND_DEFAULT_CLASS):
@@ -471,11 +474,14 @@ class CmdDrop(COMMAND_DEFAULT_CLASS):
         if not obj.at_before_drop(caller):
             return
 
-        obj.move_to(caller.location, quiet=True)
-        caller.msg("You drop %s." % (obj.name,))
-        caller.location.msg_contents("%s drops %s." % (caller.name, obj.name), exclude=caller)
-        # Call the object script's at_drop() method.
-        obj.at_drop(caller)
+        success = obj.move_to(caller.location, quiet=True)
+        if not success:
+            caller.msg("This couldn't be dropped.")
+        else:
+            caller.msg("You drop %s." % (obj.name,))
+            caller.location.msg_contents("%s drops %s." % (caller.name, obj.name), exclude=caller)
+            # Call the object script's at_drop() method.
+            obj.at_drop(caller)
 
 
 class CmdGive(COMMAND_DEFAULT_CLASS):
@@ -522,11 +528,14 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
             return
 
         # give object
-        caller.msg("You give %s to %s." % (to_give.key, target.key))
-        to_give.move_to(target, quiet=True)
-        target.msg("%s gives you %s." % (caller.key, to_give.key))
-        # Call the object script's at_give() method.
-        to_give.at_give(caller, target)
+        success = to_give.move_to(target, quiet=True)
+        if not success:
+            caller.msg("This could not be given.")
+        else:
+            caller.msg("You give %s to %s." % (to_give.key, target.key))
+            target.msg("%s gives you %s." % (caller.key, to_give.key))
+            # Call the object script's at_give() method.
+            to_give.at_give(caller, target)
 
 
 class CmdSetDesc(COMMAND_DEFAULT_CLASS):
