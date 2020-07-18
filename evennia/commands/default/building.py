@@ -16,11 +16,13 @@ from evennia.utils.utils import (
     dbref,
     interactive,
     list_to_string,
+    display_len,
 )
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
 from evennia.prototypes import spawner, prototypes as protlib, menus as olc_menus
-from evennia.utils.ansi import raw
+from evennia.utils.ansi import raw as ansi_raw
+from evennia.utils.inlinefuncs import raw as inlinefunc_raw
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
@@ -2357,26 +2359,37 @@ class CmdExamine(ObjManipCommand):
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     account_mode = False
+    detail_color = "|c"
+    header_color = "|w"
+    quell_color = "|r"
+    separator = "-"
 
     def list_attribute(self, crop, attr, category, value):
         """
         Formats a single attribute line.
+
+        Args:
+            crop (bool): If output should be cropped if too long.
+            attr (str): Attribute key.
+            category (str): Attribute category.
+            value (any): Attribute value.
+        Returns:
         """
         if crop:
             if not isinstance(value, str):
                 value = utils.to_str(value)
             value = utils.crop(value)
+        value = inlinefunc_raw(ansi_raw(value))
         if category:
-            string = "\n %s[%s] = %s" % (attr, category, value)
+            return f"{attr}[{category}] = {value}"
         else:
-            string = "\n %s = %s" % (attr, value)
-        string = raw(string)
-        return string
+            return f"{attr} = {value}"
 
     def format_attributes(self, obj, attrname=None, crop=True):
         """
         Helper function that returns info about attributes and/or
         non-persistent data stored on object
+
         """
 
         if attrname:
@@ -2391,16 +2404,18 @@ class CmdExamine(ObjManipCommand):
                 ndb_attr = obj.nattributes.all(return_tuples=True)
             except Exception:
                 ndb_attr = None
-        string = ""
+        output = {}
         if db_attr and db_attr[0]:
-            string += "\n|wPersistent attributes|n:"
-            for attr, value, category in db_attr:
-                string += self.list_attribute(crop, attr, category, value)
+            output["Persistent attribute(s)"] = "\n  " + "\n  ".join(
+               sorted(self.list_attribute(crop, attr, category, value)
+                      for attr, value, category in db_attr)
+            )
         if ndb_attr and ndb_attr[0]:
-            string += "\n|wNon-Persistent attributes|n:"
-            for attr, value in ndb_attr:
-                string += self.list_attribute(crop, attr, None, value)
-        return string
+            output["Non-Persistent attribute(s)"] = "  \n" + "  \n".join(
+                sorted(self.list_attribute(crop, attr, None, value)
+                       for attr, value in ndb_attr)
+            )
+        return output
 
     def format_output(self, obj, avail_cmdset):
         """
@@ -2414,64 +2429,83 @@ class CmdExamine(ObjManipCommand):
             str: The formatted string.
 
         """
-        string = "\n|wName/key|n: |c%s|n (%s)" % (obj.name, obj.dbref)
+        hclr = self.header_color
+        dclr = self.detail_color
+        qclr = self.quell_color
+
+        output = {}
+        # main key
+        output["Name/key"] = f"{dclr}{obj.name}|n ({obj.dbref})"
+        # aliases
         if hasattr(obj, "aliases") and obj.aliases.all():
-            string += "\n|wAliases|n: %s" % (", ".join(utils.make_iter(str(obj.aliases))))
+            output["Aliases"] = ", ".join(utils.make_iter(str(obj.aliases)))
+        # typeclass
+        output["Typeclass"] = f"{obj.typename} ({obj.typeclass_path})"
+        # sessions
         if hasattr(obj, "sessions") and obj.sessions.all():
-            string += "\n|wSession id(s)|n: %s" % (
-                ", ".join("#%i" % sess.sessid for sess in obj.sessions.all())
-            )
+            output["Session id(s)"] =  ", ".join(f"#{sess.sessid}" for sess in obj.sessions.all())
+        # email, if any
         if hasattr(obj, "email") and obj.email:
-            string += "\n|wEmail|n: |c%s|n" % obj.email
+            output["Email"] = f"{dclr}{obj.email}|n"
+        # account, for puppeted objects
         if hasattr(obj, "has_account") and obj.has_account:
-            string += "\n|wAccount|n: |c%s|n" % obj.account.name
+            output["Account"] = f"{dclr}{obj.account.name}|n ({obj.account.dbref})"
+            # account typeclass
+            output["  Account Typeclass"] = f"{obj.account.typename} ({obj.account.typeclass_path})"
+            # account permissions
             perms = obj.account.permissions.all()
             if obj.account.is_superuser:
                 perms = ["<Superuser>"]
             elif not perms:
                 perms = ["<None>"]
-            string += "\n|wAccount Perms|n: %s" % (", ".join(perms))
+            perms = ", ".join(perms)
             if obj.account.attributes.has("_quell"):
-                string += " |r(quelled)|n"
-        string += "\n|wTypeclass|n: %s (%s)" % (obj.typename, obj.typeclass_path)
+                perms += f" {qclr}(quelled)|n"
+            output["  Account Permissions"] = perms
+        # location
         if hasattr(obj, "location"):
-            string += "\n|wLocation|n: %s" % obj.location
+            loc = str(obj.location)
             if obj.location:
-                string += " (#%s)" % obj.location.id
+                loc += f" (#{obj.location.id})"
+            output["Location"] = loc
+        # home
         if hasattr(obj, "home"):
-            string += "\n|wHome|n: %s" % obj.home
+            home = str(obj.home)
             if obj.home:
-                string += " (#%s)" % obj.home.id
+                home += f" (#{obj.home.id})"
+            output["Home"] = home
+        # destination, for exits
         if hasattr(obj, "destination") and obj.destination:
-            string += "\n|wDestination|n: %s" % obj.destination
+            dest = str(obj.destination)
             if obj.destination:
-                string += " (#%s)" % obj.destination.id
+                dest += f" (#{obj.destination.id})"
+            output["Destination"] = dest
+        # main permissions
         perms = obj.permissions.all()
+        perms_string = ""
         if perms:
             perms_string = ", ".join(perms)
-        else:
-            perms_string = "<None>"
         if obj.is_superuser:
-            perms_string += " [Superuser]"
-
-        string += "\n|wPermissions|n: %s" % perms_string
-
+            perms_string += " <Superuser>"
+        if perms_string:
+            output["Permissions"] = perms_string
+        # locks
         locks = str(obj.locks)
         if locks:
-            locks_string = utils.fill("; ".join([lock for lock in locks.split(";")]), indent=6)
+            locks_string = "\n" + utils.fill(
+                "; ".join([lock for lock in locks.split(";")]), indent=2)
         else:
             locks_string = " Default"
-        string += "\n|wLocks|n:%s" % locks_string
-
+        output["Locks"] = locks_string
+        # cmdsets
         if not (len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "_EMPTY_CMDSET"):
             # all() returns a 'stack', so make a copy to sort.
-            stored_cmdsets = sorted(obj.cmdset.all(), key=lambda x: x.priority, reverse=True)
-            string += "\n|wStored Cmdset(s)|n:\n %s" % (
-                "\n ".join(
-                    "%s [%s] (%s, prio %s)"
-                    % (cmdset.path, cmdset.key, cmdset.mergetype, cmdset.priority)
-                    for cmdset in stored_cmdsets
-                    if cmdset.key != "_EMPTY_CMDSET"
+            stored_cmdsets = sorted(obj.cmdset.all(), key=lambda x: x.priority,
+                                    reverse=True)
+            output["Stored Cmdset(s)"] = (
+                "\n  " + "\n  ".join(
+                    f"{cmdset.path} [{cmdset.key}] ({cmdset.mergetype}, prio {cmdset.priority})"
+                    for cmdset in stored_cmdsets if cmdset.key != "_EMPTY_CMDSET"
                 )
             )
 
@@ -2506,40 +2540,32 @@ class CmdExamine(ObjManipCommand):
                     pass
             all_cmdsets = [cmdset for cmdset in dict(all_cmdsets).values()]
             all_cmdsets.sort(key=lambda x: x.priority, reverse=True)
-            string += "\n|wMerged Cmdset(s)|n:\n %s" % (
-                "\n ".join(
-                    "%s [%s] (%s, prio %s)"
-                    % (cmdset.path, cmdset.key, cmdset.mergetype, cmdset.priority)
+            output["Merged Cmdset(s)"] = (
+                "\n  " + "\n  ".join(
+                    f"{cmdset.path} [{cmdset.key}] ({cmdset.mergetype} prio {cmdset.priority})"
                     for cmdset in all_cmdsets
                 )
             )
-
             # list the commands available to this object
             avail_cmdset = sorted([cmd.key for cmd in avail_cmdset if cmd.access(obj, "cmd")])
 
-            cmdsetstr = utils.fill(", ".join(avail_cmdset), indent=2)
-            string += "\n|wCommands available to %s (result of Merged CmdSets)|n:\n %s" % (
-                obj.key,
-                cmdsetstr,
-            )
-
+            cmdsetstr = "\n" + utils.fill(", ".join(avail_cmdset), indent=2)
+            output[f"Commands available to {obj.key} (result of Merged CmdSets)"] = str(cmdsetstr)
+        # scripts
         if hasattr(obj, "scripts") and hasattr(obj.scripts, "all") and obj.scripts.all():
-            string += "\n|wScripts|n:\n %s" % obj.scripts
+            output["Scripts"] = "\n  " + f"{obj.scripts}"
         # add the attributes
-        string += self.format_attributes(obj)
-
-        # display Tags
-        tags_string = utils.fill(
+        output.update(self.format_attributes(obj))
+        # Tags
+        tags = obj.tags.all(return_key_and_category=True)
+        tags_string = "\n" + utils.fill(
             ", ".join(
-                "%s[%s]" % (tag, category)
-                for tag, category in obj.tags.all(return_key_and_category=True)
-            ),
-            indent=5,
+                sorted(f"{tag}[{category}]" for tag, category in tags )),
+            indent=2,
         )
-        if tags_string:
-            string += "\n|wTags[category]|n: %s" % tags_string.strip()
-
-        # add the contents
+        if tags:
+            output["Tags[category]"] = tags_string
+        # Contents of object
         exits = []
         pobjs = []
         things = []
@@ -2552,24 +2578,23 @@ class CmdExamine(ObjManipCommand):
                 else:
                     things.append(content)
             if exits:
-                string += "\n|wExits|n: %s" % ", ".join(
-                    ["%s(%s)" % (exit.name, exit.dbref) for exit in exits]
-                )
+                output["Exits (has .destination)"] = ", ".join(f"{exit.name}({exit.dbref})" for exit in exits)
             if pobjs:
-                string += "\n|wCharacters|n: %s" % ", ".join(
-                    ["|c%s|n(%s)" % (pobj.name, pobj.dbref) for pobj in pobjs]
-                )
+                output["Characters"] = ", ".join(f"{dclr}{pobj.name}|n({pobj.dbref})" for pobj in pobjs)
             if things:
-                string += "\n|wContents|n: %s" % ", ".join(
-                    [
-                        "%s(%s)" % (cont.name, cont.dbref)
-                        for cont in obj.contents
-                        if cont not in exits and cont not in pobjs
-                    ]
+                output["Contents"] = ", ".join(
+                    f"{cont.name}({cont.dbref})"
+                    for cont in obj.contents
+                    if cont not in exits and cont not in pobjs
                 )
-        separator = "-" * _DEFAULT_WIDTH
-        # output info
-        return "%s\n%s\n%s" % (separator, string.strip(), separator)
+        # format output
+        max_width = -1
+        for block in output.values():
+            max_width = max(max_width, max(display_len(line) for line in block.split("\n")))
+        sep = self.separator * max_width
+        mainstr = "\n".join(f"{hclr}{header}|n: {block}" for (header, block) in output.items())
+        return f"{sep}\n{mainstr}\n{sep}"
+
 
     def func(self):
         """Process command"""
@@ -2584,8 +2609,7 @@ class CmdExamine(ObjManipCommand):
             that function finishes. Taking the resulting cmdset, we continue
             to format and output the result.
             """
-            string = self.format_output(obj, cmdset)
-            self.msg(string.strip())
+            self.msg(self.format_output(obj, cmdset).strip())
 
         if not self.args:
             # If no arguments are provided, examine the invoker's location.
@@ -2639,7 +2663,10 @@ class CmdExamine(ObjManipCommand):
             if obj_attrs:
                 for attrname in obj_attrs:
                     # we are only interested in specific attributes
-                    caller.msg(self.format_attributes(obj, attrname, crop=False), options={"raw": True})
+                    ret = "\n".join(
+                        f"{self.header_color}{header}|n:{value}"
+                        for header, value in self.format_attributes(obj, attrname, crop=False).items())
+                    self.caller.msg(ret)
             else:
                 session = None
                 if obj.sessions.count():
