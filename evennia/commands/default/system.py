@@ -448,7 +448,7 @@ def format_script_list(scripts):
 
         table.add_row(
             script.id,
-            script.obj.key if (hasattr(script, "obj") and script.obj) else "<Global>",
+            f"{script.obj.key}({script.obj.dbref})" if (hasattr(script, "obj") and script.obj) else "<Global>",
             script.key,
             script.interval if script.interval > 0 else "--",
             nextrep,

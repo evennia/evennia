@@ -53,10 +53,10 @@ without arguments starts a full interactive Python console.
 - EvMore auto-justify now defaults to False since this works better with all types
   of texts (such as tables). New `justify` bool. Old `justify_kwargs` remains
   but is now only used to pass extra kwargs into the justify function.
-- EvMore `text` argument can now also be a list or a queryset. Querysets will be 
-  sliced to only return the required data per page. EvMore takes a new kwarg 
-  `page_formatter` which will be called for each page. This allows to customize 
-  the display of queryset data, build a new EvTable per page etc. 
+- EvMore `text` argument can now also be a list or a queryset. Querysets will be
+  sliced to only return the required data per page. EvMore takes a new kwarg
+  `page_formatter` which will be called for each page. This allows to customize
+  the display of queryset data, build a new EvTable per page etc.
 - Improve performance of `find` and `objects` commands on large data sets (strikaco)
 - New `CHANNEL_HANDLER_CLASS` setting allows for replacing the ChannelHandler entirely.
 - Made `py` interactive mode support regular quit() and more verbose.
@@ -66,20 +66,23 @@ without arguments starts a full interactive Python console.
   `.get_command_info()` method for easier overloading and access. (Volund)
 - Removed unused `CYCLE_LOGFILES` setting. Added `SERVER_LOG_DAY_ROTATION`
   and `SERVER_LOG_MAX_SIZE` (and equivalent for PORTAL) to control log rotation.
-- Addded `inside_rec` lockfunc - if room is locked, the normal `inside()` lockfunc will 
+- Addded `inside_rec` lockfunc - if room is locked, the normal `inside()` lockfunc will
   fail e.g. for your inventory objs (since their loc is you), whereas this will pass.
 - RPSystem contrib's CmdRecog will now list all recogs if no arg is given. Also multiple
   bugfixes.
-- Remove `dummy@example.com` as a default account email when unset, a string is no longer 
+- Remove `dummy@example.com` as a default account email when unset, a string is no longer
   required by Django.
 - Fixes to `spawn`, make updating an existing prototype/object work better. Add `/raw` switch
   to `spawn` command to extract the raw prototype dict for manual editing.
-- `list_to_string` is now `iter_to_string` (but old name still works as legacy alias). It will 
-  now accept any input, including generators and single values. 
+- `list_to_string` is now `iter_to_string` (but old name still works as legacy alias). It will
+  now accept any input, including generators and single values.
 - EvTable should now correctly handle columns with wider asian-characters in them.
 - Update Twisted requirement to >=2.3.0 to close security vulnerability
 - Add `$random` inlinefunc, supports minval,maxval arguments that can be ints and floats.
 - Add `evennia.utils.inlinefuncs.raw(<str>)` as a helper to escape inlinefuncs in a string.
+- Make CmdGet/Drop/Give give proper error if `obj.move_to` returns `False`.
+- Make `Object/Room/Exit.create`'s `account` argument optional. If not given, will set perms
+  to that of the object itself (along with normal Admin/Dev permission).
 
 
 ## Evennia 0.9 (2018-2019)

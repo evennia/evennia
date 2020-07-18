@@ -304,7 +304,7 @@ script = create_script
 #
 
 
-def create_help_entry(key, entrytext, category="General", locks=None, aliases=None):
+def create_help_entry(key, entrytext, category="General", locks=None, aliases=None, tags=None):
     """
     Create a static help entry in the help database. Note that Command
     help entries are dynamic and directly taken from the __doc__
@@ -317,7 +317,8 @@ def create_help_entry(key, entrytext, category="General", locks=None, aliases=No
         entrytext (str): The body of te help entry
         category (str, optional): The help category of the entry.
         locks (str, optional): A lockstring to restrict access.
-        aliases (list of str): List of alternative (likely shorter) keynames.
+        aliases (list of str, optional): List of alternative (likely shorter) keynames.
+        tags (lst, optional): List of tags or tuples `(tag, category)`.
 
     Returns:
         help (HelpEntry): A newly created help entry.
@@ -335,7 +336,9 @@ def create_help_entry(key, entrytext, category="General", locks=None, aliases=No
         if locks:
             new_help.locks.add(locks)
         if aliases:
-            new_help.aliases.add(aliases)
+            new_help.aliases.add(make_iter(aliases))
+        if tags:
+            new_help.tags.batch_add(*tags)
         new_help.save()
         return new_help
     except IntegrityError:
@@ -357,7 +360,8 @@ help_entry = create_help_entry
 # Comm system methods
 
 
-def create_message(senderobj, message, channels=None, receivers=None, locks=None, header=None):
+def create_message(senderobj, message, channels=None, receivers=None,
+                   locks=None, tags=None, header=None):
     """
     Create a new communication Msg. Msgs represent a unit of
     database-persistent communication between entites.
@@ -373,6 +377,7 @@ def create_message(senderobj, message, channels=None, receivers=None, locks=None
         receivers (Object, Account, str or list): An Account/Object to send
             to, or a list of them. May be Account objects or accountnames.
         locks (str): Lock definition string.
+        tags (list): A list of tags or tuples `(tag, category)`.
         header (str): Mime-type or other optional information for the message
 
     Notes:
@@ -399,6 +404,9 @@ def create_message(senderobj, message, channels=None, receivers=None, locks=None
         new_message.receivers = receiver
     if locks:
         new_message.locks.add(locks)
+    if tags:
+        new_message.tags.batch_add(*tags)
+
     new_message.save()
     return new_message
 
@@ -407,7 +415,7 @@ message = create_message
 create_msg = create_message
 
 
-def create_channel(key, aliases=None, desc=None, locks=None, keep_log=True, typeclass=None):
+def create_channel(key, aliases=None, desc=None, locks=None, keep_log=True, typeclass=None, tags=None):
     """
     Create A communication Channel. A Channel serves as a central hub
     for distributing Msgs to groups of people without specifying the
@@ -426,6 +434,7 @@ def create_channel(key, aliases=None, desc=None, locks=None, keep_log=True, type
         keep_log (bool): Log channel throughput.
         typeclass (str or class): The typeclass of the Channel (not
             often used).
+        tags (list): A list of tags or tuples `(tag, category)`.
 
     Returns:
         channel (Channel): A newly created channel.
@@ -442,7 +451,7 @@ def create_channel(key, aliases=None, desc=None, locks=None, keep_log=True, type
 
     # store call signature for the signal
     new_channel._createdict = dict(
-        key=key, aliases=aliases, desc=desc, locks=locks, keep_log=keep_log
+        key=key, aliases=aliases, desc=desc, locks=locks, keep_log=keep_log, tags=tags
     )
 
     # this will trigger the save signal which in turn calls the
