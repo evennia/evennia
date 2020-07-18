@@ -143,7 +143,7 @@ class GenderCharacter(DefaultCharacter):
         """
         try:
             if text and isinstance(text, tuple):
-                text = _RE_GENDER_PRONOUN.sub(self._get_pronoun, text[0]), *text[1:]
+                text = (_RE_GENDER_PRONOUN.sub(self._get_pronoun, text[0]), *text[1:])
             else:
                 text = _RE_GENDER_PRONOUN.sub(self._get_pronoun, text)
         except TypeError:
