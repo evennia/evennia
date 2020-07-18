@@ -514,6 +514,17 @@ def parse_inlinefunc(string, strip=False, available_funcs=None, stacktrace=False
     return retval
 
 
+def raw(string):
+    """
+    Escape all inlinefuncs in a string so they won't get parsed.
+
+    Args:
+        string (str): String with inlinefuncs to escape.
+    """
+    def _escape(match):
+        return "\\" + match.group(0)
+    return _RE_STARTTOKEN.sub(_escape, string)
+
 #
 # Nick templating
 #
