@@ -36,7 +36,7 @@ class Tag(models.Model):
     indexed for efficient lookup in the database. Tags are shared
     between objects - a new tag is only created if the key+category
     combination did not previously exist, making them unsuitable for
-    storing object-related data (for this a full tag should be
+    storing object-related data (for this a regular Attribute should be
     used).
 
     The 'db_data' field is intended as a documentation field for the
