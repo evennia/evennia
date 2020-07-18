@@ -154,7 +154,8 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
         if not account.is_superuser and (
             account.db._playable_characters and len(account.db._playable_characters) >= charmax
         ):
-            self.msg("You may only create a maximum of %i characters." % charmax)
+            plural = "" if charmax == 1 else "s"
+            self.msg(f"You may only create a maximum of {charmax} character{plural}.")
             return
         from evennia.objects.models import ObjectDB
 
