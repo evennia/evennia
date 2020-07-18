@@ -150,11 +150,17 @@ class CommandTest(EvenniaTest):
             returned_msg = msg_sep.join(
                 _RE.sub("", ansi.parse_ansi(mess, strip_ansi=noansi)) for mess in stored_msg
             ).strip()
-            if msg == "" and returned_msg or not returned_msg.startswith(msg.strip()):
+            msg = msg.strip()
+            if msg == "" and returned_msg or not returned_msg.startswith(msg):
+                prt = ""
+                for ic, char in enumerate(msg):
+                    import re
+                    prt += char
+
                 sep1 = "\n" + "=" * 30 + "Wanted message" + "=" * 34 + "\n"
                 sep2 = "\n" + "=" * 30 + "Returned message" + "=" * 32 + "\n"
                 sep3 = "\n" + "=" * 78
-                retval = sep1 + msg.strip() + sep2 + returned_msg + sep3
+                retval = sep1 + msg + sep2 + returned_msg + sep3
                 raise AssertionError(retval)
         else:
             returned_msg = "\n".join(str(msg) for msg in stored_msg)
@@ -470,9 +476,13 @@ class TestBuilding(CommandTest):
         self.call(building.CmdExamine(), "*TestAccount", "Name/key: TestAccount")
 
         self.char1.db.test = "testval"
-        self.call(building.CmdExamine(), "self/test", "Persistent attributes:\n test = testval")
+        self.call(building.CmdExamine(), "self/test", "Persistent attribute(s):\n  test = testval")
         self.call(building.CmdExamine(), "NotFound", "Could not find 'NotFound'.")
         self.call(building.CmdExamine(), "out", "Name/key: out")
+
+        # escape inlinefuncs
+        self.char1.db.test2 = "this is a $random() value."
+        self.call(building.CmdExamine(), "self/test2", "Persistent attribute(s):\n  test2 = this is a \$random() value.")
 
         self.room1.scripts.add(self.script.__class__)
         self.call(building.CmdExamine(), "")
