@@ -50,7 +50,7 @@ class DefaultObjectTest(EvenniaTest):
     def test_exit_create(self):
         description = "The steaming depths of the dumpster, ripe with refuse in various states of decomposition."
         obj, errors = DefaultExit.create(
-            "in", self.account, self.room1, self.room2, description=description, ip=self.ip
+            "in", self.room1, self.room2, account=self.account, description=description, ip=self.ip
         )
         self.assertTrue(obj, errors)
         self.assertFalse(errors, errors)

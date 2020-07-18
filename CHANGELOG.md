@@ -65,6 +65,8 @@ without arguments starts a full interactive Python console.
 - Add `$random` inlinefunc, supports minval,maxval arguments that can be ints and floats.
 - Add `evennia.utils.inlinefuncs.raw(<str>)` as a helper to escape inlinefuncs in a string.
 - Make CmdGet/Drop/Give give proper error if `obj.move_to` returns `False`.
+- Make `Object/Room/Exit.create`'s `account` argument optional. If not given, will set perms
+  to that of the object itself (along with normal Admin/Dev permission).
 
 
 ## Evennia 0.9 (2018-2019)
