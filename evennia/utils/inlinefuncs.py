@@ -70,6 +70,9 @@ from django.conf import settings
 
 from evennia.utils import utils, logger
 
+# The stack size is a security measure. Set to <=0 to disable.
+_STACK_MAXSIZE = settings.INLINEFUNC_STACK_MAXSIZE
+
 
 # example/testing inline functions
 
@@ -278,12 +281,6 @@ for module in utils.make_iter(settings.INLINEFUNC_MODULES):
         else:
             raise
 
-
-# The stack size is a security measure. Set to <=0 to disable.
-try:
-    _STACK_MAXSIZE = settings.INLINEFUNC_STACK_MAXSIZE
-except AttributeError:
-    _STACK_MAXSIZE = 20
 
 # regex definitions
 
