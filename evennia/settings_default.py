@@ -593,12 +593,15 @@ TIME_IGNORE_DOWNTIMES = False
 # session-aware text formatting and manipulation on the fly. If
 # disabled, such inline functions will not be parsed.
 INLINEFUNC_ENABLED = False
+# This defined how deeply nested inlinefuncs can be. Set to <=0 to
+# disable (not recommended, this is a safeguard against infinite loops).
+INLINEFUNC_STACK_MAXSIZE = 20
 # Only functions defined globally (and not starting with '_') in
 # these modules will be considered valid inlinefuncs. The list
 # is loaded from left-to-right, same-named functions will overload
 INLINEFUNC_MODULES = ["evennia.utils.inlinefuncs", "server.conf.inlinefuncs"]
-# Module holding handlers for OLCFuncs. These allow for embedding
-# functional code in prototypes
+# Module holding handlers for ProtFuncs. These allow for embedding
+# functional code in prototypes and has the same syntax as inlinefuncs.
 PROTOTYPEFUNC_MODULES = ["evennia.utils.prototypefuncs", "server.conf.prototypefuncs"]
 
 ######################################################################
