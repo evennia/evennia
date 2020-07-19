@@ -67,6 +67,7 @@ without arguments starts a full interactive Python console.
 - Make CmdGet/Drop/Give give proper error if `obj.move_to` returns `False`.
 - Make `Object/Room/Exit.create`'s `account` argument optional. If not given, will set perms
   to that of the object itself (along with normal Admin/Dev permission).
+- Make `INLINEFUNC_STACK_MAXSIZE` default visible in `settings_default.py`.
 
 
 ## Evennia 0.9 (2018-2019)
