@@ -941,6 +941,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         nofound_string=None,
         multimatch_string=None,
         use_nicks=True,
+        quiet=False,
         **kwargs,
     ):
         """
@@ -967,9 +968,13 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 message to echo if `searchdata` leads to multiple matches.
                 If not given, will fall back to the default handler.
             use_nicks (bool, optional): Use account-level nick replacement.
+            quiet (bool, optional): If set, will not show any error to the user,
+                and will also lead to returning a list of matches.
 
         Return:
             match (Account, Object or None): A single Account or Object match.
+            list: If `quiet=True` this is a list of 0, 1 or more Account or Object matches.
+
         Notes:
             Extra keywords are ignored, but are allowed in call in
             order to make API more consistent with
@@ -981,28 +986,33 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             # handle wrapping of common terms
             if searchdata.lower() in ("me", "*me", "self", "*self"):
                 return self
+        searchdata = self.nicks.nickreplace(
+            searchdata, categories=("account",), include_account=False
+        )
         if search_object:
             matches = ObjectDB.objects.object_search(
-                searchdata, typeclass=typeclass, use_nicks=use_nicks
+                searchdata, typeclass=typeclass
             )
         else:
-            searchdata = self.nicks.nickreplace(
-                searchdata, categories=("account",), include_account=False
-            )
-
             matches = AccountDB.objects.account_search(searchdata, typeclass=typeclass)
-        matches = _AT_SEARCH_RESULT(
-            matches,
-            self,
-            query=searchdata,
-            nofound_string=nofound_string,
-            multimatch_string=multimatch_string,
-        )
-        if matches and return_puppet:
-            try:
-                return matches.puppet
-            except AttributeError:
-                return None
+
+        if quiet:
+            matches = list(matches)
+            if return_puppet:
+                matches = [match.puppet for match in matches]
+        else:
+            matches = _AT_SEARCH_RESULT(
+                matches,
+                self,
+                query=searchdata,
+                nofound_string=nofound_string,
+                multimatch_string=multimatch_string,
+            )
+            if matches and return_puppet:
+                try:
+                    matches = matches.puppet
+                except AttributeError:
+                    return None
         return matches
 
     def access(
