@@ -84,6 +84,8 @@ without arguments starts a full interactive Python console.
 - Make `Object/Room/Exit.create`'s `account` argument optional. If not given, will set perms
   to that of the object itself (along with normal Admin/Dev permission).
 - Make `INLINEFUNC_STACK_MAXSIZE` default visible in `settings_default.py`.
+- Change how `ic` finds puppets; non-priveleged users will use `_playable_characters` list as
+  candidates, Builders+ will use list, local search and only global search if no match found.
 
 
 ## Evennia 0.9 (2018-2019)
