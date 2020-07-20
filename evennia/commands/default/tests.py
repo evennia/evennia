@@ -353,10 +353,26 @@ class TestAccount(CommandTest):
         self.call(account.CmdOOC(), "", "You go OOC.", caller=self.account)
 
     def test_ic(self):
+        self.account.db._playable_characters = [self.char1]
         self.account.unpuppet_object(self.session)
         self.call(
             account.CmdIC(), "Char", "You become Char.", caller=self.account, receiver=self.char1
         )
+
+    def test_ic__other_object(self):
+        self.account.db._playable_characters = [self.obj1]
+        self.account.unpuppet_object(self.session)
+        self.call(
+            account.CmdIC(), "Obj", "You become Obj.", caller=self.account, receiver=self.obj1
+        )
+
+    def test_ic__nonaccess(self):
+        self.account.unpuppet_object(self.session)
+        self.call(
+            account.CmdIC(), "Nonexistent", "That is not a valid character choice.",
+            caller=self.account, receiver=self.account
+        )
+
 
     def test_password(self):
         self.call(
