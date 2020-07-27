@@ -15,17 +15,24 @@ _IGNORE_FILES = []
 _SOURCEDIR_NAME = "source"
 _SOURCE_DIR = pathjoin(dirname(dirname(abspath(__file__))), _SOURCEDIR_NAME)
 _TOC_FILE = pathjoin(_SOURCE_DIR, "toc.md")
-_NO_REMAP_STARTSWITH = ["http://", "https://", "github:", "api:",
-                        "feature-request", "report-bug", "issue", "bug-report"]
+_NO_REMAP_STARTSWITH = [
+    "http://",
+    "https://",
+    "github:",
+    "api:",
+    "feature-request",
+    "report-bug",
+    "issue",
+    "bug-report",
+]
 
-TXT_REMAPS = {
-}
-URL_REMAPS = {
-}
+TXT_REMAPS = {}
+URL_REMAPS = {}
 
 _USED_REFS = {}
 
 _CURRFILE = None
+
 
 def auto_link_remapper():
     """
@@ -44,7 +51,7 @@ def auto_link_remapper():
         # we allow a max of 4 levels of nesting in the source dir
         ind = pathparts[-5:].index(_SOURCEDIR_NAME)
         # get the part after source/
-        pathparts = pathparts[-5 + 1 + ind:]
+        pathparts = pathparts[-5 + 1 + ind :]
         url = "/".join(pathparts)
         # get the reference, without .md
         url = url.rsplit(".", 1)[0]
@@ -71,7 +78,8 @@ def auto_link_remapper():
             raise DocumentError(
                 f" Tried to add {src_url}.md, but a file {duplicate_src_url}.md already exists.\n"
                 " Evennia's auto-link-corrector does not accept doc-files with the same \n"
-                " name, even in different folders. Rename one.\n")
+                " name, even in different folders. Rename one.\n"
+            )
         toc_map[fname] = src_url
 
         # find relative links to all other files
@@ -86,17 +94,20 @@ def auto_link_remapper():
                 url = "./" + url
             docref_map[sourcepath][targetname] = url.rsplit(".", 1)[0]
 
-
     # normal reference-links [txt](urls)
-    ref_regex = re.compile(r"\[(?P<txt>[\w -\[\]\`]+?)\]\((?P<url>.+?)\)", re.I + re.S + re.U + re.M)
+    ref_regex = re.compile(
+        r"\[(?P<txt>[\w -\[\]\`]+?)\]\((?P<url>.+?)\)", re.I + re.S + re.U + re.M
+    )
     # in document references
-    ref_doc_regex = re.compile(r"\[(?P<txt>[\w -\`]+?)\]:\s+?(?P<url>.+?)(?=$|\n)", re.I + re.S + re.U + re.M)
+    ref_doc_regex = re.compile(
+        r"\[(?P<txt>[\w -\`]+?)\]:\s+?(?P<url>.+?)(?=$|\n)", re.I + re.S + re.U + re.M
+    )
 
     def _sub(match):
         # inline reference links
         global _USED_REFS
         grpdict = match.groupdict()
-        txt, url = grpdict['txt'], grpdict['url']
+        txt, url = grpdict["txt"], grpdict["url"]
 
         txt = TXT_REMAPS.get(txt, txt)
         url = URL_REMAPS.get(url, url)
@@ -117,7 +128,7 @@ def auto_link_remapper():
 
             if _CURRFILE in docref_map and fname in docref_map[_CURRFILE]:
                 cfilename = _CURRFILE.rsplit("/", 1)[-1]
-                urlout = docref_map[_CURRFILE][fname] + ('#' + anchor[0] if anchor else '')
+                urlout = docref_map[_CURRFILE][fname] + ("#" + anchor[0] if anchor else "")
                 if urlout != url:
                     print(f"  {cfilename}: [{txt}]({url}) -> [{txt}]({urlout})")
             else:
@@ -129,7 +140,7 @@ def auto_link_remapper():
         # reference links set at the bottom of the page
         global _USED_REFS
         grpdict = match.groupdict()
-        txt, url = grpdict['txt'], grpdict['url']
+        txt, url = grpdict["txt"], grpdict["url"]
 
         txt = TXT_REMAPS.get(txt, txt)
         url = URL_REMAPS.get(url, url)
@@ -150,7 +161,7 @@ def auto_link_remapper():
 
             if _CURRFILE in docref_map and fname in docref_map[_CURRFILE]:
                 cfilename = _CURRFILE.rsplit("/", 1)[-1]
-                urlout = docref_map[_CURRFILE][fname] + ('#' + anchor[0] if anchor else '')
+                urlout = docref_map[_CURRFILE][fname] + ("#" + anchor[0] if anchor else "")
                 if urlout != url:
                     print(f"  {cfilename}: [{txt}]: {url} -> [{txt}]: {urlout}")
             else:
@@ -165,12 +176,12 @@ def auto_link_remapper():
         # from pudb import debugger;debugger.Debugger().set_trace()
         _CURRFILE = path.as_posix()
 
-        with open(path, 'r') as fil:
+        with open(path, "r") as fil:
             intxt = fil.read()
             outtxt = ref_regex.sub(_sub, intxt)
             outtxt = ref_doc_regex.sub(_sub_doc, outtxt)
         if intxt != outtxt:
-            with open(path, 'w') as fil:
+            with open(path, "w") as fil:
                 fil.write(outtxt)
             count += 1
             print(f"  -- Auto-relinked links in {path.name}")
@@ -206,6 +217,7 @@ def auto_link_remapper():
         fil.write("\n\n```toctree::\n  :hidden:\n\n  toc\n```")
 
     print("  -- Auto-Remapper finished.")
+
 
 if __name__ == "__main__":
     auto_link_remapper()

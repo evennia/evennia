@@ -132,7 +132,7 @@ def _server_maintenance():
     else:
         # adjust the runtime not with 60s but with the actual elapsed time
         # in case this may varies slightly from 60s.
-        _GAMETIME_MODULE.SERVER_RUNTIME += (now - _LAST_SERVER_TIME_SNAPSHOT)
+        _GAMETIME_MODULE.SERVER_RUNTIME += now - _LAST_SERVER_TIME_SNAPSHOT
     _LAST_SERVER_TIME_SNAPSHOT = now
 
     # update game time and save it across reloads

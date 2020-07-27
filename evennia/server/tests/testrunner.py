@@ -26,6 +26,7 @@ class EvenniaTestSuiteRunner(DiscoverRunner):
         # can't mock it - instead we stop it before starting the test - otherwise
         # we'd get unclean reactor errors across test boundaries.
         from evennia.server.portal.portal import PORTAL
+
         PORTAL.maintenance_task.stop()
 
         import evennia
@@ -34,4 +35,3 @@ class EvenniaTestSuiteRunner(DiscoverRunner):
         return super(EvenniaTestSuiteRunner, self).build_suite(
             test_labels, extra_tests=extra_tests, **kwargs
         )
-

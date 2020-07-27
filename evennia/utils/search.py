@@ -205,29 +205,33 @@ help_entries = search_help
 # not the attribute object itself (this is usually what you want)
 
 
-def search_object_attribute(key=None, category=None, value=None,
-                            strvalue=None, attrtype=None, **kwargs):
+def search_object_attribute(
+    key=None, category=None, value=None, strvalue=None, attrtype=None, **kwargs
+):
     return ObjectDB.objects.get_by_attribute(
         key=key, category=category, value=value, strvalue=strvalue, attrtype=attrtype, **kwargs
     )
 
 
-def search_account_attribute(key=None, category=None, value=None,
-                             strvalue=None, attrtype=None, **kwargs):
+def search_account_attribute(
+    key=None, category=None, value=None, strvalue=None, attrtype=None, **kwargs
+):
     return AccountDB.objects.get_by_attribute(
         key=key, category=category, value=value, strvalue=strvalue, attrtype=attrtype, **kwargs
     )
 
 
-def search_script_attribute(key=None, category=None, value=None,
-                            strvalue=None, attrtype=None, **kwargs):
+def search_script_attribute(
+    key=None, category=None, value=None, strvalue=None, attrtype=None, **kwargs
+):
     return ScriptDB.objects.get_by_attribute(
         key=key, category=category, value=value, strvalue=strvalue, attrtype=attrtype, **kwargs
     )
 
 
-def search_channel_attribute(key=None, category=None, value=None,
-                             strvalue=None, attrtype=None, **kwargs):
+def search_channel_attribute(
+    key=None, category=None, value=None, strvalue=None, attrtype=None, **kwargs
+):
     return Channel.objects.get_by_attribute(
         key=key, category=category, value=value, strvalue=strvalue, attrtype=attrtype, **kwargs
     )

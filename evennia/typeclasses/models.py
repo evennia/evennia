@@ -126,7 +126,6 @@ class TypeclassBase(SharedMemoryModelBase):
         if not dbmodel:
             raise TypeError(f"{name} does not appear to inherit from a database model.")
 
-
         # typeclass proxy setup
         # first check explicit __applabel__ on the typeclass, then figure
         # it out from the dbmodel
@@ -135,6 +134,7 @@ class TypeclassBase(SharedMemoryModelBase):
             attrs["__applabel__"] = dbmodel._meta.app_label
 
         if "Meta" not in attrs:
+
             class Meta:
                 proxy = True
                 app_label = attrs.get("__applabel__", "typeclasses")
@@ -156,8 +156,7 @@ class TypeclassBase(SharedMemoryModelBase):
 
         # attach signals
         signals.post_save.connect(call_at_first_save, sender=new_class)
-        signals.pre_delete.connect(
-            remove_attributes_on_delete, sender=new_class)
+        signals.pre_delete.connect(remove_attributes_on_delete, sender=new_class)
         return new_class
 
 

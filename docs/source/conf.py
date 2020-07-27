@@ -128,7 +128,7 @@ def url_resolver(url):
     if url.endswith(choose_issue):
         return _github_issue_choose
     elif githubstart in url:
-        urlpath = url[url.index(githubstart) + len(githubstart):]
+        urlpath = url[url.index(githubstart) + len(githubstart) :]
         if not (urlpath.startswith("develop/") or urlpath.startswith("master")):
             urlpath = "master/" + urlpath
         return _github_code_root + urlpath
@@ -137,14 +137,14 @@ def url_resolver(url):
         ind = url.index(apistart)
         depth = url[:ind].count("/") + 1
         path = "../".join("" for _ in range(depth))
-        urlpath = path + "api/" + url[ind + len(apistart):] + ".html"
+        urlpath = path + "api/" + url[ind + len(apistart) :] + ".html"
         return urlpath
     elif sourcestart in url:
         ind = url.index(sourcestart)
         depth = url[:ind].count("/") + 1
         path = "../".join("" for _ in range(depth))
 
-        modpath, *inmodule = url[ind + len(sourcestart):].rsplit("#", 1)
+        modpath, *inmodule = url[ind + len(sourcestart) :].rsplit("#", 1)
         modpath = "/".join(modpath.split("."))
         inmodule = "#" + inmodule[0] if inmodule else ""
         modpath = modpath + ".html" + inmodule
@@ -252,13 +252,12 @@ def autodoc_post_process_docstring(app, what, name, obj, options, lines):
 
         def _sub_codeblock(match):
             code = match.group(1)
-            return "::\n\n    {}".format(
-                "\n    ".join(lne for lne in code.split("\n")))
+            return "::\n\n    {}".format("\n    ".join(lne for lne in code.split("\n")))
 
         underline_map = {
             1: "-",
             2: "=",
-            3: '^',
+            3: "^",
             4: '"',
         }
 
@@ -271,11 +270,14 @@ def autodoc_post_process_docstring(app, what, name, obj, options, lines):
             return f"{title}\n" + (underline_map[lvl] * len(title))
 
         doc = "\n".join(lines)
-        doc = re.sub(r"```python\s*\n+(.*?)```", _sub_codeblock, doc,
-                     flags=re.MULTILINE + re.DOTALL)
+        doc = re.sub(
+            r"```python\s*\n+(.*?)```", _sub_codeblock, doc, flags=re.MULTILINE + re.DOTALL
+        )
         doc = re.sub(r"```", "", doc, flags=re.MULTILINE)
         doc = re.sub(r"`{1}", "**", doc, flags=re.MULTILINE)
-        doc = re.sub(r"^(?P<hashes>#{1,2})\s*?(?P<title>.*?)$", _sub_header, doc, flags=re.MULTILINE)
+        doc = re.sub(
+            r"^(?P<hashes>#{1,2})\s*?(?P<title>.*?)$", _sub_header, doc, flags=re.MULTILINE
+        )
 
         newlines = doc.split("\n")
         # we must modify lines in-place

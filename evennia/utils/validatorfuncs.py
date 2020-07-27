@@ -65,7 +65,11 @@ def datetime(entry, option_key="Datetime", account=None, from_tz=None, **kwargs)
             try:
                 from_tz = _pytz.timezone(acct_tz)
             except Exception as err:
-                raise ValueError(_("Timezone string '{acct_tz}' is not a valid timezone ({err})").format(acct_tz=acct_tz, err=err))
+                raise ValueError(
+                    _("Timezone string '{acct_tz}' is not a valid timezone ({err})").format(
+                        acct_tz=acct_tz, err=err
+                    )
+                )
         else:
             from_tz = _pytz.UTC
 

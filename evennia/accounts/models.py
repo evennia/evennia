@@ -109,8 +109,8 @@ class AccountDB(TypedObject, AbstractUser):
     __applabel__ = "accounts"
     __settingsclasspath__ = settings.BASE_SCRIPT_TYPECLASS
 
-   #  class Meta:
-   #      verbose_name = "Account"
+    #  class Meta:
+    #      verbose_name = "Account"
 
     # cmdset_storage property
     # This seems very sensitive to caching, so leaving it be for now /Griatch

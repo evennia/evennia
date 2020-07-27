@@ -611,7 +611,6 @@ class CmdUsePuzzleParts(MuxCommand):
     passed in.
     """
 
-
     key = "use"
     aliases = "combine"
     locks = "cmd:pperm(use) or pperm(Player)"

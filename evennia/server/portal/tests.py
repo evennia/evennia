@@ -1,4 +1,3 @@
-
 try:
     from django.utils.unittest import TestCase
 except ImportError:
@@ -290,7 +289,7 @@ class TestWebSocket(EvenniaTest):
         self.proto.sessionhandler = PORTAL_SESSIONS
         self.proto.sessionhandler.portal = Mock()
         self.proto.transport = proto_helpers.StringTransport()
-        #self.proto.transport = proto_helpers.FakeDatagramTransport()
+        # self.proto.transport = proto_helpers.FakeDatagramTransport()
         self.proto.transport.client = ["localhost"]
         self.proto.transport.setTcpKeepAlive = Mock()
         self.proto.state = MagicMock()
@@ -318,4 +317,4 @@ class TestWebSocket(EvenniaTest):
         self.proto.sendLine = MagicMock()
         msg = json.dumps(["logged_in", (), {}])
         self.proto.sessionhandler.data_out(self.proto, text=[["Excepting Alice"], {}])
-        self.proto.sendLine.assert_called_with(json.dumps(['text', ['Excepting Alice'], {}]))
+        self.proto.sendLine.assert_called_with(json.dumps(["text", ["Excepting Alice"], {}]))

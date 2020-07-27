@@ -431,7 +431,9 @@ class CmdGet(COMMAND_DEFAULT_CLASS):
             caller.msg("This can't be picked up.")
         else:
             caller.msg("You pick up %s." % obj.name)
-            caller.location.msg_contents("%s picks up %s." % (caller.name, obj.name), exclude=caller)
+            caller.location.msg_contents(
+                "%s picks up %s." % (caller.name, obj.name), exclude=caller
+            )
             # calling at_get hook method
             obj.at_get(caller)
 

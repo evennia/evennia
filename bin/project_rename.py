@@ -108,13 +108,7 @@ def _case_sensitive_replace(string, old, new):
                 result.append(new_word[ind + 1 :].lower())
             out.append("".join(result))
         # if we have more new words than old ones, just add them verbatim
-        out.extend(
-            [
-                new_word
-                for ind, new_word in enumerate(new_words)
-                if ind >= len(old_words)
-            ]
-        )
+        out.extend([new_word for ind, new_word in enumerate(new_words) if ind >= len(old_words)])
         return " ".join(out)
 
     regex = re.compile(re.escape(old), re.I)
@@ -154,9 +148,7 @@ def rename_in_tree(path, in_list, out_list, excl_list, fileend_list, is_interact
                 print("%s skipped (excluded)." % full_path)
                 continue
 
-            if not fileend_list or any(
-                file.endswith(ending) for ending in fileend_list
-            ):
+            if not fileend_list or any(file.endswith(ending) for ending in fileend_list):
                 rename_in_file(full_path, in_list, out_list, is_interactive)
 
             # rename file - always ask
@@ -164,9 +156,7 @@ def rename_in_tree(path, in_list, out_list, excl_list, fileend_list, is_interact
             for src, dst in repl_mapping:
                 new_file = _case_sensitive_replace(new_file, src, dst)
             if new_file != file:
-                inp = input(
-                    _green("Rename %s\n   ->  %s\n Y/[N]? > " % (file, new_file))
-                )
+                inp = input(_green("Rename %s\n   ->  %s\n Y/[N]? > " % (file, new_file)))
                 if inp.upper() == "Y":
                     new_full_path = os.path.join(root, new_file)
                     try:
@@ -182,9 +172,7 @@ def rename_in_tree(path, in_list, out_list, excl_list, fileend_list, is_interact
         for src, dst in repl_mapping:
             new_root = _case_sensitive_replace(new_root, src, dst)
         if new_root != root:
-            inp = input(
-                _green("Dir Rename %s\n       ->  %s\n Y/[N]? > " % (root, new_root))
-            )
+            inp = input(_green("Dir Rename %s\n       ->  %s\n Y/[N]? > " % (root, new_root)))
             if inp.upper() == "Y":
                 try:
                     os.rename(root, new_root)
@@ -252,9 +240,7 @@ def rename_in_file(path, in_list, out_list, is_interactive):
 
             while True:
 
-                for iline, renamed_line in sorted(
-                    list(renamed.items()), key=lambda tup: tup[0]
-                ):
+                for iline, renamed_line in sorted(list(renamed.items()), key=lambda tup: tup[0]):
                     print("%3i orig: %s" % (iline + 1, org_lines[iline]))
                     print("    new : %s" % (_yellow(renamed_line)))
                 print(_green("%s (%i lines changed)" % (path, len(renamed))))
@@ -297,11 +283,7 @@ def rename_in_file(path, in_list, out_list, is_interactive):
                     input(_HELP_TEXT.format(sources=in_list, targets=out_list))
                 elif ret.startswith("i"):
                     # ignore one or more lines
-                    ignores = [
-                        int(ind) - 1
-                        for ind in ret[1:].split(",")
-                        if ind.strip().isdigit()
-                    ]
+                    ignores = [int(ind) - 1 for ind in ret[1:].split(",") if ind.strip().isdigit()]
                     if not ignores:
                         input("Ignore example: i 2,7,34,133\n (return to continue)")
                         continue
@@ -313,9 +295,7 @@ def rename_in_file(path, in_list, out_list, is_interactive):
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(
-        description="Rename text in a source tree, or a single file"
-    )
+    parser = argparse.ArgumentParser(description="Rename text in a source tree, or a single file")
 
     parser.add_argument(
         "-i",
@@ -326,27 +306,19 @@ if __name__ == "__main__":
     parser.add_argument(
         "-o", "--output", action="append", help="Word to rename a matching src-word to"
     )
-    parser.add_argument(
-        "-x", "--exc", action="append", help="File path patterns to exclude"
-    )
+    parser.add_argument("-x", "--exc", action="append", help="File path patterns to exclude")
     parser.add_argument(
         "-a", "--auto", action="store_true", help="Automatic mode, don't ask to rename"
     )
-    parser.add_argument(
-        "-r", "--recursive", action="store_true", help="Recurse subdirs"
-    )
+    parser.add_argument("-r", "--recursive", action="store_true", help="Recurse subdirs")
     parser.add_argument(
         "-f",
         "--fileending",
         action="append",
         help="Change which file endings to allow (default .py and .html)",
     )
-    parser.add_argument(
-        "--nocolor", action="store_true", help="Turn off in-program color"
-    )
-    parser.add_argument(
-        "--fake", action="store_true", help="Simulate run but don't actually save"
-    )
+    parser.add_argument("--nocolor", action="store_true", help="Turn off in-program color")
+    parser.add_argument("--fake", action="store_true", help="Simulate run but don't actually save")
     parser.add_argument("path", help="File or directory in which to rename text")
 
     args = parser.parse_args()
@@ -362,9 +334,7 @@ if __name__ == "__main__":
         print("At least one source- and destination word must be given.")
         sys.exit()
     if len(in_list) != len(out_list):
-        print(
-            "Number of sources must be identical to the number of destination arguments."
-        )
+        print("Number of sources must be identical to the number of destination arguments.")
         sys.exit()
 
     exc_list = exc_list or []
@@ -376,8 +346,6 @@ if __name__ == "__main__":
     FAKE_MODE = args.fake
 
     if is_recursive:
-        rename_in_tree(
-            args.path, in_list, out_list, exc_list, fileend_list, is_interactive
-        )
+        rename_in_tree(args.path, in_list, out_list, exc_list, fileend_list, is_interactive)
     else:
         rename_in_file(args.path, in_list, out_list, is_interactive)
