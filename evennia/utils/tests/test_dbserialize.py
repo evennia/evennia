@@ -11,8 +11,9 @@ class TestDbSerialize(TestCase):
     """
     Database serialization operations.
     """
+
     def setUp(self):
-        self.obj = DefaultObject(db_key="Tester", )
+        self.obj = DefaultObject(db_key="Tester",)
         self.obj.save()
 
     def test_constants(self):
@@ -54,5 +55,5 @@ class TestDbSerialize(TestCase):
         self.assertEqual(self.obj.db.test, [[1, 2, 3], [4, 5, 6]])
         self.obj.db.test = [{1: 0}, {0: 1}]
         self.assertEqual(self.obj.db.test, [{1: 0}, {0: 1}])
-        self.obj.db.test.sort(key=lambda d:  str(d))
+        self.obj.db.test.sort(key=lambda d: str(d))
         self.assertEqual(self.obj.db.test, [{0: 1}, {1: 0}])

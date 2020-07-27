@@ -102,7 +102,6 @@ def dbsafe_encode(value, compress_object=False, pickle_protocol=DEFAULT_PROTOCOL
 
     value = dumps(value, protocol=pickle_protocol)
 
-
     if compress_object:
         value = compress(value)
     value = b64encode(value).decode()  # decode bytes to str

@@ -314,8 +314,12 @@ class CmdIC(COMMAND_DEFAULT_CLASS):
             if account.db._playable_characters:
                 # look at the playable_characters list first
                 character_candidates.extend(
-                    account.search(self.args, candidates=account.db._playable_characters,
-                                   search_object=True, quiet=True)
+                    account.search(
+                        self.args,
+                        candidates=account.db._playable_characters,
+                        search_object=True,
+                        quiet=True,
+                    )
                 )
 
             if account.locks.check_lockstring(account, "perm(Builder)"):
@@ -337,8 +341,12 @@ class CmdIC(COMMAND_DEFAULT_CLASS):
                     # fall back to global search only if Builder+ has no
                     # playable_characers in list and is not standing in a room
                     # with a matching char.
-                    character_candidates.extend([
-                        char for char in search.object_search(self.args) if char.access(account, "puppet")]
+                    character_candidates.extend(
+                        [
+                            char
+                            for char in search.object_search(self.args)
+                            if char.access(account, "puppet")
+                        ]
                     )
 
         # handle possible candidates

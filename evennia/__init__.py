@@ -450,10 +450,14 @@ def set_trace(term_size=(140, 80), debugger="auto"):
         # Stopped at breakpoint. Press 'n' to continue into the code.
         dbg.set_trace()
 
+
 # initialize the doc string
 global __doc__
 __doc__ = DOCSTRING.format(
-    "\n- " + "\n- ".join(
-        f"evennia.{key}" for key in sorted(globals())
-        if not key.startswith("_")
-        and key not in ("DOCSTRING", )))
+    "\n- "
+    + "\n- ".join(
+        f"evennia.{key}"
+        for key in sorted(globals())
+        if not key.startswith("_") and key not in ("DOCSTRING",)
+    )
+)

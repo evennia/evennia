@@ -235,7 +235,6 @@ class _SaverMutable(object):
     def __gt__(self, other):
         return self._data > other
 
-
     @_save
     def __setitem__(self, key, value):
         self._data.__setitem__(key, self._convert_mutables(value))
