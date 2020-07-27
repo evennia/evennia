@@ -2375,6 +2375,8 @@ class CmdExamine(ObjManipCommand):
             value (any): Attribute value.
         Returns:
         """
+        if attr is None: 
+            return "No such attribute was found."
         value = utils.to_str(value)
         if crop:
             value = utils.crop(value)
@@ -2390,19 +2392,24 @@ class CmdExamine(ObjManipCommand):
         non-persistent data stored on object
 
         """
-
         if attrname:
-            db_attr = [(attrname, obj.attributes.get(attrname), None)]
+            if obj.attributes.has(attrname):
+                db_attr = [(attrname, obj.attributes.get(attrname), None)]
+            else:
+                db_attr = None
             try:
                 ndb_attr = [(attrname, object.__getattribute__(obj.ndb, attrname))]
             except Exception:
                 ndb_attr = None
+            if not (db_attr or ndb_attr):
+                return {"Attribue(s)": f"\n  No Attribute '{attrname}' found on {obj.name}"}
         else:
             db_attr = [(attr.key, attr.value, attr.category) for attr in obj.db_attributes.all()]
             try:
                 ndb_attr = obj.nattributes.all(return_tuples=True)
             except Exception:
-                ndb_attr = None
+                ndb_attr = (None, None, None)
+
         output = {}
         if db_attr and db_attr[0]:
             output["Persistent attribute(s)"] = "\n  " + "\n  ".join(
