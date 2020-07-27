@@ -100,6 +100,7 @@
 - [Howto/Parsing commands tutorial](Howto/Parsing-commands-tutorial)
 - [Howto/Starting/Part2/Game Planning](Howto/Starting/Part2/Game-Planning)
 - [Howto/Starting/Part2/Some Useful Contribs](Howto/Starting/Part2/Some-Useful-Contribs)
+- [Howto/Starting/Part3/A Sittable Object](Howto/Starting/Part3/A-Sittable-Object)
 - [Howto/Starting/Part3/Implementing a game rule system](Howto/Starting/Part3/Implementing-a-game-rule-system)
 - [Howto/Starting/Part3/Turn based Combat System](Howto/Starting/Part3/Turn-based-Combat-System)
 - [Howto/Starting/Part3/Tutorial for basic MUSH like game](Howto/Starting/Part3/Tutorial-for-basic-MUSH-like-game)

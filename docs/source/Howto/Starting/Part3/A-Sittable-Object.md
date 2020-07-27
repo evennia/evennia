@@ -1,3 +1,5 @@
+[prev lesson]() | [next lesson]()
+
 # Making a sittable object 
 
 In this lesson we will go through how to make a chair you can sit on. Sounds easy, right? 
@@ -13,9 +15,19 @@ The goals of this lesson are as follows:
 - When you sit down you should not be able to walk to another room without first standing up.
 - A character should be able to stand up and move away from the chair. 
 
+There are two main ways to design the commands for sitting and standing up.
+- You can store the commands on the chair so they are only available when a chair is in the room
+- You can store the commands on the Character so they are always available and you must always specify
+  which chair to sit on.
+  
+Both of these are very useful to know about, so in this lesson we'll try both. But first
+we need to handle some basics.  
+
+
 ## Don't move us when resting
 
-This requires a change to our Character typeclass. Open `mygame/characters.py`:
+When you are sitting in a chair you can't just walk off without first standing up. 
+This requires a change to our Character typeclass. Open `mygame/typeclasses/characters.py`:
 
 ```python
 
@@ -42,9 +54,9 @@ to determine if we are stuck on the chair or not.
 
 ## Making the Chair itself 
 
-First we need the Chair itself. Since we want this to do some extra coded actions when 
-you sit in it, we can't just use a default Object. We need a new, custom Typeclass. 
-Create a new module `mygame/typeclasses/sittables.py` with the following content: 
+Next we need the Chair itself, or rather a whole family of "things you can sit on" that we will call 
+_sittables_. We can't just use a default Object since we want a sittable to contain some custom code. We need 
+a new, custom Typeclass. Create a new module `mygame/typeclasses/sittables.py` with the following content: 
 
 ```python
 
@@ -99,7 +111,7 @@ One could imagine that one could have the future `sit` command check if someone 
 chair instead. This would work too, but letting the `Sittable` class handle the logic around who can sit on it makes
 logical sense. 
 
-We let the typeclass handle the logic, we also let it do all the return messaging. This makes it easy to churn out
+We let the typeclass handle the logic, and also let it do all the return messaging. This makes it easy to churn out
 a bunch of chairs for people to sit on. But it's not perfect. The `Sittable` class is general. What if you want to
 make an armchair. You sit "in" an armchair rather than "on" it. We _could_ make a child class of `Sittable` named
 `SittableIn` that makes this change, but that feels excessive. Instead we will make it so that Sittables can 
@@ -157,7 +169,7 @@ class Sittable(DefaultObject):
 ```
 
 We added a new Attribute `adjective` which will probably usually be `in` or `on` but could also be `at` if you
-want to be able to sit at a `desk` for example. A regular builder would use it like this: 
+want to be able to sit _at a desk_ for example. A regular builder would use it like this: 
 
     > create/drop armchair : sittables.Sittable
     > set armchair/adjective = in
@@ -167,7 +179,7 @@ sit down?
 
     You sit down and a whoopie cushion makes a loud fart noise! 
 
-For this we needs to allow some further customization. Let's let the current strings be defaults that 
+For this we need to allow some further customization. Let's let the current strings be defaults that 
 we can replace. 
 
 ```python
@@ -256,19 +268,18 @@ class Sittable(DefaultObject):
                 stander.msg(f"You stand up from {self.key}")
 ```
 
-Here we really went all out with flexibility. We added a bunch of optional Attributes to 
-hold alternative versions of all the messages. There are some things to note: 
+Here we really went all out with flexibility. If you need this much is up to you. 
+We added a bunch of optional Attributes to hold alternative versions of all the messages. 
+There are some things to note: 
 
 - We don't actually initiate those Attributes in `at_object_creation`. This is a simple 
 optimization. The assumption is that _most_ chairs will probably not be this customized. 
-So initiating to, say, empty strings would be a lot of useless database calls. The drawback
-is that the available Attributes become less visible when reading the code. So we add a long
+So initiating a bunch of Attributes to, say, empty strings would be a lot of useless database calls. 
+The drawback is that the available Attributes become less visible when reading the code. So we add a long
 describing docstring to the end to explain all you can use. 
 - We use `.format` to inject formatting-tokens in the text. The good thing about such formatting
 markers is that they are _optional_. They are there if you want them, but Python will not complain 
-if you don't include some or any of them.
-
-Let's actually create the chair now so we can test it later. 
+if you don't include some or any of them. Let's see an example: 
 
     > reload   # if you have new code
     > create/drop armchair : sittables.Sittable 
@@ -276,9 +287,9 @@ Let's actually create the chair now so we can test it later.
     > set armchair/msg_sitting_down = As you sit down {adjective} {key}, life feels easier.
     > set armchair/msg_standing_up = You stand up from {key}. Life resumes.
      
-We could have skipped `{key}` and `{adjective}` if we wanted. Whenever the message is returned, the format-tokens
-within weill be replaced with `armchair` and `in` respectively. Should we rename the chair later, this will
-show in the messages automatically (since `{key}` will change).
+The `{key}` and `{adjective}` are examples of optional formatting markers. Whenever the message is 
+returned, the format-tokens within will be replaced with `armchair` and `in` respectively. Should we 
+rename the chair later, this will show in the messages automatically (since `{key}` will change).
 
 We have no Command to use this chair yet. But we can try it out with `py`:
 
@@ -293,26 +304,18 @@ We have no Command to use this chair yet. But we can try it out with `py`:
     
 If you follow along and get a result like this, all seems to be working well! 
 
-## Deciding on a sitting command
+## Command variant 1: Commands on the chair
 
-We already know what our `sit` command must do: 
+This way to implement `sit` and `stand` puts new cmdsets on the Sittable itself.
+As we've learned before, commands on objects are made available to others in the room. 
+This makes the command easy but instead adds some complexity in the management of the CmdSet. 
 
-- It needs to somehow figure out what object to sit on
-- Once it finds a suitable sittable, it should call `sittable.do_sit(caller)`. The
-  object does the rest from there.
-    
-There are a few ways to do a Command like this. We'll explore the two main ones. 
-
-### Command variant 1: Command on the Chair 
-
-We can put the `sit` command in a command-set _on_ the chair. As we've learned before, commands on 
-objects are made available to others in the room. This makes the command easy. In combination with our
-new `armchair`:
+This is how it will look if `armchair` is in the room: 
 
     > sit 
     As you sit down in armchair, life feels easier. 
 
-What happens if there are also a sittable `sofa` and `barstool` in the room? Evennia will automatically
+What happens if there are sittables `sofa` and `barstool` also in the room? Evennia will automatically
 handle this for us and allow us to specify which one we want: 
 
     > sit
@@ -323,14 +326,14 @@ handle this for us and allow us to specify which one we want:
     > sit-1
     As you sit down in armchair, life feels easier.
     
-This is how we'd implement this type of command. To keep things separate we'll make a new module
-`mygame/commands/sittables.py`
+To keep things separate we'll make a new module `mygame/commands/sittables.py`:
     
 ```sidebar:: Separate Commands and Typeclasses?
 
-    You can organize these things as you like. If you wanted you could also put the sit-command + cmdset
+    You can organize these things as you like. If you wanted you could put the sit-command + cmdset
     together with the `Sittable` typeclass in `mygame/typeclasses/sittables.py`. That has the advantage of 
-    keeping everything related to sitting in one place.
+    keeping everything related to sitting in one place. But there is also some organizational merit to 
+    keeping all Commands in one place as we do here. 
 
 ```
 
@@ -399,7 +402,16 @@ We could also update all existing sittables (all on one line):
     > py from typeclasses.sittables import Sittable ; 
            [sittable.at_object_creation() for sittable in Sittable.objects.all()]
     
+> The above shows an example of a _list comprehension_. Think of it as an efficient way to construct a new list 
+all in one line. You can read more about list comprehensions 
+[here in the Python docs](https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions).
+    
 We should now be able to use `sit` while in the room with the armchair.
+
+    > sit 
+    As you sit down in armchair, life feels easier.
+    > stand 
+    You stand up from armchair.
 
 One issue with placing the `sit` (or `stand`) Command "on" the chair is that it will not be available when in a 
 room without a Sittable object: 
@@ -407,8 +419,9 @@ room without a Sittable object:
     > sit 
     Command 'sit' is not available. ...
     
-This is practical but not so good-looking; it makes it harder for the user to know a `sit` action is at all possible.
-Here is a trick for fixing this. Let's add another Command to the bottom of `mygame/commands/sittables.py`:
+This is practical but not so good-looking; it makes it harder for the user to know a `sit` action is at all 
+possible. Here is a trick for fixing this. Let's add _another_ Command to the bottom 
+of `mygame/commands/sittables.py`:
 
 ```python
 # ... 
@@ -433,11 +446,11 @@ added `stand` to its `aliases`. In the command we look at `self.cmdname`, which 
 _actually used_ to call this command. We use this to return different messages. 
 
 We don't need a separate CmdSet for this, instead we will add this 
-to the default Character cmdset. Open `mygame/commands/default_cmdsets`:
+to the default Character cmdset. Open `mygame/commands/default_cmdsets.py`:
 
 ```python
 # ... 
-from commands.sittables import CmdNoSitStand
+from commands import sittables
 
 class CharacterCmdSet(CmdSet):
     """
@@ -445,7 +458,7 @@ class CharacterCmdSet(CmdSet):
     """
     def at_cmdset_creation(self):
         # ...
-        self.add(CmdNoSitStand)
+        self.add(sittables.CmdNoSitStand)
 
 ```
 
@@ -465,9 +478,9 @@ default error message is shown.
 
 How does this work? There are two cmdsets at play, both of which have a `sit` Command. As you may remember we 
 set the chair's cmdset to `priority = 1`. This is where that matters. The default Character cmdset has a 
-priority of 0. This means that whenever we enter a room with a Sittable thing, _its_ cmdset will take 
-_precedence_ over the Character cmdset. So we are actually picking different `sit` commands
-depending on circumstance. The user will never be the wiser.
+priority of 0. This means that whenever we enter a room with a Sittable thing, the `sit` command
+from _its_ cmdset will take _precedence_ over the Character cmdset's version. So we are actually picking 
+_different_ `sit` commands depending on circumstance! The user will never be the wiser.
         
 So this handles `sit`. What about `stand`? That will work just fine: 
 
@@ -511,9 +524,9 @@ class CmdStand(Command):
 # ...
 ```
 
-We define a [Lock](../../../Components/Locks) on the command. The `cmd:` is in what situation Evennia will check the lock. The `cmd`
-means that it will check the lock when determining if a user has access to this command or not. What will be 
-checked is the `sitsonthis` _lock function_ which doesn't exist yet. 
+We define a [Lock](../../../Components/Locks) on the command. The `cmd:` is in what situation Evennia will check 
+the lock. The `cmd` means that it will check the lock when determining if a user has access to this command or not. 
+What will be checked is the `sitsonthis` _lock function_ which doesn't exist yet. 
 
 Open `mygame/server/conf/lockfuncs.py` to add it! 
 
@@ -521,14 +534,27 @@ Open `mygame/server/conf/lockfuncs.py` to add it!
 """
 (module lockstring)
 """
+# ... 
 
 def sitsonthis(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    True if accessing_obj is sitting on/in the accessed_obj. 
+    """
     return accessed_obj.db.sitting == accessing_obj
 
+# ... 
 ```
 
 Evennia knows that all functions in `mygame/server/conf/lockfuncs` should be possible to use in a lock definition.
 The arguments are required and Evennia will pass all relevant objects to them: 
+
+```sidebar:: Lockfuncs
+
+    Evennia provides a large number of default lockfuncs, such as checking permission-levels,
+    if you are carrying or are inside the accessed object etc. There is no concept of 'sitting'
+    in default Evennia however, so this we need to specify ourselves.
+
+```
 
 - `accessing_obj` is the one trying to access the lock. So us, in this case. 
 - `accessed_obj` is the entity we are trying to gain a particular type of access to. So the chair.
@@ -551,20 +577,20 @@ caveats though that one needs to keep in mind.
 
 We'll now try another way to add the `sit/stand` commands.
 
-### Command variant 2: Command on Character 
+## Command variant 2: Command on Character 
 
 Before we start with this, delete the chairs you've created (`del armchair` etc) and then do the following 
 changes: 
 
 - In `mygame/typeclasses/sittables.py`, comment out the line `self.cmdset.add_default(CmdSetSit)`.
-- In `mygame/commands/default_cmdsets.py`, comment out the line `self.add(CmdNoSitStand)`. 
+- In `mygame/commands/default_cmdsets.py`, comment out the line `self.add(sittables.CmdNoSitStand)`. 
 
 This disables the on-object command solution so we can try an alternative. Make sure to `reload` so the 
 changes are known to Evennia. 
 
 In this variation we will put the `sit` and `stand` commands on the `Character` instead of on the chair. This
 makes some things easier, but makes the Commands themselves more complex because they will not know which 
-chair to sit on. We can't just do `sit` anymore. We need this: 
+chair to sit on. We can't just do `sit` anymore. This is how it will work. 
 
     > sit <chair> 
     You sit on chair.
@@ -713,7 +739,7 @@ class CmdStand2(Command):
         # find the thing we are sitting on/in, by finding the object
         # in the current location that as an Attribute "sitter" set 
         # to the caller
-        sittable = self.caller.search(
+        sittable = caller.search(
                          caller, 
                          candidates=caller.location.contents,
                          attribute_name="sitter", 
@@ -726,4 +752,51 @@ class CmdStand2(Command):
         
 ```
 
-This forced us to to use the full power of the ``
+This forced us to to use the full power of the `caller.search` method. If we wanted to search for something 
+more complex we would likely need to break out a [Django query](../Part1/Django-queries) to do it. The key here is that
+we know that the object we are looking for is a `Sittable` and that it must have an Attribute named `sitter` 
+which should be set to us, the one sitting on/in the thing. Once we have that we just call `.do_stand` on it 
+and let the Typeclass handle the rest. 
+
+All that is left now is to make this available to us. This type of Command should be available to us all the time
+so we can put it in the default Cmdset` on the Character. Open `mygame/default_cmdsets.py`
+
+
+```python
+# ... 
+from commands import sittables
+
+class CharacterCmdSet(CmdSet):
+    """
+    (docstring)
+    """
+    def at_cmdset_creation(self):
+        # ...
+        self.add(sittables.CmdSit2)
+        self.add(sittables.CmdStand2)
+
+```
+
+Now let's try it out: 
+
+    > reload 
+    > create/drop sofa : sittables.Sittable
+    > sit sofa
+    You sit down on sofa.
+    > stand 
+    You stand up from sofa.
+
+
+## Conclusions
+
+In this lesson we accomplished quite a bit: 
+
+- We modified our `Character` class to avoid moving when sitting down.
+- We made a new `Sittable` typeclass
+- We tried two ways to allow a user to interact with sittables using `sit` and `stand` commands. 
+
+Eagle-eyed readers will notice that the `stand` command sitting "on" the chair (variant 1) would work just fine 
+together with the `sit` command sitting "on" the Character (variant 2). There is nothing stopping you from 
+mixing them, or even try a third solution that better fits what you have in mind. 
+
+[prev lesson]() | [next lesson]()
