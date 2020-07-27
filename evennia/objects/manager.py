@@ -154,7 +154,7 @@ class ObjectDBManager(TypedObjectManager):
 
         Args:
             attribute_name (str): Attribute key to search for.
-            attribute_value (str):  Attribute value to search for.
+            attribute_value (any):  Attribute value to search for. This can also be database objects.
             candidates (list, optional): Candidate objects to limit search to.
             typeclasses (list, optional): Python pats to restrict matches with.
 
@@ -175,31 +175,16 @@ class ObjectDBManager(TypedObjectManager):
         )
         type_restriction = typeclasses and Q(db_typeclass_path__in=make_iter(typeclasses)) or Q()
 
-        # This doesn't work if attribute_value is an object. Workaround below
-
-        if isinstance(attribute_value, (str, int, float, bool)):
-            return self.filter(
+        results = (
+            self
+            .filter(
                 cand_restriction
                 & type_restriction
-                & Q(db_attributes__db_key=attribute_name, db_attributes__db_value=attribute_value)
-            ).order_by("id")
-        else:
-            # We must loop for safety since the referenced lookup gives deepcopy error if attribute value is an object.
-            global _ATTR
-            if not _ATTR:
-                from evennia.typeclasses.models import Attribute as _ATTR
-            cands = list(
-                self.filter(
-                    cand_restriction & type_restriction & Q(db_attributes__db_key=attribute_name)
-                )
-            )
-            results = [
-                attr.objectdb_set.all()
-                for attr in _ATTR.objects.filter(
-                    objectdb__in=cands, db_value=attribute_value
-                ).order_by("id")
-            ]
-            return chain(*results)
+                & Q(db_attributes__db_key=attribute_name)
+                & Q(db_attributes__db_value=attribute_value))
+            .order_by("id")
+        )
+        return results
 
     def get_objs_with_db_property(self, property_name, candidates=None):
         """
