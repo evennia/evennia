@@ -31,7 +31,7 @@ Modified for Evennia by Griatch and the Evennia community.
 from ast import literal_eval
 from datetime import datetime
 
-from copy import deepcopy
+from copy import deepcopy, Error as CopyError
 from base64 import b64encode, b64decode
 from zlib import compress, decompress
 
@@ -44,6 +44,7 @@ from django.forms.widgets import Textarea
 
 from pickle import loads, dumps
 from django.utils.encoding import force_str
+from evennia.utils.dbserialize import pack_dbobj
 
 
 DEFAULT_PROTOCOL = 4
@@ -92,7 +93,16 @@ def dbsafe_encode(value, compress_object=False, pickle_protocol=DEFAULT_PROTOCOL
     # The reason this is important is because we do all of our lookups as
     # simple string matches, thus the character streams must be the same
     # for the lookups to work properly. See tests.py for more information.
-    value = dumps(deepcopy(value), protocol=pickle_protocol)
+    try:
+        value = deepcopy(value)
+    except CopyError:
+        # this can happen on a manager query where the search query string is a
+        # database model.
+        value = pack_dbobj(value)
+
+    value = dumps(value, protocol=pickle_protocol)
+
+
     if compress_object:
         value = compress(value)
     value = b64encode(value).decode()  # decode bytes to str
