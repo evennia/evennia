@@ -2375,9 +2375,8 @@ class CmdExamine(ObjManipCommand):
             value (any): Attribute value.
         Returns:
         """
+        value = utils.to_str(value)
         if crop:
-            if not isinstance(value, str):
-                value = utils.to_str(value)
             value = utils.crop(value)
         value = inlinefunc_raw(ansi_raw(value))
         if category:
