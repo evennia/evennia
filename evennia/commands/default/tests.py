@@ -155,6 +155,7 @@ class CommandTest(EvenniaTest):
                 prt = ""
                 for ic, char in enumerate(msg):
                     import re
+
                     prt += char
 
                 sep1 = "\n" + "=" * 30 + "Wanted message" + "=" * 34 + "\n"
@@ -369,10 +370,12 @@ class TestAccount(CommandTest):
     def test_ic__nonaccess(self):
         self.account.unpuppet_object(self.session)
         self.call(
-            account.CmdIC(), "Nonexistent", "That is not a valid character choice.",
-            caller=self.account, receiver=self.account
+            account.CmdIC(),
+            "Nonexistent",
+            "That is not a valid character choice.",
+            caller=self.account,
+            receiver=self.account,
         )
-
 
     def test_password(self):
         self.call(
@@ -485,7 +488,11 @@ class TestBuilding(CommandTest):
 
         # escape inlinefuncs
         self.char1.db.test2 = "this is a $random() value."
-        self.call(building.CmdExamine(), "self/test2", "Persistent attribute(s):\n  test2 = this is a \$random() value.")
+        self.call(
+            building.CmdExamine(),
+            "self/test2",
+            "Persistent attribute(s):\n  test2 = this is a \$random() value.",
+        )
 
         self.room1.scripts.add(self.script.__class__)
         self.call(building.CmdExamine(), "")

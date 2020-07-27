@@ -109,11 +109,17 @@ class TestCreateHelpEntry(TestCase):
 
     def test_create_help_entry__complex(self):
         locks = "foo:false();bar:true()"
-        aliases = ['foo', 'bar', 'tst']
+        aliases = ["foo", "bar", "tst"]
         tags = [("tag1", "help"), ("tag2", "help"), ("tag3", "help")]
 
-        entry = create.create_help_entry("testentry", self.help_entry, category="Testing",
-                                         locks=locks, aliases=aliases, tags=tags)
+        entry = create.create_help_entry(
+            "testentry",
+            self.help_entry,
+            category="Testing",
+            locks=locks,
+            aliases=aliases,
+            tags=tags,
+        )
         self.assertTrue(all(lock in entry.locks.all() for lock in locks.split(";")))
         self.assertEqual(list(entry.aliases.all()).sort(), aliases.sort())
         self.assertEqual(entry.tags.all(return_key_and_category=True), tags)
@@ -137,21 +143,28 @@ class TestCreateMessage(EvenniaTest):
     def test_create_msg__channel(self):
         chan1 = create.create_channel("DummyChannel1")
         chan2 = create.create_channel("DummyChannel2")
-        msg = create.create_message(self.char1, self.msgtext, channels=[chan1, chan2], header="TestHeader")
+        msg = create.create_message(
+            self.char1, self.msgtext, channels=[chan1, chan2], header="TestHeader"
+        )
         self.assertEqual(list(msg.channels), [chan1, chan2])
 
     def test_create_msg__custom(self):
         locks = "foo:false();bar:true()"
         tags = ["tag1", "tag2", "tag3"]
-        msg = create.create_message(self.char1, self.msgtext, header="TestHeader",
-                                    receivers=[self.char1, self.char2], locks=locks, tags=tags)
+        msg = create.create_message(
+            self.char1,
+            self.msgtext,
+            header="TestHeader",
+            receivers=[self.char1, self.char2],
+            locks=locks,
+            tags=tags,
+        )
         self.assertEqual(msg.receivers, [self.char1, self.char2])
         self.assertTrue(all(lock in msg.locks.all() for lock in locks.split(";")))
         self.assertEqual(msg.tags.all(), tags)
 
 
 class TestCreateChannel(TestCase):
-
     def test_create_channel__simple(self):
         chan = create.create_channel("TestChannel1", desc="Testing channel")
         self.assertEqual(chan.key, "TestChannel1")
@@ -160,10 +173,11 @@ class TestCreateChannel(TestCase):
     def test_create_channel__complex(self):
         locks = "foo:false();bar:true()"
         tags = ["tag1", "tag2", "tag3"]
-        aliases = ['foo', 'bar', 'tst']
+        aliases = ["foo", "bar", "tst"]
 
-        chan = create.create_channel("TestChannel2", desc="Testing channel",
-                                     aliases=aliases, locks=locks, tags=tags)
+        chan = create.create_channel(
+            "TestChannel2", desc="Testing channel", aliases=aliases, locks=locks, tags=tags
+        )
         self.assertTrue(all(lock in chan.locks.all() for lock in locks.split(";")))
         self.assertEqual(chan.tags.all(), tags)
         self.assertEqual(list(chan.aliases.all()).sort(), aliases.sort())

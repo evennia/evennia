@@ -10,6 +10,7 @@ from evennia.objects.models import ObjectDB
 from django.contrib.admin.utils import flatten_fieldsets
 from django.utils.translation import gettext as _
 
+
 class ObjectAttributeInline(AttributeInline):
     """
     Defines inline descriptions of Attributes (experimental)
@@ -61,7 +62,7 @@ class ObjectCreateForm(forms.ModelForm):
         required=False,
         widget=forms.TextInput(attrs={"size": "78"}),
         help_text="Most non-character objects don't need a cmdset"
-        " and can leave this field blank."
+        " and can leave this field blank.",
     )
     raw_id_fields = ("db_destination", "db_location", "db_home")
 

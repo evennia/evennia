@@ -175,15 +175,12 @@ class ObjectDBManager(TypedObjectManager):
         )
         type_restriction = typeclasses and Q(db_typeclass_path__in=make_iter(typeclasses)) or Q()
 
-        results = (
-            self
-            .filter(
-                cand_restriction
-                & type_restriction
-                & Q(db_attributes__db_key=attribute_name)
-                & Q(db_attributes__db_value=attribute_value))
-            .order_by("id")
-        )
+        results = self.filter(
+            cand_restriction
+            & type_restriction
+            & Q(db_attributes__db_key=attribute_name)
+            & Q(db_attributes__db_value=attribute_value)
+        ).order_by("id")
         return results
 
     def get_objs_with_db_property(self, property_name, candidates=None):

@@ -184,7 +184,9 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
                         raise exc.with_traceback(tb)
                     else:
                         # try next suggested path
-                        errstring += _("\n(Unsuccessfully tried '{path}').").format(path=python_path)
+                        errstring += _("\n(Unsuccessfully tried '{path}').").format(
+                            path=python_path
+                        )
                         continue
                 try:
                     cmdsetclass = getattr(module, classname)
@@ -194,7 +196,9 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
                         dum, dum, tb = sys.exc_info()
                         raise exc.with_traceback(tb)
                     else:
-                        errstring += _("\n(Unsuccessfully tried '{path}').").format(path=python_path)
+                        errstring += _("\n(Unsuccessfully tried '{path}').").format(
+                            path=python_path
+                        )
                         continue
                 _CACHED_CMDSETS[python_path] = cmdsetclass
 

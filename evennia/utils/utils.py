@@ -390,6 +390,7 @@ def iter_to_string(initer, endsep="and", addquote=False):
             return str(initer[0])
         return ", ".join(str(v) for v in initer[:-1]) + "%s %s" % (endsep, initer[-1])
 
+
 # legacy alias
 list_to_string = iter_to_string
 
@@ -1862,8 +1863,6 @@ def display_len(target):
         return len(target)
 
 
-
-
 # -------------------------------------------------------------------
 # Search handler function
 # -------------------------------------------------------------------
@@ -1911,7 +1910,9 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
         if multimatch_string:
             error = "%s\n" % multimatch_string
         else:
-            error = _("More than one match for '{query}' (please narrow target):\n").format(query=query)
+            error = _("More than one match for '{query}' (please narrow target):\n").format(
+                query=query
+            )
 
         for num, result in enumerate(matches):
             # we need to consider Commands, where .aliases is a list

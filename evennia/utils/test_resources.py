@@ -158,11 +158,13 @@ class EvenniaTest(TestCase):
         self.account2.delete()
         super().tearDown()
 
+
 class LocalEvenniaTest(EvenniaTest):
     """
     This test class is intended for inheriting in mygame tests.
     It helps ensure your tests are run with your own objects.
     """
+
     account_typeclass = settings.BASE_ACCOUNT_TYPECLASS
     object_typeclass = settings.BASE_OBJECT_TYPECLASS
     character_typeclass = settings.BASE_CHARACTER_TYPECLASS

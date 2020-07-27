@@ -508,8 +508,10 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         if banned:
             # this is a banned IP or name!
             errors.append(
-                _("|rYou have been banned and cannot continue from here."
-                "\nIf you feel this ban is in error, please email an admin.|x")
+                _(
+                    "|rYou have been banned and cannot continue from here."
+                    "\nIf you feel this ban is in error, please email an admin.|x"
+                )
             )
             logger.log_sec(f"Authentication Denied (Banned): {username} (IP: {ip}).")
             LOGIN_THROTTLE.update(ip, "Too many sightings of banned artifact.")
@@ -673,7 +675,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         # Load the appropriate Character class
         character_typeclass = kwargs.pop("typeclass", None)
-        character_typeclass = character_typeclass if character_typeclass else settings.BASE_CHARACTER_TYPECLASS
+        character_typeclass = (
+            character_typeclass if character_typeclass else settings.BASE_CHARACTER_TYPECLASS
+        )
         Character = class_from_module(character_typeclass)
 
         # Create the character
@@ -683,7 +687,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             ip=character_ip,
             typeclass=character_typeclass,
             permissions=character_permissions,
-            **kwargs
+            **kwargs,
         )
         if character:
             # Update playable character list
@@ -761,9 +765,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         banned = cls.is_banned(username=username, ip=ip)
         if banned:
             # this is a banned IP or name!
-            string = (
-                _("|rYou have been banned and cannot continue from here."
-                "\nIf you feel this ban is in error, please email an admin.|x")
+            string = _(
+                "|rYou have been banned and cannot continue from here."
+                "\nIf you feel this ban is in error, please email an admin.|x"
             )
             errors.append(string)
             return None, errors
@@ -778,7 +782,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
             except Exception as e:
                 errors.append(
-                    _("There was an error creating the Account. If this problem persists, contact an admin.")
+                    _(
+                        "There was an error creating the Account. If this problem persists, contact an admin."
+                    )
                 )
                 logger.log_trace()
                 return None, errors
@@ -802,7 +808,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             if account and settings.MULTISESSION_MODE < 2:
                 # Auto-create a character to go with this account
 
-                character, errs = account.create_character(typeclass=kwargs.get("character_typeclass"))
+                character, errs = account.create_character(
+                    typeclass=kwargs.get("character_typeclass")
+                )
                 if errs:
                     errors.extend(errs)
 
@@ -990,9 +998,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             searchdata, categories=("account",), include_account=False
         )
         if search_object:
-            matches = ObjectDB.objects.object_search(
-                searchdata, typeclass=typeclass
-            )
+            matches = ObjectDB.objects.object_search(searchdata, typeclass=typeclass)
         else:
             matches = AccountDB.objects.account_search(searchdata, typeclass=typeclass)
 
@@ -1340,7 +1346,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         """
         reason = f" ({reason if reason else ''})"
-        self._send_to_connect_channel(_("|R{key} disconnected{reason}|n").format(key=self.key, reason=reason))
+        self._send_to_connect_channel(
+            _("|R{key} disconnected{reason}|n").format(key=self.key, reason=reason)
+        )
 
     def at_post_disconnect(self, **kwargs):
         """
@@ -1489,7 +1497,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             if is_su or len(characters) < charmax:
                 if not characters:
                     result.append(
-                        _("\n\n You don't have any characters yet. See |whelp @charcreate|n for creating one.")
+                        _(
+                            "\n\n You don't have any characters yet. See |whelp @charcreate|n for creating one."
+                        )
                     )
                 else:
                     result.append("\n |w@charcreate <name> [=description]|n - create new character")
