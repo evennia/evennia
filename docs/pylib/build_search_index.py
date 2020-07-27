@@ -45,7 +45,7 @@ def create_search_index(sourcedir, outfile):
     print(f"Building Search index from {len(filepaths)} files ... ", end="")
 
     for filepath in filepaths:
-        with open(filepath, 'r') as fil:
+        with open(filepath, "r") as fil:
             filename = filepath.rsplit(sep, 1)[1].split(".", 1)[0]
             url = f"{URL_BASE}{sep}{filename}.html".strip()
             title = filename.replace("-", " ").strip()
@@ -61,16 +61,7 @@ def create_search_index(sourcedir, outfile):
     idx = lunr(
         ref="url",
         documents=outlist,
-        fields=[
-            {
-                "field_name": "title",
-                "boost": 10
-            },
-            {
-                "field_name": "text",
-                "boost": 1
-            }
-        ],
+        fields=[{"field_name": "title", "boost": 10}, {"field_name": "text", "boost": 1}],
     )
 
     with open(outfile, "w") as fil:
@@ -83,10 +74,18 @@ if __name__ == "__main__":
 
     parser = ArgumentParser(description="Build a static search index.")
 
-    parser.add_argument("-i", dest="sourcedir", default=DEFAULT_SOURCE_DIR,
-                        help="Absolute path to the documentation source dir")
-    parser.add_argument("-o", dest="outfile", default=DEFAULT_OUTFILE,
-                        help="Absolute path to the index file to output.")
+    parser.add_argument(
+        "-i",
+        dest="sourcedir",
+        default=DEFAULT_SOURCE_DIR,
+        help="Absolute path to the documentation source dir",
+    )
+    parser.add_argument(
+        "-o",
+        dest="outfile",
+        default=DEFAULT_OUTFILE,
+        help="Absolute path to the index file to output.",
+    )
 
     args = parser.parse_args()
 

@@ -675,7 +675,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         # Load the appropriate Character class
         character_typeclass = kwargs.pop("typeclass", None)
-        character_typeclass = character_typeclass if character_typeclass else settings.BASE_CHARACTER_TYPECLASS
+        character_typeclass = (
+            character_typeclass if character_typeclass else settings.BASE_CHARACTER_TYPECLASS
+        )
         Character = class_from_module(character_typeclass)
 
         # Create the character
@@ -685,7 +687,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             ip=character_ip,
             typeclass=character_typeclass,
             permissions=character_permissions,
-            **kwargs
+            **kwargs,
         )
         if character:
             # Update playable character list
@@ -806,7 +808,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             if account and settings.MULTISESSION_MODE < 2:
                 # Auto-create a character to go with this account
 
-                character, errs = account.create_character(typeclass=kwargs.get("character_typeclass"))
+                character, errs = account.create_character(
+                    typeclass=kwargs.get("character_typeclass")
+                )
                 if errs:
                     errors.extend(errs)
 
@@ -994,9 +998,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             searchdata, categories=("account",), include_account=False
         )
         if search_object:
-            matches = ObjectDB.objects.object_search(
-                searchdata, typeclass=typeclass
-            )
+            matches = ObjectDB.objects.object_search(searchdata, typeclass=typeclass)
         else:
             matches = AccountDB.objects.account_search(searchdata, typeclass=typeclass)
 

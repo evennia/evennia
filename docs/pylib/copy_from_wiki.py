@@ -43,8 +43,11 @@ _INDEX_PREFIX = f"""
 """
 
 _WIKI_DIR = "../../../evennia.wiki/"
-_INFILES = [path for path in sorted(glob.glob(_WIKI_DIR + "/*.md"))
-            if path.rsplit('/', 1)[-1] not in _IGNORE_FILES]
+_INFILES = [
+    path
+    for path in sorted(glob.glob(_WIKI_DIR + "/*.md"))
+    if path.rsplit("/", 1)[-1] not in _IGNORE_FILES
+]
 _FILENAMES = [path.rsplit("/", 1)[-1] for path in _INFILES]
 _FILENAMES = [path.split(".", 1)[0] for path in _FILENAMES]
 _FILENAMESLOW = [path.lower() for path in _FILENAMES]
@@ -95,8 +98,17 @@ _ABSOLUTE_LINK_SKIP = (
 # specific references tokens that should be ignored. Should be given
 # without any #anchor.
 _REF_SKIP = (
-    "[5](Win)", "[6](Win)", "[7](Win)", "[10](Win)", "[11](Mac)", "[13](Win)",
-    "[14](IOS)", "[15](IOS)", "[16](Andr)", "[17](Andr)", "[18](Unix)",
+    "[5](Win)",
+    "[6](Win)",
+    "[7](Win)",
+    "[10](Win)",
+    "[11](Mac)",
+    "[13](Win)",
+    "[14](IOS)",
+    "[15](IOS)",
+    "[16](Andr)",
+    "[17](Andr)",
+    "[18](Unix)",
     "[21](Chrome)",
     # these should be checked
     "[EvTable](EvTable)",
@@ -126,20 +138,19 @@ def _sub_remap(match):
 def _sub_link(match):
 
     mdict = match.groupdict()
-    txt, url_orig = mdict['txt'], mdict['url']
+    txt, url_orig = mdict["txt"], mdict["url"]
     url = url_orig
     # if not txt:
     #     # the 'comment' is not supported by Mkdocs
     #     return ""
     print(f" [{txt}]({url})")
 
-
     url = _CUSTOM_LINK_REMAP.get(url, url)
 
     url, *anchor = url.rsplit("#", 1)
 
     if url in _ABSOLUTE_LINK_SKIP:
-        url += (("#" + anchor[0]) if anchor else "")
+        url += ("#" + anchor[0]) if anchor else ""
         return f"[{txt}]({url})"
 
     if url.startswith("evennia"):
@@ -166,11 +177,10 @@ def _sub_link(match):
         # this happens on same-file #labels in wiki
         url = _CURRENT_TITLE
 
-    if (url not in _FILENAMES and
-            not url.startswith("http") and not url.startswith(_CODE_PREFIX)):
+    if url not in _FILENAMES and not url.startswith("http") and not url.startswith(_CODE_PREFIX):
 
         url_cap = url.capitalize()
-        url_plur = url[:-3] + 's' + ".md"
+        url_plur = url[:-3] + "s" + ".md"
         url_cap_plur = url_plur.capitalize()
 
         link = f"[{txt}]({url})"
@@ -201,6 +211,7 @@ def _sub_link(match):
 
     return f"[{txt}]({url})"
 
+
 def create_toctree(files):
     with open("../source/toc.md", "w") as fil:
         fil.write("# Toc\n")
@@ -215,13 +226,14 @@ def create_toctree(files):
 
             fil.write(f"\n* [{linkname}]({ref}.md)")
 
+
 def convert_links(files, outdir):
     global _CURRENT_TITLE
 
     for inpath in files:
 
         is_index = False
-        outfile = inpath.rsplit('/', 1)[-1]
+        outfile = inpath.rsplit("/", 1)[-1]
         if outfile == "Home.md":
             outfile = "index.md"
             is_index = True
@@ -236,23 +248,30 @@ def convert_links(files, outdir):
             if is_index:
                 text = _INDEX_PREFIX + text
                 lines = text.split("\n")
-                lines = (lines[:-11]
-                         + [" - The [TOC](toc) lists all regular documentation pages.\n\n"]
-                         + lines[-11:])
+                lines = (
+                    lines[:-11]
+                    + [" - The [TOC](toc) lists all regular documentation pages.\n\n"]
+                    + lines[-11:]
+                )
                 text = "\n".join(lines)
 
             _CURRENT_TITLE = title.replace(" ", "-")
             text = _RE_CLEAN.sub("", text)
             text = _RE_REF_LINK.sub(_sub_remap, text)
             text = _RE_MD_LINK.sub(_sub_link, text)
-            text = text.split('\n')[1:] if text.split('\n')[0].strip().startswith('[]') else text.split('\n')
+            text = (
+                text.split("\n")[1:]
+                if text.split("\n")[0].strip().startswith("[]")
+                else text.split("\n")
+            )
             text = "\n".join(text)
 
             if not is_index:
                 text = f"# {title}\n\n{text}"
 
-        with open(outfile, 'w') as fil:
+        with open(outfile, "w") as fil:
             fil.write(text)
+
 
 if __name__ == "__main__":
     print("This should not be run on develop files, it would overwrite changes.")

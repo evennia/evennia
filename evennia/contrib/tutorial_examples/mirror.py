@@ -54,9 +54,9 @@ class TutorialMirror(DefaultObject):
         text = text[0] if is_iter(text) else text
         if from_obj:
             for obj in make_iter(from_obj):
-                obj.msg(f"{self.key} echoes back to you:\n\"{text}\".")
+                obj.msg(f'{self.key} echoes back to you:\n"{text}".')
         elif self.location:
-            self.location.msg_contents(f"{self.key} echoes back:\n\"{text}\".", exclude=[self])
+            self.location.msg_contents(f'{self.key} echoes back:\n"{text}".', exclude=[self])
         else:
             # no from_obj and no location, just log
             logger.log_msg(f"{self.key}.msg was called without from_obj and .location is None.")

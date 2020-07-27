@@ -360,8 +360,9 @@ help_entry = create_help_entry
 # Comm system methods
 
 
-def create_message(senderobj, message, channels=None, receivers=None,
-                   locks=None, tags=None, header=None):
+def create_message(
+    senderobj, message, channels=None, receivers=None, locks=None, tags=None, header=None
+):
     """
     Create a new communication Msg. Msgs represent a unit of
     database-persistent communication between entites.
@@ -415,7 +416,9 @@ message = create_message
 create_msg = create_message
 
 
-def create_channel(key, aliases=None, desc=None, locks=None, keep_log=True, typeclass=None, tags=None):
+def create_channel(
+    key, aliases=None, desc=None, locks=None, keep_log=True, typeclass=None, tags=None
+):
     """
     Create A communication Channel. A Channel serves as a central hub
     for distributing Msgs to groups of people without specifying the

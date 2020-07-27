@@ -1459,7 +1459,12 @@ class CmdOpen(ObjManipCommand):
             if not typeclass:
                 typeclass = settings.BASE_EXIT_TYPECLASS
             exit_obj = create.create_object(
-                typeclass, key=exit_name, location=location, aliases=exit_aliases, locks=lockstring, report_to=caller
+                typeclass,
+                key=exit_name,
+                location=location,
+                aliases=exit_aliases,
+                locks=lockstring,
+                report_to=caller,
             )
             if exit_obj:
                 # storing a destination is what makes it an exit!
@@ -2375,7 +2380,7 @@ class CmdExamine(ObjManipCommand):
             value (any): Attribute value.
         Returns:
         """
-        if attr is None: 
+        if attr is None:
             return "No such attribute was found."
         value = utils.to_str(value)
         if crop:
@@ -2413,13 +2418,14 @@ class CmdExamine(ObjManipCommand):
         output = {}
         if db_attr and db_attr[0]:
             output["Persistent attribute(s)"] = "\n  " + "\n  ".join(
-               sorted(self.list_attribute(crop, attr, category, value)
-                      for attr, value, category in db_attr)
+                sorted(
+                    self.list_attribute(crop, attr, category, value)
+                    for attr, value, category in db_attr
+                )
             )
         if ndb_attr and ndb_attr[0]:
             output["Non-Persistent attribute(s)"] = "  \n" + "  \n".join(
-                sorted(self.list_attribute(crop, attr, None, value)
-                       for attr, value in ndb_attr)
+                sorted(self.list_attribute(crop, attr, None, value) for attr, value in ndb_attr)
             )
         return output
 
@@ -2449,7 +2455,7 @@ class CmdExamine(ObjManipCommand):
         output["Typeclass"] = f"{obj.typename} ({obj.typeclass_path})"
         # sessions
         if hasattr(obj, "sessions") and obj.sessions.all():
-            output["Session id(s)"] =  ", ".join(f"#{sess.sessid}" for sess in obj.sessions.all())
+            output["Session id(s)"] = ", ".join(f"#{sess.sessid}" for sess in obj.sessions.all())
         # email, if any
         if hasattr(obj, "email") and obj.email:
             output["Email"] = f"{dclr}{obj.email}|n"
@@ -2499,20 +2505,19 @@ class CmdExamine(ObjManipCommand):
         locks = str(obj.locks)
         if locks:
             locks_string = "\n" + utils.fill(
-                "; ".join([lock for lock in locks.split(";")]), indent=2)
+                "; ".join([lock for lock in locks.split(";")]), indent=2
+            )
         else:
             locks_string = " Default"
         output["Locks"] = locks_string
         # cmdsets
         if not (len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "_EMPTY_CMDSET"):
             # all() returns a 'stack', so make a copy to sort.
-            stored_cmdsets = sorted(obj.cmdset.all(), key=lambda x: x.priority,
-                                    reverse=True)
-            output["Stored Cmdset(s)"] = (
-                "\n  " + "\n  ".join(
-                    f"{cmdset.path} [{cmdset.key}] ({cmdset.mergetype}, prio {cmdset.priority})"
-                    for cmdset in stored_cmdsets if cmdset.key != "_EMPTY_CMDSET"
-                )
+            stored_cmdsets = sorted(obj.cmdset.all(), key=lambda x: x.priority, reverse=True)
+            output["Stored Cmdset(s)"] = "\n  " + "\n  ".join(
+                f"{cmdset.path} [{cmdset.key}] ({cmdset.mergetype}, prio {cmdset.priority})"
+                for cmdset in stored_cmdsets
+                if cmdset.key != "_EMPTY_CMDSET"
             )
 
             # this gets all components of the currently merged set
@@ -2546,11 +2551,9 @@ class CmdExamine(ObjManipCommand):
                     pass
             all_cmdsets = [cmdset for cmdset in dict(all_cmdsets).values()]
             all_cmdsets.sort(key=lambda x: x.priority, reverse=True)
-            output["Merged Cmdset(s)"] = (
-                "\n  " + "\n  ".join(
-                    f"{cmdset.path} [{cmdset.key}] ({cmdset.mergetype} prio {cmdset.priority})"
-                    for cmdset in all_cmdsets
-                )
+            output["Merged Cmdset(s)"] = "\n  " + "\n  ".join(
+                f"{cmdset.path} [{cmdset.key}] ({cmdset.mergetype} prio {cmdset.priority})"
+                for cmdset in all_cmdsets
             )
             # list the commands available to this object
             avail_cmdset = sorted([cmd.key for cmd in avail_cmdset if cmd.access(obj, "cmd")])
@@ -2565,9 +2568,7 @@ class CmdExamine(ObjManipCommand):
         # Tags
         tags = obj.tags.all(return_key_and_category=True)
         tags_string = "\n" + utils.fill(
-            ", ".join(
-                sorted(f"{tag}[{category}]" for tag, category in tags )),
-            indent=2,
+            ", ".join(sorted(f"{tag}[{category}]" for tag, category in tags)), indent=2,
         )
         if tags:
             output["Tags[category]"] = tags_string
@@ -2584,9 +2585,13 @@ class CmdExamine(ObjManipCommand):
                 else:
                     things.append(content)
             if exits:
-                output["Exits (has .destination)"] = ", ".join(f"{exit.name}({exit.dbref})" for exit in exits)
+                output["Exits (has .destination)"] = ", ".join(
+                    f"{exit.name}({exit.dbref})" for exit in exits
+                )
             if pobjs:
-                output["Characters"] = ", ".join(f"{dclr}{pobj.name}|n({pobj.dbref})" for pobj in pobjs)
+                output["Characters"] = ", ".join(
+                    f"{dclr}{pobj.name}|n({pobj.dbref})" for pobj in pobjs
+                )
             if things:
                 output["Contents"] = ", ".join(
                     f"{cont.name}({cont.dbref})"
@@ -2600,7 +2605,6 @@ class CmdExamine(ObjManipCommand):
         sep = self.separator * max_width
         mainstr = "\n".join(f"{hclr}{header}|n: {block}" for (header, block) in output.items())
         return f"{sep}\n{mainstr}\n{sep}"
-
 
     def func(self):
         """Process command"""
@@ -2671,7 +2675,10 @@ class CmdExamine(ObjManipCommand):
                     # we are only interested in specific attributes
                     ret = "\n".join(
                         f"{self.header_color}{header}|n:{value}"
-                        for header, value in self.format_attributes(obj, attrname, crop=False).items())
+                        for header, value in self.format_attributes(
+                            obj, attrname, crop=False
+                        ).items()
+                    )
                     self.caller.msg(ret)
             else:
                 session = None

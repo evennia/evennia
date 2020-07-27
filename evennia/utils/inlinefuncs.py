@@ -76,6 +76,7 @@ _STACK_MAXSIZE = settings.INLINEFUNC_STACK_MAXSIZE
 
 # example/testing inline functions
 
+
 def random(*args, **kwargs):
     """
     Inlinefunc. Returns a random number between
@@ -102,11 +103,11 @@ def random(*args, **kwargs):
     nargs = len(args)
     if nargs == 1:
         # only maxval given
-        minval, maxval = '0', args[0]
+        minval, maxval = "0", args[0]
     elif nargs > 1:
         minval, maxval = args[:2]
     else:
-        minval, maxval = ('0', '1')
+        minval, maxval = ("0", "1")
 
     if "." in minval or "." in maxval:
         # float mode
@@ -521,9 +522,12 @@ def raw(string):
     Args:
         string (str): String with inlinefuncs to escape.
     """
+
     def _escape(match):
         return "\\" + match.group(0)
+
     return _RE_STARTTOKEN.sub(_escape, string)
+
 
 #
 # Nick templating

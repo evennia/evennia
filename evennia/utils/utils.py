@@ -390,6 +390,7 @@ def iter_to_string(initer, endsep="and", addquote=False):
             return str(initer[0])
         return ", ".join(str(v) for v in initer[:-1]) + "%s %s" % (endsep, initer[-1])
 
+
 # legacy alias
 list_to_string = iter_to_string
 
@@ -2043,8 +2044,6 @@ def display_len(target):
         return sum(2 if east_asian_width(char) in extra_wide else 1 for char in target)
     else:
         return len(target)
-
-
 
 
 # -------------------------------------------------------------------
