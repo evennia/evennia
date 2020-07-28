@@ -2602,6 +2602,8 @@ class CmdExamine(ObjManipCommand):
         max_width = -1
         for block in output.values():
             max_width = max(max_width, max(display_len(line) for line in block.split("\n")))
+        max_width = max(0, min(self.client_width(), max_width))
+
         sep = self.separator * max_width
         mainstr = "\n".join(f"{hclr}{header}|n: {block}" for (header, block) in output.items())
         return f"{sep}\n{mainstr}\n{sep}"
