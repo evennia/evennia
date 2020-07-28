@@ -1,4 +1,4 @@
-[prev lesson](../Starting-Part2) next lesson
+[prev lesson](../Starting-Part2) | [next lesson](Planning-The-Tutorial-Game)
 
 # On Planning a Game
 
@@ -214,5 +214,4 @@ have made their dream game a reality!
 
 In the next lesson we'll make use of these general points and try to plan out our tutorial game. 
 
-[prev lesson](../Starting-Part2) next lesson
-
+[prev lesson](../Starting-Part2) | [next lesson](Planning-The-Tutorial-Game)
