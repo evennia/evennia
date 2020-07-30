@@ -99,6 +99,7 @@
 - [Howto/NPC shop Tutorial](Howto/NPC-shop-Tutorial)
 - [Howto/Parsing commands tutorial](Howto/Parsing-commands-tutorial)
 - [Howto/Starting/Part2/Game Planning](Howto/Starting/Part2/Game-Planning)
+- [Howto/Starting/Part2/Planning The Tutorial Game](Howto/Starting/Part2/Planning-The-Tutorial-Game)
 - [Howto/Starting/Part2/Some Useful Contribs](Howto/Starting/Part2/Some-Useful-Contribs)
 - [Howto/Starting/Part3/A Sittable Object](Howto/Starting/Part3/A-Sittable-Object)
 - [Howto/Starting/Part3/Implementing a game rule system](Howto/Starting/Part3/Implementing-a-game-rule-system)
