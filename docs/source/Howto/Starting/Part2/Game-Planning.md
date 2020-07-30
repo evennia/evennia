@@ -1,4 +1,4 @@
-[prev lesson](../Starting-Part2) | [next lesson](Planning-The-Tutorial-Game)
+[prev lesson](../Starting-Part2) | [next lesson](./Planning-The-Tutorial-Game)
 
 # On Planning a Game
 
@@ -55,7 +55,6 @@ could ask yourself.
 
 - Should your game rules be enforced by coded systems by human game masters?
 - What is the staff hierarchy in your game? Is vanilla Evennia roles enough or do you need something else?
-- Should characters be able to send mail (IC/OOC?) to each other in-game?
 - Should players be able to post out-of-characters on channels and via other means like bulletin-boards?
 
 ### Building
@@ -66,9 +65,8 @@ could ask yourself.
 
 ### Systems
 
-- What are the game mechanics? How do you decide if an action succeeds or fails? 
 - Do you base your game off an existing RPG system or make up your own?
-- How does the character-generation work? Walk from room-to-room? A menu? 
+- What are the game mechanics? How do you decide if an action succeeds or fails? 
 - Does the flow of time matter in your game - does night and day change? What about seasons?
 - Do you want changing, global weather or should weather just be set manually in roleplay? 
 - Do you want a coded world-economy or just a simple barter system? Or no formal economy at all?
@@ -84,7 +82,7 @@ dramatic weather, fire or magical effects? If so, how would this affect things i
 these things something admins/game masters should handle manually?
 - Can objects be hidden in the room? Can a person hide in the room? How does the room display this?
 
-### Objects
+### Objects / items
 
 - How numerous are your objects? Do you want large loot-lists or are objects just role playing props
 created on demand?
@@ -92,22 +90,19 @@ created on demand?
 - Do multiple similar objects form stacks and how are those stacks handled in that case?
 - Does an object have weight or volume (so you cannot carry an infinite amount of them)?
 - Can objects be broken? Can they be repaired?
-- Is a weapon a specific type of object or can you fight with a chair or a flower too?
-- NPCs/mobs are also objects. Should they just stand around or should they have some sort of AI?
+- Can you fight with a chair or a flower or must you use a specific 'weapon' kind of thing?
+- Will characters be able to craft new objects?
+- Should mobs/NPCs have some sort of AI?
 - Are NPCs and mobs different entities? How do they differ? 
 - Should there be NPCs giving quests? If so, how do you track Quest status? 
 
 ### Characters
 
 - Can players have more than one Character active at a time or are they allowed to multi-play?
-- How will Character creation work? Walking room-to-room? A menu? Answering questions? Filling in a form?
+- How does the character-generation work? Walk from room-to-room? A menu? 
 - How do you implement different "classes" or "races"? Are they separate types of objects or do you
 simply load different stats on a basic object depending on what the Player wants?
 - If a Character can hide in a room, what skill will decide if they are detected?
-- What skill allows a Character to wield a weapon and hit? Do they need a special skill to wield a
-chair rather than a sword?
-- Does a Character need a Strength attribute to tell how much they can carry or which objects they
-can smash?
 - What does the skill tree look like? Can a Character gain experience to improve? By killing
 enemies? Solving quests? By roleplaying?
 - May player-characters attack each other (PvP)?
@@ -214,4 +209,4 @@ have made their dream game a reality!
 
 In the next lesson we'll make use of these general points and try to plan out our tutorial game. 
 
-[prev lesson](../Starting-Part2) | [next lesson](Planning-The-Tutorial-Game)
+[prev lesson](../Starting-Part2) | [next lesson](./Planning-The-Tutorial-Game)
