@@ -36,12 +36,13 @@ primarily be accessed as link refs (e.g. `Component/Account`)
 - `source/Howtos/` holds docs that describe how to achieve a specific goal, effect or 
   result in Evennia. This is often on a tutorial or FAQ form and will refer to the rest of the 
   documentation for further reading.
-  - `source/Howtos/StartingTutorial/` holds all documents part of the initial tutorial sequence.
+  - `source/Howtos/Starting/` holds all documents part of the initial tutorial sequence.
   
   
  Other files and folders:
   - `source/api/` contains the auto-generated API documentation as `.rst` files. Don't edit these
-    files manually, your changes will be lost. 
+    files manually, your changes will be lost. To refer to these files, use `api:` followed by 
+    the Python path, for example `[rpsystem contrib](api:evennia.contrib.rpsystem)`. 
   - `source/_templates` and `source/_static` should not be modified unless adding a new doc-page 
     feature or changing the look of the HTML documentation.
   - `conf.py` holds the Sphinx configuration. It should usually not be modified except to update
@@ -62,7 +63,7 @@ not hard and is very readable on its raw text-form.
 
 You can furthermore get a good feel for how things will look using a
 Markdown-viewer like [Grip][grip]. Editors like [ReText][retext] or IDE's like
-[PyCharm][pycharm] also have Markdown previews. Building the docs locally is
+[PyCharm][pycharm] also have native Markdown previews. Building the docs locally is
 however the only way to make sure the outcome is exactly as you expect. The process
 will also find any mistakes you made, like making a typo in a link.
 
@@ -98,13 +99,17 @@ done in your terminal/console.
 
 The full documentation includes both the doc pages and the API documentation
 generated from the Evennia source. For this you must install Evennia and
-initialize a new game with a default database (you don't need to have it
+initialize a new game with a default database (you don't need to have any server
 running)
 
-- Follow the normal [Evennia Getting-Started instructions][getting-started]
-  to install Evennia into a virtualenv. Get back here once everything is installed but
-  before creating a new game.
-- Make sure you `cd` to the folder _containing_ your `evennia/` repo (so two levels
+- It's recommended that you use a virtualenv. Install your cloned version of Evennia into
+by pointing to the repo folder (the one containing `/docs`): 
+
+    ```
+    pip install -e evennia 
+    ```
+  
+- Make sure you are in the parent folder _containing_ your `evennia/` repo (so _two_ levels
   up from `evennia/docs/`).
 - Create a new game folder called exactly `gamedir` at the same level as your `evennia`
 repo with
@@ -113,8 +118,8 @@ repo with
     evennia --init gamedir
     ```
 
-- Then `cd` into it and create a new, empty database. You don't need to start the game
-  or do any further changes.
+- Then `cd` into it and create a new, empty database. You don't need to start the 
+game or do any further changes after this. 
 
     ```
     evennia migrate
@@ -130,11 +135,10 @@ repo with
       ----- gamedir/
     ```
 
-If you are already working on a game, you may of course have your 'real' game folder there as
-well. We won't touch that.
+(If you are already working on a game, you may of course have your 'real' game folder there as
+well. We won't touch that.)
 
-- Make sure you are still in your virtualenv, then go to `evennia/docs/` and
-  install the doc-building requirements:
+- Go to `evennia/docs/` and install the doc-building requirements (you only need to do this once):
 
     ```
     make install
@@ -180,8 +184,8 @@ docs are built by looking at the git tree.
     make mv-local
     ```
 
-This is as close to the 'real' version as you can get locally. The different versions
-will be found under `evennia/docs/build`. During deploy a symlink `latest` will point
+This is as close to the 'real' version of the docs as you can get locally. The different versions
+will be found under `evennia/docs/build/versions/`. During deploy a symlink `latest` will point
 to the latest version of the docs.
 
 #### Release
@@ -221,16 +225,16 @@ We generally use underscores for italics and double-asterisks for bold:
 ### Headings
 
 We use `#` to indicate sections/headings. The more `#` the more of a sub-heading it is (will get
-smaller
-and smaller font).
+smaller and smaller font).
 
 - `# Heading`
 - `## SubHeading`
-- `## SubSubHeading`
+- `### SubSubHeading`
+- `#### SubSubSubHeading`
 
-> Don't reuse the same heading/subheading name over and over in the same document. While Markdown
-does not prevent
-it, it makes it impossible to link to those duplicates properly (see next section).
+> Don't use the same heading/subheading name more than once in one page. While Markdown
+does not prevent it, it will make it impossible to refer to that heading uniquely.
+The Evennia documentation preparser will detect this and give you an error. 
 
 ### Lists
 
@@ -283,13 +287,13 @@ full `http://` linking unless really referring to an external resource.
 
 You can point to sub-sections (headings) in a document by using a single `#` and the name of the
 heading, replacing spaces with dashes. So to refer to a heading `## Cool Stuff` inside `My-Document`
-would be a link `[cool stuff](My-Document#Cool-Stuff)`.
+would be a link `[cool stuff](My-Document#Cool-Stuff)`. This is why headings must be uniquely named
+within on document.
 
 - `[linktext][linkref]` - refer to a reference defined later in the document.
 
 Urls can get long and if you are using the same url in many places it can get a little cluttered. So
-you can also put
-the url as a 'footnote' at the end of your document
+you can also put the url as a 'footnote' at the end of your document
 and refer to it by putting your reference within square brackets `[ ]`. Here's an example:
 
 ```
@@ -298,7 +302,7 @@ This is a [clickable link][mylink]. This is [another link][1].
 ...
 
 
-[mylink](http://...)
+[mylink]: http://...
 [1]: My-Document
 
 ```
@@ -309,8 +313,8 @@ The Evennia documentation supports some special reference shortcuts in links:
 
 ##### Github online repository
 
-- `github:` - a shortcut for the full path to the Evennia repository on github. This will refer to
-  the `master` branch by default:
+- `github:` - a shortcut for the full path to the Evennia repository on github. This must be given 
+with forward-slashes and include the `.py` file ending. It will refer to the `master` branch by default:
 
         [link to objects.py](github:evennia/objects/objects.py)
 
@@ -328,20 +332,17 @@ The Evennia documentation supports some special reference shortcuts in links:
     This will create a link to the auto-generated `evennia/source/api/evennia.objects.rst` document.
 
     Since api-docs are generated alongside the documentation, this will always be the api docs for
-the
-    current version/branch of the docs.
+    the current version/branch of the docs.
 
 ##### Bug reports/feature request
 
 
-- `issue`, `bug-report`, `feature-request` - links to the same github issue select page.
+- `github:issue` - links to the github issue selection page, where the user can choose which type of 
+   issue to create. 
 
         If you find a problem, make a [bug report](github:issue)!
 
     This will generate a link to https://github.com/evennia/evennia/issues/new/choose.
-
- > For some reason these particular shortcuts gives a warning during documentation compilation. This
- > can be ignored.
 
 ### Verbatim text
 
@@ -396,13 +397,13 @@ def a_python_func(x):
 Markdown is easy to read and use. But while it does most of what we need, there are some things it's
 not quite as expressive as it needs to be. For this we need to fall back to the [ReST][ReST] markup
 language which the documentation system uses under the hood. This is done by specifying `eval_rst`
-as
-the name of the `language` of a literal block:
+as the name of the `language` of a literal block:
 
 ````
 ```eval_rst
 
-    This will be evaluated as ReST.
+    This will be evaluated as ReST. 
+    All content must be indented.
 
 ```
 ````
@@ -413,13 +414,23 @@ There is also a short-hand form for starting a [ReST directive][ReST-directives]
 ````
 ```directive:: possible-option
 
-  Content that *must* be indented for it to be included in the directive.
+  Content *must* be indented for it to be included in the directive.
 
-  New lines are ignored except if separated by an empty line.
+  New lines are ignored, empty lines starts a new paragraph.
 ```
 ````
 
-See below for examples of this.
+Within a ReST block, one must use Restructured Text syntax, which is not the same as Markdown. 
+
+- Single backticks around text makes it _italic_.
+- Double backticks around text makes it `verbatim`.
+- A link is written within back-ticks, with an underscore at the end:
+
+      `python <www.python.org>`_
+      
+[Here is a ReST formatting cheat sheet](https://thomas-cokelaer.info/tutorials/sphinx/rest_syntax.html).
+
+Below are examples of ReST-block structures.
 
 #### Note
 
@@ -598,9 +609,9 @@ or the more flexible but verbose
 
 #### A more flexible code block
 
-The regular Markdown codeblock is usually enough but for more direct control over the style, one
-can also specify the code block explicitly in `ReST`.
-for more flexibility. It also provides a link to the code block, identified by its name.
+The regular Markdown Python codeblock is usually enough but for more direct control over the style, one
+can also specify the code block explicitly in `ReST` for more flexibility. 
+It also provides a link to the code block, identified by its name.
 
 
 ````
@@ -642,11 +653,21 @@ this
 block through the link that will appear (so it should be unique for a give document).
 
 > The default markdown syntax will actually generate a code-block ReST instruction like this
-> automatically for us behind the scenes. The automatic generation can't know things like emphasize-
-lines
-> or caption since that's not a part of the Markdown specification.
+> automatically for us behind the scenes. But the automatic generation can't know things like emphasize-
+lines or captions since that's not a part of the Markdown specification.
 
-# Technical
+## Code documentation
+
+The source code docstrings will be parsed as Markdown. When writing a module docstring, you can use Markdown formatting,
+including header levels down to 4th level (`#### SubSubSubHeader`). After the module documentation it's 
+a good idea to end with four dashes `----`. This will create a visible line between the documentation and the 
+class/function docs to follow. See for example [the Traits docs](api:evennia.contrib.traits).
+
+All non-private classes, methods and functions must have a Google-style docstring, as per the 
+[Evennia coding style guidelines][github:evennia/CODING_STYLE.md]. This will then be correctly formatted
+into pretty api docs.
+
+## Technical
 
 Evennia leverages [Sphinx][sphinx] with the [recommonmark][recommonmark] extension, which allows us
 to write our

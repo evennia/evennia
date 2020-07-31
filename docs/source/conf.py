@@ -276,7 +276,7 @@ def autodoc_post_process_docstring(app, what, name, obj, options, lines):
         doc = re.sub(r"```", "", doc, flags=re.MULTILINE)
         doc = re.sub(r"`{1}", "**", doc, flags=re.MULTILINE)
         doc = re.sub(
-            r"^(?P<hashes>#{1,2})\s*?(?P<title>.*?)$", _sub_header, doc, flags=re.MULTILINE
+            r"^(?P<hashes>#{1,4})\s*?(?P<title>.*?)$", _sub_header, doc, flags=re.MULTILINE
         )
 
         newlines = doc.split("\n")

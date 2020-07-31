@@ -328,6 +328,8 @@ Reload the server and you should now be able to use your trait:
 
 ```
 
+----
+
 """
 
 
