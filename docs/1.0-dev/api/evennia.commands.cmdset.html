@@ -230,15 +230,20 @@ helps if wanting to selectively remov cmdsets.</p></li>
 
 <dl class="py method">
 <dt id="evennia.commands.cmdset.CmdSet.add">
-<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmd</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdset.CmdSet.add" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a new command or commands to this CmdSetcommand, a list of
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmd</span></em>, <em class="sig-param"><span class="n">allow_duplicates</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdset.CmdSet.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new command or commands to this CmdSet, a list of
 commands or a cmdset to this cmdset. Note that this is <em>not</em>
 a merge operation (that is handled by the + operator).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>cmd</strong> (<a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><em>Command</em></a><em>, </em><em>list</em><em>, </em><em>Cmdset</em>) – This allows for adding one or
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cmd</strong> (<a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><em>Command</em></a><em>, </em><em>list</em><em>, </em><em>Cmdset</em>) – This allows for adding one or
 more commands to this Cmdset in one go. If another Cmdset
-is given, all its commands will be added.</p>
+is given, all its commands will be added.</p></li>
+<li><p><strong>allow_duplicates</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set, will not try to remove
+duplicate cmds in the set. This is needed during the merge process
+to avoid wiping commands coming from cmdsets with duplicate=True.</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>

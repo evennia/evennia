@@ -77,7 +77,7 @@
 <span class="sd">    indexed for efficient lookup in the database. Tags are shared</span>
 <span class="sd">    between objects - a new tag is only created if the key+category</span>
 <span class="sd">    combination did not previously exist, making them unsuitable for</span>
-<span class="sd">    storing object-related data (for this a full tag should be</span>
+<span class="sd">    storing object-related data (for this a regular Attribute should be</span>
 <span class="sd">    used).</span>
 
 <span class="sd">    The &#39;db_data&#39; field is intended as a documentation field for the</span>
@@ -490,8 +490,8 @@
 <span class="sd">        Batch-add tags from a list of tuples.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            tuples (tuple or str): Any number of `tagstr` keys, `(keystr, category)` or</span>
-<span class="sd">                `(keystr, category, data)` tuples.</span>
+<span class="sd">            *args (tuple or str): Each argument should be a `tagstr` keys or tuple `(keystr, category)` or</span>
+<span class="sd">                `(keystr, category, data)`. It&#39;s possible to mix input types.</span>
 
 <span class="sd">        Notes:</span>
 <span class="sd">            This will generate a mimimal number of self.add calls,</span>

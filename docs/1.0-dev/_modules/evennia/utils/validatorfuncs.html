@@ -52,10 +52,8 @@
 <span class="kn">import</span> <span class="nn">re</span> <span class="k">as</span> <span class="nn">_re</span>
 <span class="kn">import</span> <span class="nn">pytz</span> <span class="k">as</span> <span class="nn">_pytz</span>
 <span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">_dt</span>
-<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="k">import</span> <span class="n">ValidationError</span> <span class="k">as</span> <span class="n">_error</span>
-<span class="kn">from</span> <span class="nn">django.core.validators</span> <span class="k">import</span> <span class="n">validate_email</span> <span class="k">as</span> <span class="n">_val_email</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="k">import</span> <span class="n">strip_ansi</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">string_partial_matching</span> <span class="k">as</span> <span class="n">_partial</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">string_partial_matching</span> <span class="k">as</span> <span class="n">_partial</span><span class="p">,</span> <span class="n">validate_email_address</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="k">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 
 <span class="n">_TZ_DICT</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">tz</span><span class="p">):</span> <span class="n">_pytz</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="n">tz</span><span class="p">)</span> <span class="k">for</span> <span class="n">tz</span> <span class="ow">in</span> <span class="n">_pytz</span><span class="o">.</span><span class="n">common_timezones</span><span class="p">}</span>
@@ -255,9 +253,8 @@
 <div class="viewcode-block" id="email"><a class="viewcode-back" href="../../../api/evennia.utils.validatorfuncs.html#evennia.utils.validatorfuncs.email">[docs]</a><span class="k">def</span> <span class="nf">email</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">option_key</span><span class="o">=</span><span class="s2">&quot;Email Address&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">entry</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Email address field empty!&quot;</span><span class="p">)</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">_val_email</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">entry</span><span class="p">))</span>  <span class="c1"># offloading the hard work to Django!</span>
-    <span class="k">except</span> <span class="n">_error</span><span class="p">:</span>
+    <span class="n">valid</span> <span class="o">=</span> <span class="n">validate_email_address</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">valid</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;That isn&#39;t a valid </span><span class="si">{option_key}</span><span class="s2">!&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">entry</span></div>
 

@@ -304,7 +304,8 @@ and <strong>senders</strong> keywords to create a Msg instance on the fly.</p></
 to build senders for the message.</p></li>
 <li><p><strong>sender_strings</strong> (<em>list</em><em>, </em><em>optional</em>) – Name strings of senders. Used for external
 connections where the sender is not an account or object.
-When this is defined, external will be assumed.</p></li>
+When this is defined, external will be assumed. The list will be
+filtered so each sender-string only occurs once.</p></li>
 <li><p><strong>keep_log</strong> (<em>bool</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – This allows to temporarily change the logging status of
 this channel message. If <strong>None</strong>, the Channel’s <strong>keep_log</strong> Attribute will
 be used. If <strong>True</strong> or <strong>False</strong>, that logging status will be used for this

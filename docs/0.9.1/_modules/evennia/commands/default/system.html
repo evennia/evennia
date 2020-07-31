@@ -489,7 +489,9 @@
 
         <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
             <span class="n">script</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-            <span class="n">script</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span> <span class="k">if</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">script</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;&lt;Global&gt;&quot;</span><span class="p">,</span>
+            <span class="n">f</span><span class="s2">&quot;</span><span class="si">{script.obj.key}</span><span class="s2">(</span><span class="si">{script.obj.dbref}</span><span class="s2">)&quot;</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">script</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
+            <span class="k">else</span> <span class="s2">&quot;&lt;Global&gt;&quot;</span><span class="p">,</span>
             <span class="n">script</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
             <span class="n">script</span><span class="o">.</span><span class="n">interval</span> <span class="k">if</span> <span class="n">script</span><span class="o">.</span><span class="n">interval</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span>
             <span class="n">nextrep</span><span class="p">,</span>

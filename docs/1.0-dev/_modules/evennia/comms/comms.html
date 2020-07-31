@@ -91,7 +91,9 @@
             <span class="k">if</span> <span class="n">cdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;keep_log&quot;</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;keep_log&quot;</span><span class="p">,</span> <span class="n">cdict</span><span class="p">[</span><span class="s2">&quot;keep_log&quot;</span><span class="p">])</span>
             <span class="k">if</span> <span class="n">cdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;desc&quot;</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="n">cdict</span><span class="p">[</span><span class="s2">&quot;desc&quot;</span><span class="p">])</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="n">cdict</span><span class="p">[</span><span class="s2">&quot;desc&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">cdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span><span class="o">*</span><span class="n">cdict</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.basetype_setup"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.basetype_setup">[docs]</a>    <span class="k">def</span> <span class="nf">basetype_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># delayed import of the channelhandler</span>
@@ -435,7 +437,8 @@
 <span class="sd">                to build senders for the message.</span>
 <span class="sd">            sender_strings (list, optional): Name strings of senders. Used for external</span>
 <span class="sd">                connections where the sender is not an account or object.</span>
-<span class="sd">                When this is defined, external will be assumed.</span>
+<span class="sd">                When this is defined, external will be assumed. The list will be </span>
+<span class="sd">                filtered so each sender-string only occurs once.</span>
 <span class="sd">            keep_log (bool or None, optional): This allows to temporarily change the logging status of</span>
 <span class="sd">                this channel message. If `None`, the Channel&#39;s `keep_log` Attribute will</span>
 <span class="sd">                be used. If `True` or `False`, that logging status will be used for this</span>
@@ -466,6 +469,8 @@
         <span class="n">msgobj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pre_send_message</span><span class="p">(</span><span class="n">msgobj</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">msgobj</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">sender_strings</span><span class="p">:</span>
+            <span class="n">sender_strings</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">make_iter</span><span class="p">(</span><span class="n">sender_strings</span><span class="p">)))</span>
         <span class="n">msgobj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">message_transform</span><span class="p">(</span>
             <span class="n">msgobj</span><span class="p">,</span> <span class="n">emit</span><span class="o">=</span><span class="n">emit</span><span class="p">,</span> <span class="n">sender_strings</span><span class="o">=</span><span class="n">sender_strings</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="n">external</span>
         <span class="p">)</span>

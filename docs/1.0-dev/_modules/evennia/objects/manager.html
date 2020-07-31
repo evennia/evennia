@@ -195,7 +195,7 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            attribute_name (str): Attribute key to search for.</span>
-<span class="sd">            attribute_value (str):  Attribute value to search for.</span>
+<span class="sd">            attribute_value (any):  Attribute value to search for. This can also be database objects.</span>
 <span class="sd">            candidates (list, optional): Candidate objects to limit search to.</span>
 <span class="sd">            typeclasses (list, optional): Python pats to restrict matches with.</span>
 
@@ -216,31 +216,13 @@
         <span class="p">)</span>
         <span class="n">type_restriction</span> <span class="o">=</span> <span class="n">typeclasses</span> <span class="ow">and</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_typeclass_path__in</span><span class="o">=</span><span class="n">make_iter</span><span class="p">(</span><span class="n">typeclasses</span><span class="p">))</span> <span class="ow">or</span> <span class="n">Q</span><span class="p">()</span>
 
-        <span class="c1"># This doesn&#39;t work if attribute_value is an object. Workaround below</span>
-
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attribute_value</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-                <span class="n">cand_restriction</span>
-                <span class="o">&amp;</span> <span class="n">type_restriction</span>
-                <span class="o">&amp;</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_attributes__db_key</span><span class="o">=</span><span class="n">attribute_name</span><span class="p">,</span> <span class="n">db_attributes__db_value</span><span class="o">=</span><span class="n">attribute_value</span><span class="p">)</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># We must loop for safety since the referenced lookup gives deepcopy error if attribute value is an object.</span>
-            <span class="k">global</span> <span class="n">_ATTR</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">_ATTR</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="k">import</span> <span class="n">Attribute</span> <span class="k">as</span> <span class="n">_ATTR</span>
-            <span class="n">cands</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-                    <span class="n">cand_restriction</span> <span class="o">&amp;</span> <span class="n">type_restriction</span> <span class="o">&amp;</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_attributes__db_key</span><span class="o">=</span><span class="n">attribute_name</span><span class="p">)</span>
-                <span class="p">)</span>
-            <span class="p">)</span>
-            <span class="n">results</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">attr</span><span class="o">.</span><span class="n">objectdb_set</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-                <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">_ATTR</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-                    <span class="n">objectdb__in</span><span class="o">=</span><span class="n">cands</span><span class="p">,</span> <span class="n">db_value</span><span class="o">=</span><span class="n">attribute_value</span>
-                <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
-            <span class="p">]</span>
-            <span class="k">return</span> <span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="n">results</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="n">cand_restriction</span>
+            <span class="o">&amp;</span> <span class="n">type_restriction</span>
+            <span class="o">&amp;</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_attributes__db_key</span><span class="o">=</span><span class="n">attribute_name</span><span class="p">)</span>
+            <span class="o">&amp;</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_attributes__db_value</span><span class="o">=</span><span class="n">attribute_value</span><span class="p">)</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">results</span>
 
     <span class="k">def</span> <span class="nf">get_objs_with_db_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_name</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

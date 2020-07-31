@@ -195,7 +195,8 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">account</span><span class="o">.</span><span class="n">is_superuser</span> <span class="ow">and</span> <span class="p">(</span>
             <span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">charmax</span>
         <span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You may only create a maximum of </span><span class="si">%i</span><span class="s2"> characters.&quot;</span> <span class="o">%</span> <span class="n">charmax</span><span class="p">)</span>
+            <span class="n">plural</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">charmax</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;s&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;You may only create a maximum of </span><span class="si">{charmax}</span><span class="s2"> character</span><span class="si">{plural}</span><span class="s2">.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
         <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="k">import</span> <span class="n">ObjectDB</span>
 
@@ -341,27 +342,68 @@
         <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span>
 
         <span class="n">new_character</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">character_candidates</span> <span class="o">=</span> <span class="p">[]</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
-            <span class="n">new_character</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_last_puppet</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">new_character</span><span class="p">:</span>
+            <span class="n">character_candidates</span> <span class="o">=</span> <span class="p">[</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_last_puppet</span><span class="p">]</span> <span class="ow">or</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">character_candidates</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: ic &lt;character&gt;&quot;</span><span class="p">)</span>
                 <span class="k">return</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">new_character</span><span class="p">:</span>
-            <span class="c1"># search for a matching character</span>
-            <span class="n">new_character</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">char</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">search</span><span class="o">.</span><span class="n">object_search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="k">if</span> <span class="n">char</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="s2">&quot;puppet&quot;</span><span class="p">)</span>
-            <span class="p">]</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">new_character</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;That is not a valid character choice.&quot;</span><span class="p">)</span>
-                <span class="k">return</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_character</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                    <span class="s2">&quot;Multiple targets with the same name:</span><span class="se">\n</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span>
-                    <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">(#</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">new_character</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># argument given</span>
+
+            <span class="k">if</span> <span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">:</span>
+                <span class="c1"># look at the playable_characters list first</span>
+                <span class="n">character_candidates</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                    <span class="n">account</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+                        <span class="n">candidates</span><span class="o">=</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">,</span>
+                        <span class="n">search_object</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="p">)</span>
                 <span class="p">)</span>
-                <span class="k">return</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">new_character</span> <span class="o">=</span> <span class="n">new_character</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">account</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">check_lockstring</span><span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="s2">&quot;perm(Builder)&quot;</span><span class="p">):</span>
+                <span class="c1"># builders and higher should be able to puppet more than their</span>
+                <span class="c1"># playable characters.</span>
+                <span class="k">if</span> <span class="n">session</span><span class="o">.</span><span class="n">puppet</span><span class="p">:</span>
+                    <span class="c1"># start by local search - this helps to avoid the user</span>
+                    <span class="c1"># getting locked into their playable characters should one</span>
+                    <span class="c1"># happen to be named the same as another. We replace the suggestion</span>
+                    <span class="c1"># from playable_characters here - this allows builders to puppet objects</span>
+                    <span class="c1"># with the same name as their playable chars should it be necessary</span>
+                    <span class="c1"># (by going to the same location).</span>
+                    <span class="n">character_candidates</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="n">char</span>
+                        <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">session</span><span class="o">.</span><span class="n">puppet</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">char</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="s2">&quot;puppet&quot;</span><span class="p">)</span>
+                    <span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">character_candidates</span><span class="p">:</span>
+                    <span class="c1"># fall back to global search only if Builder+ has no</span>
+                    <span class="c1"># playable_characers in list and is not standing in a room</span>
+                    <span class="c1"># with a matching char.</span>
+                    <span class="n">character_candidates</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                        <span class="p">[</span>
+                            <span class="n">char</span>
+                            <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">search</span><span class="o">.</span><span class="n">object_search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">char</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="s2">&quot;puppet&quot;</span><span class="p">)</span>
+                        <span class="p">]</span>
+                    <span class="p">)</span>
+
+        <span class="c1"># handle possible candidates</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">character_candidates</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;That is not a valid character choice.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">character_candidates</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="s2">&quot;Multiple targets with the same name:</span><span class="se">\n</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span>
+                <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">(#</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">character_candidates</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new_character</span> <span class="o">=</span> <span class="n">character_candidates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># do the puppet puppet</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">account</span><span class="o">.</span><span class="n">puppet_object</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">new_character</span><span class="p">)</span>
             <span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_last_puppet</span> <span class="o">=</span> <span class="n">new_character</span>

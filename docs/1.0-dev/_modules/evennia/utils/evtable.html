@@ -158,7 +158,7 @@
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">textwrap</span> <span class="k">import</span> <span class="n">TextWrapper</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span><span class="p">,</span> <span class="n">copy</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">m_len</span><span class="p">,</span> <span class="n">is_iter</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">display_len</span> <span class="k">as</span> <span class="n">d_len</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="k">import</span> <span class="n">ANSIString</span>
 
 <span class="n">_DEFAULT_WIDTH</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CLIENT_DEFAULT_WIDTH</span>
@@ -272,7 +272,7 @@
                 <span class="n">indent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_indent</span>
 
             <span class="c1"># Maximum width for this line.</span>
-            <span class="n">width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="n">m_len</span><span class="p">(</span><span class="n">indent</span><span class="p">)</span>
+            <span class="n">width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="n">d_len</span><span class="p">(</span><span class="n">indent</span><span class="p">)</span>
 
             <span class="c1"># First chunk on line is whitespace -- drop it, unless this</span>
             <span class="c1"># is the very beginning of the text (ie. no lines started yet).</span>
@@ -280,7 +280,7 @@
                 <span class="k">del</span> <span class="n">chunks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
             <span class="k">while</span> <span class="n">chunks</span><span class="p">:</span>
-                <span class="n">l</span> <span class="o">=</span> <span class="n">m_len</span><span class="p">(</span><span class="n">chunks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">l</span> <span class="o">=</span> <span class="n">d_len</span><span class="p">(</span><span class="n">chunks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
                 <span class="c1"># Can at least squeeze this chunk onto the current line.</span>
                 <span class="k">if</span> <span class="n">cur_len</span> <span class="o">+</span> <span class="n">l</span> <span class="o">&lt;=</span> <span class="n">width</span><span class="p">:</span>
@@ -293,7 +293,7 @@
 
             <span class="c1"># The current line is full, and the next chunk is too big to</span>
             <span class="c1"># fit on *any* line (not just this one).</span>
-            <span class="k">if</span> <span class="n">chunks</span> <span class="ow">and</span> <span class="n">m_len</span><span class="p">(</span><span class="n">chunks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">width</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">chunks</span> <span class="ow">and</span> <span class="n">d_len</span><span class="p">(</span><span class="n">chunks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">width</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_handle_long_word</span><span class="p">(</span><span class="n">chunks</span><span class="p">,</span> <span class="n">cur_line</span><span class="p">,</span> <span class="n">cur_len</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
 
             <span class="c1"># If the last chunk on this line is all whitespace, drop it.</span>
@@ -483,7 +483,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">valign</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;valign&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_lines</span><span class="p">(</span><span class="n">_to_ansi</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">raw_width</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">m_len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_width</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">d_len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">raw_height</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 
         <span class="c1"># this is extra trimming required for cels in the middle of a table only</span>
@@ -522,9 +522,9 @@
 <span class="sd">            width (int): The width to crop `text` to.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">m_len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">width</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">d_len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">width</span><span class="p">:</span>
             <span class="n">crop_string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">crop_string</span>
-            <span class="k">return</span> <span class="n">text</span><span class="p">[:</span> <span class="n">width</span> <span class="o">-</span> <span class="n">m_len</span><span class="p">(</span><span class="n">crop_string</span><span class="p">)]</span> <span class="o">+</span> <span class="n">crop_string</span>
+            <span class="k">return</span> <span class="n">text</span><span class="p">[:</span> <span class="n">width</span> <span class="o">-</span> <span class="n">d_len</span><span class="p">(</span><span class="n">crop_string</span><span class="p">)]</span> <span class="o">+</span> <span class="n">crop_string</span>
         <span class="k">return</span> <span class="n">text</span>
 
     <span class="k">def</span> <span class="nf">_reformat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -565,7 +565,7 @@
         <span class="n">width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span>
         <span class="n">adjusted_data</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
-            <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">width</span> <span class="o">&lt;</span> <span class="n">m_len</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+            <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">width</span> <span class="o">&lt;</span> <span class="n">d_len</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
                 <span class="c1"># replace_whitespace=False, expand_tabs=False is a</span>
                 <span class="c1"># fix for ANSIString not supporting expand_tabs/translate</span>
                 <span class="n">adjusted_data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
@@ -608,7 +608,7 @@
 <span class="sd">            text (str): Centered text.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">excess</span> <span class="o">=</span> <span class="n">width</span> <span class="o">-</span> <span class="n">m_len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">excess</span> <span class="o">=</span> <span class="n">width</span> <span class="o">-</span> <span class="n">d_len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">excess</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">text</span>
         <span class="k">if</span> <span class="n">excess</span> <span class="o">%</span> <span class="mi">2</span><span class="p">:</span>
@@ -647,13 +647,13 @@
                     <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;  &quot;</span><span class="p">)</span>
                     <span class="k">else</span> <span class="n">line</span>
                 <span class="p">)</span>
-                <span class="o">+</span> <span class="n">hfill_char</span> <span class="o">*</span> <span class="p">(</span><span class="n">width</span> <span class="o">-</span> <span class="n">m_len</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
+                <span class="o">+</span> <span class="n">hfill_char</span> <span class="o">*</span> <span class="p">(</span><span class="n">width</span> <span class="o">-</span> <span class="n">d_len</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
                 <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">data</span>
             <span class="p">]</span>
             <span class="k">return</span> <span class="n">lines</span>
         <span class="k">elif</span> <span class="n">align</span> <span class="o">==</span> <span class="s2">&quot;r&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span>
-                <span class="n">hfill_char</span> <span class="o">*</span> <span class="p">(</span><span class="n">width</span> <span class="o">-</span> <span class="n">m_len</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
+                <span class="n">hfill_char</span> <span class="o">*</span> <span class="p">(</span><span class="n">width</span> <span class="o">-</span> <span class="n">d_len</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
                 <span class="o">+</span> <span class="p">(</span>
                     <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;  &quot;</span><span class="p">)</span>
@@ -794,7 +794,7 @@
 <span class="sd">            natural_width (int): Width of cell.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">m_len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">formatted</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># if self.formatted else 0</span></div>
+        <span class="k">return</span> <span class="n">d_len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">formatted</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># if self.formatted else 0</span></div>
 
 <div class="viewcode-block" id="EvCell.replace_data"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvCell.replace_data">[docs]</a>    <span class="k">def</span> <span class="nf">replace_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -809,7 +809,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_lines</span><span class="p">(</span><span class="n">_to_ansi</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">raw_width</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">m_len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_width</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">d_len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">raw_height</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reformat</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
