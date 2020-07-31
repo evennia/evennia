@@ -1,10 +1,10 @@
-[prev lesson](./Starting-Part2) | [next lesson](./Planning-The-Tutorial-Game)
+[prev lesson](./Planning-Where-Do-I-Begin) | [next lesson](./Planning-The-Tutorial-Game)
 
 # On Planning a Game
 
-This lesson will be less hands-on and more introspective. We'll go through some general things to think
-about when planning your game. In the following lessons we'll apply this to plan out the tutorial-game we will
-be making. 
+Last lesson we asked ourselves some questions about our motivation. In this one we'll present 
+some more technical questions to consider. In the next lesson we'll answer them for the sake of 
+our tutorial game.
 
 Note that the suggestions on this page are just that - suggestions. Also, they are primarily aimed at a lone 
 hobby designer or a small team developing a game in their free time. 
@@ -209,4 +209,4 @@ have made their dream game a reality!
 
 In the next lesson we'll make use of these general points and try to plan out our tutorial game. 
 
-[prev lesson](./Starting-Part2) | [next lesson](./Planning-The-Tutorial-Game)
+[prev lesson](./Planning-Where-Do-I-Begin) | [next lesson](./Planning-The-Tutorial-Game)
