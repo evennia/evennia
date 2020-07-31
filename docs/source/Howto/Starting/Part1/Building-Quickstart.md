@@ -1,6 +1,6 @@
 # Using the game and building stuff
 
-[prev lesson](../Starting-Part1) | [next lesson](./Tutorial-World-Introduction)
+[prev lesson](./Starting-Part1) | [next lesson](./Tutorial-World-Introduction)
 
 In this lesson we will test out what we can do in-game out-of-the-box. Evennia ships with 
 [around 90 default commands](api:evennia.commands.default#modules), and while you can override those as you please, 
@@ -313,4 +313,4 @@ You will now find your new `History` entry in the `help` list and read your help
 After this brief introduction to building and using in-game commands you may be ready to see a more fleshed-out 
 example. Evennia comes with a tutorial world for you to explore. We will try that out in the next section.
 
-[prev lesson](../Starting-Part1) | [next lesson](./Tutorial-World-Introduction)
+[prev lesson](./Starting-Part1) | [next lesson](./Tutorial-World-Introduction)

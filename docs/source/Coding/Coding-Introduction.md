@@ -7,7 +7,7 @@ Here are some pointers to get you going.
 
 ### Start with the tutorial
 
-It's highly recommended that you jump in on the [Starting Tutorial](../Howto/Starting/Starting-Part1). Even if 
+It's highly recommended that you jump in on the [Starting Tutorial](../Howto/Starting/Part1/Starting-Part1). Even if 
 you only the beginning or some part of it, it covers much of the things needed to get started.
 
 ### Python

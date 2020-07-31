@@ -1,6 +1,6 @@
 # Starting Tutorial (Part 1)
 
-[Start](Part1/Building-Quickstart)
+[Start](./Building-Quickstart)
   
 ```sidebar:: Tutorial Parts
 
@@ -27,18 +27,18 @@ and share with others!
     :numbered: 
     :maxdepth: 1
 
-    Building stuff <Part1/Building-Quickstart>
-    The Tutorial World <Part1/Tutorial-World-Introduction>
-    Python basics <Part1/Python-basic-introduction>
-    Game dir overview <Part1/Gamedir-Overview>
-    Python classes and objects <Part1/Python-classes-and-objects>
-    Accessing the Evennia library <Part1/Evennia-Library-Overview>
-    Typeclasses and Persistent objects <Part1/Learning-Typeclasses>
-    Making first own Commands <Part1/Adding-Commands>
-    Parsing and replacing default Commands <Part1/More-on-Commands>
-    Creating things <Part1/Creating-Things>
-    Searching for things <Part1/Searching-Things>
-    Advanced searching with Django queries <Part1/Django-queries>
+    Building stuff <Building-Quickstart>
+    The Tutorial World <Tutorial-World-Introduction>
+    Python basics <Python-basic-introduction>
+    Game dir overview <Gamedir-Overview>
+    Python classes and objects <Python-classes-and-objects>
+    Accessing the Evennia library <Evennia-Library-Overview>
+    Typeclasses and Persistent objects <Learning-Typeclasses>
+    Making first own Commands <Adding-Commands>
+    Parsing and replacing default Commands <More-on-Commands>
+    Creating things <Creating-Things>
+    Searching for things <Searching-Things>
+    Advanced searching with Django queries <Django-queries>
 ```
 
 In this first part we'll focus on what we get out of the box in Evennia - we'll get used to the tools,
@@ -61,7 +61,7 @@ from in-game, but you _will_ need to use the command-line to get anywhere. Here 
 
 ### A MUD client
 
-You might already have a MUD-client you prefer. Check out the [grid of supported clients](../../Setup/Client-Support-Grid) for aid. 
+You might already have a MUD-client you prefer. Check out the [grid of supported clients](../../../Setup/Client-Support-Grid) for aid. 
 If telnet's not your thing, you can also just use Evennia's web client in your browser. 
 
 > In this documentation we often use 'MUD' and 'MU' or 'MU*' interchangeably
@@ -83,7 +83,7 @@ things don't change much from year to year. Popular choices for Python are PyCha
 
 ### Set up a game dir for the tutorial
 
-Next you should make sure you have [installed Evennia](../../Setup/Setup-Quickstart). If you followed the instructions
+Next you should make sure you have [installed Evennia](../../../Setup/Setup-Quickstart). If you followed the instructions
 you will already have created a game-dir. You could use that for this tutorial or you may want to do the 
 tutorial in its own, isolated game dir; it's up to you.
 
@@ -114,4 +114,4 @@ first enter that gamedir and run
 
   You should now be good to go!  
   
-  [Start](Part1/Building-Quickstart)
+  [Start](./Building-Quickstart)
