@@ -48,12 +48,12 @@ world is "about": The theme, the world concept, cool monsters and so on. Such th
 unfortunately, they are not enough to make your game. You need to figure out how to accomplish your ideas in 
 Evennia.
 
-Below are some questions to get you going. Depending on your game, there are many more possible questions you 
-could ask yourself. 
+Below are some questions to get you going. In the next lesson we will try to answer them for our particular
+tutorial game. There are of course many more questions you could be asking yourself.
 
 ### Administration 
 
-- Should your game rules be enforced by coded systems by human game masters?
+- Should your game rules be enforced by coded systems or by human game masters?
 - What is the staff hierarchy in your game? Is vanilla Evennia roles enough or do you need something else?
 - Should players be able to post out-of-characters on channels and via other means like bulletin-boards?
 
