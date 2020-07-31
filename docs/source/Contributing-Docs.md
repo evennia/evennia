@@ -554,7 +554,7 @@ a plain HTML string in the markdown like so:
 
 #### Tables
 
-A table is specified using [ReST table syntax][ReST-tables]: 
+A table is specified using [ReST table syntax][ReST-tables] (they don't need to be indented): 
 ````
 ```eval_rst
 

@@ -18,9 +18,7 @@
 
 1. Introduction & Overview (you are here)
 1. [On planning a game](Part2/Game-Planning)
-1. [Multisession modes](../../Unimplemented)
-1. [Layout of our tutorial game](../../Unimplemented)
-1. [Some useful Contribs](Part2/Some-Useful-Contribs)
+1. [Planning to use some useful Contribs](Part2/Planning-Some-Useful-Contribs)
 
 In Part two of the Starting tutorial we'll step back and plan out the kind of tutorial 
 game we want to make. In the process we'll go through the common questions of "where to start"

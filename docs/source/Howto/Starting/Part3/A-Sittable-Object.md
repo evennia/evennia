@@ -1,4 +1,4 @@
-[prev lesson]() | [next lesson]()
+[prev lesson](../../../Unimplemented) | [next lesson](../../../Unimplemented)
 
 # Making a sittable object 
 
@@ -799,4 +799,4 @@ Eagle-eyed readers will notice that the `stand` command sitting "on" the chair (
 together with the `sit` command sitting "on" the Character (variant 2). There is nothing stopping you from 
 mixing them, or even try a third solution that better fits what you have in mind. 
 
-[prev lesson]() | [next lesson]()
+[prev lesson](../../../Unimplemented) | [next lesson](../../../Unimplemented)
