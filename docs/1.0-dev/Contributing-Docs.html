@@ -72,14 +72,15 @@ Any contrib-specific tutorials will be found here instead of in <code class="doc
 result in Evennia. This is often on a tutorial or FAQ form and will refer to the rest of the
 documentation for further reading.</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">source/Howtos/StartingTutorial/</span></code> holds all documents part of the initial tutorial sequence.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">source/Howtos/Starting/</span></code> holds all documents part of the initial tutorial sequence.</p></li>
 </ul>
 </li>
 </ul>
 <p>Other files and folders:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">source/api/</span></code> contains the auto-generated API documentation as <code class="docutils literal notranslate"><span class="pre">.rst</span></code> files. Don’t edit these
-files manually, your changes will be lost.</p></li>
+files manually, your changes will be lost. To refer to these files, use <code class="docutils literal notranslate"><span class="pre">api:</span></code> followed by
+the Python path, for example <code class="docutils literal notranslate"><span class="pre">[rpsystem</span> <span class="pre">contrib](api:evennia.contrib.rpsystem)</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">source/_templates</span></code> and <code class="docutils literal notranslate"><span class="pre">source/_static</span></code> should not be modified unless adding a new doc-page
 feature or changing the look of the HTML documentation.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">conf.py</span></code> holds the Sphinx configuration. It should usually not be modified except to update
@@ -98,7 +99,7 @@ referred to in this document.</p>
 not hard and is very readable on its raw text-form.</p>
 <p>You can furthermore get a good feel for how things will look using a
 Markdown-viewer like [Grip][grip]. Editors like [ReText][retext] or IDE’s like
-[PyCharm][pycharm] also have Markdown previews. Building the docs locally is
+[PyCharm][pycharm] also have native Markdown previews. Building the docs locally is
 however the only way to make sure the outcome is exactly as you expect. The process
 will also find any mistakes you made, like making a typo in a link.</p>
 <div class="section" id="building-only-the-main-documentation">
@@ -133,13 +134,16 @@ build them!</p></li>
 <h3>Building the main documentation and API docs<a class="headerlink" href="#building-the-main-documentation-and-api-docs" title="Permalink to this headline">¶</a></h3>
 <p>The full documentation includes both the doc pages and the API documentation
 generated from the Evennia source. For this you must install Evennia and
-initialize a new game with a default database (you don’t need to have it
+initialize a new game with a default database (you don’t need to have any server
 running)</p>
 <ul>
-<li><p>Follow the normal [Evennia Getting-Started instructions][getting-started]
-to install Evennia into a virtualenv. Get back here once everything is installed but
-before creating a new game.</p></li>
-<li><p>Make sure you <code class="docutils literal notranslate"><span class="pre">cd</span></code> to the folder <em>containing</em> your <code class="docutils literal notranslate"><span class="pre">evennia/</span></code> repo (so two levels
+<li><p>It’s recommended that you use a virtualenv. Install your cloned version of Evennia into
+by pointing to the repo folder (the one containing <code class="docutils literal notranslate"><span class="pre">/docs</span></code>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="n">evennia</span> 
+</pre></div>
+</div>
+</li>
+<li><p>Make sure you are in the parent folder <em>containing</em> your <code class="docutils literal notranslate"><span class="pre">evennia/</span></code> repo (so <em>two</em> levels
 up from <code class="docutils literal notranslate"><span class="pre">evennia/docs/</span></code>).</p></li>
 <li><p>Create a new game folder called exactly <code class="docutils literal notranslate"><span class="pre">gamedir</span></code> at the same level as your <code class="docutils literal notranslate"><span class="pre">evennia</span></code>
 repo with</p>
@@ -147,8 +151,8 @@ repo with</p>
 </pre></div>
 </div>
 </li>
-<li><p>Then <code class="docutils literal notranslate"><span class="pre">cd</span></code> into it and create a new, empty database. You don’t need to start the game
-or do any further changes.</p>
+<li><p>Then <code class="docutils literal notranslate"><span class="pre">cd</span></code> into it and create a new, empty database. You don’t need to start the
+game or do any further changes after this.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">migrate</span>
 </pre></div>
 </div>
@@ -163,11 +167,10 @@ or do any further changes.</p>
 </div>
 </li>
 </ul>
-<p>If you are already working on a game, you may of course have your ‘real’ game folder there as
-well. We won’t touch that.</p>
+<p>(If you are already working on a game, you may of course have your ‘real’ game folder there as
+well. We won’t touch that.)</p>
 <ul>
-<li><p>Make sure you are still in your virtualenv, then go to <code class="docutils literal notranslate"><span class="pre">evennia/docs/</span></code> and
-install the doc-building requirements:</p>
+<li><p>Go to <code class="docutils literal notranslate"><span class="pre">evennia/docs/</span></code> and install the doc-building requirements (you only need to do this once):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="n">install</span>
 <span class="ow">or</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
@@ -211,8 +214,8 @@ docs are built by looking at the git tree.</p></li>
 </div>
 </li>
 </ul>
-<p>This is as close to the ‘real’ version as you can get locally. The different versions
-will be found under <code class="docutils literal notranslate"><span class="pre">evennia/docs/build</span></code>. During deploy a symlink <code class="docutils literal notranslate"><span class="pre">latest</span></code> will point
+<p>This is as close to the ‘real’ version of the docs as you can get locally. The different versions
+will be found under <code class="docutils literal notranslate"><span class="pre">evennia/docs/build/versions/</span></code>. During deploy a symlink <code class="docutils literal notranslate"><span class="pre">latest</span></code> will point
 to the latest version of the docs.</p>
 <div class="section" id="release">
 <h4>Release<a class="headerlink" href="#release" title="Permalink to this headline">¶</a></h4>
@@ -253,17 +256,17 @@ few alternative forms for some of these, we try to stick to the below forms for 
 <div class="section" id="headings">
 <h2>Headings<a class="headerlink" href="#headings" title="Permalink to this headline">¶</a></h2>
 <p>We use <code class="docutils literal notranslate"><span class="pre">#</span></code> to indicate sections/headings. The more <code class="docutils literal notranslate"><span class="pre">#</span></code> the more of a sub-heading it is (will get
-smaller
-and smaller font).</p>
+smaller and smaller font).</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">Heading</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">##</span> <span class="pre">SubHeading</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">##</span> <span class="pre">SubSubHeading</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">###</span> <span class="pre">SubSubHeading</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">####</span> <span class="pre">SubSubSubHeading</span></code></p></li>
 </ul>
 <blockquote>
-<div><p>Don’t reuse the same heading/subheading name over and over in the same document. While Markdown
-does not prevent
-it, it makes it impossible to link to those duplicates properly (see next section).</p>
+<div><p>Don’t use the same heading/subheading name more than once in one page. While Markdown
+does not prevent it, it will make it impossible to refer to that heading uniquely.
+The Evennia documentation preparser will detect this and give you an error.</p>
 </div></blockquote>
 </div>
 <div class="section" id="lists">
@@ -318,20 +321,20 @@ full <code class="docutils literal notranslate"><span class="pre">http://</span>
 </ul>
 <p>You can point to sub-sections (headings) in a document by using a single <code class="docutils literal notranslate"><span class="pre">#</span></code> and the name of the
 heading, replacing spaces with dashes. So to refer to a heading <code class="docutils literal notranslate"><span class="pre">##</span> <span class="pre">Cool</span> <span class="pre">Stuff</span></code> inside <code class="docutils literal notranslate"><span class="pre">My-Document</span></code>
-would be a link <code class="docutils literal notranslate"><span class="pre">[cool</span> <span class="pre">stuff](My-Document#Cool-Stuff)</span></code>.</p>
+would be a link <code class="docutils literal notranslate"><span class="pre">[cool</span> <span class="pre">stuff](My-Document#Cool-Stuff)</span></code>. This is why headings must be uniquely named
+within on document.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">[linktext][linkref]</span></code> - refer to a reference defined later in the document.</p></li>
 </ul>
 <p>Urls can get long and if you are using the same url in many places it can get a little cluttered. So
-you can also put
-the url as a ‘footnote’ at the end of your document
+you can also put the url as a ‘footnote’ at the end of your document
 and refer to it by putting your reference within square brackets <code class="docutils literal notranslate"><span class="pre">[</span> <span class="pre">]</span></code>. Here’s an example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">This</span> <span class="ow">is</span> <span class="n">a</span> <span class="p">[</span><span class="n">clickable</span> <span class="n">link</span><span class="p">][</span><span class="n">mylink</span><span class="p">]</span><span class="o">.</span> <span class="n">This</span> <span class="ow">is</span> <span class="p">[</span><span class="n">another</span> <span class="n">link</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span>
 
 <span class="o">...</span>
 
 
-<span class="p">[</span><span class="n">mylink</span><span class="p">](</span><span class="n">http</span><span class="p">:</span><span class="o">//...</span><span class="p">)</span>
+<span class="p">[</span><span class="n">mylink</span><span class="p">]:</span> <span class="n">http</span><span class="p">:</span><span class="o">//...</span>
 <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="n">My</span><span class="o">-</span><span class="n">Document</span>
 </pre></div>
 </div>
@@ -341,8 +344,8 @@ and refer to it by putting your reference within square brackets <code class="do
 <div class="section" id="github-online-repository">
 <h4>Github online repository<a class="headerlink" href="#github-online-repository" title="Permalink to this headline">¶</a></h4>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">github:</span></code> - a shortcut for the full path to the Evennia repository on github. This will refer to
-the <code class="docutils literal notranslate"><span class="pre">master</span></code> branch by default:</p>
+<li><p><code class="docutils literal notranslate"><span class="pre">github:</span></code> - a shortcut for the full path to the Evennia repository on github. This must be given
+with forward-slashes and include the <code class="docutils literal notranslate"><span class="pre">.py</span></code> file ending. It will refer to the <code class="docutils literal notranslate"><span class="pre">master</span></code> branch by default:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="p">[</span><span class="n">link</span> <span class="n">to</span> <span class="n">objects</span><span class="o">.</span><span class="n">py</span><span class="p">](</span><span class="n">github</span><span class="p">:</span><span class="n">evennia</span><span class="o">/</span><span class="n">objects</span><span class="o">/</span><span class="n">objects</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -364,25 +367,21 @@ the <code class="docutils literal notranslate"><span class="pre">master</span></
 </div>
 <p>This will create a link to the auto-generated <code class="docutils literal notranslate"><span class="pre">evennia/source/api/evennia.objects.rst</span></code> document.</p>
 <p>Since api-docs are generated alongside the documentation, this will always be the api docs for
-the
-current version/branch of the docs.</p>
+the current version/branch of the docs.</p>
 </li>
 </ul>
 </div>
 <div class="section" id="bug-reports-feature-request">
 <h4>Bug reports/feature request<a class="headerlink" href="#bug-reports-feature-request" title="Permalink to this headline">¶</a></h4>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">issue</span></code>, <code class="docutils literal notranslate"><span class="pre">bug-report</span></code>, <code class="docutils literal notranslate"><span class="pre">feature-request</span></code> - links to the same github issue select page.</p>
+<li><p><code class="docutils literal notranslate"><span class="pre">github:issue</span></code> - links to the github issue selection page, where the user can choose which type of
+issue to create.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  If you find a problem, make a [bug report](github:issue)!
 </pre></div>
 </div>
 <p>This will generate a link to https://github.com/evennia/evennia/issues/new/choose.</p>
 </li>
 </ul>
-<blockquote>
-<div><p>For some reason these particular shortcuts gives a warning during documentation compilation. This
-can be ignored.</p>
-</div></blockquote>
 </div>
 </div>
 </div>
@@ -434,11 +433,11 @@ def a_python_func(x):
 <p>Markdown is easy to read and use. But while it does most of what we need, there are some things it’s
 not quite as expressive as it needs to be. For this we need to fall back to the [ReST][ReST] markup
 language which the documentation system uses under the hood. This is done by specifying <code class="docutils literal notranslate"><span class="pre">eval_rst</span></code>
-as
-the name of the <code class="docutils literal notranslate"><span class="pre">language</span></code> of a literal block:</p>
+as the name of the <code class="docutils literal notranslate"><span class="pre">language</span></code> of a literal block:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>```eval_rst
 
-    This will be evaluated as ReST.
+    This will be evaluated as ReST. 
+    All content must be indented.
 
 ```
 </pre></div>
@@ -447,13 +446,24 @@ the name of the <code class="docutils literal notranslate"><span class="pre">lan
 <code class="docutils literal notranslate"><span class="pre">eval_rst</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>```directive:: possible-option
 
-  Content that *must* be indented for it to be included in the directive.
+  Content *must* be indented for it to be included in the directive.
 
-  New lines are ignored except if separated by an empty line.
+  New lines are ignored, empty lines starts a new paragraph.
 ```
 </pre></div>
 </div>
-<p>See below for examples of this.</p>
+<p>Within a ReST block, one must use Restructured Text syntax, which is not the same as Markdown.</p>
+<ul>
+<li><p>Single backticks around text makes it <em>italic</em>.</p></li>
+<li><p>Double backticks around text makes it <code class="docutils literal notranslate"><span class="pre">verbatim</span></code>.</p></li>
+<li><p>A link is written within back-ticks, with an underscore at the end:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>`python &lt;www.python.org&gt;`_
+</pre></div>
+</div>
+</li>
+</ul>
+<p><a class="reference external" href="https://thomas-cokelaer.info/tutorials/sphinx/rest_syntax.html">Here is a ReST formatting cheat sheet</a>.</p>
+<p>Below are examples of ReST-block structures.</p>
 <div class="section" id="note">
 <h3>Note<a class="headerlink" href="#note" title="Permalink to this headline">¶</a></h3>
 <p>This kind of note may pop more than doing a <code class="docutils literal notranslate"><span class="pre">&gt;</span> <span class="pre">Note:</span> <span class="pre">...</span></code>. Contrary to a
@@ -563,7 +573,7 @@ a plain HTML string in the markdown like so:</p>
 <div style="clear: right;"></div></div>
 <div class="section" id="tables">
 <h3>Tables<a class="headerlink" href="#tables" title="Permalink to this headline">¶</a></h3>
-<p>A table is specified using [ReST table syntax][ReST-tables]:</p>
+<p>A table is specified using [ReST table syntax][ReST-tables] (they don’t need to be indented):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>```eval_rst
 
 =====  =====  =======
@@ -652,9 +662,9 @@ True   True   True
 </div>
 <div class="section" id="a-more-flexible-code-block">
 <h3>A more flexible code block<a class="headerlink" href="#a-more-flexible-code-block" title="Permalink to this headline">¶</a></h3>
-<p>The regular Markdown codeblock is usually enough but for more direct control over the style, one
-can also specify the code block explicitly in <code class="docutils literal notranslate"><span class="pre">ReST</span></code>.
-for more flexibility. It also provides a link to the code block, identified by its name.</p>
+<p>The regular Markdown Python codeblock is usually enough but for more direct control over the style, one
+can also specify the code block explicitly in <code class="docutils literal notranslate"><span class="pre">ReST</span></code> for more flexibility.
+It also provides a link to the code block, identified by its name.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>```code-block:: python
     :linenos:
     :emphasize-lines: 1-2,8
@@ -698,15 +708,23 @@ this
 block through the link that will appear (so it should be unique for a give document).</p>
 <blockquote>
 <div><p>The default markdown syntax will actually generate a code-block ReST instruction like this
-automatically for us behind the scenes. The automatic generation can’t know things like emphasize-
-lines
-or caption since that’s not a part of the Markdown specification.</p>
+automatically for us behind the scenes. But the automatic generation can’t know things like emphasize-
+lines or captions since that’s not a part of the Markdown specification.</p>
 </div></blockquote>
 </div>
 </div>
+<div class="section" id="code-documentation">
+<h2>Code documentation<a class="headerlink" href="#code-documentation" title="Permalink to this headline">¶</a></h2>
+<p>The source code docstrings will be parsed as Markdown. When writing a module docstring, you can use Markdown formatting,
+including header levels down to 4th level (<code class="docutils literal notranslate"><span class="pre">####</span> <span class="pre">SubSubSubHeader</span></code>). After the module documentation it’s
+a good idea to end with four dashes <code class="docutils literal notranslate"><span class="pre">----</span></code>. This will create a visible line between the documentation and the
+class/function docs to follow. See for example <a class="reference external" href="api/evennia.contrib.traits.html">the Traits docs</a>.</p>
+<p>All non-private classes, methods and functions must have a Google-style docstring, as per the
+[Evennia coding style guidelines][github:evennia/CODING_STYLE.md]. This will then be correctly formatted
+into pretty api docs.</p>
 </div>
 <div class="section" id="technical">
-<h1>Technical<a class="headerlink" href="#technical" title="Permalink to this headline">¶</a></h1>
+<h2>Technical<a class="headerlink" href="#technical" title="Permalink to this headline">¶</a></h2>
 <p>Evennia leverages [Sphinx][sphinx] with the [recommonmark][recommonmark] extension, which allows us
 to write our
 docs in light-weight Markdown (more specifically [CommonMark][commonmark], like on github) rather
@@ -733,6 +751,7 @@ to understand our friendly Google-style docstrings used in classes and functions
 <a class="reference external" href="https://github.com/retext-project/retext">retext</a>
 <a class="reference external" href="https://github.com/joeyespo/grip">grip</a>
 <a class="reference external" href="https://www.jetbrains.com/pycharm/">pycharm</a></p>
+</div>
 </div>
 
 
@@ -799,9 +818,10 @@ to understand our friendly Google-style docstrings used in classes and functions
 <li><a class="reference internal" href="#a-more-flexible-code-block">A more flexible code block</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#code-documentation">Code documentation</a></li>
+<li><a class="reference internal" href="#technical">Technical</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#technical">Technical</a></li>
 </ul>
 
   <div role="note" aria-label="source link">

@@ -58,7 +58,7 @@
 <span class="kn">from</span> <span class="nn">anything</span> <span class="k">import</span> <span class="n">Anything</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">mock</span> <span class="k">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">mock</span>
+<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="k">import</span> <span class="n">patch</span><span class="p">,</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">MagicMock</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">DefaultRoom</span><span class="p">,</span> <span class="n">DefaultExit</span><span class="p">,</span> <span class="n">ObjectDB</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.default.cmdset_character</span> <span class="k">import</span> <span class="n">CharacterCmdSet</span>
@@ -97,7 +97,8 @@
 <span class="c1"># ------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="CommandTest"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.CommandTest">[docs]</a><span class="k">class</span> <span class="nc">CommandTest</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
+<div class="viewcode-block" id="CommandTest"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.CommandTest">[docs]</a><span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.server.portal.portal.LoopingCall&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">MagicMock</span><span class="p">())</span>
+<span class="k">class</span> <span class="nc">CommandTest</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Tests a command</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -190,11 +191,18 @@
             <span class="n">returned_msg</span> <span class="o">=</span> <span class="n">msg_sep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                 <span class="n">_RE</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">ansi</span><span class="o">.</span><span class="n">parse_ansi</span><span class="p">(</span><span class="n">mess</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="n">noansi</span><span class="p">))</span> <span class="k">for</span> <span class="n">mess</span> <span class="ow">in</span> <span class="n">stored_msg</span>
             <span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">msg</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="n">returned_msg</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">returned_msg</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">strip</span><span class="p">()):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">msg</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="n">returned_msg</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">returned_msg</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+                <span class="n">prt</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="k">for</span> <span class="n">ic</span><span class="p">,</span> <span class="n">char</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+                    <span class="kn">import</span> <span class="nn">re</span>
+
+                    <span class="n">prt</span> <span class="o">+=</span> <span class="n">char</span>
+
                 <span class="n">sep1</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">30</span> <span class="o">+</span> <span class="s2">&quot;Wanted message&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">34</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="n">sep2</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">30</span> <span class="o">+</span> <span class="s2">&quot;Returned message&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">32</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="n">sep3</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">78</span>
-                <span class="n">retval</span> <span class="o">=</span> <span class="n">sep1</span> <span class="o">+</span> <span class="n">msg</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">+</span> <span class="n">sep2</span> <span class="o">+</span> <span class="n">returned_msg</span> <span class="o">+</span> <span class="n">sep3</span>
+                <span class="n">retval</span> <span class="o">=</span> <span class="n">sep1</span> <span class="o">+</span> <span class="n">msg</span> <span class="o">+</span> <span class="n">sep2</span> <span class="o">+</span> <span class="n">returned_msg</span> <span class="o">+</span> <span class="n">sep3</span>
                 <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="n">retval</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">returned_msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">stored_msg</span><span class="p">)</span>
@@ -400,9 +408,27 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">CmdOOC</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;You go OOC.&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestAccount.test_ic"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestAccount.test_ic">[docs]</a>    <span class="k">def</span> <span class="nf">test_ic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">unpuppet_object</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">account</span><span class="o">.</span><span class="n">CmdIC</span><span class="p">(),</span> <span class="s2">&quot;Char&quot;</span><span class="p">,</span> <span class="s2">&quot;You become Char.&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestAccount.test_ic__other_object"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestAccount.test_ic__other_object">[docs]</a>    <span class="k">def</span> <span class="nf">test_ic__other_object</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">unpuppet_object</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">account</span><span class="o">.</span><span class="n">CmdIC</span><span class="p">(),</span> <span class="s2">&quot;Obj&quot;</span><span class="p">,</span> <span class="s2">&quot;You become Obj.&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestAccount.test_ic__nonaccess"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestAccount.test_ic__nonaccess">[docs]</a>    <span class="k">def</span> <span class="nf">test_ic__nonaccess</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">unpuppet_object</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">account</span><span class="o">.</span><span class="n">CmdIC</span><span class="p">(),</span>
+            <span class="s2">&quot;Nonexistent&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;That is not a valid character choice.&quot;</span><span class="p">,</span>
+            <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span>
+            <span class="n">receiver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestAccount.test_password"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestAccount.test_password">[docs]</a>    <span class="k">def</span> <span class="nf">test_password</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -510,9 +536,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdExamine</span><span class="p">(),</span> <span class="s2">&quot;*TestAccount&quot;</span><span class="p">,</span> <span class="s2">&quot;Name/key: TestAccount&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">test</span> <span class="o">=</span> <span class="s2">&quot;testval&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdExamine</span><span class="p">(),</span> <span class="s2">&quot;self/test&quot;</span><span class="p">,</span> <span class="s2">&quot;Persistent attributes:</span><span class="se">\n</span><span class="s2"> test = testval&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdExamine</span><span class="p">(),</span> <span class="s2">&quot;self/test&quot;</span><span class="p">,</span> <span class="s2">&quot;Persistent attribute(s):</span><span class="se">\n</span><span class="s2">  test = testval&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdExamine</span><span class="p">(),</span> <span class="s2">&quot;NotFound&quot;</span><span class="p">,</span> <span class="s2">&quot;Could not find &#39;NotFound&#39;.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdExamine</span><span class="p">(),</span> <span class="s2">&quot;out&quot;</span><span class="p">,</span> <span class="s2">&quot;Name/key: out&quot;</span><span class="p">)</span>
+
+        <span class="c1"># escape inlinefuncs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">test2</span> <span class="o">=</span> <span class="s2">&quot;this is a $random() value.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdExamine</span><span class="p">(),</span>
+            <span class="s2">&quot;self/test2&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Persistent attribute(s):</span><span class="se">\n</span><span class="s2">  test2 = this is a \$random() value.&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdExamine</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
@@ -559,7 +593,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj2/test2&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj2/test2 = value2&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj2/NotFound&quot;</span><span class="p">,</span> <span class="s2">&quot;Obj2 has no attribute &#39;notfound&#39;.&quot;</span><span class="p">)</span>
 
-        <span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.default.building.EvEditor&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">mock_ed</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.default.building.EvEditor&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">mock_ed</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;/edit Obj2/test3&quot;</span><span class="p">)</span>
             <span class="n">mock_ed</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="n">Anything</span><span class="p">,</span> <span class="n">Anything</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Obj2/test3&quot;</span><span class="p">)</span>
 
@@ -843,7 +877,7 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdDesc</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Usage: &quot;</span><span class="p">)</span>
 
-        <span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.default.building.EvEditor&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">mock_ed</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.default.building.EvEditor&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">mock_ed</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdDesc</span><span class="p">(),</span> <span class="s2">&quot;/edit&quot;</span><span class="p">)</span>
             <span class="n">mock_ed</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span>
@@ -1058,9 +1092,9 @@
                 <span class="p">}</span>
             <span class="p">)</span>
         <span class="p">]</span>
-        <span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span>
+        <span class="k">with</span> <span class="n">patch</span><span class="p">(</span>
             <span class="s2">&quot;evennia.commands.default.building.protlib.search_prototype&quot;</span><span class="p">,</span>
-            <span class="n">new</span><span class="o">=</span><span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="n">test_prototype</span><span class="p">),</span>
+            <span class="n">new</span><span class="o">=</span><span class="n">MagicMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="n">test_prototype</span><span class="p">),</span>
         <span class="p">)</span> <span class="k">as</span> <span class="n">mprot</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
                 <span class="n">building</span><span class="o">.</span><span class="n">CmdTypeclass</span><span class="p">(),</span>
@@ -1126,7 +1160,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdFind</span><span class="p">(),</span> <span class="s2">&quot;/exact Obj&quot;</span><span class="p">,</span> <span class="s2">&quot;One Match&quot;</span><span class="p">)</span>
 
         <span class="c1"># Test multitype filtering</span>
-        <span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span>
+        <span class="k">with</span> <span class="n">patch</span><span class="p">(</span>
             <span class="s2">&quot;evennia.commands.default.building.CHAR_TYPECLASS&quot;</span><span class="p">,</span>
             <span class="s2">&quot;evennia.objects.objects.DefaultCharacter&quot;</span><span class="p">,</span>
         <span class="p">):</span>
@@ -1166,7 +1200,7 @@
             <span class="s2">&quot;= Obj&quot;</span><span class="p">,</span>
             <span class="s2">&quot;To create a global script you need scripts/add &lt;typeclass&gt;.&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdScript</span><span class="p">(),</span> <span class="s2">&quot;Obj = &quot;</span><span class="p">,</span> <span class="s2">&quot;dbref obj&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdScript</span><span class="p">(),</span> <span class="s2">&quot;Obj = &quot;</span><span class="p">,</span> <span class="s2">&quot;dbref     obj&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdScript</span><span class="p">(),</span> <span class="s2">&quot;/start Obj&quot;</span><span class="p">,</span> <span class="s2">&quot;0 scripts started on Obj&quot;</span>
@@ -1594,11 +1628,11 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">multimatch</span><span class="p">,</span> <span class="s2">&quot;look&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestSystemCommands.test_channelcommand"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestSystemCommands.test_channelcommand">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.default.syscommands.ChannelDB&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="TestSystemCommands.test_channelcommand"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestSystemCommands.test_channelcommand">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.default.syscommands.ChannelDB&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_channelcommand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_channeldb</span><span class="p">):</span>
-        <span class="n">channel</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
-        <span class="n">channel</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
-        <span class="n">mock_channeldb</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_channel</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">channel</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_channeldb</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_channel</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">syscommands</span><span class="o">.</span><span class="n">SystemSendToChannel</span><span class="p">(),</span> <span class="s2">&quot;public:Hello&quot;</span><span class="p">)</span>
         <span class="n">channel</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span></div></div>

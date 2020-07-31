@@ -54,6 +54,7 @@
 
 <span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">dirname</span><span class="p">,</span> <span class="n">abspath</span>
 <span class="kn">from</span> <span class="nn">twisted.application</span> <span class="k">import</span> <span class="n">internet</span><span class="p">,</span> <span class="n">service</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="k">import</span> <span class="n">LoopingCall</span>
 <span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="k">import</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">reactor</span>
 <span class="kn">from</span> <span class="nn">twisted.python.log</span> <span class="k">import</span> <span class="n">ILogObserver</span>
 
@@ -61,6 +62,7 @@
 
 <span class="n">django</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">connection</span>
 
 <span class="kn">import</span> <span class="nn">evennia</span>
 
@@ -142,8 +144,27 @@
     <span class="n">WEB_PLUGINS_MODULE</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">INFO_DICT</span><span class="p">[</span><span class="s2">&quot;errors&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s2">&quot;WARNING: settings.WEB_PLUGINS_MODULE not found - &quot;</span>
-        <span class="s2">&quot;copy &#39;evennia/game_template/server/conf/web_plugins.py to mygame/server/conf.&quot;</span>
+        <span class="s2">&quot;copy &#39;evennia/game_template/server/conf/web_plugins.py to &quot;</span>
+        <span class="s2">&quot;mygame/server/conf.&quot;</span>
     <span class="p">)</span>
+
+
+<span class="n">_MAINTENANCE_COUNT</span> <span class="o">=</span> <span class="mi">0</span>
+
+
+<span class="k">def</span> <span class="nf">_portal_maintenance</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Repeated maintenance tasks for the portal.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_MAINTENANCE_COUNT</span>
+
+    <span class="n">_MAINTENANCE_COUNT</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="n">_MAINTENANCE_COUNT</span> <span class="o">%</span> <span class="p">(</span><span class="mi">3600</span> <span class="o">*</span> <span class="mi">7</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># drop database connection every 7 hrs to avoid default timeouts on MySQL</span>
+        <span class="c1"># (see https://github.com/evennia/evennia/issues/1376)</span>
+        <span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 
 <span class="c1"># -------------------------------------------------------------</span>
@@ -183,6 +204,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">server_info_dict</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">maintenance_task</span> <span class="o">=</span> <span class="n">LoopingCall</span><span class="p">(</span><span class="n">_portal_maintenance</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maintenance_task</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="n">now</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># call every minute</span>
 
         <span class="c1"># in non-interactive portal mode, this gets overwritten by</span>
         <span class="c1"># cmdline sent by the evennia launcher</span>

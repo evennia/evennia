@@ -132,7 +132,7 @@ scripts in the database.</p>
 
 <dl class="py function">
 <dt id="evennia.utils.create.create_help_entry">
-<code class="sig-prename descclassname">evennia.utils.create.</code><code class="sig-name descname">create_help_entry</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">entrytext</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">'General'</span></em>, <em class="sig-param"><span class="n">locks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">aliases</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/create.html#create_help_entry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.create.create_help_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.create.</code><code class="sig-name descname">create_help_entry</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">entrytext</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">'General'</span></em>, <em class="sig-param"><span class="n">locks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">aliases</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/create.html#create_help_entry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.create.create_help_entry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a static help entry in the help database. Note that Command
 help entries are dynamic and directly taken from the __doc__
 entries of the command. The database-stored help entries are
@@ -145,7 +145,8 @@ in-game setting information and so on.</p>
 <li><p><strong>entrytext</strong> (<em>str</em>) – The body of te help entry</p></li>
 <li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – The help category of the entry.</p></li>
 <li><p><strong>locks</strong> (<em>str</em><em>, </em><em>optional</em>) – A lockstring to restrict access.</p></li>
-<li><p><strong>aliases</strong> (<em>list of str</em>) – List of alternative (likely shorter) keynames.</p></li>
+<li><p><strong>aliases</strong> (<em>list of str</em><em>, </em><em>optional</em>) – List of alternative (likely shorter) keynames.</p></li>
+<li><p><strong>tags</strong> (<em>lst</em><em>, </em><em>optional</em>) – List of tags or tuples <strong>(tag, category)</strong>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -156,7 +157,7 @@ in-game setting information and so on.</p>
 
 <dl class="py function">
 <dt id="evennia.utils.create.create_message">
-<code class="sig-prename descclassname">evennia.utils.create.</code><code class="sig-name descname">create_message</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">senderobj</span></em>, <em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="n">channels</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">receivers</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">header</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/create.html#create_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.create.create_message" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.create.</code><code class="sig-name descname">create_message</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">senderobj</span></em>, <em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="n">channels</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">receivers</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">header</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/create.html#create_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.create.create_message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new communication Msg. Msgs represent a unit of
 database-persistent communication between entites.</p>
 <dl class="field-list simple">
@@ -172,6 +173,7 @@ unique key strings.</p></li>
 <li><p><strong>receivers</strong> (<em>Object</em><em>, </em><em>Account</em><em>, </em><em>str</em><em> or </em><em>list</em>) – An Account/Object to send
 to, or a list of them. May be Account objects or accountnames.</p></li>
 <li><p><strong>locks</strong> (<em>str</em>) – Lock definition string.</p></li>
+<li><p><strong>tags</strong> (<em>list</em>) – A list of tags or tuples <strong>(tag, category)</strong>.</p></li>
 <li><p><strong>header</strong> (<em>str</em>) – Mime-type or other optional information for the message</p></li>
 </ul>
 </dd>
@@ -185,7 +187,7 @@ limit this as desired.</p>
 
 <dl class="py function">
 <dt id="evennia.utils.create.create_channel">
-<code class="sig-prename descclassname">evennia.utils.create.</code><code class="sig-name descname">create_channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">aliases</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">desc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keep_log</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/create.html#create_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.create.create_channel" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.create.</code><code class="sig-name descname">create_channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">aliases</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">desc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keep_log</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/create.html#create_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.create.create_channel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create A communication Channel. A Channel serves as a central hub
 for distributing Msgs to groups of people without specifying the
 receivers explicitly. Instead accounts may ‘connect’ to the channel
@@ -204,6 +206,7 @@ keep_log switch.</p>
 <li><p><strong>keep_log</strong> (<em>bool</em>) – Log channel throughput.</p></li>
 <li><p><strong>typeclass</strong> (<em>str</em><em> or </em><em>class</em>) – The typeclass of the Channel (not
 often used).</p></li>
+<li><p><strong>tags</strong> (<a class="reference internal" href="evennia.contrib.barter.html#evennia.contrib.barter.TradeHandler.list" title="evennia.contrib.barter.TradeHandler.list"><em>list</em></a>) – A list of tags or tuples <strong>(tag, category)</strong>.</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Returns</dt>

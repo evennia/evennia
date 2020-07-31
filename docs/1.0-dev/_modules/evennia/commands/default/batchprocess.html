@@ -91,35 +91,6 @@
 <span class="s2"> Error reported was: &#39;</span><span class="si">%s</span><span class="s2">&#39;</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
-<span class="n">_PROCPOOL_BATCHCMD_SOURCE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">from evennia.commands.default.batchprocess import batch_cmd_exec, step_pointer, BatchSafeCmdSet</span>
-<span class="s2">caller.ndb.batch_stack = commands</span>
-<span class="s2">caller.ndb.batch_stackptr = 0</span>
-<span class="s2">caller.ndb.batch_batchmode = &quot;batch_commands&quot;</span>
-<span class="s2">caller.cmdset.add(BatchSafeCmdSet)</span>
-<span class="s2">for inum in range(len(commands)):</span>
-<span class="s2">    print &quot;command:&quot;, inum</span>
-<span class="s2">    caller.cmdset.add(BatchSafeCmdSet)</span>
-<span class="s2">    if not batch_cmd_exec(caller):</span>
-<span class="s2">        break</span>
-<span class="s2">    step_pointer(caller, 1)</span>
-<span class="s2">print &quot;leaving run ...&quot;</span>
-<span class="s2">&quot;&quot;&quot;</span>
-<span class="n">_PROCPOOL_BATCHCODE_SOURCE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">from evennia.commands.default.batchprocess import batch_code_exec, step_pointer, BatchSafeCmdSet</span>
-<span class="s2">caller.ndb.batch_stack = codes</span>
-<span class="s2">caller.ndb.batch_stackptr = 0</span>
-<span class="s2">caller.ndb.batch_batchmode = &quot;batch_code&quot;</span>
-<span class="s2">caller.cmdset.add(BatchSafeCmdSet)</span>
-<span class="s2">for inum in range(len(codes)):</span>
-<span class="s2">    print &quot;code:&quot;, inum</span>
-<span class="s2">    caller.cmdset.add(BatchSafeCmdSet)</span>
-<span class="s2">    if not batch_code_exec(caller):</span>
-<span class="s2">        break</span>
-<span class="s2">    step_pointer(caller, 1)</span>
-<span class="s2">print &quot;leaving run ...&quot;</span>
-<span class="s2">&quot;&quot;&quot;</span>
-
 
 <span class="c1"># -------------------------------------------------------------</span>
 <span class="c1"># Helper functions</span>
@@ -341,42 +312,17 @@
                 <span class="s2">&quot;for </span><span class="si">%s</span><span class="s2"> (this might take some time) ...&quot;</span> <span class="o">%</span> <span class="n">python_path</span>
             <span class="p">)</span>
 
-            <span class="n">procpool</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">if</span> <span class="s2">&quot;PythonProcPool&quot;</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">server_services</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">uses_database</span><span class="p">(</span><span class="s2">&quot;sqlite3&quot;</span><span class="p">):</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Batchprocessor disabled ProcPool under SQLite3.&quot;</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">procpool</span> <span class="o">=</span> <span class="kc">True</span>
-
-            <span class="k">if</span> <span class="n">procpool</span><span class="p">:</span>
-                <span class="c1"># run in parallel process</span>
-                <span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;  |GBatchfile &#39;</span><span class="si">%s</span><span class="s2">&#39; applied.&quot;</span> <span class="o">%</span> <span class="n">python_path</span><span class="p">)</span>
-                    <span class="n">purge_processor</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
-
-                <span class="k">def</span> <span class="nf">errback</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;  |RError from processor: &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
-                    <span class="n">purge_processor</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
-
-                <span class="n">utils</span><span class="o">.</span><span class="n">run_async</span><span class="p">(</span>
-                    <span class="n">_PROCPOOL_BATCHCMD_SOURCE</span><span class="p">,</span>
-                    <span class="n">commands</span><span class="o">=</span><span class="n">commands</span><span class="p">,</span>
-                    <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span>
-                    <span class="n">at_return</span><span class="o">=</span><span class="n">callback</span><span class="p">,</span>
-                    <span class="n">at_err</span><span class="o">=</span><span class="n">errback</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># run in-process (might block)</span>
-                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">commands</span><span class="p">)):</span>
-                    <span class="c1"># loop through the batch file</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">batch_cmd_exec</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
-                        <span class="k">return</span>
-                    <span class="n">step_pointer</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-                <span class="c1"># clean out the safety cmdset and clean out all other</span>
-                <span class="c1"># temporary attrs.</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;  Batchfile &#39;</span><span class="si">%s</span><span class="s2">&#39; applied.&quot;</span> <span class="o">%</span> <span class="n">python_path</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|G</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">string</span><span class="p">)</span>
-                <span class="n">purge_processor</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span></div></div>
+            <span class="c1"># run in-process (might block)</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">commands</span><span class="p">)):</span>
+                <span class="c1"># loop through the batch file</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">batch_cmd_exec</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+                    <span class="k">return</span>
+                <span class="n">step_pointer</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># clean out the safety cmdset and clean out all other</span>
+            <span class="c1"># temporary attrs.</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;  Batchfile &#39;</span><span class="si">%s</span><span class="s2">&#39; applied.&quot;</span> <span class="o">%</span> <span class="n">python_path</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|G</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">string</span><span class="p">)</span>
+            <span class="n">purge_processor</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="CmdBatchCode"><a class="viewcode-back" href="../../../../api/evennia.commands.default.batchprocess.html#evennia.commands.default.batchprocess.CmdBatchCode">[docs]</a><span class="k">class</span> <span class="nc">CmdBatchCode</span><span class="p">(</span><span class="n">_COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
@@ -461,41 +407,16 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Running Batch-code processor - Automatic mode for </span><span class="si">%s</span><span class="s2"> ...&quot;</span> <span class="o">%</span> <span class="n">python_path</span><span class="p">)</span>
 
-            <span class="n">procpool</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">if</span> <span class="s2">&quot;PythonProcPool&quot;</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">server_services</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">uses_database</span><span class="p">(</span><span class="s2">&quot;sqlite3&quot;</span><span class="p">):</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Batchprocessor disabled ProcPool under SQLite3.&quot;</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">procpool</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="k">if</span> <span class="n">procpool</span><span class="p">:</span>
-                <span class="c1"># run in parallel process</span>
-                <span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;  |GBatchfile &#39;</span><span class="si">%s</span><span class="s2">&#39; applied.&quot;</span> <span class="o">%</span> <span class="n">python_path</span><span class="p">)</span>
-                    <span class="n">purge_processor</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
-
-                <span class="k">def</span> <span class="nf">errback</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;  |RError from processor: &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
-                    <span class="n">purge_processor</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
-
-                <span class="n">utils</span><span class="o">.</span><span class="n">run_async</span><span class="p">(</span>
-                    <span class="n">_PROCPOOL_BATCHCODE_SOURCE</span><span class="p">,</span>
-                    <span class="n">codes</span><span class="o">=</span><span class="n">codes</span><span class="p">,</span>
-                    <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span>
-                    <span class="n">at_return</span><span class="o">=</span><span class="n">callback</span><span class="p">,</span>
-                    <span class="n">at_err</span><span class="o">=</span><span class="n">errback</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># un in-process (will block)</span>
-                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">codes</span><span class="p">)):</span>
-                    <span class="c1"># loop through the batch file</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">batch_code_exec</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
-                        <span class="k">return</span>
-                    <span class="n">step_pointer</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-                <span class="c1"># clean out the safety cmdset and clean out all other</span>
-                <span class="c1"># temporary attrs.</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;  Batchfile &#39;</span><span class="si">%s</span><span class="s2">&#39; applied.&quot;</span> <span class="o">%</span> <span class="n">python_path</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|G</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">string</span><span class="p">)</span>
-                <span class="n">purge_processor</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span></div></div>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">codes</span><span class="p">)):</span>
+                <span class="c1"># loop through the batch file</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">batch_code_exec</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+                    <span class="k">return</span>
+                <span class="n">step_pointer</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># clean out the safety cmdset and clean out all other</span>
+            <span class="c1"># temporary attrs.</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;  Batchfile &#39;</span><span class="si">%s</span><span class="s2">&#39; applied.&quot;</span> <span class="o">%</span> <span class="n">python_path</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|G</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">string</span><span class="p">)</span>
+            <span class="n">purge_processor</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span></div></div>
 
 
 <span class="c1"># -------------------------------------------------------------</span>

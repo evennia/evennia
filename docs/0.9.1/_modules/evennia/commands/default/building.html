@@ -57,11 +57,13 @@
     <span class="n">dbref</span><span class="p">,</span>
     <span class="n">interactive</span><span class="p">,</span>
     <span class="n">list_to_string</span><span class="p">,</span>
+    <span class="n">display_len</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.eveditor</span> <span class="k">import</span> <span class="n">EvEditor</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.evmore</span> <span class="k">import</span> <span class="n">EvMore</span>
 <span class="kn">from</span> <span class="nn">evennia.prototypes</span> <span class="k">import</span> <span class="n">spawner</span><span class="p">,</span> <span class="n">prototypes</span> <span class="k">as</span> <span class="n">protlib</span><span class="p">,</span> <span class="n">menus</span> <span class="k">as</span> <span class="n">olc_menus</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="k">import</span> <span class="n">raw</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="k">import</span> <span class="n">raw</span> <span class="k">as</span> <span class="n">ansi_raw</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.inlinefuncs</span> <span class="k">import</span> <span class="n">raw</span> <span class="k">as</span> <span class="n">inlinefunc_raw</span>
 
 <span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>
 
@@ -1448,6 +1450,7 @@
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:perm(open) or perm(Builder)&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
 
+    <span class="n">new_obj_lockstring</span> <span class="o">=</span> <span class="s2">&quot;control:id(</span><span class="si">{id}</span><span class="s2">) or perm(Admin);delete:id(</span><span class="si">{id}</span><span class="s2">) or perm(Admin)&quot;</span>
     <span class="c1"># a custom member method to chug out exits and do checks</span>
 <div class="viewcode-block" id="CmdOpen.create_exit"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdOpen.create_exit">[docs]</a>    <span class="k">def</span> <span class="nf">create_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exit_name</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">exit_aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1493,10 +1496,16 @@
 
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># exit does not exist before. Create a new one.</span>
+            <span class="n">lockstring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_obj_lockstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">caller</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">typeclass</span><span class="p">:</span>
                 <span class="n">typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_EXIT_TYPECLASS</span>
             <span class="n">exit_obj</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>
-                <span class="n">typeclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">exit_name</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">location</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="n">exit_aliases</span><span class="p">,</span> <span class="n">report_to</span><span class="o">=</span><span class="n">caller</span>
+                <span class="n">typeclass</span><span class="p">,</span>
+                <span class="n">key</span><span class="o">=</span><span class="n">exit_name</span><span class="p">,</span>
+                <span class="n">location</span><span class="o">=</span><span class="n">location</span><span class="p">,</span>
+                <span class="n">aliases</span><span class="o">=</span><span class="n">exit_aliases</span><span class="p">,</span>
+                <span class="n">locks</span><span class="o">=</span><span class="n">lockstring</span><span class="p">,</span>
+                <span class="n">report_to</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">exit_obj</span><span class="p">:</span>
                 <span class="c1"># storing a destination is what makes it an exit!</span>
@@ -2396,116 +2405,160 @@
     <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;(/\w+?(\s|$))|\s|$&quot;</span>
 
     <span class="n">account_mode</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">detail_color</span> <span class="o">=</span> <span class="s2">&quot;|c&quot;</span>
+    <span class="n">header_color</span> <span class="o">=</span> <span class="s2">&quot;|w&quot;</span>
+    <span class="n">quell_color</span> <span class="o">=</span> <span class="s2">&quot;|r&quot;</span>
+    <span class="n">separator</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span>
 
 <div class="viewcode-block" id="CmdExamine.list_attribute"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.list_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">list_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">crop</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Formats a single attribute line.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            crop (bool): If output should be cropped if too long.</span>
+<span class="sd">            attr (str): Attribute key.</span>
+<span class="sd">            category (str): Attribute category.</span>
+<span class="sd">            value (any): Attribute value.</span>
+<span class="sd">        Returns:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">attr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;No such attribute was found.&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">crop</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">inlinefunc_raw</span><span class="p">(</span><span class="n">ansi_raw</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">category</span><span class="p">:</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> </span><span class="si">%s</span><span class="s2">[</span><span class="si">%s</span><span class="s2">] = </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{attr}</span><span class="s2">[</span><span class="si">{category}</span><span class="s2">] = </span><span class="si">{value}</span><span class="s2">&quot;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> = </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-        <span class="n">string</span> <span class="o">=</span> <span class="n">raw</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">string</span></div>
+            <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{attr}</span><span class="s2"> = </span><span class="si">{value}</span><span class="s2">&quot;</span></div>
 
 <div class="viewcode-block" id="CmdExamine.format_attributes"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">format_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attrname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">crop</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper function that returns info about attributes and/or</span>
 <span class="sd">        non-persistent data stored on object</span>
-<span class="sd">        &quot;&quot;&quot;</span>
 
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">attrname</span><span class="p">:</span>
-            <span class="n">db_attr</span> <span class="o">=</span> <span class="p">[(</span><span class="n">attrname</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attrname</span><span class="p">),</span> <span class="kc">None</span><span class="p">)]</span>
+            <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">attrname</span><span class="p">):</span>
+                <span class="n">db_attr</span> <span class="o">=</span> <span class="p">[(</span><span class="n">attrname</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attrname</span><span class="p">),</span> <span class="kc">None</span><span class="p">)]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">db_attr</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">ndb_attr</span> <span class="o">=</span> <span class="p">[(</span><span class="n">attrname</span><span class="p">,</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__getattribute__</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">ndb</span><span class="p">,</span> <span class="n">attrname</span><span class="p">))]</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                 <span class="n">ndb_attr</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">db_attr</span> <span class="ow">or</span> <span class="n">ndb_attr</span><span class="p">):</span>
+                <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;Attribue(s)&quot;</span><span class="p">:</span> <span class="n">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  No Attribute &#39;</span><span class="si">{attrname}</span><span class="s2">&#39; found on </span><span class="si">{obj.name}</span><span class="s2">&quot;</span><span class="p">}</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">db_attr</span> <span class="o">=</span> <span class="p">[(</span><span class="n">attr</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">attr</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">attr</span><span class="o">.</span><span class="n">category</span><span class="p">)</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">db_attributes</span><span class="o">.</span><span class="n">all</span><span class="p">()]</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">ndb_attr</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">nattributes</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">return_tuples</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                <span class="n">ndb_attr</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="n">ndb_attr</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">output</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="n">db_attr</span> <span class="ow">and</span> <span class="n">db_attr</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wPersistent attributes|n:&quot;</span>
-            <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">db_attr</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_attribute</span><span class="p">(</span><span class="n">crop</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Persistent attribute(s)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="nb">sorted</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">list_attribute</span><span class="p">(</span><span class="n">crop</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">db_attr</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="n">ndb_attr</span> <span class="ow">and</span> <span class="n">ndb_attr</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wNon-Persistent attributes|n:&quot;</span>
-            <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">ndb_attr</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_attribute</span><span class="p">(</span><span class="n">crop</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">string</span></div>
+            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Non-Persistent attribute(s)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;  </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;  </span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">list_attribute</span><span class="p">(</span><span class="n">crop</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">ndb_attr</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">output</span></div>
 
 <div class="viewcode-block" id="CmdExamine.format_output"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_output">[docs]</a>    <span class="k">def</span> <span class="nf">format_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">avail_cmdset</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper function that creates a nice report about an object.</span>
 
-<span class="sd">        returns a string.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            obj (any): Object to analyze.</span>
+<span class="sd">            avail_cmdset (CmdSet): Current cmdset for object.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The formatted string.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wName/key|n: |c</span><span class="si">%s</span><span class="s2">|n (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">dbref</span><span class="p">)</span>
+        <span class="n">hclr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">header_color</span>
+        <span class="n">dclr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">detail_color</span>
+        <span class="n">qclr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quell_color</span>
+
+        <span class="n">output</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># main key</span>
+        <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Name/key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{dclr}{obj.name}</span><span class="s2">|n (</span><span class="si">{obj.dbref}</span><span class="s2">)&quot;</span>
+        <span class="c1"># aliases</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;aliases&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
-            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wAliases|n: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">make_iter</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">aliases</span><span class="p">))))</span>
+            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Aliases&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">make_iter</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">aliases</span><span class="p">)))</span>
+        <span class="c1"># typeclass</span>
+        <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Typeclass&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{obj.typename}</span><span class="s2"> (</span><span class="si">{obj.typeclass_path}</span><span class="s2">)&quot;</span>
+        <span class="c1"># sessions</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;sessions&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
-            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wSession id(s)|n: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
-                <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;#</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">sess</span><span class="o">.</span><span class="n">sessid</span> <span class="k">for</span> <span class="n">sess</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
-            <span class="p">)</span>
+            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Session id(s)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;#</span><span class="si">{sess.sessid}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">sess</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
+        <span class="c1"># email, if any</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;email&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">email</span><span class="p">:</span>
-            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wEmail|n: |c</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">email</span>
+            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Email&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{dclr}{obj.email}</span><span class="s2">|n&quot;</span>
+        <span class="c1"># account, for puppeted objects</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;has_account&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">has_account</span><span class="p">:</span>
-            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wAccount|n: |c</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Account&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{dclr}{obj.account.name}</span><span class="s2">|n (</span><span class="si">{obj.account.dbref}</span><span class="s2">)&quot;</span>
+            <span class="c1"># account typeclass</span>
+            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;  Account Typeclass&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{obj.account.typename}</span><span class="s2"> (</span><span class="si">{obj.account.typeclass_path}</span><span class="s2">)&quot;</span>
+            <span class="c1"># account permissions</span>
             <span class="n">perms</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">is_superuser</span><span class="p">:</span>
                 <span class="n">perms</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&lt;Superuser&gt;&quot;</span><span class="p">]</span>
             <span class="k">elif</span> <span class="ow">not</span> <span class="n">perms</span><span class="p">:</span>
                 <span class="n">perms</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&lt;None&gt;&quot;</span><span class="p">]</span>
-            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wAccount Perms|n: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">perms</span><span class="p">))</span>
+            <span class="n">perms</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">perms</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="s2">&quot;_quell&quot;</span><span class="p">):</span>
-                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; |r(quelled)|n&quot;</span>
-        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wTypeclass|n: </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">typename</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">typeclass_path</span><span class="p">)</span>
+                <span class="n">perms</span> <span class="o">+=</span> <span class="n">f</span><span class="s2">&quot; </span><span class="si">{qclr}</span><span class="s2">(quelled)|n&quot;</span>
+            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;  Account Permissions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">perms</span>
+        <span class="c1"># location</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;location&quot;</span><span class="p">):</span>
-            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wLocation|n: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">location</span>
+            <span class="n">loc</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; (#</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">id</span>
+                <span class="n">loc</span> <span class="o">+=</span> <span class="n">f</span><span class="s2">&quot; (#</span><span class="si">{obj.location.id}</span><span class="s2">)&quot;</span>
+            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Location&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc</span>
+        <span class="c1"># home</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;home&quot;</span><span class="p">):</span>
-            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wHome|n: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">home</span>
+            <span class="n">home</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">home</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">home</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; (#</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">home</span><span class="o">.</span><span class="n">id</span>
+                <span class="n">home</span> <span class="o">+=</span> <span class="n">f</span><span class="s2">&quot; (#</span><span class="si">{obj.home.id}</span><span class="s2">)&quot;</span>
+            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Home&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">home</span>
+        <span class="c1"># destination, for exits</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;destination&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">destination</span><span class="p">:</span>
-            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wDestination|n: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">destination</span>
+            <span class="n">dest</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">destination</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">destination</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; (#</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">destination</span><span class="o">.</span><span class="n">id</span>
+                <span class="n">dest</span> <span class="o">+=</span> <span class="n">f</span><span class="s2">&quot; (#</span><span class="si">{obj.destination.id}</span><span class="s2">)&quot;</span>
+            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Destination&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dest</span>
+        <span class="c1"># main permissions</span>
         <span class="n">perms</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="n">perms_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">if</span> <span class="n">perms</span><span class="p">:</span>
             <span class="n">perms_string</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">perms</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">perms_string</span> <span class="o">=</span> <span class="s2">&quot;&lt;None&gt;&quot;</span>
         <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">is_superuser</span><span class="p">:</span>
-            <span class="n">perms_string</span> <span class="o">+=</span> <span class="s2">&quot; [Superuser]&quot;</span>
-
-        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wPermissions|n: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">perms_string</span>
-
+            <span class="n">perms_string</span> <span class="o">+=</span> <span class="s2">&quot; &lt;Superuser&gt;&quot;</span>
+        <span class="k">if</span> <span class="n">perms_string</span><span class="p">:</span>
+            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Permissions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">perms_string</span>
+        <span class="c1"># locks</span>
         <span class="n">locks</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">locks</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">locks</span><span class="p">:</span>
-            <span class="n">locks_string</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="s2">&quot;; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">lock</span> <span class="k">for</span> <span class="n">lock</span> <span class="ow">in</span> <span class="n">locks</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)]),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+            <span class="n">locks_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">utils</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span>
+                <span class="s2">&quot;; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">lock</span> <span class="k">for</span> <span class="n">lock</span> <span class="ow">in</span> <span class="n">locks</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)]),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">locks_string</span> <span class="o">=</span> <span class="s2">&quot; Default&quot;</span>
-        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wLocks|n:</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">locks_string</span>
-
+        <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Locks&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">locks_string</span>
+        <span class="c1"># cmdsets</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">all</span><span class="p">())</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;_EMPTY_CMDSET&quot;</span><span class="p">):</span>
             <span class="c1"># all() returns a &#39;stack&#39;, so make a copy to sort.</span>
             <span class="n">stored_cmdsets</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">priority</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wStored Cmdset(s)|n:</span><span class="se">\n</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
-                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                    <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> [</span><span class="si">%s</span><span class="s2">] (</span><span class="si">%s</span><span class="s2">, prio </span><span class="si">%s</span><span class="s2">)&quot;</span>
-                    <span class="o">%</span> <span class="p">(</span><span class="n">cmdset</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">mergetype</span><span class="p">,</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">priority</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">stored_cmdsets</span>
-                    <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;_EMPTY_CMDSET&quot;</span>
-                <span class="p">)</span>
+            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Stored Cmdset(s)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">f</span><span class="s2">&quot;</span><span class="si">{cmdset.path}</span><span class="s2"> [</span><span class="si">{cmdset.key}</span><span class="s2">] (</span><span class="si">{cmdset.mergetype}</span><span class="s2">, prio </span><span class="si">{cmdset.priority}</span><span class="s2">)&quot;</span>
+                <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">stored_cmdsets</span>
+                <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;_EMPTY_CMDSET&quot;</span>
             <span class="p">)</span>
 
             <span class="c1"># this gets all components of the currently merged set</span>
@@ -2539,40 +2592,28 @@
                     <span class="k">pass</span>
             <span class="n">all_cmdsets</span> <span class="o">=</span> <span class="p">[</span><span class="n">cmdset</span> <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">(</span><span class="n">all_cmdsets</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
             <span class="n">all_cmdsets</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">priority</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wMerged Cmdset(s)|n:</span><span class="se">\n</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
-                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                    <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> [</span><span class="si">%s</span><span class="s2">] (</span><span class="si">%s</span><span class="s2">, prio </span><span class="si">%s</span><span class="s2">)&quot;</span>
-                    <span class="o">%</span> <span class="p">(</span><span class="n">cmdset</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">mergetype</span><span class="p">,</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">priority</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">all_cmdsets</span>
-                <span class="p">)</span>
+            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Merged Cmdset(s)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">f</span><span class="s2">&quot;</span><span class="si">{cmdset.path}</span><span class="s2"> [</span><span class="si">{cmdset.key}</span><span class="s2">] (</span><span class="si">{cmdset.mergetype}</span><span class="s2"> prio </span><span class="si">{cmdset.priority}</span><span class="s2">)&quot;</span>
+                <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">all_cmdsets</span>
             <span class="p">)</span>
-
             <span class="c1"># list the commands available to this object</span>
             <span class="n">avail_cmdset</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">cmd</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">avail_cmdset</span> <span class="k">if</span> <span class="n">cmd</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;cmd&quot;</span><span class="p">)])</span>
 
-            <span class="n">cmdsetstr</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">avail_cmdset</span><span class="p">),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wCommands available to </span><span class="si">%s</span><span class="s2"> (result of Merged CmdSets)|n:</span><span class="se">\n</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
-                <span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
-                <span class="n">cmdsetstr</span><span class="p">,</span>
-            <span class="p">)</span>
-
+            <span class="n">cmdsetstr</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">utils</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">avail_cmdset</span><span class="p">),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">output</span><span class="p">[</span><span class="n">f</span><span class="s2">&quot;Commands available to </span><span class="si">{obj.key}</span><span class="s2"> (result of Merged CmdSets)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cmdsetstr</span><span class="p">)</span>
+        <span class="c1"># scripts</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;scripts&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">scripts</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
-            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wScripts|n:</span><span class="se">\n</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">scripts</span>
+            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Scripts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{obj.scripts}</span><span class="s2">&quot;</span>
         <span class="c1"># add the attributes</span>
-        <span class="n">string</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_attributes</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-
-        <span class="c1"># display Tags</span>
-        <span class="n">tags_string</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span>
-            <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">[</span><span class="si">%s</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">tag</span><span class="p">,</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">return_key_and_category</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="p">),</span>
-            <span class="n">indent</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format_attributes</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+        <span class="c1"># Tags</span>
+        <span class="n">tags</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">return_key_and_category</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">tags_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">utils</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span>
+            <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{tag}</span><span class="s2">[</span><span class="si">{category}</span><span class="s2">]&quot;</span> <span class="k">for</span> <span class="n">tag</span><span class="p">,</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">)),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="n">tags_string</span><span class="p">:</span>
-            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wTags[category]|n: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">tags_string</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-
-        <span class="c1"># add the contents</span>
+        <span class="k">if</span> <span class="n">tags</span><span class="p">:</span>
+            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Tags[category]&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tags_string</span>
+        <span class="c1"># Contents of object</span>
         <span class="n">exits</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">pobjs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">things</span> <span class="o">=</span> <span class="p">[]</span>
@@ -2585,24 +2626,28 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">things</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">exits</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wExits|n: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                    <span class="p">[</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">exit</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">exit</span><span class="o">.</span><span class="n">dbref</span><span class="p">)</span> <span class="k">for</span> <span class="n">exit</span> <span class="ow">in</span> <span class="n">exits</span><span class="p">]</span>
+                <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Exits (has .destination)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">f</span><span class="s2">&quot;</span><span class="si">{exit.name}</span><span class="s2">(</span><span class="si">{exit.dbref}</span><span class="s2">)&quot;</span> <span class="k">for</span> <span class="n">exit</span> <span class="ow">in</span> <span class="n">exits</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="n">pobjs</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wCharacters|n: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                    <span class="p">[</span><span class="s2">&quot;|c</span><span class="si">%s</span><span class="s2">|n(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pobj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">pobj</span><span class="o">.</span><span class="n">dbref</span><span class="p">)</span> <span class="k">for</span> <span class="n">pobj</span> <span class="ow">in</span> <span class="n">pobjs</span><span class="p">]</span>
+                <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Characters&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">f</span><span class="s2">&quot;</span><span class="si">{dclr}{pobj.name}</span><span class="s2">|n(</span><span class="si">{pobj.dbref}</span><span class="s2">)&quot;</span> <span class="k">for</span> <span class="n">pobj</span> <span class="ow">in</span> <span class="n">pobjs</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="n">things</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wContents|n: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                    <span class="p">[</span>
-                        <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cont</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">cont</span><span class="o">.</span><span class="n">dbref</span><span class="p">)</span>
-                        <span class="k">for</span> <span class="n">cont</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">contents</span>
-                        <span class="k">if</span> <span class="n">cont</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exits</span> <span class="ow">and</span> <span class="n">cont</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pobjs</span>
-                    <span class="p">]</span>
+                <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Contents&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">f</span><span class="s2">&quot;</span><span class="si">{cont.name}</span><span class="s2">(</span><span class="si">{cont.dbref}</span><span class="s2">)&quot;</span>
+                    <span class="k">for</span> <span class="n">cont</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">contents</span>
+                    <span class="k">if</span> <span class="n">cont</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exits</span> <span class="ow">and</span> <span class="n">cont</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pobjs</span>
                 <span class="p">)</span>
-        <span class="n">separator</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="n">_DEFAULT_WIDTH</span>
-        <span class="c1"># output info</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">separator</span><span class="p">,</span> <span class="n">string</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">separator</span><span class="p">)</span></div>
+        <span class="c1"># format output</span>
+        <span class="n">max_width</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">output</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">max_width</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_width</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">display_len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">block</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)))</span>
+        <span class="n">max_width</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client_width</span><span class="p">(),</span> <span class="n">max_width</span><span class="p">))</span>
+
+        <span class="n">sep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">separator</span> <span class="o">*</span> <span class="n">max_width</span>
+        <span class="n">mainstr</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{hclr}{header}</span><span class="s2">|n: </span><span class="si">{block}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span> <span class="ow">in</span> <span class="n">output</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{sep}</span><span class="se">\n</span><span class="si">{mainstr}</span><span class="se">\n</span><span class="si">{sep}</span><span class="s2">&quot;</span></div>
 
 <div class="viewcode-block" id="CmdExamine.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Process command&quot;&quot;&quot;</span>
@@ -2617,8 +2662,7 @@
 <span class="sd">            that function finishes. Taking the resulting cmdset, we continue</span>
 <span class="sd">            to format and output the result.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_output</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format_output</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="c1"># If no arguments are provided, examine the invoker&#39;s location.</span>
@@ -2672,7 +2716,13 @@
             <span class="k">if</span> <span class="n">obj_attrs</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">attrname</span> <span class="ow">in</span> <span class="n">obj_attrs</span><span class="p">:</span>
                     <span class="c1"># we are only interested in specific attributes</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format_attributes</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attrname</span><span class="p">,</span> <span class="n">crop</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+                    <span class="n">ret</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                        <span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.header_color}{header}</span><span class="s2">|n:</span><span class="si">{value}</span><span class="s2">&quot;</span>
+                        <span class="k">for</span> <span class="n">header</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_attributes</span><span class="p">(</span>
+                            <span class="n">obj</span><span class="p">,</span> <span class="n">attrname</span><span class="p">,</span> <span class="n">crop</span><span class="o">=</span><span class="kc">False</span>
+                        <span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">session</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">count</span><span class="p">():</span>

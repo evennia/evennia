@@ -68,10 +68,10 @@ Twisted packages
 ## Linux Install
 
 If you run into any issues during the installation and first start, please
-check out [Linux Troubleshooting](Getting-Started#linux-troubleshooting).
+check out [Linux Troubleshooting](./Getting-Started#linux-troubleshooting).
 
 For Debian-derived systems (like Ubuntu, Mint etc), start a terminal and
-install the [dependencies](Getting-Started#requirements):
+install the [dependencies](./Getting-Started#requirements):
 
 ```
 sudo apt-get update
@@ -175,7 +175,7 @@ evennia start        # (create a superuser when asked. Email is optional.)
 
 Your game should now be running! Open a web browser at `http://localhost:4001`
 or point a telnet client to `localhost:4000` and log in with the user you
-created. Check out [where to go next](Getting-Started#where-to-go-next).
+created. Check out [where to go next](./Getting-Started#where-to-go-next).
 
 
 ## Mac Install
@@ -184,7 +184,7 @@ The Evennia server is a terminal program. Open the terminal e.g. from
 *Applications->Utilities->Terminal*. [Here is an introduction to the Mac
 terminal](http://blog.teamtreehouse.com/introduction-to-the-mac-os-x-command-line)
 if you are unsure how it works. If you run into any issues during the
-installation, please check out [Mac Troubleshooting](Getting-Started#mac-troubleshooting).
+installation, please check out [Mac Troubleshooting](./Getting-Started#mac-troubleshooting).
 
 * Python should already be installed but you must make sure it's a high enough version.
 ([This](http://docs.python-guide.org/en/latest/starting/install/osx/) discusses
@@ -287,13 +287,13 @@ evennia start    # (create a superuser when asked. Email is optional.)
 
 Your game should now be running! Open a web browser at `http://localhost:4001`
 or point a telnet client to `localhost:4000` and log in with the user you
-created. Check out [where to go next](Getting-Started#where-to-go-next).
+created. Check out [where to go next](./Getting-Started#where-to-go-next).
 
 
 ## Windows Install
 
 If you run into any issues during the installation, please check out 
-[Windows Troubleshooting](Getting-Started#windows-troubleshooting). 
+[Windows Troubleshooting](./Getting-Started#windows-troubleshooting). 
 
 > If you are running Windows10, consider using the Windows Subsystem for Linux 
 > ([WSL](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux)) instead.
@@ -428,7 +428,7 @@ evennia start      # (create a superuser when asked. Email is optional.)
 
 Your game should now be running! Open a web browser at `http://localhost:4001`
 or point a telnet client to `localhost:4000` and log in with the user you
-created. Check out [where to go next](Getting-Started#where-to-go-next).
+created. Check out [where to go next](./Getting-Started#where-to-go-next).
 
 
 ## Where to Go Next

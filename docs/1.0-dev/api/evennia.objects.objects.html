@@ -335,8 +335,7 @@ the keyword attribute_name specifies otherwise.
 </li>
 </ul>
 </p></li>
-<li><p><strong>global_search</strong> (<em>bool</em>) – Search all objects globally. This is overruled
-by <strong>location</strong> keyword.</p></li>
+<li><p><strong>global_search</strong> (<em>bool</em>) – Search all objects globally. This overrules ‘location’ data.</p></li>
 <li><p><strong>use_nicks</strong> (<em>bool</em>) – Use nickname-replace (nicktype “object”) on <strong>searchdata</strong>.</p></li>
 <li><p><strong>typeclass</strong> (<em>str</em><em> or </em><em>Typeclass</em><em>, or </em><em>list of either</em>) – Limit search only
 to <strong>Objects</strong> with this typeclass. May be a list of typeclasses
@@ -1477,7 +1476,7 @@ a character avatar controlled by an account.</p>
 
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultCharacter.create">
-<em class="property">classmethod </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">account</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultCharacter.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultCharacter.create" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">account</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultCharacter.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultCharacter.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a basic Character with default parameters, unless otherwise
 specified or extended.</p>
 <p>Provides a friendlier interface to the utils.create_character() function.</p>
@@ -1485,8 +1484,8 @@ specified or extended.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>key</strong> (<em>str</em>) – Name of the new Character.</p></li>
-<li><p><strong>account</strong> (<em>obj</em>) – Account to associate this Character with. Required as
-an argument, but one can fake it out by supplying None– it will
+<li><p><strong>account</strong> (<em>obj</em><em>, </em><em>optional</em>) – Account to associate this Character with.
+If unset supplying None– it will
 change the default lockset and skip creator attribution.</p></li>
 </ul>
 </dd>
@@ -1651,7 +1650,7 @@ location is always <strong>None</strong>.</p>
 
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultRoom.create">
-<em class="property">classmethod </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">account</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultRoom.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultRoom.create" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">account</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultRoom.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultRoom.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a basic Room with default parameters, unless otherwise
 specified or extended.</p>
 <p>Provides a friendlier interface to the utils.create_object() function.</p>
@@ -1659,7 +1658,9 @@ specified or extended.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>key</strong> (<em>str</em>) – Name of the new Room.</p></li>
-<li><p><strong>account</strong> (<em>obj</em>) – Account to associate this Room with.</p></li>
+<li><p><strong>account</strong> (<em>obj</em><em>, </em><em>optional</em>) – Account to associate this Room with. If
+given, it will be given specific control/edit permissions to this
+object (along with normal Admin perms). If not given, default</p></li>
 </ul>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
@@ -1811,7 +1812,7 @@ exit’s name, triggering the movement between rooms.</p>
 
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultExit.create">
-<em class="property">classmethod </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">account</span></em>, <em class="sig-param"><span class="n">source</span></em>, <em class="sig-param"><span class="n">dest</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultExit.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultExit.create" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">source</span></em>, <em class="sig-param"><span class="n">dest</span></em>, <em class="sig-param"><span class="n">account</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultExit.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultExit.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a basic Exit with default parameters, unless otherwise
 specified or extended.</p>
 <p>Provides a friendlier interface to the utils.create_object() function.</p>

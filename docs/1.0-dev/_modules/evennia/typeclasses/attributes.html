@@ -1135,13 +1135,13 @@
 <span class="sd">        repeat-calling add when having many Attributes to add.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            *args (tuple): Tuples of varying length representing the</span>
-<span class="sd">                Attribute to add to this object. Supported tuples are</span>
-
-<span class="sd">                - (key, value)</span>
-<span class="sd">                - (key, value, category)</span>
-<span class="sd">                - (key, value, category, lockstring)</span>
-<span class="sd">                - (key, value, category, lockstring, default_access)</span>
+<span class="sd">            *args (tuple): Each argument should be a tuples (can be of varying</span>
+<span class="sd">                length) representing the Attribute to add to this object.</span>
+<span class="sd">                Supported tuples are</span>
+<span class="sd">                    - `(key, value)`</span>
+<span class="sd">                    - `(key, value, category)`</span>
+<span class="sd">                    - `(key, value, category, lockstring)`</span>
+<span class="sd">                    - `(key, value, category, lockstring, default_access)`</span>
 
 <span class="sd">        Keyword args:</span>
 <span class="sd">            strattr (bool): If `True`, value must be a string. This</span>

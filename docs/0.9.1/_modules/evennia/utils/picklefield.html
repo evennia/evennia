@@ -72,7 +72,7 @@
 <span class="kn">from</span> <span class="nn">ast</span> <span class="k">import</span> <span class="n">literal_eval</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
 
-<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span><span class="p">,</span> <span class="n">Error</span> <span class="k">as</span> <span class="n">CopyError</span>
 <span class="kn">from</span> <span class="nn">base64</span> <span class="k">import</span> <span class="n">b64encode</span><span class="p">,</span> <span class="n">b64decode</span>
 <span class="kn">from</span> <span class="nn">zlib</span> <span class="k">import</span> <span class="n">compress</span><span class="p">,</span> <span class="n">decompress</span>
 
@@ -85,6 +85,7 @@
 
 <span class="kn">from</span> <span class="nn">pickle</span> <span class="k">import</span> <span class="n">loads</span><span class="p">,</span> <span class="n">dumps</span>
 <span class="kn">from</span> <span class="nn">django.utils.encoding</span> <span class="k">import</span> <span class="n">force_str</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.dbserialize</span> <span class="k">import</span> <span class="n">pack_dbobj</span>
 
 
 <span class="n">DEFAULT_PROTOCOL</span> <span class="o">=</span> <span class="mi">4</span>
@@ -133,7 +134,15 @@
     <span class="c1"># The reason this is important is because we do all of our lookups as</span>
     <span class="c1"># simple string matches, thus the character streams must be the same</span>
     <span class="c1"># for the lookups to work properly. See tests.py for more information.</span>
-    <span class="n">value</span> <span class="o">=</span> <span class="n">dumps</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="n">protocol</span><span class="o">=</span><span class="n">pickle_protocol</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">CopyError</span><span class="p">:</span>
+        <span class="c1"># this can happen on a manager query where the search query string is a</span>
+        <span class="c1"># database model.</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">pack_dbobj</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="n">value</span> <span class="o">=</span> <span class="n">dumps</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">pickle_protocol</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">compress_object</span><span class="p">:</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">compress</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
     <span class="n">value</span> <span class="o">=</span> <span class="n">b64encode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>  <span class="c1"># decode bytes to str</span>

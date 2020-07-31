@@ -90,6 +90,33 @@ blocks, will lead to the entire string remaining unparsed. Inlineparsing should
 never traceback.</p>
 <hr class="docutils" />
 <dl class="py function">
+<dt id="evennia.utils.inlinefuncs.random">
+<code class="sig-prename descclassname">evennia.utils.inlinefuncs.</code><code class="sig-name descname">random</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#random"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.random" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inlinefunc. Returns a random number between
+0 and 1, from 0 to a maximum value, or within a given range (inclusive).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>minval</strong> (<em>str</em><em>, </em><em>optional</em>) – Minimum value. If not given, assumed 0.</p></li>
+<li><p><strong>maxval</strong> (<em>str</em><em>, </em><em>optional</em>) – Maximum value.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Keyword argumuents:</dt><dd><p>session (Session): Session getting the string.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If either of the min/maxvalue has a ‘.’ in it, a floating-point random
+value will be returned. Otherwise it will be an integer value in the
+given range.</p>
+<p class="rubric">Example</p>
+<p><strong>$random()</strong>
+<strong>$random(5)</strong>
+<strong>$random(5, 10)</strong></p>
+</dd></dl>
+
+<dl class="py function">
 <dt id="evennia.utils.inlinefuncs.pad">
 <code class="sig-prename descclassname">evennia.utils.inlinefuncs.</code><code class="sig-name descname">pad</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#pad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.pad" title="Permalink to this definition">¶</a></dt>
 <dd><p>Inlinefunc. Pads text to given width.</p>
@@ -100,7 +127,8 @@ never traceback.</p>
 <li><p><strong>width</strong> (<em>str</em><em>, </em><em>optional</em>) – Will be converted to integer. Width
 of padding.</p></li>
 <li><p><strong>align</strong> (<em>str</em><em>, </em><em>optional</em>) – Alignment of padding; one of ‘c’, ‘l’ or ‘r’.</p></li>
-<li><p><strong>fillchar</strong> (<em>str</em><em>, </em><em>optional</em>) – Character used for padding. Defaults to a space.</p></li>
+<li><p><strong>fillchar</strong> (<em>str</em><em>, </em><em>optional</em>) – Character used for padding. Defaults to a
+space.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
@@ -238,6 +266,17 @@ If unset, use the functions found through <strong>settings.INLINEFUNC_MODULES</s
 it. It is passed to the inlinefunc.</p></li>
 <li><p><strong>kwargs</strong> (<em>any</em>) – All other kwargs are also passed on to the inlinefunc.</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.inlinefuncs.raw">
+<code class="sig-prename descclassname">evennia.utils.inlinefuncs.</code><code class="sig-name descname">raw</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#raw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Escape all inlinefuncs in a string so they won’t get parsed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>string</strong> (<em>str</em>) – String with inlinefuncs to escape.</p>
 </dd>
 </dl>
 </dd></dl>

@@ -147,9 +147,8 @@ that varies slowly or not at all, and which may be modified in-place.</p>
 <span class="go">12</span>
 </pre></div>
 </div>
-</div>
 <div class="section" id="counter">
-<h2># Counter<a class="headerlink" href="#counter" title="Permalink to this headline">¶</a></h2>
+<h3>Counter<a class="headerlink" href="#counter" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><dl class="simple">
 <dt>min/unset     base    base+mod                       max/unset</dt><dd><dl class="simple">
@@ -206,9 +205,8 @@ value.</p>
 <span class="s2">&quot;expert&quot;</span>
 </pre></div>
 </div>
-</div>
 <div class="section" id="rate">
-<h2>## .rate<a class="headerlink" href="#rate" title="Permalink to this headline">¶</a></h2>
+<h4>.rate<a class="headerlink" href="#rate" title="Permalink to this headline">¶</a></h4>
 <p>The <strong>rate</strong> property defaults to 0. If set to a value different from 0, it
 allows the trait to change value dynamically. This could be used for example
 for an attribute that was temporarily lowered but will gradually (or abruptly)
@@ -243,7 +241,7 @@ reaches the boundary) will likely also come out a float. If you expect an
 integer, you must run run int() on the result yourself.</p>
 </div>
 <div class="section" id="percentage">
-<h2>## .percentage()<a class="headerlink" href="#percentage" title="Permalink to this headline">¶</a></h2>
+<h4>.percentage()<a class="headerlink" href="#percentage" title="Permalink to this headline">¶</a></h4>
 <p>If both min and max are defined, the <strong>.percentage()</strong> method of the trait will
 return the value as a percentage.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">percentage</span><span class="p">()</span>
@@ -251,8 +249,9 @@ return the value as a percentage.</p>
 </pre></div>
 </div>
 </div>
+</div>
 <div class="section" id="gauge">
-<h2># Gauge<a class="headerlink" href="#gauge" title="Permalink to this headline">¶</a></h2>
+<h3>Gauge<a class="headerlink" href="#gauge" title="Permalink to this headline">¶</a></h3>
 <p>This emulates a [fuel-] gauge that empties from a base+mod value.</p>
 <blockquote>
 <div><dl>
@@ -289,7 +288,7 @@ increasing it. You can also use the <strong>.percentage()</strong> function to s
 as a percentage.</p>
 </div>
 <div class="section" id="trait">
-<h2># Trait<a class="headerlink" href="#trait" title="Permalink to this headline">¶</a></h2>
+<h3>Trait<a class="headerlink" href="#trait" title="Permalink to this headline">¶</a></h3>
 <p>A single value of any type.</p>
 <p>This is the ‘base’ Trait, meant to inherit from if you want to make your own
 trait-types (see below). Its .value can be anything (that can be stored in an Attribute)
@@ -302,6 +301,7 @@ acts just like a glorified Attribute.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">value</span>
 <span class="go">&quot;stringvalue&quot;</span>
 </pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="expanding-with-your-own-traits">
@@ -336,6 +336,7 @@ just add <strong>rage</strong> property get/setters/deleters on the class.</p>
 <span class="go">30</span>
 </pre></div>
 </div>
+<hr class="docutils" />
 <dl class="py exception">
 <dt id="evennia.contrib.traits.TraitException">
 <em class="property">exception </em><code class="sig-prename descclassname">evennia.contrib.traits.</code><code class="sig-name descname">TraitException</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#TraitException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.TraitException" title="Permalink to this definition">¶</a></dt>
@@ -871,12 +872,16 @@ returned.</p>
 <li><a class="reference internal" href="#adding-traits-to-a-typeclass">Adding Traits to a typeclass</a></li>
 <li><a class="reference internal" href="#using-traits">Using traits</a></li>
 <li><a class="reference internal" href="#trait-types">Trait types</a></li>
-<li><a class="reference internal" href="#static-trait">Static trait</a></li>
-<li><a class="reference internal" href="#counter"># Counter</a></li>
-<li><a class="reference internal" href="#rate">## .rate</a></li>
-<li><a class="reference internal" href="#percentage">## .percentage()</a></li>
-<li><a class="reference internal" href="#gauge"># Gauge</a></li>
-<li><a class="reference internal" href="#trait"># Trait</a></li>
+<li><a class="reference internal" href="#static-trait">Static trait</a><ul>
+<li><a class="reference internal" href="#counter">Counter</a><ul>
+<li><a class="reference internal" href="#rate">.rate</a></li>
+<li><a class="reference internal" href="#percentage">.percentage()</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#gauge">Gauge</a></li>
+<li><a class="reference internal" href="#trait">Trait</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#expanding-with-your-own-traits">Expanding with your own Traits</a></li>
 </ul>
 </li>

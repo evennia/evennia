@@ -484,12 +484,12 @@
         <span class="c1"># print &quot;__add__ for %s (prio %i)  called with %s (prio %i).&quot; % (self.key, self.priority, cmdset_a.key, cmdset_a.priority)</span>
 
         <span class="c1"># return the system commands to the cmdset</span>
-        <span class="n">cmdset_c</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sys_commands</span><span class="p">)</span>
+        <span class="n">cmdset_c</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sys_commands</span><span class="p">,</span> <span class="n">allow_duplicates</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">cmdset_c</span>
 
-<div class="viewcode-block" id="CmdSet.add"><a class="viewcode-back" href="../../../api/evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSet.add"><a class="viewcode-back" href="../../../api/evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">allow_duplicates</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Add a new command or commands to this CmdSetcommand, a list of</span>
+<span class="sd">        Add a new command or commands to this CmdSet, a list of</span>
 <span class="sd">        commands or a cmdset to this cmdset. Note that this is *not*</span>
 <span class="sd">        a merge operation (that is handled by the + operator).</span>
 
@@ -497,6 +497,9 @@
 <span class="sd">            cmd (Command, list, Cmdset): This allows for adding one or</span>
 <span class="sd">                more commands to this Cmdset in one go. If another Cmdset</span>
 <span class="sd">                is given, all its commands will be added.</span>
+<span class="sd">            allow_duplicates (bool, optional): If set, will not try to remove</span>
+<span class="sd">                duplicate cmds in the set. This is needed during the merge process</span>
+<span class="sd">                to avoid wiping commands coming from cmdsets with duplicate=True.</span>
 
 <span class="sd">        Notes:</span>
 <span class="sd">            If cmd already exists in set, it will replace the old one</span>
@@ -539,8 +542,10 @@
                 <span class="n">commands</span><span class="p">[</span><span class="n">ic</span><span class="p">]</span> <span class="o">=</span> <span class="n">cmd</span>  <span class="c1"># replace</span>
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                 <span class="n">commands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
-            <span class="c1"># extra run to make sure to avoid doublets</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">commands</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">commands</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">commands</span> <span class="o">=</span> <span class="n">commands</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">allow_duplicates</span><span class="p">:</span>
+                <span class="c1"># extra run to make sure to avoid doublets</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">commands</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="p">))</span>
             <span class="c1"># add system_command to separate list as well,</span>
             <span class="c1"># for quick look-up</span>
             <span class="k">if</span> <span class="n">cmd</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;__&quot;</span><span class="p">):</span>

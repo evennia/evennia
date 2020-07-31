@@ -230,15 +230,50 @@ Defaults to client’s default width.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="evennia.utils.utils.list_to_string">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">list_to_string</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inlist</span></em>, <em class="sig-param"><span class="n">endsep</span><span class="o">=</span><span class="default_value">'and'</span></em>, <em class="sig-param"><span class="n">addquote</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#list_to_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.list_to_string" title="Permalink to this definition">¶</a></dt>
-<dd><p>This pretty-formats a list as string output, adding an optional
+<dt id="evennia.utils.utils.iter_to_string">
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">iter_to_string</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">initer</span></em>, <em class="sig-param"><span class="n">endsep</span><span class="o">=</span><span class="default_value">'and'</span></em>, <em class="sig-param"><span class="n">addquote</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#iter_to_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.iter_to_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>This pretty-formats an iterable list as string output, adding an optional
 alternative separator to the second to last entry.  If <strong>addquote</strong>
 is <strong>True</strong>, the outgoing strings will be surrounded by quotes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>inlist</strong> (<em>list</em>) – The list to print.</p></li>
+<li><p><strong>initer</strong> (<em>any</em>) – Usually an iterable to print. Each element must be possible to
+present with a string. Note that if this is a generator, it will be
+consumed by this operation.</p></li>
+<li><p><strong>endsep</strong> (<em>str</em><em>, </em><em>optional</em>) – If set, the last item separator will
+be replaced with this value.</p></li>
+<li><p><strong>addquote</strong> (<em>bool</em><em>, </em><em>optional</em>) – This will surround all outgoing
+values with double quotes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>str</em> – The list represented as a string.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">endsep</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="go">&#39;1, 2, 3&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">ensdep</span><span class="o">=</span><span class="s1">&#39;and&#39;</span><span class="p">)</span>
+<span class="go">&#39;1, 2 and 3&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">endsep</span><span class="o">=</span><span class="s1">&#39;and&#39;</span><span class="p">,</span> <span class="n">addquote</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">&#39;&quot;1&quot;, &quot;2&quot; and &quot;3&quot;&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.utils.list_to_string">
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">list_to_string</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">initer</span></em>, <em class="sig-param"><span class="n">endsep</span><span class="o">=</span><span class="default_value">'and'</span></em>, <em class="sig-param"><span class="n">addquote</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.utils.list_to_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>This pretty-formats an iterable list as string output, adding an optional
+alternative separator to the second to last entry.  If <strong>addquote</strong>
+is <strong>True</strong>, the outgoing strings will be surrounded by quotes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>initer</strong> (<em>any</em>) – Usually an iterable to print. Each element must be possible to
+present with a string. Note that if this is a generator, it will be
+consumed by this operation.</p></li>
 <li><p><strong>endsep</strong> (<em>str</em><em>, </em><em>optional</em>) – If set, the last item separator will
 be replaced with this value.</p></li>
 <li><p><strong>addquote</strong> (<em>bool</em><em>, </em><em>optional</em>) – This will surround all outgoing
@@ -543,18 +578,14 @@ falling back to settings.ENCODINGS.</p></li>
 <dl class="py function">
 <dt id="evennia.utils.utils.validate_email_address">
 <code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">validate_email_address</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">emailaddress</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#validate_email_address"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.validate_email_address" title="Permalink to this definition">¶</a></dt>
-<dd><p>Checks if an email address is syntactically correct.</p>
+<dd><p>Checks if an email address is syntactically correct. Makes use
+of the django email-validator for consistency.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>emailaddress</strong> (<em>str</em>) – Email address to validate.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>is_valid (bool)</em> – If this is a valid email or not.</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>Notes.</dt><dd><p>(This snippet was adapted from
-<a class="reference external" href="http://commandline.org.uk/python/email-syntax-check">http://commandline.org.uk/python/email-syntax-check</a>.)</p>
+<dd class="field-even"><p><em>bool</em> – If this is a valid email or not.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1254,11 +1285,28 @@ print the caller of the caller etc.</p>
 back to normal len for other objects.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>target</strong> (<em>string</em>) – A string with potential MXP components
+<dd class="field-odd"><p><strong>target</strong> (<em>str</em>) – A string with potential MXP components
 to search.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><em>length (int)</em> – The length of <strong>target</strong>, ignoring MXP components.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.utils.display_len">
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">display_len</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#display_len"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.display_len" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the ‘visible width’ of text. This is not necessarily the same as the
+number of characters in the case of certain asian characters. This will also
+strip MXP patterns.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>target</strong> (<em>any</em>) – Something to measure the length of. If a string, it will be
+measured keeping asian-character and MXP links in mind.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>int</em> – The visible width of the target.</p>
 </dd>
 </dl>
 </dd></dl>

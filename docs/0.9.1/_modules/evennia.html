@@ -490,13 +490,17 @@
         <span class="c1"># Stopped at breakpoint. Press &#39;n&#39; to continue into the code.</span>
         <span class="n">dbg</span><span class="o">.</span><span class="n">set_trace</span><span class="p">()</span></div>
 
+
 <span class="c1"># initialize the doc string</span>
 <span class="k">global</span> <span class="vm">__doc__</span>
 <span class="vm">__doc__</span> <span class="o">=</span> <span class="n">DOCSTRING</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-        <span class="n">f</span><span class="s2">&quot;evennia.</span><span class="si">{key}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">globals</span><span class="p">())</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
-        <span class="ow">and</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;DOCSTRING&quot;</span><span class="p">,</span> <span class="p">)))</span>
+    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- &quot;</span>
+    <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">- &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">f</span><span class="s2">&quot;evennia.</span><span class="si">{key}</span><span class="s2">&quot;</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">globals</span><span class="p">())</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;DOCSTRING&quot;</span><span class="p">,)</span>
+    <span class="p">)</span>
+<span class="p">)</span>
 </pre></div>
 
             <div class="clearer"></div>

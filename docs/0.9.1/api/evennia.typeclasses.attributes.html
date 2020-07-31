@@ -1041,14 +1041,17 @@ will be exited.</p></li>
 repeat-calling add when having many Attributes to add.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>*args</strong> (<em>tuple</em>) – <p>Tuples of varying length representing the
-Attribute to add to this object. Supported tuples are</p>
-<ul class="simple">
-<li><p>(key, value)</p></li>
-<li><p>(key, value, category)</p></li>
-<li><p>(key, value, category, lockstring)</p></li>
-<li><p>(key, value, category, lockstring, default_access)</p></li>
+<dd class="field-odd"><p><strong>*args</strong> (<em>tuple</em>) – <p>Each argument should be a tuples (can be of varying
+length) representing the Attribute to add to this object.
+Supported tuples are</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>(key, value)</strong></p></li>
+<li><p><strong>(key, value, category)</strong></p></li>
+<li><p><strong>(key, value, category, lockstring)</strong></p></li>
+<li><p><strong>(key, value, category, lockstring, default_access)</strong></p></li>
 </ul>
+</div></blockquote>
 </p>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>

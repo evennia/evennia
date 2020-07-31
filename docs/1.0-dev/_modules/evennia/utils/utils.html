@@ -50,6 +50,7 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">gc</span>
 <span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">types</span>
 <span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">re</span>
@@ -60,6 +61,7 @@
 <span class="kn">import</span> <span class="nn">importlib</span>
 <span class="kn">import</span> <span class="nn">importlib.util</span>
 <span class="kn">import</span> <span class="nn">importlib.machinery</span>
+<span class="kn">from</span> <span class="nn">unicodedata</span> <span class="k">import</span> <span class="n">east_asian_width</span>
 <span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="k">import</span> <span class="n">deferLater</span>
 <span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="k">import</span> <span class="n">returnValue</span>  <span class="c1"># noqa - used as import target</span>
 <span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">join</span> <span class="k">as</span> <span class="n">osjoin</span>
@@ -70,6 +72,8 @@
 <span class="kn">from</span> <span class="nn">django.utils</span> <span class="k">import</span> <span class="n">timezone</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="k">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 <span class="kn">from</span> <span class="nn">django.apps</span> <span class="k">import</span> <span class="n">apps</span>
+<span class="kn">from</span> <span class="nn">django.core.validators</span> <span class="k">import</span> <span class="n">validate_email</span> <span class="k">as</span> <span class="n">django_validate_email</span>
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="k">import</span> <span class="n">ValidationError</span> <span class="k">as</span> <span class="n">DjangoValidationError</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span>
 
 <span class="n">_MULTIMATCH_TEMPLATE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SEARCH_MULTIMATCH_TEMPLATE</span>
@@ -381,14 +385,16 @@
     <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="list_to_string"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.list_to_string">[docs]</a><span class="k">def</span> <span class="nf">list_to_string</span><span class="p">(</span><span class="n">inlist</span><span class="p">,</span> <span class="n">endsep</span><span class="o">=</span><span class="s2">&quot;and&quot;</span><span class="p">,</span> <span class="n">addquote</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="iter_to_string"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.iter_to_string">[docs]</a><span class="k">def</span> <span class="nf">iter_to_string</span><span class="p">(</span><span class="n">initer</span><span class="p">,</span> <span class="n">endsep</span><span class="o">=</span><span class="s2">&quot;and&quot;</span><span class="p">,</span> <span class="n">addquote</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This pretty-formats a list as string output, adding an optional</span>
+<span class="sd">    This pretty-formats an iterable list as string output, adding an optional</span>
 <span class="sd">    alternative separator to the second to last entry.  If `addquote`</span>
 <span class="sd">    is `True`, the outgoing strings will be surrounded by quotes.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        inlist (list): The list to print.</span>
+<span class="sd">        initer (any): Usually an iterable to print. Each element must be possible to</span>
+<span class="sd">            present with a string. Note that if this is a generator, it will be</span>
+<span class="sd">            consumed by this operation.</span>
 <span class="sd">        endsep (str, optional): If set, the last item separator will</span>
 <span class="sd">            be replaced with this value.</span>
 <span class="sd">        addquote (bool, optional): This will surround all outgoing</span>
@@ -413,16 +419,21 @@
         <span class="n">endsep</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">endsep</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">endsep</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">inlist</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">initer</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">initer</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">initer</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">addquote</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inlist</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="n">inlist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">return</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">inlist</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">endsep</span><span class="p">,</span> <span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="n">inlist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">initer</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="n">initer</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">initer</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">endsep</span><span class="p">,</span> <span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="n">initer</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inlist</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">inlist</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="k">return</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">inlist</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">endsep</span><span class="p">,</span> <span class="n">inlist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span></div>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">initer</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">initer</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">initer</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">endsep</span><span class="p">,</span> <span class="n">initer</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span></div>
+
+
+<span class="c1"># legacy alias</span>
+<span class="n">list_to_string</span> <span class="o">=</span> <span class="n">iter_to_string</span>
 
 
 <div class="viewcode-block" id="wildcard_to_regexp"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.wildcard_to_regexp">[docs]</a><span class="k">def</span> <span class="nf">wildcard_to_regexp</span><span class="p">(</span><span class="n">instring</span><span class="p">):</span>
@@ -947,69 +958,25 @@
 
 <div class="viewcode-block" id="validate_email_address"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.validate_email_address">[docs]</a><span class="k">def</span> <span class="nf">validate_email_address</span><span class="p">(</span><span class="n">emailaddress</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Checks if an email address is syntactically correct.</span>
+<span class="sd">    Checks if an email address is syntactically correct. Makes use</span>
+<span class="sd">    of the django email-validator for consistency.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        emailaddress (str): Email address to validate.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        is_valid (bool): If this is a valid email or not.</span>
-
-<span class="sd">    Notes.</span>
-<span class="sd">        (This snippet was adapted from</span>
-<span class="sd">        http://commandline.org.uk/python/email-syntax-check.)</span>
+<span class="sd">        bool: If this is a valid email or not.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">emailaddress</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">emailaddress</span>
-
-    <span class="n">domains</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;aero&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;asia&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;biz&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;cat&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;com&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;coop&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;edu&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;gov&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;info&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;int&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;jobs&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;mil&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;mobi&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;museum&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;name&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;net&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;org&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;pro&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;tel&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;travel&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="c1"># Email address must be more than 7 characters in total.</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">emailaddress</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">7</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># Address too short.</span>
-
-    <span class="c1"># Split up email address into parts.</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">localpart</span><span class="p">,</span> <span class="n">domainname</span> <span class="o">=</span> <span class="n">emailaddress</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">host</span><span class="p">,</span> <span class="n">toplevel</span> <span class="o">=</span> <span class="n">domainname</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># Address does not have enough parts.</span>
-
-    <span class="c1"># Check for Country code or Generic Domain.</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">toplevel</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">toplevel</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">domains</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># Not a domain name.</span>
-
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="s2">&quot;-_.%+.&quot;</span><span class="p">:</span>
-        <span class="n">localpart</span> <span class="o">=</span> <span class="n">localpart</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="s2">&quot;-_.&quot;</span><span class="p">:</span>
-        <span class="n">host</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">localpart</span><span class="o">.</span><span class="n">isalnum</span><span class="p">()</span> <span class="ow">and</span> <span class="n">host</span><span class="o">.</span><span class="n">isalnum</span><span class="p">():</span>
-        <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># Email address is fine.</span>
+        <span class="n">django_validate_email</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">emailaddress</span><span class="p">))</span>
+    <span class="k">except</span> <span class="n">DjangoValidationError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">False</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># Email address has funny characters.</span></div>
+        <span class="k">return</span> <span class="kc">True</span></div>
 
 
 <div class="viewcode-block" id="inherits_from"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.inherits_from">[docs]</a><span class="k">def</span> <span class="nf">inherits_from</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
@@ -2078,7 +2045,7 @@
 <span class="sd">    back to normal len for other objects.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        target (string): A string with potential MXP components</span>
+<span class="sd">        target (str): A string with potential MXP components</span>
 <span class="sd">            to search.</span>
 
 <span class="sd">    Returns:</span>
@@ -2091,6 +2058,33 @@
     <span class="k">if</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;|lt&quot;</span> <span class="ow">in</span> <span class="n">target</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">ANSI_PARSER</span><span class="o">.</span><span class="n">strip_mxp</span><span class="p">(</span><span class="n">target</span><span class="p">))</span>
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">target</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="display_len"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.utils.utils.display_len">[docs]</a><span class="k">def</span> <span class="nf">display_len</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the &#39;visible width&#39; of text. This is not necessarily the same as the</span>
+<span class="sd">    number of characters in the case of certain asian characters. This will also</span>
+<span class="sd">    strip MXP patterns.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        target (any): Something to measure the length of. If a string, it will be</span>
+<span class="sd">            measured keeping asian-character and MXP links in mind.</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        int: The visible width of the target.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Would create circular import if in module root.</span>
+    <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="k">import</span> <span class="n">ANSI_PARSER</span>
+
+    <span class="k">if</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># str or ANSIString</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">ANSI_PARSER</span><span class="o">.</span><span class="n">strip_mxp</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">ANSI_PARSER</span><span class="o">.</span><span class="n">parse_ansi</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">extra_wide</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;F&quot;</span><span class="p">,</span> <span class="s2">&quot;W&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">2</span> <span class="k">if</span> <span class="n">east_asian_width</span><span class="p">(</span><span class="n">char</span><span class="p">)</span> <span class="ow">in</span> <span class="n">extra_wide</span> <span class="k">else</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">target</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">target</span><span class="p">)</span></div>
 
 
 <span class="c1"># -------------------------------------------------------------------</span>

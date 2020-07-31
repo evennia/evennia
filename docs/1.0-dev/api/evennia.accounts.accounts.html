@@ -440,6 +440,29 @@ would mean old passwords in the database (pre validation checks) could get inval
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.create_character">
+<code class="sig-name descname">create_character</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.create_character"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.create_character" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a character linked to this account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em><em>, </em><em>optional</em>) – If not given, use the same name as the account.</p></li>
+<li><p><strong>typeclass</strong> (<em>str</em><em>, </em><em>optional</em>) – Typeclass to use for this character. If
+not given, use settings.BASE_CHARACTER_TYPECLASS.</p></li>
+<li><p><strong>permissions</strong> (<em>list</em><em>, </em><em>optional</em>) – If not given, use the account’s permissions.</p></li>
+<li><p><strong>ip</strong> (<em>str</em><em>, </em><em>optiona</em>) – The client IP creating this character. Will fall back to the
+one stored for the account if not given.</p></li>
+<li><p><strong>kwargs</strong> (<em>any</em>) – Other kwargs will be used in the create_call.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Object</em> – A new character of the <strong>character_typeclass</strong> type. None on an error.
+list or None: A list of errors, or None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.accounts.accounts.DefaultAccount.create">
 <em class="property">classmethod </em><code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates an Account (or Account/Character pair for MULTISESSION_MODE&lt;2)
@@ -532,7 +555,7 @@ commands at run-time.</p>
 
 <dl class="py method">
 <dt id="evennia.accounts.accounts.DefaultAccount.search">
-<code class="sig-name descname">search</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">searchdata</span></em>, <em class="sig-param"><span class="n">return_puppet</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">search_object</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nofound_string</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">multimatch_string</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">use_nicks</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.search" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">searchdata</span></em>, <em class="sig-param"><span class="n">return_puppet</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">search_object</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nofound_string</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">multimatch_string</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">use_nicks</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">quiet</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.search" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is similar to <strong>DefaultObject.search</strong> but defaults to searching
 for Accounts only.</p>
 <dl class="field-list simple">
@@ -557,10 +580,13 @@ will fall back to the default handler.</p></li>
 message to echo if <strong>searchdata</strong> leads to multiple matches.
 If not given, will fall back to the default handler.</p></li>
 <li><p><strong>use_nicks</strong> (<em>bool</em><em>, </em><em>optional</em>) – Use account-level nick replacement.</p></li>
+<li><p><strong>quiet</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set, will not show any error to the user,
+and will also lead to returning a list of matches.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>match (Account, Object or None)</em> – A single Account or Object match.</p>
+<dd class="field-even"><p><em>match (Account, Object or None)</em> – A single Account or Object match.
+list: If <strong>quiet=True</strong> this is a list of 0, 1 or more Account or Object matches.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>

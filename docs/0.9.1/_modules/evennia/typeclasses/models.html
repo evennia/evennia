@@ -151,10 +151,38 @@
         <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;typename&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
         <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;__module__&quot;</span><span class="p">],</span> <span class="n">name</span><span class="p">)</span>
 
+        <span class="k">def</span> <span class="nf">_get_dbmodel</span><span class="p">(</span><span class="n">bases</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Recursively get the dbmodel&quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">bases</span><span class="p">,</span> <span class="s2">&quot;__iter__&quot;</span><span class="p">):</span>
+                <span class="n">bases</span> <span class="o">=</span> <span class="p">[</span><span class="n">bases</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">base</span> <span class="ow">in</span> <span class="n">bases</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">base</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">proxy</span> <span class="ow">or</span> <span class="n">base</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">abstract</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">kls</span> <span class="ow">in</span> <span class="n">base</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">parents</span><span class="p">:</span>
+                            <span class="k">return</span> <span class="n">_get_dbmodel</span><span class="p">(</span><span class="n">kls</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                    <span class="c1"># this happens if trying to parse a non-typeclass mixin parent,</span>
+                    <span class="c1"># without a _meta</span>
+                    <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">base</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">dbmodel</span> <span class="o">=</span> <span class="n">_get_dbmodel</span><span class="p">(</span><span class="n">bases</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dbmodel</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> does not appear to inherit from a database model.&quot;</span><span class="p">)</span>
+
         <span class="c1"># typeclass proxy setup</span>
+        <span class="c1"># first check explicit __applabel__ on the typeclass, then figure</span>
+        <span class="c1"># it out from the dbmodel</span>
+        <span class="k">if</span> <span class="s2">&quot;__applabel__&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
+            <span class="c1"># find the app-label in one of the bases, usually the dbmodel</span>
+            <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;__applabel__&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dbmodel</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">app_label</span>
+
         <span class="k">if</span> <span class="s2">&quot;Meta&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
 
-            <span class="k">class</span> <span class="nc">Meta</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+            <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
                 <span class="n">proxy</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="n">app_label</span> <span class="o">=</span> <span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;__applabel__&quot;</span><span class="p">,</span> <span class="s2">&quot;typeclasses&quot;</span><span class="p">)</span>
 
@@ -162,6 +190,16 @@
         <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;Meta&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">proxy</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="n">new_class</span> <span class="o">=</span> <span class="n">ModelBase</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">attrs</span><span class="p">)</span>
+
+        <span class="c1"># django doesn&#39;t support inheriting proxy models so we hack support for</span>
+        <span class="c1"># it here by injecting `proxy_for_model` to the actual dbmodel.</span>
+        <span class="c1"># Unfortunately we cannot also set the correct model_name, because this</span>
+        <span class="c1"># would block multiple-inheritance of typeclasses (Django doesn&#39;t allow</span>
+        <span class="c1"># multiple bases of the same model).</span>
+        <span class="k">if</span> <span class="n">dbmodel</span><span class="p">:</span>
+            <span class="n">new_class</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">proxy_for_model</span> <span class="o">=</span> <span class="n">dbmodel</span>
+            <span class="c1"># Maybe Django will eventually handle this in the future:</span>
+            <span class="c1"># new_class._meta.model_name = dbmodel._meta.model_name</span>
 
         <span class="c1"># attach signals</span>
         <span class="n">signals</span><span class="o">.</span><span class="n">post_save</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">call_at_first_save</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">new_class</span><span class="p">)</span>

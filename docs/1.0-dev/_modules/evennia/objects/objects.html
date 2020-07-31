@@ -250,7 +250,7 @@
 
     <span class="c1"># lockstring of newly created objects, for easy overloading.</span>
     <span class="c1"># Will be formatted with the appropriate attributes.</span>
-    <span class="n">lockstring</span> <span class="o">=</span> <span class="s2">&quot;control:id(</span><span class="si">{account_id}</span><span class="s2">) or perm(Admin);&quot;</span> <span class="s2">&quot;delete:id(</span><span class="si">{account_id}</span><span class="s2">) or perm(Admin)&quot;</span>
+    <span class="n">lockstring</span> <span class="o">=</span> <span class="s2">&quot;control:id(</span><span class="si">{account_id}</span><span class="s2">) or perm(Admin);delete:id(</span><span class="si">{account_id}</span><span class="s2">) or perm(Admin)&quot;</span>
 
     <span class="n">objects</span> <span class="o">=</span> <span class="n">ObjectManager</span><span class="p">()</span>
 
@@ -434,8 +434,7 @@
 <span class="sd">                - `me,self`: self-reference to this object</span>
 <span class="sd">                - `&lt;num&gt;-&lt;string&gt;` - can be used to differentiate</span>
 <span class="sd">                   between multiple same-named matches</span>
-<span class="sd">            global_search (bool): Search all objects globally. This is overruled</span>
-<span class="sd">                by `location` keyword.</span>
+<span class="sd">            global_search (bool): Search all objects globally. This overrules &#39;location&#39; data.</span>
 <span class="sd">            use_nicks (bool): Use nickname-replace (nicktype &quot;object&quot;) on `searchdata`.</span>
 <span class="sd">            typeclass (str or Typeclass, or list of either): Limit search only</span>
 <span class="sd">                to `Objects` with this typeclass. May be a list of typeclasses</span>
@@ -2083,10 +2082,13 @@
     <span class="n">_content_types</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;character&quot;</span><span class="p">,)</span>
     <span class="c1"># lockstring of newly created rooms, for easy overloading.</span>
     <span class="c1"># Will be formatted with the appropriate attributes.</span>
-    <span class="n">lockstring</span> <span class="o">=</span> <span class="s2">&quot;puppet:id(</span><span class="si">{character_id}</span><span class="s2">) or pid(</span><span class="si">{account_id}</span><span class="s2">) or perm(Developer) or pperm(Developer);delete:id(</span><span class="si">{account_id}</span><span class="s2">) or perm(Admin)&quot;</span>
+    <span class="n">lockstring</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;puppet:id(</span><span class="si">{character_id}</span><span class="s2">) or pid(</span><span class="si">{account_id}</span><span class="s2">) or perm(Developer) or pperm(Developer);&quot;</span>
+        <span class="s2">&quot;delete:id(</span><span class="si">{account_id}</span><span class="s2">) or perm(Admin)&quot;</span>
+    <span class="p">)</span>
 
 <div class="viewcode-block" id="DefaultCharacter.create"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.create">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">account</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a basic Character with default parameters, unless otherwise</span>
 <span class="sd">        specified or extended.</span>
@@ -2095,8 +2097,8 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            key (str): Name of the new Character.</span>
-<span class="sd">            account (obj): Account to associate this Character with. Required as</span>
-<span class="sd">                an argument, but one can fake it out by supplying None-- it will</span>
+<span class="sd">            account (obj, optional): Account to associate this Character with.</span>
+<span class="sd">                If unset supplying None-- it will</span>
 <span class="sd">                change the default lockset and skip creator attribution.</span>
 
 <span class="sd">        Keyword args:</span>
@@ -2346,7 +2348,7 @@
     <span class="p">)</span>
 
 <div class="viewcode-block" id="DefaultRoom.create"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultRoom.create">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">account</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a basic Room with default parameters, unless otherwise</span>
 <span class="sd">        specified or extended.</span>
@@ -2355,7 +2357,9 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            key (str): Name of the new Room.</span>
-<span class="sd">            account (obj): Account to associate this Room with.</span>
+<span class="sd">            account (obj, optional): Account to associate this Room with. If</span>
+<span class="sd">                given, it will be given specific control/edit permissions to this</span>
+<span class="sd">                object (along with normal Admin perms). If not given, default</span>
 
 <span class="sd">        Keyword args:</span>
 <span class="sd">            description (str): Brief description for this object.</span>
@@ -2384,13 +2388,20 @@
         <span class="c1"># Get description, if provided</span>
         <span class="n">description</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 
+        <span class="c1"># get locks if provided</span>
+        <span class="n">locks</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;locks&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># Create the Room</span>
             <span class="n">obj</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-            <span class="c1"># Set appropriate locks</span>
-            <span class="n">lockstring</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;locks&quot;</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">lockstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
-            <span class="n">obj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">lockstring</span><span class="p">)</span>
+            <span class="c1"># Add locks</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">locks</span> <span class="ow">and</span> <span class="n">account</span><span class="p">:</span>
+                <span class="n">locks</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">lockstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="p">})</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">locks</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">account</span><span class="p">:</span>
+                <span class="n">locks</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">lockstring</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">})</span>
+
+            <span class="n">obj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">locks</span><span class="p">)</span>
 
             <span class="c1"># Record creator id and creation IP</span>
             <span class="k">if</span> <span class="n">ip</span><span class="p">:</span>
@@ -2540,7 +2551,7 @@
     <span class="c1"># Command hooks</span>
 
 <div class="viewcode-block" id="DefaultExit.create"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultExit.create">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">account</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a basic Exit with default parameters, unless otherwise</span>
 <span class="sd">        specified or extended.</span>
@@ -2584,13 +2595,18 @@
 
         <span class="n">description</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 
+        <span class="n">locks</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;locks&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># Create the Exit</span>
             <span class="n">obj</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
             <span class="c1"># Set appropriate locks</span>
-            <span class="n">lockstring</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;locks&quot;</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">lockstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
-            <span class="n">obj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">lockstring</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">locks</span> <span class="ow">and</span> <span class="n">account</span><span class="p">:</span>
+                <span class="n">locks</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">lockstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="p">})</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">locks</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">account</span><span class="p">:</span>
+                <span class="n">locks</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">lockstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">})</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">locks</span><span class="p">)</span>
 
             <span class="c1"># Record creator id and creation IP</span>
             <span class="k">if</span> <span class="n">ip</span><span class="p">:</span>

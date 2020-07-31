@@ -345,7 +345,7 @@
 <span class="c1">#</span>
 
 
-<div class="viewcode-block" id="create_help_entry"><a class="viewcode-back" href="../../../api/evennia.utils.create.html#evennia.utils.create.create_help_entry">[docs]</a><span class="k">def</span> <span class="nf">create_help_entry</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">entrytext</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;General&quot;</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="create_help_entry"><a class="viewcode-back" href="../../../api/evennia.utils.create.html#evennia.utils.create.create_help_entry">[docs]</a><span class="k">def</span> <span class="nf">create_help_entry</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">entrytext</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;General&quot;</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a static help entry in the help database. Note that Command</span>
 <span class="sd">    help entries are dynamic and directly taken from the __doc__</span>
@@ -358,7 +358,8 @@
 <span class="sd">        entrytext (str): The body of te help entry</span>
 <span class="sd">        category (str, optional): The help category of the entry.</span>
 <span class="sd">        locks (str, optional): A lockstring to restrict access.</span>
-<span class="sd">        aliases (list of str): List of alternative (likely shorter) keynames.</span>
+<span class="sd">        aliases (list of str, optional): List of alternative (likely shorter) keynames.</span>
+<span class="sd">        tags (lst, optional): List of tags or tuples `(tag, category)`.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        help (HelpEntry): A newly created help entry.</span>
@@ -376,7 +377,9 @@
         <span class="k">if</span> <span class="n">locks</span><span class="p">:</span>
             <span class="n">new_help</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">locks</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">aliases</span><span class="p">:</span>
-            <span class="n">new_help</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">aliases</span><span class="p">)</span>
+            <span class="n">new_help</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">make_iter</span><span class="p">(</span><span class="n">aliases</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">tags</span><span class="p">:</span>
+            <span class="n">new_help</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span><span class="o">*</span><span class="n">tags</span><span class="p">)</span>
         <span class="n">new_help</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">new_help</span>
     <span class="k">except</span> <span class="n">IntegrityError</span><span class="p">:</span>
@@ -398,7 +401,9 @@
 <span class="c1"># Comm system methods</span>
 
 
-<div class="viewcode-block" id="create_message"><a class="viewcode-back" href="../../../api/evennia.utils.create.html#evennia.utils.create.create_message">[docs]</a><span class="k">def</span> <span class="nf">create_message</span><span class="p">(</span><span class="n">senderobj</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receivers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="create_message"><a class="viewcode-back" href="../../../api/evennia.utils.create.html#evennia.utils.create.create_message">[docs]</a><span class="k">def</span> <span class="nf">create_message</span><span class="p">(</span>
+    <span class="n">senderobj</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receivers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a new communication Msg. Msgs represent a unit of</span>
 <span class="sd">    database-persistent communication between entites.</span>
@@ -414,6 +419,7 @@
 <span class="sd">        receivers (Object, Account, str or list): An Account/Object to send</span>
 <span class="sd">            to, or a list of them. May be Account objects or accountnames.</span>
 <span class="sd">        locks (str): Lock definition string.</span>
+<span class="sd">        tags (list): A list of tags or tuples `(tag, category)`.</span>
 <span class="sd">        header (str): Mime-type or other optional information for the message</span>
 
 <span class="sd">    Notes:</span>
@@ -440,6 +446,9 @@
         <span class="n">new_message</span><span class="o">.</span><span class="n">receivers</span> <span class="o">=</span> <span class="n">receiver</span>
     <span class="k">if</span> <span class="n">locks</span><span class="p">:</span>
         <span class="n">new_message</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">locks</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">tags</span><span class="p">:</span>
+        <span class="n">new_message</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span><span class="o">*</span><span class="n">tags</span><span class="p">)</span>
+
     <span class="n">new_message</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">new_message</span></div>
 
@@ -448,7 +457,9 @@
 <span class="n">create_msg</span> <span class="o">=</span> <span class="n">create_message</span>
 
 
-<div class="viewcode-block" id="create_channel"><a class="viewcode-back" href="../../../api/evennia.utils.create.html#evennia.utils.create.create_channel">[docs]</a><span class="k">def</span> <span class="nf">create_channel</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep_log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="create_channel"><a class="viewcode-back" href="../../../api/evennia.utils.create.html#evennia.utils.create.create_channel">[docs]</a><span class="k">def</span> <span class="nf">create_channel</span><span class="p">(</span>
+    <span class="n">key</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep_log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create A communication Channel. A Channel serves as a central hub</span>
 <span class="sd">    for distributing Msgs to groups of people without specifying the</span>
@@ -467,6 +478,7 @@
 <span class="sd">        keep_log (bool): Log channel throughput.</span>
 <span class="sd">        typeclass (str or class): The typeclass of the Channel (not</span>
 <span class="sd">            often used).</span>
+<span class="sd">        tags (list): A list of tags or tuples `(tag, category)`.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        channel (Channel): A newly created channel.</span>
@@ -483,7 +495,7 @@
 
     <span class="c1"># store call signature for the signal</span>
     <span class="n">new_channel</span><span class="o">.</span><span class="n">_createdict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-        <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="n">aliases</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="n">locks</span><span class="p">,</span> <span class="n">keep_log</span><span class="o">=</span><span class="n">keep_log</span>
+        <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="n">aliases</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="n">locks</span><span class="p">,</span> <span class="n">keep_log</span><span class="o">=</span><span class="n">keep_log</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="n">tags</span>
     <span class="p">)</span>
 
     <span class="c1"># this will trigger the save signal which in turn calls the</span>

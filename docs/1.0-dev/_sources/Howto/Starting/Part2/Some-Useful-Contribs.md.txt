@@ -1,3 +1,0 @@
-# Some useful contribs
-
-TODO 
