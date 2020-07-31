@@ -114,6 +114,7 @@
 - [Howto/Starting/Part2/Game Planning](Howto/Starting/Part2/Game-Planning)
 - [Howto/Starting/Part2/Planning Some Useful Contribs](Howto/Starting/Part2/Planning-Some-Useful-Contribs)
 - [Howto/Starting/Part2/Planning The Tutorial Game](Howto/Starting/Part2/Planning-The-Tutorial-Game)
+- [Howto/Starting/Part2/Planning Where Do I Begin](Howto/Starting/Part2/Planning-Where-Do-I-Begin)
 - [Howto/Starting/Part2/Starting Part2](Howto/Starting/Part2/Starting-Part2)
 - [Howto/Starting/Part3/A Sittable Object](Howto/Starting/Part3/A-Sittable-Object)
 - [Howto/Starting/Part3/Implementing a game rule system](Howto/Starting/Part3/Implementing-a-game-rule-system)
