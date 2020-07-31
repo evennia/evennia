@@ -11,13 +11,15 @@
 - Using `lunr` search indexing for better `help` matching and suggestions. Also improve
   the main help command's default listing output.
 - Added `content_types` indexing to DefaultObject's ContentsHandler. (volund)
-- Made most of the networking classes such as Protocols and the SessionHandlers 
+- Made most of the networking classes such as Protocols and the SessionHandlers
   replaceable via `settings.py` for modding enthusiasts. (volund)
-- The `initial_setup.py` file can now be substituted in `settings.py` to customize 
+- The `initial_setup.py` file can now be substituted in `settings.py` to customize
   initial game database state. (volund)
 - Added new Traits contrib, converted and expanded from Ainneve project.
 - Added new `requirements_extra.txt` file for easily getting all optional dependencies.
-- Change default multimatch syntax from 1-obj, 2-obj to obj-1, obj-2. 
+- Change default multimatch syntax from 1-obj, 2-obj to obj-1, obj-2.
+- Make `object.search` support 'stacks=0' keyword - if ``>0``, the method will return
+  N identical matches instead of triggering a multi-match error.
 
 ### Already in master
 - Renamed Tutorial classes "Weapon" and "WeaponRack" to "TutorialWeapon" and

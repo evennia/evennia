@@ -375,6 +375,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         nofound_string=None,
         multimatch_string=None,
         use_dbref=None,
+        stacked=0,
     ):
         """
         Returns an Object matching a search string/condition
@@ -430,10 +431,19 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 will be treated like a normal string. If `None` (default), the ability to query by
                 #dbref is turned on if `self` has the permission 'Builder' and is turned off
                 otherwise.
+            stacked (int, optional): If > 0, multimatches will be analyzed to determine if they
+                only contains identical objects; these are then assumed 'stacked' and no multi-match
+                error will be generated, instead `stacked` number of matches will be returned. If
+                `stacked` is larger than number of matches, returns that number of matches. If
+                the found stack is a mix of objects, return None and handle the multi-match
+                error depending on the value of `quiet`.
 
         Returns:
-            match (Object, None or list): will return an Object/None if `quiet=False`,
-                otherwise it will return a list of 0, 1 or more matches.
+            Object: If finding a match an `quiet=False`
+            None: If not finding a unique match and `quiet=False`.
+            list: With 0, 1 or more matching objects if `quiet=True`
+            list: With 2 or more matching objects if `stacked` is a positive integer and
+                the matched stack has only object-copies.
 
         Notes:
             To find Accounts, use eg. `evennia.account_search`. If
@@ -501,8 +511,29 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             use_dbref=use_dbref,
         )
 
+        nresults = len(results)
+        if stacked > 0 and nresults > 1:
+            # handle stacks, disable multimatch errors
+            nstack = nresults
+            if not exact:
+                # we re-run exact match agains one of the matches to
+                # make sure we were not catching partial matches not belonging
+                # to the stack
+                nstack = len(ObjectDB.objects.get_objs_with_key_or_alias(
+                    results[0].key,
+                    exact=True,
+                    candidates=list(results),
+                    typeclasses=[typeclass] if typeclass else None
+                ))
+            if nstack == nresults:
+                # a valid stack, return multiple results
+                return list(results)[:stacked]
+
         if quiet:
+            # don't auto-handle error messaging
             return list(results)
+
+        # handle error messages
         return _AT_SEARCH_RESULT(
             results,
             self,

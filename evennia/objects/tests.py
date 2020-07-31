@@ -74,6 +74,18 @@ class DefaultObjectTest(EvenniaTest):
         self.assertTrue(self.room1.get_absolute_url())
         self.assertTrue("admin" in self.room1.web_get_admin_url())
 
+    def test_search_stacked(self):
+        "Test searching stacks"
+        coin1 = DefaultObject.create("coin", location=self.room1)[0]
+        coin2 = DefaultObject.create("coin", location=self.room1)[0]
+        colon = DefaultObject.create("colon", location=self.room1)[0]
+
+        # stack
+        self.assertEqual(self.char1.search("coin", stacked=2), [coin1, coin2])
+        self.assertEqual(self.char1.search("coin", stacked=5), [coin1, coin2])
+        # partial match to 'colon' - multimatch error since stack is not homogenous
+        self.assertEqual(self.char1.search("co", stacked=2), None)
+
 
 class TestObjectManager(EvenniaTest):
     "Test object manager methods"
