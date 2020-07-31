@@ -32,9 +32,7 @@ in mind for your own game, this will give you a good start.
 
 1. [Introduction & Overview](Starting/Starting-Part2)
 1. [On planning a game](Starting/Part2/Game-Planning)
-1. [Multisession modes](../Unimplemented)
-1. [Layout of our tutorial game](../Unimplemented)
-1. [Some useful Contribs](Starting/Part2/Some-Useful-Contribs)
+1. [Planning to use some useful Contribs](Starting/Part2/Planning-Some-Useful-Contribs)
 
 ### Part3: How we get there
 
