@@ -231,9 +231,6 @@ def auto_link_remapper():
             if ref == "toc":
                 continue
 
-            if "Part1/" in ref:
-                continue
-
             if not "/" in ref:
                 ref = "./" + ref
 

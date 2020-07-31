@@ -17,8 +17,8 @@
 ## Lessons for Part 2
 
 1. Introduction & Overview (you are here)
-1. [On planning a game](Part2/Game-Planning)
-1. [Planning to use some useful Contribs](Part2/Planning-Some-Useful-Contribs)
+1. [On planning a game](./Game-Planning)
+1. [Planning to use some useful Contribs](./Planning-Some-Useful-Contribs)
 
 In Part two of the Starting tutorial we'll step back and plan out the kind of tutorial 
 game we want to make. In the process we'll go through the common questions of "where to start"
