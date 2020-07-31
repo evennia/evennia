@@ -1,6 +1,6 @@
 # Django Database queries
 
-[prev lesson](./Searching-Things) | [next lesson](../Starting-Part2)
+[prev lesson](./Searching-Things) | [next lesson](../Part2/Starting-Part2)
 
 ```important:: More advanced lesson!
   
@@ -398,4 +398,4 @@ query using Django is a powerful skill to have.
 This concludes the first part of the Evennia starting tutorial - "What we have". Now we have a good foundation
 to understand how to plan what our tutorial game will be about.
 
-[prev lesson](./Searching-Things) | [next lesson](../Starting-Part2)
+[prev lesson](./Searching-Things) | [next lesson](../Part2/Starting-Part2)

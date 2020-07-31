@@ -3,11 +3,14 @@
 # Planning our tutorial game
 
 Using the general plan from last lesson we'll now establish what kind of game we want to create for this tutorial.
-Remembering that we need to keep the scope down, let's establish some parameters. Note that for your own 
+Remembering that we need to keep the scope down, let's establish some parameters. 
+Note that for your own 
 game you don't _need_ to agree/adopt any of these. Many game-types need more or much less than this. 
 But this makes for good, instructive examples.
 
-- We want a small game we can play ourselves for fun, but which could in principle be expanded 
+- To have something to refer to rather than just saying "our tutorial game" over and over, we'll 
+  name it ... _EvAdventure_.
+- We want EvAdventure be a small game we can play ourselves for fun, but which could in principle be expanded 
   to something more later.
 - Let's go with a fantasy theme, it's well understood.
 - We'll use some existing, simple RPG system. 
@@ -16,7 +19,7 @@ But this makes for good, instructive examples.
 - We don't want to have to rely on a Game master to resolve things, but will rely on code for skill resolution
   and combat.
 - We want monsters to fight and NPCs we can talk to. So some sort of AI. 
-- We want to be able to buy and sell stuff. 
+- We want to be able to buy and sell stuff, both with NPCs and other players. 
 - We want some sort of crafting system.
 - We want some sort of quest system. 
 
@@ -26,10 +29,23 @@ Let's answer the questions from the previous lesson and discuss some of the poss
 
 #### Should your game rules be enforced by coded systems by human game masters?
 
-Using game masters one need to add some new GM-helper commands to make their jobs easier. But overall there 
-is less work code-wise. GM:ing is work-intensive however, and they can't be online all the time. 
+Generally, the more work you expect human staffers/GMs to do, the less your code needs to work. To 
+support GMs you'd need to design commands to support GM-specific actions and the type of game-mastering 
+you want them to do. You may need to expand communication channels so you can easily 
+talk to groups people in private and split off gaming groups from each other. RPG rules could be as simple
+as the GM sitting with the rule books and using a dice-roller for visibility.
 
-We want our tutorial game to work without human Game masters. 
+GM:ing is work-intensive however, and even the most skilled and enthusiastic GM can't be awake all hours 
+of the day to serve an international player base. The computer never needs sleep, so having the ability for
+players to "self-serve" their RP itch when no GMs are around is a good idea even for the most GM-heavy games.
+
+On the other side of the spectrum are games with no GMs at all; all gameplay are driven either by the computer
+or by the interactions between players. Such games still need an active staff, but nowhere as much active 
+involvement. Allowing for solo-play with the computer also allows players to have fun when the number of active
+players is low. 
+
+We want EvAdventure to work entirely without depending on human GMs. That said, there'd be nothing 
+stopping a GM from stepping in and run an adventure for some players should they want to. 
 
 #### What is the staff hierarchy in your game? Is vanilla Evennia roles enough or do you need something else?
 
@@ -67,7 +83,7 @@ _Bulletin boards_ are a sort of in-game forum where posts are made publicly or p
 the messages are usually stored and are grouped into topics with replies. Evennia has no default bulletin-board
 system. 
 
-In this tutorial game we will just use the default inter-account channels. We will also not be implementing any 
+In EvAdventure we will just use the default inter-account channels. We will also not be implementing any 
 bulletin boards. 
 
 ### Building
@@ -265,7 +281,7 @@ shop-keepers and quest-gives so they won't need any real AI to speak of.
 also be city guards or the baker going to chat with the neighbor. Back in the day, they were often fundamentally
 different these days it's often easier to just make NPCs and mobs essentially the same thing. 
 
-In our tutorial game, Both Monsters and NPCs will be the same type of thing; A monster could give you a quest
+In EvAdventure, both Monsters and NPCs will be the same type of thing; A monster could give you a quest
 and an NPC might fight you as a mob as well as trade with you. 
 
 #### _Should there be NPCs giving quests? If so, how do you track Quest status?
@@ -329,7 +345,7 @@ Hiding means a few things.
   find the person (probably based on skill checks).
 - The room will also need to be involved, maybe with some modifier as to how easy it is to hide in the room. 
 
-We will _not_ be including a hide-mechanic in our tutorial game though. 
+We will _not_ be including a hide-mechanic in EvAdventure though. 
 
 #### What does the skill tree look like? Can a Character gain experience to improve? By killing enemies? Solving quests? By roleplaying?
 
@@ -348,7 +364,7 @@ ways to implement this:
   - XP from fails - you only gain XP when failing rolls. 
   - XP from other players - other players can award you XP for good RP. 
  
-For our tutorial game we will use Open Adventure's rules for XP, which will be driven by kills and quest successes. 
+For EvAdventure we will use Open Adventure's rules for XP, which will be driven by kills and quest successes. 
  
 #### May player-characters attack each other (PvP)?
 
@@ -359,7 +375,7 @@ have to be very careful to balance the game - all characters does not have to be
 all be viable to play a fun game with. PvP does not only mean combat though. Players can compete in all sorts of ways, including gaining influence in 
 a political game or gaining market share when selling their crafted merchandise. 
 
-For the tutorial game we will support both Player-vs-environment combat and turn-based PvP. We will allow players
+For the EvAdventure we will support both Player-vs-environment combat and turn-based PvP. We will allow players
 to barter with each other (so potentially scam others?) but that's the extent of it. We will focus on showing
 off techniques and will not focus on making a balanced game. 
 

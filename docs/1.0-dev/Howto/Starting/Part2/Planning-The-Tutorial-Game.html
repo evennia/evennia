@@ -40,11 +40,14 @@
 <div class="section" id="planning-our-tutorial-game">
 <h1>Planning our tutorial game<a class="headerlink" href="#planning-our-tutorial-game" title="Permalink to this headline">¶</a></h1>
 <p>Using the general plan from last lesson we’ll now establish what kind of game we want to create for this tutorial.
-Remembering that we need to keep the scope down, let’s establish some parameters. Note that for your own
+Remembering that we need to keep the scope down, let’s establish some parameters.
+Note that for your own
 game you don’t <em>need</em> to agree/adopt any of these. Many game-types need more or much less than this.
 But this makes for good, instructive examples.</p>
 <ul class="simple">
-<li><p>We want a small game we can play ourselves for fun, but which could in principle be expanded
+<li><p>To have something to refer to rather than just saying “our tutorial game” over and over, we’ll
+name it … <em>EvAdventure</em>.</p></li>
+<li><p>We want EvAdventure be a small game we can play ourselves for fun, but which could in principle be expanded
 to something more later.</p></li>
 <li><p>Let’s go with a fantasy theme, it’s well understood.</p></li>
 <li><p>We’ll use some existing, simple RPG system.</p></li>
@@ -53,7 +56,7 @@ to something more later.</p></li>
 <li><p>We don’t want to have to rely on a Game master to resolve things, but will rely on code for skill resolution
 and combat.</p></li>
 <li><p>We want monsters to fight and NPCs we can talk to. So some sort of AI.</p></li>
-<li><p>We want to be able to buy and sell stuff.</p></li>
+<li><p>We want to be able to buy and sell stuff, both with NPCs and other players.</p></li>
 <li><p>We want some sort of crafting system.</p></li>
 <li><p>We want some sort of quest system.</p></li>
 </ul>
@@ -62,9 +65,20 @@ and combat.</p></li>
 <h2>Administration<a class="headerlink" href="#administration" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="should-your-game-rules-be-enforced-by-coded-systems-by-human-game-masters">
 <h3>Should your game rules be enforced by coded systems by human game masters?<a class="headerlink" href="#should-your-game-rules-be-enforced-by-coded-systems-by-human-game-masters" title="Permalink to this headline">¶</a></h3>
-<p>Using game masters one need to add some new GM-helper commands to make their jobs easier. But overall there
-is less work code-wise. GM:ing is work-intensive however, and they can’t be online all the time.</p>
-<p>We want our tutorial game to work without human Game masters.</p>
+<p>Generally, the more work you expect human staffers/GMs to do, the less your code needs to work. To
+support GMs you’d need to design commands to support GM-specific actions and the type of game-mastering
+you want them to do. You may need to expand communication channels so you can easily
+talk to groups people in private and split off gaming groups from each other. RPG rules could be as simple
+as the GM sitting with the rule books and using a dice-roller for visibility.</p>
+<p>GM:ing is work-intensive however, and even the most skilled and enthusiastic GM can’t be awake all hours
+of the day to serve an international player base. The computer never needs sleep, so having the ability for
+players to “self-serve” their RP itch when no GMs are around is a good idea even for the most GM-heavy games.</p>
+<p>On the other side of the spectrum are games with no GMs at all; all gameplay are driven either by the computer
+or by the interactions between players. Such games still need an active staff, but nowhere as much active
+involvement. Allowing for solo-play with the computer also allows players to have fun when the number of active
+players is low.</p>
+<p>We want EvAdventure to work entirely without depending on human GMs. That said, there’d be nothing
+stopping a GM from stepping in and run an adventure for some players should they want to.</p>
 </div>
 <div class="section" id="what-is-the-staff-hierarchy-in-your-game-is-vanilla-evennia-roles-enough-or-do-you-need-something-else">
 <h3>What is the staff hierarchy in your game? Is vanilla Evennia roles enough or do you need something else?<a class="headerlink" href="#what-is-the-staff-hierarchy-in-your-game-is-vanilla-evennia-roles-enough-or-do-you-need-something-else" title="Permalink to this headline">¶</a></h3>
@@ -100,7 +114,7 @@ would have an in-game meaning:</p>
 <p><em>Bulletin boards</em> are a sort of in-game forum where posts are made publicly or privately. Contrary to a channel,
 the messages are usually stored and are grouped into topics with replies. Evennia has no default bulletin-board
 system.</p>
-<p>In this tutorial game we will just use the default inter-account channels. We will also not be implementing any
+<p>In EvAdventure we will just use the default inter-account channels. We will also not be implementing any
 bulletin boards.</p>
 </div>
 </div>
@@ -293,7 +307,7 @@ shop-keepers and quest-gives so they won’t need any real AI to speak of.</p>
 <p>“Mobs” or “mobiles” are things that move around. This is traditionally monsters you can fight with, but could
 also be city guards or the baker going to chat with the neighbor. Back in the day, they were often fundamentally
 different these days it’s often easier to just make NPCs and mobs essentially the same thing.</p>
-<p>In our tutorial game, Both Monsters and NPCs will be the same type of thing; A monster could give you a quest
+<p>In EvAdventure, both Monsters and NPCs will be the same type of thing; A monster could give you a quest
 and an NPC might fight you as a mob as well as trade with you.</p>
 </div>
 <div class="section" id="should-there-be-npcs-giving-quests-if-so-how-do-you-track-quest-status">
@@ -359,7 +373,7 @@ or <code class="docutils literal notranslate"><span class="pre">look</span> <spa
 find the person (probably based on skill checks).</p></li>
 <li><p>The room will also need to be involved, maybe with some modifier as to how easy it is to hide in the room.</p></li>
 </ul>
-<p>We will <em>not</em> be including a hide-mechanic in our tutorial game though.</p>
+<p>We will <em>not</em> be including a hide-mechanic in EvAdventure though.</p>
 </div>
 <div class="section" id="what-does-the-skill-tree-look-like-can-a-character-gain-experience-to-improve-by-killing-enemies-solving-quests-by-roleplaying">
 <h3>What does the skill tree look like? Can a Character gain experience to improve? By killing enemies? Solving quests? By roleplaying?<a class="headerlink" href="#what-does-the-skill-tree-look-like-can-a-character-gain-experience-to-improve-by-killing-enemies-solving-quests-by-roleplaying" title="Permalink to this headline">¶</a></h3>
@@ -382,7 +396,7 @@ you gain XP only for running when you run, XP for your axe skill when you fight 
 </ul>
 </li>
 </ul>
-<p>For our tutorial game we will use Open Adventure’s rules for XP, which will be driven by kills and quest successes.</p>
+<p>For EvAdventure we will use Open Adventure’s rules for XP, which will be driven by kills and quest successes.</p>
 </div>
 <div class="section" id="may-player-characters-attack-each-other-pvp">
 <h3>May player-characters attack each other (PvP)?<a class="headerlink" href="#may-player-characters-attack-each-other-pvp" title="Permalink to this headline">¶</a></h3>
@@ -392,7 +406,7 @@ will not be as accepting if they perceive another player is perceived as being o
 have to be very careful to balance the game - all characters does not have to be exactly equal but they should
 all be viable to play a fun game with. PvP does not only mean combat though. Players can compete in all sorts of ways, including gaining influence in
 a political game or gaining market share when selling their crafted merchandise.</p>
-<p>For the tutorial game we will support both Player-vs-environment combat and turn-based PvP. We will allow players
+<p>For the EvAdventure we will support both Player-vs-environment combat and turn-based PvP. We will allow players
 to barter with each other (so potentially scam others?) but that’s the extent of it. We will focus on showing
 off techniques and will not focus on making a balanced game.</p>
 </div>

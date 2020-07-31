@@ -14,7 +14,7 @@ in mind for your own game, this will give you a good start.
 
 ### Part 1: What we have
 
-1. [Introduction & Overview](Starting/Starting-Part1)
+1. [Introduction & Overview](Starting/Part1/Starting-Part1)
 1. [Building stuff](Starting/Part1/Building-Quickstart)
 1. [The Tutorial World](Starting/Part1/Tutorial-World-Introduction)
 1. [Python basics](Starting/Part1/Python-basic-introduction)
@@ -30,13 +30,13 @@ in mind for your own game, this will give you a good start.
 
 ### Part 2: What we want
 
-1. [Introduction & Overview](Starting/Starting-Part2)
+1. [Introduction & Overview](Starting/Part2/Starting-Part2)
 1. [On planning a game](Starting/Part2/Game-Planning)
 1. [Planning to use some useful Contribs](Starting/Part2/Planning-Some-Useful-Contribs)
 
 ### Part3: How we get there
 
-1. [Introduction & Overview](Starting/Starting-Part3)
+1. [Introduction & Overview](Starting/Part3/Starting-Part3)
 1. [Making a custom Character](Starting/Part3/Implementing-a-game-rule-system)
 1. [Character generation](../Unimplemented)
 1. [Resolving skills and challenges](../Unimplemented)
@@ -46,13 +46,13 @@ in mind for your own game, this will give you a good start.
 
 ### Part 4: Using what we created
 
-1. [Introduction & Overview](Starting/Starting-Part4)
+1. [Introduction & Overview](Starting/Part4/Starting-Part4)
 1. [Building the tech demo](../Unimplemented)
 1. [Creating a game world](../Unimplemented)
 
 ### Part 5: Showing the world
 
-1. [Introduction & Overview](Starting/Starting-Part5)
+1. [Introduction & Overview](Starting/Part5/Starting-Part5)
 1. [Add a web page](Starting/Part5/Add-a-simple-new-web-page)
 1. [More on adding web features](Starting/Part5/Web-Tutorial)
 1. [Taking your game online](../Unimplemented)

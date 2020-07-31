@@ -18,7 +18,7 @@ This is the manual of [Evennia](http://www.evennia.com), the open source Python
 
 - [Evennia Introduction](./Evennia-Introduction)
 - [Install & Setup Quickstart](Setup/Setup-Quickstart)
-- [Starting tutorial](Howto/Starting/Starting-Part1)
+- [Starting tutorial](Howto/Starting/Part1/Starting-Part1)
 - [How to get (and give) help](./How-To-Get-And-Give-Help)
 
 ## Main sections
