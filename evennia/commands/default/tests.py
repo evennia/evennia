@@ -1146,7 +1146,7 @@ class TestBuilding(CommandTest):
             "= Obj",
             "To create a global script you need scripts/add <typeclass>.",
         )
-        self.call(building.CmdScript(), "Obj = ", "dbref     obj")
+        self.call(building.CmdScript(), "Obj ", "dbref ")
 
         self.call(
             building.CmdScript(), "/start Obj", "0 scripts started on Obj"
