@@ -1262,7 +1262,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 ]
             except Exception:
                 logger.log_trace()
-        now = timezone.now()
+        now = timezone.localtime()
         now = "%02i-%02i-%02i(%02i:%02i)" % (now.year, now.month, now.day, now.hour, now.minute)
         if _MUDINFO_CHANNEL:
             _MUDINFO_CHANNEL.tempmsg(f"[{_MUDINFO_CHANNEL.key}, {now}]: {message}")
