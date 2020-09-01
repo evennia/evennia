@@ -339,22 +339,23 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             singular (str): The singular form to display.
             plural (str): The determined plural form of the key, including the count.
         """
+        plural_category = "plural_key"
         key = kwargs.get("key", self.key)
         key = ansi.ANSIString(key)  # this is needed to allow inflection of colored names
         try:
-            plural = _INFLECT.plural(key, 2)
-            plural = "%s %s" % (_INFLECT.number_to_words(count, threshold=12), plural)
+            plural = _INFLECT.plural(key, count)
+            plural = "{} {}".format(_INFLECT.number_to_words(count, threshold=12), plural)
         except IndexError:
             # this is raised by inflect if the input is not a proper noun
             plural = key
         singular = _INFLECT.an(key)
-        if not self.aliases.get(plural, category="plural_key"):
+        if not self.aliases.get(plural, category=plural_category):
             # we need to wipe any old plurals/an/a in case key changed in the interrim
-            self.aliases.clear(category="plural_key")
-            self.aliases.add(plural, category="plural_key")
+            self.aliases.clear(category=plural_category)
+            self.aliases.add(plural, category=plural_category)
             # save the singular form as an alias here too so we can display "an egg" and also
             # look at 'an egg'.
-            self.aliases.add(singular, category="plural_key")
+            self.aliases.add(singular, category=plural_category)
         return singular, plural
 
     def search(
