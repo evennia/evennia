@@ -70,6 +70,8 @@ without arguments starts a full interactive Python console.
 - Make `INLINEFUNC_STACK_MAXSIZE` default visible in `settings_default.py`.
 - Change how `ic` finds puppets; non-priveleged users will use `_playable_characters` list as
   candidates, Builders+ will use list, local search and only global search if no match found.
+- Make `cmd.at_post_cmd()` always run after `cmd.func()`, even when the latter uses delays 
+  with yield.
 
 
 ## Evennia 0.9 (2018-2019)
