@@ -1368,10 +1368,10 @@ def create_settings_file(init=True, secret_settings=False):
     if not init:
         # if not --init mode, settings file may already exist from before
         if os.path.exists(settings_path):
-            inp = eval(input("%s already exists. Do you want to reset it? y/[N]> " % settings_path))
+            inp = input("%s already exists. Do you want to reset it? y/[N]> " % settings_path)
             if not inp.lower() == "y":
                 print("Aborted.")
-                return
+                sys.exit()
             else:
                 print("Reset the settings file.")
 
