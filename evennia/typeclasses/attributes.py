@@ -186,7 +186,7 @@ class Attribute(SharedMemoryModel):
     def __repr__(self):
         return "%s(%s)" % (self.db_key, self.id)
 
-    def access(self, accessing_obj, access_type="read", default=False, **kwargs):
+    def access(self, accessing_obj, access_type="attrread", default=False, **kwargs):
         """
         Determines if another object has permission to access.
 
