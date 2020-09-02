@@ -206,7 +206,7 @@ def _progressive_cmd_run(cmd, generator, response=None):
         else:
             value = generator.send(response)
     except StopIteration:
-        pass
+        raise
     else:
         if isinstance(value, (int, float)):
             utils.delay(value, _progressive_cmd_run, cmd, generator)
@@ -631,20 +631,31 @@ def cmdhandler(
             ret = cmd.func()
             if isinstance(ret, types.GeneratorType):
                 # cmd.func() is a generator, execute progressively
-                _progressive_cmd_run(cmd, ret)
+                in_generator = True
+                try:
+                    _progressive_cmd_run(cmd, ret)
+                except StopIteration:
+                    # this means func() has run its course
+                    in_generator = False
                 yield None
             else:
+                in_generator = False
                 ret = yield ret
 
-            # post-command hook
-            yield cmd.at_post_cmd()
+            if not in_generator:
+                # this will only run if we are out of the generator for this
+                # cmd, otherwise we would have at_post_cmd run before a delayed
+                # func() finished
 
-            if cmd.save_for_next:
-                # store a reference to this command, possibly
-                # accessible by the next command.
-                caller.ndb.last_cmd = yield copy(cmd)
-            else:
-                caller.ndb.last_cmd = None
+                # post-command hook
+                yield cmd.at_post_cmd()
+
+                if cmd.save_for_next:
+                    # store a reference to this command, possibly
+                    # accessible by the next command.
+                    caller.ndb.last_cmd = yield copy(cmd)
+                else:
+                    caller.ndb.last_cmd = None
 
             # return result to the deferred
             returnValue(ret)
