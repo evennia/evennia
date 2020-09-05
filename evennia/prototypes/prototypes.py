@@ -9,8 +9,11 @@ import hashlib
 import time
 from ast import literal_eval
 from django.conf import settings
+from django.db.models import Q, Subquery
+from django.core.paginator import Paginator
 from evennia.scripts.scripts import DefaultScript
 from evennia.objects.models import ObjectDB
+from evennia.typeclasses.attributes import Attribute
 from evennia.utils.create import create_script
 from evennia.utils.utils import (
     all_from_module,
@@ -320,7 +323,7 @@ def delete_prototype(prototype_key, caller=None):
     return True
 
 
-def search_prototype(key=None, tags=None, require_single=False):
+def search_prototype(key=None, tags=None, require_single=False, return_iterators=False):
     """
     Find prototypes based on key and/or tags, or all prototypes.
 
@@ -331,11 +334,17 @@ def search_prototype(key=None, tags=None, require_single=False):
             tag category.
         require_single (bool): If set, raise KeyError if the result
             was not found or if there are multiple matches.
+        return_iterators (bool): Optimized return for large numbers of db-prototypes.
+            If set, separate returns of module based prototypes and paginate
+            the db-prototype return.
 
     Return:
-        matches (list): All found prototype dicts. Empty list if
+        matches (list): Default return, all found prototype dicts. Empty list if
             no match was found. Note that if neither `key` nor `tags`
             were given, *all* available prototypes will be returned.
+        list, queryset: If `return_iterators` are found, this is a list of
+            module-based prototypes followed by a *paginated* queryset of
+            db-prototypes.
 
     Raises:
         KeyError: If `require_single` is True and there are 0 or >1 matches.
@@ -387,27 +396,41 @@ def search_prototype(key=None, tags=None, require_single=False):
     if key:
         # exact or partial match on key
         db_matches = (
-            db_matches.filter(db_key=key) or db_matches.filter(db_key__icontains=key)
-        ).order_by("id")
-        # return prototype
-    db_prototypes = [dbprot.prototype for dbprot in db_matches]
-
-    matches = db_prototypes + module_prototypes
-    nmatches = len(matches)
-    if nmatches > 1 and key:
-        key = key.lower()
-        # avoid duplicates if an exact match exist between the two types
-        filter_matches = [
-            mta for mta in matches if mta.get("prototype_key") and mta["prototype_key"] == key
-        ]
-        if filter_matches and len(filter_matches) < nmatches:
-            matches = filter_matches
-
-    nmatches = len(matches)
-    if nmatches != 1 and require_single:
-        raise KeyError("Found {} matching prototypes.".format(nmatches))
-
-    return matches
+            db_matches
+            .filter(
+                Q(db_key__iexact=key) | Q(db_key__icontains=key))
+            .order_by("id")
+        )
+    # convert to prototype
+    db_ids = db_matches.values_list("id", flat=True)
+    db_matches = (
+        Attribute.objects
+        .filter(scriptdb__pk__in=db_ids, db_key="prototype")
+        .values_list("db_value", flat=True)
+    )
+    if key:
+        matches = list(db_matches) + module_prototypes
+        nmatches = len(matches)
+        if nmatches > 1:
+            key = key.lower()
+            # avoid duplicates if an exact match exist between the two types
+            filter_matches = [
+                mta for mta in matches if mta.get("prototype_key") and mta["prototype_key"] == key
+            ]
+            if filter_matches and len(filter_matches) < nmatches:
+                matches = filter_matches
+        nmatches = len(matches)
+        if nmatches != 1 and require_single:
+            raise KeyError("Found {} matching prototypes.".format(nmatches))
+        return matches
+    elif return_iterators:
+        # trying to get the entire set of prototypes - we must paginate
+        # we must paginate the result of trying to fetch the entire set
+        db_pages = Paginator(db_matches, 500)
+        return module_prototypes, db_pages
+    else:
+        # full fetch, no pagination
+        return list(db_matches) + module_prototypes
 
 
 def search_objects_with_prototype(prototype_key):
