@@ -592,7 +592,7 @@ def validate_prototype(
         protparent = protparents.get(protstring)
         if not protparent:
             _flags["errors"].append(
-                "Prototype {}'s prototype_parent '{}' was not found.".format((protkey, protstring))
+                "Prototype {}'s prototype_parent '{}' was not found.".format(protkey, protstring)
             )
         if id(prototype) in _flags["visited"]:
             _flags["errors"].append(
