@@ -29,6 +29,7 @@ caller.msg() construct every time the page is updated.
 """
 from django.conf import settings
 from django.db.models.query import QuerySet
+from django.core.paginator import Paginator
 from evennia import Command, CmdSet
 from evennia.commands import cmdhandler
 from evennia.utils.utils import make_iter, inherits_from, justify
@@ -131,7 +132,7 @@ class EvMore(object):
     def __init__(
         self,
         caller,
-        text,
+        inp,
         always_page=False,
         session=None,
         justify=False,
@@ -143,28 +144,28 @@ class EvMore(object):
     ):
 
         """
-        Initialization of the text handler.
+        Initialization of the inp handler.
 
         Args:
             caller (Object or Account): Entity reading the text.
-            text (str, EvTable or iterator): The text or data to put under paging.
+            inp (str, EvTable, Paginator or iterator): The text or data to put under paging.
                 - If a string, paginage normally. If this text contains
                    one or more `\f` format symbol, automatic pagination and justification
                    are force-disabled and page-breaks will only happen after each `\f`.
                 - If `EvTable`, the EvTable will be paginated with the same
                    setting on each page if it is too long. The table
                    decorations will be considered in the size of the page.
-                - Otherwise `text` is converted to an iterator, where each step is
+                - Otherwise `inp` is converted to an iterator, where each step is
                    expected to be a line in the final display. Each line
                    will be run through `iter_callable`.
             always_page (bool, optional): If `False`, the
-                pager will only kick in if `text` is too big
+                pager will only kick in if `inp` is too big
                 to fit the screen.
             session (Session, optional): If given, this session will be used
                 to determine the screen width and will receive all output.
             justify (bool, optional): If set, auto-justify long lines. This must be turned
                 off for fixed-width or formatted output, like tables. It's force-disabled
-                if `text` is an EvTable.
+                if `inp` is an EvTable.
             justify_kwargs (dict, optional): Keywords for the justifiy function. Used only
                 if `justify` is True. If this is not set, default arguments will be used.
             exit_on_lastpage (bool, optional): If reaching the last page without the
@@ -230,31 +231,51 @@ class EvMore(object):
         # always limit number of chars to 10 000 per page
         self.height = min(10000 // max(1, self.width), height)
 
-        if inherits_from(text, "evennia.utils.evtable.EvTable"):
-            # an EvTable
-            self.init_evtable(text)
-        elif isinstance(text, QuerySet):
-            # a queryset
-            self.init_queryset(text)
-        elif not isinstance(text, str):
-            # anything else not a str
-            self.init_iterable(text)
-        elif "\f" in text:
-            # string with \f line-break markers in it
-            self.init_f_str(text)
-        else:
-            # a string
-            self.init_str(text)
+        # does initial parsing of input
+        self.parse_input(inp)
 
         # kick things into gear
         self.start()
 
-    # page formatter
+    # Hooks for customizing input handling and formatting (use if overriding this class)
+
+    def parse_input(self, inp):
+        """
+        Parse the input to figure out the size of the data, how many pages it
+        consist of and pick the correct paginator mechanism. Override this if
+        you want to support a new type of input.
+
+        Each initializer should set self._paginator and optionally self._page_formatter
+        for properly handling the input data.
+
+        """
+        if inherits_from(inp, "evennia.utils.evtable.EvTable"):
+            # an EvTable
+            self.init_evtable(inp)
+        elif isinstance(inp, QuerySet):
+            # a queryset
+            self.init_queryset(inp)
+        elif isinstance(inp, Paginator):
+            self.init_django_paginator(inp)
+        elif not isinstance(inp, str):
+            # anything else not a str
+            self.init_iterable(inp)
+        elif "\f" in inp:
+            # string with \f line-break markers in it
+            self.init_f_str(inp)
+        else:
+            # a string
+            self.init_str(inp)
 
     def format_page(self, page):
         """
         Page formatter. Uses the page_formatter callable by default.
         This allows to easier override the class if needed.
+
+        Args:
+            page (any): A piece of data representing one page to display. This must
+                be poss
+        Returns:
         """
         return self._page_formatter(page)
 
@@ -269,7 +290,13 @@ class EvMore(object):
         Paginate by slice. This is done with an eye on memory efficiency (usually for
         querysets); to avoid fetching all objects at the same time.
         """
-        return self._data[pageno * self.height : pageno * self.height + self.height]
+        return self._data[pageno * self.height: pageno * self.height + self.height]
+
+    def paginator_django(self, pageno):
+        """
+        Paginate using the django queryset Paginator API. Note that his is indexed from 1.
+        """
+        return self._data.page(pageno + 1)
 
     # inits for different input types
 
@@ -291,6 +318,14 @@ class EvMore(object):
         self._npages = nsize // self.height + (0 if nsize % self.height == 0 else 1)
         self._data = qs
         self._paginator = self.paginator_slice
+
+    def init_django_paginator(self, pages):
+        """
+        The input is a django Paginator object.
+        """
+        self._npages = pages.num_pages
+        self._data = pages
+        self._paginator = self.paginator_django
 
     def init_iterable(self, inp):
         """The input is something other than a string - convert to iterable of strings"""
