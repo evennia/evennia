@@ -3476,16 +3476,16 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
         elif query:
             self.caller.msg(f"No prototype named '{query}' was found.")
         else:
-            self.caller.msg(f"No prototypes found.")
+            self.caller.msg("No prototypes found.")
 
     def _list_prototypes(self, key=None, tags=None):
         """Display prototypes as a list, optionally limited by key/tags. """
-        table = protlib.list_prototypes(self.caller, key=key, tags=tags)
-        if not table:
-            return True
-        EvMore(
-            self.caller, str(table), exit_on_lastpage=True, justify_kwargs=False,
-        )
+        protlib.list_prototypes(self.caller, key=key, tags=tags)
+        # if not table:
+        #     return True
+        # EvMore(
+        #     self.caller, str(table), exit_on_lastpage=True, justify_kwargs=False,
+        # )
 
     @interactive
     def _update_existing_objects(self, caller, prototype_key, quiet=False):

@@ -15,6 +15,7 @@ from evennia.scripts.scripts import DefaultScript
 from evennia.objects.models import ObjectDB
 from evennia.typeclasses.attributes import Attribute
 from evennia.utils.create import create_script
+from evennia.utils.evmore import EvMore
 from evennia.utils.utils import (
     all_from_module,
     make_iter,
@@ -393,6 +394,7 @@ def search_prototype(key=None, tags=None, require_single=False, return_iterators
         db_matches = DbPrototype.objects.get_by_tag(tags, tag_categories)
     else:
         db_matches = DbPrototype.objects.all().order_by("id")
+
     if key:
         # exact or partial match on key
         db_matches = (
@@ -425,8 +427,8 @@ def search_prototype(key=None, tags=None, require_single=False, return_iterators
         return matches
     elif return_iterators:
         # trying to get the entire set of prototypes - we must paginate
-        # we must paginate the result of trying to fetch the entire set
-        db_pages = Paginator(db_matches, 500)
+        # the result instead of trying to fetch the entire set at once
+        db_pages = Paginator(db_matches, 20)
         return module_prototypes, db_pages
     else:
         # full fetch, no pagination
@@ -447,6 +449,74 @@ def search_objects_with_prototype(prototype_key):
     return ObjectDB.objects.get_by_tag(key=prototype_key, category=PROTOTYPE_TAG_CATEGORY)
 
 
+class PrototypeEvMore(EvMore):
+    """
+    Listing 1000+ prototypes can be very slow. So we customize EvMore to
+    display an EvTable per paginated page rather than to try creating an
+    EvTable for the entire dataset and then paginate it.
+    """
+
+    def __init__(self, *args, **kwargs):
+        """Store some extra properties on the EvMore class"""
+        self.show_non_use = kwargs.pop("show_non_use", False)
+        self.show_non_edit = kwargs.pop("show_non_edit", False)
+        super().__init__(*args, **kwargs)
+
+    def page_formatter(self, page):
+        """Input is a queryset page from django.Paginator"""
+        caller = self._caller
+
+        # get use-permissions of readonly attributes (edit is always False)
+        display_tuples = []
+
+        for prototype in page:
+            lock_use = caller.locks.check_lockstring(
+                caller, prototype.get("prototype_locks", ""), access_type="spawn", default=True
+            )
+            if not self.show_non_use and not lock_use:
+                continue
+            if prototype.get("prototype_key", "") in _MODULE_PROTOTYPES:
+                lock_edit = False
+            else:
+                lock_edit = caller.locks.check_lockstring(
+                    caller, prototype.get("prototype_locks", ""), access_type="edit", default=True
+                )
+            if not self.show_non_edit and not lock_edit:
+                continue
+            ptags = []
+            for ptag in prototype.get("prototype_tags", []):
+                if is_iter(ptag):
+                    if len(ptag) > 1:
+                        ptags.append("{} (category: {}".format(ptag[0], ptag[1]))
+                    else:
+                        ptags.append(ptag[0])
+                else:
+                    ptags.append(str(ptag))
+
+            display_tuples.append(
+                (
+                    prototype.get("prototype_key", "<unset>"),
+                    prototype.get("prototype_desc", "<unset>"),
+                    "{}/{}".format("Y" if lock_use else "N", "Y" if lock_edit else "N"),
+                    ",".join(ptags),
+                )
+            )
+
+        if not display_tuples:
+            return ""
+
+        table = []
+        width = 78
+        for i in range(len(display_tuples[0])):
+            table.append([str(display_tuple[i]) for display_tuple in display_tuples])
+        table = EvTable("Key", "Desc", "Spawn/Edit", "Tags", table=table, crop=True, width=width)
+        table.reformat_column(0, width=22)
+        table.reformat_column(1, width=29)
+        table.reformat_column(2, width=11, align="c")
+        table.reformat_column(3, width=16)
+        return str(table)
+
+
 def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_edit=True):
     """
     Collate a list of found prototypes based on search criteria and access.
@@ -465,57 +535,66 @@ def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_ed
     # this allows us to pass lists of empty strings
     tags = [tag for tag in make_iter(tags) if tag]
 
-    # get prototypes for readonly and db-based prototypes
-    prototypes = search_prototype(key, tags)
+    if key is not None:
+        # get specific prototype (one value or exception)
+        return PrototypeEvMore(caller, [search_prototype(key, tags)],
+                               show_non_use=show_non_use,
+                               show_non_edit=show_non_edit)
+    else:
+        # list all
+        # get prototypes for readonly and db-based prototypes
+        module_prots, db_prots = search_prototype(key, tags, return_iterators=True)
+        return PrototypeEvMore(caller, db_prots,
+                               show_non_use=show_non_use, show_non_edit=show_non_edit)
 
-    # get use-permissions of readonly attributes (edit is always False)
-    display_tuples = []
-    for prototype in sorted(prototypes, key=lambda d: d.get("prototype_key", "")):
-        lock_use = caller.locks.check_lockstring(
-            caller, prototype.get("prototype_locks", ""), access_type="spawn", default=True
-        )
-        if not show_non_use and not lock_use:
-            continue
-        if prototype.get("prototype_key", "") in _MODULE_PROTOTYPES:
-            lock_edit = False
-        else:
-            lock_edit = caller.locks.check_lockstring(
-                caller, prototype.get("prototype_locks", ""), access_type="edit", default=True
-            )
-        if not show_non_edit and not lock_edit:
-            continue
-        ptags = []
-        for ptag in prototype.get("prototype_tags", []):
-            if is_iter(ptag):
-                if len(ptag) > 1:
-                    ptags.append("{} (category: {}".format(ptag[0], ptag[1]))
-                else:
-                    ptags.append(ptag[0])
-            else:
-                ptags.append(str(ptag))
-
-        display_tuples.append(
-            (
-                prototype.get("prototype_key", "<unset>"),
-                prototype.get("prototype_desc", "<unset>"),
-                "{}/{}".format("Y" if lock_use else "N", "Y" if lock_edit else "N"),
-                ",".join(ptags),
-            )
-        )
-
-    if not display_tuples:
-        return ""
-
-    table = []
-    width = 78
-    for i in range(len(display_tuples[0])):
-        table.append([str(display_tuple[i]) for display_tuple in display_tuples])
-    table = EvTable("Key", "Desc", "Spawn/Edit", "Tags", table=table, crop=True, width=width)
-    table.reformat_column(0, width=22)
-    table.reformat_column(1, width=29)
-    table.reformat_column(2, width=11, align="c")
-    table.reformat_column(3, width=16)
-    return table
+#     # get use-permissions of readonly attributes (edit is always False)
+#     display_tuples = []
+#     for prototype in sorted(prototypes, key=lambda d: d.get("prototype_key", "")):
+#         lock_use = caller.locks.check_lockstring(
+#             caller, prototype.get("prototype_locks", ""), access_type="spawn", default=True
+#         )
+#         if not show_non_use and not lock_use:
+#             continue
+#         if prototype.get("prototype_key", "") in _MODULE_PROTOTYPES:
+#             lock_edit = False
+#         else:
+#             lock_edit = caller.locks.check_lockstring(
+#                 caller, prototype.get("prototype_locks", ""), access_type="edit", default=True
+#             )
+#         if not show_non_edit and not lock_edit:
+#             continue
+#         ptags = []
+#         for ptag in prototype.get("prototype_tags", []):
+#             if is_iter(ptag):
+#                 if len(ptag) > 1:
+#                     ptags.append("{} (category: {}".format(ptag[0], ptag[1]))
+#                 else:
+#                     ptags.append(ptag[0])
+#             else:
+#                 ptags.append(str(ptag))
+#
+#         display_tuples.append(
+#             (
+#                 prototype.get("prototype_key", "<unset>"),
+#                 prototype.get("prototype_desc", "<unset>"),
+#                 "{}/{}".format("Y" if lock_use else "N", "Y" if lock_edit else "N"),
+#                 ",".join(ptags),
+#             )
+#         )
+#
+#     if not display_tuples:
+#         return ""
+#
+#     table = []
+#     width = 78
+#     for i in range(len(display_tuples[0])):
+#         table.append([str(display_tuple[i]) for display_tuple in display_tuples])
+#     table = EvTable("Key", "Desc", "Spawn/Edit", "Tags", table=table, crop=True, width=width)
+#     table.reformat_column(0, width=22)
+#     table.reformat_column(1, width=29)
+#     table.reformat_column(2, width=11, align="c")
+#     table.reformat_column(3, width=16)
+#     return table
 
 
 def validate_prototype(
