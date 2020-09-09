@@ -456,11 +456,21 @@ class PrototypeEvMore(EvMore):
     EvTable for the entire dataset and then paginate it.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, caller, *args, session=None, **kwargs):
         """Store some extra properties on the EvMore class"""
         self.show_non_use = kwargs.pop("show_non_use", False)
         self.show_non_edit = kwargs.pop("show_non_edit", False)
-        super().__init__(*args, **kwargs)
+
+        # set up table width
+        width = settings.CLIENT_DEFAULT_WIDTH
+        if not session:
+            # fall back to the first session
+            session = caller.sessions.all()[0]
+        if session:
+            width = session.protocol_flags.get("SCREENWIDTH", {0: width})[0]
+        self.width = width
+
+        super().__init__(caller, *args, session=session, **kwargs)
 
     def page_formatter(self, page):
         """Input is a queryset page from django.Paginator"""
@@ -487,7 +497,7 @@ class PrototypeEvMore(EvMore):
             for ptag in prototype.get("prototype_tags", []):
                 if is_iter(ptag):
                     if len(ptag) > 1:
-                        ptags.append("{} (category: {}".format(ptag[0], ptag[1]))
+                        ptags.append("{} (category: {})".format(ptag[0], ptag[1]))
                     else:
                         ptags.append(ptag[0])
                 else:
@@ -496,9 +506,9 @@ class PrototypeEvMore(EvMore):
             display_tuples.append(
                 (
                     prototype.get("prototype_key", "<unset>"),
-                    prototype.get("prototype_desc", "<unset>"),
                     "{}/{}".format("Y" if lock_use else "N", "Y" if lock_edit else "N"),
-                    ",".join(ptags),
+                    "\n".join(list(set(ptags))),
+                    prototype.get("prototype_desc", "<unset>"),
                 )
             )
 
@@ -506,18 +516,17 @@ class PrototypeEvMore(EvMore):
             return ""
 
         table = []
-        width = 78
         for i in range(len(display_tuples[0])):
             table.append([str(display_tuple[i]) for display_tuple in display_tuples])
-        table = EvTable("Key", "Desc", "Spawn/Edit", "Tags", table=table, crop=True, width=width)
+        table = EvTable("Key", "Spawn/Edit", "Tags", "Desc", table=table, crop=True, width=self.width)
         table.reformat_column(0, width=22)
-        table.reformat_column(1, width=29)
-        table.reformat_column(2, width=11, align="c")
-        table.reformat_column(3, width=16)
+        table.reformat_column(1, width=9, align="c")
+        table.reformat_column(2)
+        table.reformat_column(3)
         return str(table)
 
 
-def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_edit=True):
+def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_edit=True, session=None):
     """
     Collate a list of found prototypes based on search criteria and access.
 
@@ -527,6 +536,7 @@ def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_ed
         tags (str or list, optional): Tag key or keys to query for.
         show_non_use (bool, optional): Show also prototypes the caller may not use.
         show_non_edit (bool, optional): Show also prototypes the caller may not edit.
+        session (Session, optional): If given, this is used for display formatting.
     Returns:
         table (EvTable or None): An EvTable representation of the prototypes. None
             if no prototypes were found.
@@ -538,6 +548,7 @@ def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_ed
     if key is not None:
         # get specific prototype (one value or exception)
         return PrototypeEvMore(caller, [search_prototype(key, tags)],
+                               session=session,
                                show_non_use=show_non_use,
                                show_non_edit=show_non_edit)
     else:
@@ -545,56 +556,8 @@ def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_ed
         # get prototypes for readonly and db-based prototypes
         module_prots, db_prots = search_prototype(key, tags, return_iterators=True)
         return PrototypeEvMore(caller, db_prots,
+                               session=session,
                                show_non_use=show_non_use, show_non_edit=show_non_edit)
-
-#     # get use-permissions of readonly attributes (edit is always False)
-#     display_tuples = []
-#     for prototype in sorted(prototypes, key=lambda d: d.get("prototype_key", "")):
-#         lock_use = caller.locks.check_lockstring(
-#             caller, prototype.get("prototype_locks", ""), access_type="spawn", default=True
-#         )
-#         if not show_non_use and not lock_use:
-#             continue
-#         if prototype.get("prototype_key", "") in _MODULE_PROTOTYPES:
-#             lock_edit = False
-#         else:
-#             lock_edit = caller.locks.check_lockstring(
-#                 caller, prototype.get("prototype_locks", ""), access_type="edit", default=True
-#             )
-#         if not show_non_edit and not lock_edit:
-#             continue
-#         ptags = []
-#         for ptag in prototype.get("prototype_tags", []):
-#             if is_iter(ptag):
-#                 if len(ptag) > 1:
-#                     ptags.append("{} (category: {}".format(ptag[0], ptag[1]))
-#                 else:
-#                     ptags.append(ptag[0])
-#             else:
-#                 ptags.append(str(ptag))
-#
-#         display_tuples.append(
-#             (
-#                 prototype.get("prototype_key", "<unset>"),
-#                 prototype.get("prototype_desc", "<unset>"),
-#                 "{}/{}".format("Y" if lock_use else "N", "Y" if lock_edit else "N"),
-#                 ",".join(ptags),
-#             )
-#         )
-#
-#     if not display_tuples:
-#         return ""
-#
-#     table = []
-#     width = 78
-#     for i in range(len(display_tuples[0])):
-#         table.append([str(display_tuple[i]) for display_tuple in display_tuples])
-#     table = EvTable("Key", "Desc", "Spawn/Edit", "Tags", table=table, crop=True, width=width)
-#     table.reformat_column(0, width=22)
-#     table.reformat_column(1, width=29)
-#     table.reformat_column(2, width=11, align="c")
-#     table.reformat_column(3, width=16)
-#     return table
 
 
 def validate_prototype(

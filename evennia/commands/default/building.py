@@ -3480,12 +3480,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
     def _list_prototypes(self, key=None, tags=None):
         """Display prototypes as a list, optionally limited by key/tags. """
-        protlib.list_prototypes(self.caller, key=key, tags=tags)
-        # if not table:
-        #     return True
-        # EvMore(
-        #     self.caller, str(table), exit_on_lastpage=True, justify_kwargs=False,
-        # )
+        protlib.list_prototypes(self.caller, key=key, tags=tags, session=self.session)
 
     @interactive
     def _update_existing_objects(self, caller, prototype_key, quiet=False):
