@@ -120,7 +120,7 @@ class GenderCharacter(DefaultCharacter):
         pronoun = _GENDER_PRONOUN_MAP[gender][typ.lower()]
         return pronoun.capitalize() if typ.isupper() else pronoun
 
-    def msg(self, text, from_obj=None, session=None, **kwargs):
+    def msg(self, text=None, from_obj=None, session=None, **kwargs):
         """
         Emits something to a session attached to the object.
         Overloads the default msg() implementation to include
@@ -141,6 +141,10 @@ class GenderCharacter(DefaultCharacter):
             All extra kwargs will be passed on to the protocol.
 
         """
+        if text is None:
+            super().msg(from_obj=from_obj, session=session, **kwargs)
+            return
+
         try:
             if text and isinstance(text, tuple):
                 text = (_RE_GENDER_PRONOUN.sub(self._get_pronoun, text[0]), *text[1:])
