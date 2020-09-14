@@ -410,22 +410,13 @@ def search_prototype(key=None, tags=None, require_single=False, return_iterators
         .filter(scriptdb__pk__in=db_ids, db_key="prototype")
         .values_list("db_value", flat=True)
     )
-    if key:
-        matches = list(db_matches) + module_prototypes
-        nmatches = len(matches)
-        if nmatches > 1:
-            key = key.lower()
-            # avoid duplicates if an exact match exist between the two types
-            filter_matches = [
-                mta for mta in matches if mta.get("prototype_key") and mta["prototype_key"] == key
-            ]
-            if filter_matches and len(filter_matches) < nmatches:
-                matches = filter_matches
-        nmatches = len(matches)
-        if nmatches != 1 and require_single:
-            raise KeyError("Found {} matching prototypes.".format(nmatches))
-        return matches
-    elif return_iterators:
+    if key and require_single:
+        nmodules = len(module_prototypes)
+        ndbprots = db_matches.count()
+        if nmodules + ndbprots != 1:
+            raise KeyError(f"Found {nmodules + ndbprots} matching prototypes.")
+
+    if return_iterators:
         # trying to get the entire set of prototypes - we must paginate
         # the result instead of trying to fetch the entire set at once
         db_pages = Paginator(db_matches, 20)
@@ -478,6 +469,8 @@ class PrototypeEvMore(EvMore):
 
         # get use-permissions of readonly attributes (edit is always False)
         display_tuples = []
+
+        print("page", page)
 
         for prototype in page:
             lock_use = caller.locks.check_lockstring(
@@ -538,16 +531,23 @@ def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_ed
         show_non_edit (bool, optional): Show also prototypes the caller may not edit.
         session (Session, optional): If given, this is used for display formatting.
     Returns:
-        table (EvTable or None): An EvTable representation of the prototypes. None
-            if no prototypes were found.
+        PrototypeEvMore: An EvMore subclass optimized for prototype listings.
+        None: If a `key` was given and no matches was found. In this case the caller
+            has already been notified.
 
     """
     # this allows us to pass lists of empty strings
     tags = [tag for tag in make_iter(tags) if tag]
 
     if key is not None:
+        matches = search_prototype(key, tags)
+        if not matches:
+            caller.msg("No prototypes found.", session=session)
+            return None
+        if len(matches) < 2:
+            matches = [matches]
         # get specific prototype (one value or exception)
-        return PrototypeEvMore(caller, [search_prototype(key, tags)],
+        return PrototypeEvMore(caller, matches,
                                session=session,
                                show_non_use=show_non_use,
                                show_non_edit=show_non_edit)

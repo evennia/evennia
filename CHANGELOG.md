@@ -38,9 +38,7 @@ without arguments starts a full interactive Python console.
   of texts (such as tables). New `justify` bool. Old `justify_kwargs` remains
   but is now only used to pass extra kwargs into the justify function.
 - EvMore `text` argument can now also be a list or a queryset. Querysets will be
-  sliced to only return the required data per page. EvMore takes a new kwarg
-  `page_formatter` which will be called for each page. This allows to customize
-  the display of queryset data, build a new EvTable per page etc.
+  sliced to only return the required data per page.
 - Improve performance of `find` and `objects` commands on large data sets (strikaco)
 - New `CHANNEL_HANDLER_CLASS` setting allows for replacing the ChannelHandler entirely.
 - Made `py` interactive mode support regular quit() and more verbose.
