@@ -248,8 +248,11 @@ class EvMore(object):
         """
         Pretty-print the page.
         """
-        pos = self._npos
-        text = self.page_formatter(self.paginator(pos))
+        pos = 0
+        text = "[no content]"
+        if self._npages > 0:
+            pos = self._npos
+            text = self.page_formatter(self.paginator(pos))
         if show_footer:
             page = _DISPLAY.format(text=text, pageno=pos + 1, pagemax=self._npages)
         else:
@@ -447,6 +450,7 @@ class EvMore(object):
         if inherits_from(inp, "evennia.utils.evtable.EvTable"):
             # an EvTable
             self.init_evtable(inp)
+            self._paginator = self.paginator_index
         elif isinstance(inp, QuerySet):
             # a queryset
             self.init_queryset(inp)
@@ -457,13 +461,15 @@ class EvMore(object):
         elif not isinstance(inp, str):
             # anything else not a str
             self.init_iterable(inp)
-            self._paginator = self.paginator_django
+            self._paginator = self.paginator_index
         elif "\f" in inp:
             # string with \f line-break markers in it
             self.init_f_str(inp)
+            self._paginator = self.paginator_index
         else:
             # a string
             self.init_str(inp)
+            self._paginator = self.paginator_index
 
     def paginator(self, pageno):
         """
