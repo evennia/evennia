@@ -3076,9 +3076,9 @@ class CmdScript(COMMAND_DEFAULT_CLASS):
                 result.append("No scripts defined on %s." % obj.get_display_name(caller))
             elif not self.switches:
                 # view all scripts
-                from evennia.commands.default.system import format_script_list
-
-                result.append(format_script_list(scripts))
+                from evennia.commands.default.system import ScriptEvMore
+                ScriptEvMore(self.caller, scripts.order_by("id"), session=self.session)
+                return
             elif "start" in self.switches:
                 num = sum([obj.scripts.start(script.key) for script in scripts])
                 result.append("%s scripts started on %s." % (num, obj.get_display_name(caller)))
@@ -3285,6 +3285,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
       spawn/search [prototype_keykey][;tag[,tag]]
       spawn/list [tag, tag, ...]
+      spawn/list modules    - list only module-based prototypes
       spawn/show [<prototype_key>]
       spawn/update <prototype_key>
 

@@ -70,9 +70,11 @@ without arguments starts a full interactive Python console.
   candidates, Builders+ will use list, local search and only global search if no match found.
 - Make `cmd.at_post_cmd()` always run after `cmd.func()`, even when the latter uses delays 
   with yield.
-- Add new `return_iterators` kwarg to `search_prototypes` function in order to prepare for 
-  more paginated handling of prototype returns.
-
+- `EvMore` support for db queries and django paginators as well as easier to override for custom
+  pagination (e.g. to create EvTables for every page instead of splittine one table)
+- Using `EvMore pagination`, dramatically improves performance of `spawn/list` and `scripts` listings 
+  (100x speed increase for displaying 1000+ prototypes/scripts).
+  
 
 ## Evennia 0.9 (2018-2019)
 
