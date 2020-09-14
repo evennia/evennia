@@ -391,24 +391,37 @@ def search_prototype(key=None, tags=None, require_single=False, return_iterators
         # exact match on tag(s)
         tags = make_iter(tags)
         tag_categories = ["db_prototype" for _ in tags]
-        db_matches = DbPrototype.objects.get_by_tag(tags, tag_categories)
+        db_matches = DbPrototype.objects.get_by_tag(
+            tags, tag_categories)
     else:
-        db_matches = DbPrototype.objects.all().order_by("id")
+        db_matches = DbPrototype.objects.all()
 
     if key:
         # exact or partial match on key
-        db_matches = (
+        exact_match = (
             db_matches
             .filter(
-                Q(db_key__iexact=key) | Q(db_key__icontains=key))
-            .order_by("id")
+                Q(db_key__iexact=key))
+            .order_by("db_key")
         )
+        if not exact_match:
+            # try with partial match instead
+            db_matches = (
+                db_matches
+                .filter(
+                    Q(db_key__icontains=key))
+                .order_by("db_key")
+            )
+        else:
+            db_matches = exact_match
+
     # convert to prototype
     db_ids = db_matches.values_list("id", flat=True)
     db_matches = (
         Attribute.objects
         .filter(scriptdb__pk__in=db_ids, db_key="prototype")
         .values_list("db_value", flat=True)
+        .order_by("scriptdb__db_key")
     )
     if key and require_single:
         nmodules = len(module_prototypes)
@@ -419,10 +432,9 @@ def search_prototype(key=None, tags=None, require_single=False, return_iterators
     if return_iterators:
         # trying to get the entire set of prototypes - we must paginate
         # the result instead of trying to fetch the entire set at once
-        db_pages = Paginator(db_matches, 20)
-        return module_prototypes, db_pages
+        return db_matches, module_prototypes
     else:
-        # full fetch, no pagination
+        # full fetch, no pagination (compatibility mode)
         return list(db_matches) + module_prototypes
 
 
@@ -451,17 +463,44 @@ class PrototypeEvMore(EvMore):
         """Store some extra properties on the EvMore class"""
         self.show_non_use = kwargs.pop("show_non_use", False)
         self.show_non_edit = kwargs.pop("show_non_edit", False)
-
-        # set up table width
-        width = settings.CLIENT_DEFAULT_WIDTH
-        if not session:
-            # fall back to the first session
-            session = caller.sessions.all()[0]
-        if session:
-            width = session.protocol_flags.get("SCREENWIDTH", {0: width})[0]
-        self.width = width
-
         super().__init__(caller, *args, session=session, **kwargs)
+
+    def init_pages(self, inp):
+        """
+        This will be initialized with a tuple (mod_prototype_list, paginated_db_query)
+        and we must handle these separately since they cannot be paginated in the same
+        way. We will build the prototypes so that the db-prototypes come first (they
+        are likely the most volatile), followed by the mod-prototypes.
+        """
+        dbprot_query, modprot_list = inp
+        # set the number of entries per page to half the reported height of the screen
+        # to account for long descs etc
+        dbprot_paged = Paginator(dbprot_query, max(1, int(self.height / 2)))
+
+        # we separate the different types of data, so we track how many pages there are
+        # of each.
+        n_mod = len(modprot_list)
+        self._npages_mod = n_mod // self.height + (0 if n_mod % self.height == 0 else 1)
+        self._db_count = dbprot_paged.count
+        self._npages_db = dbprot_paged.num_pages if self._db_count > 0 else 0
+        # total number of pages
+        self._npages = self._npages_mod + self._npages_db
+        self._data = (dbprot_paged, modprot_list)
+        self._paginator = self.prototype_paginator
+
+    def prototype_paginator(self, pageno):
+        """
+        The listing is separated in db/mod prototypes, so we need to figure out which
+        one to pick based on the page number. Also, pageno starts from 0.
+        """
+        dbprot_pages, modprot_list = self._data
+
+        if self._db_count and pageno < self._npages_db:
+            return dbprot_pages.page(pageno + 1)
+        else:
+            # get the correct slice, adjusted for the db-prototypes
+            pageno = max(0, pageno - self._npages_db)
+            return modprot_list[pageno * self.height: pageno * self.height + self.height]
 
     def page_formatter(self, page):
         """Input is a queryset page from django.Paginator"""
@@ -470,7 +509,15 @@ class PrototypeEvMore(EvMore):
         # get use-permissions of readonly attributes (edit is always False)
         display_tuples = []
 
-        print("page", page)
+        table = EvTable(
+            "|wKey|n",
+            "|wSpawn/Edit|n",
+            "|wTags|n",
+            "|wDesc|n",
+            border="tablecols",
+            crop=True,
+            width=self.width
+        )
 
         for prototype in page:
             lock_use = caller.locks.check_lockstring(
@@ -490,36 +537,24 @@ class PrototypeEvMore(EvMore):
             for ptag in prototype.get("prototype_tags", []):
                 if is_iter(ptag):
                     if len(ptag) > 1:
-                        ptags.append("{} (category: {})".format(ptag[0], ptag[1]))
+                        ptags.append("{}".format(ptag[0]))
                     else:
                         ptags.append(ptag[0])
                 else:
                     ptags.append(str(ptag))
 
-            display_tuples.append(
-                (
-                    prototype.get("prototype_key", "<unset>"),
-                    "{}/{}".format("Y" if lock_use else "N", "Y" if lock_edit else "N"),
-                    "\n".join(list(set(ptags))),
-                    prototype.get("prototype_desc", "<unset>"),
-                )
+            table.add_row(
+                prototype.get("prototype_key", "<unset>"),
+                "{}/{}".format("Y" if lock_use else "N", "Y" if lock_edit else "N"),
+                ", ".join(list(set(ptags))),
+                prototype.get("prototype_desc", "<unset>"),
             )
 
-        if not display_tuples:
-            return ""
-
-        table = []
-        for i in range(len(display_tuples[0])):
-            table.append([str(display_tuple[i]) for display_tuple in display_tuples])
-        table = EvTable("Key", "Spawn/Edit", "Tags", "Desc", table=table, crop=True, width=self.width)
-        table.reformat_column(0, width=22)
-        table.reformat_column(1, width=9, align="c")
-        table.reformat_column(2)
-        table.reformat_column(3)
         return str(table)
 
 
-def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_edit=True, session=None):
+def list_prototypes(caller, key=None, tags=None, show_non_use=False,
+                    show_non_edit=True, session=None):
     """
     Collate a list of found prototypes based on search criteria and access.
 
@@ -532,33 +567,23 @@ def list_prototypes(caller, key=None, tags=None, show_non_use=False, show_non_ed
         session (Session, optional): If given, this is used for display formatting.
     Returns:
         PrototypeEvMore: An EvMore subclass optimized for prototype listings.
-        None: If a `key` was given and no matches was found. In this case the caller
-            has already been notified.
+        None: If no matches were found. In this case the caller has already been notified.
 
     """
     # this allows us to pass lists of empty strings
     tags = [tag for tag in make_iter(tags) if tag]
 
-    if key is not None:
-        matches = search_prototype(key, tags)
-        if not matches:
-            caller.msg("No prototypes found.", session=session)
-            return None
-        if len(matches) < 2:
-            matches = [matches]
-        # get specific prototype (one value or exception)
-        return PrototypeEvMore(caller, matches,
-                               session=session,
-                               show_non_use=show_non_use,
-                               show_non_edit=show_non_edit)
-    else:
-        # list all
-        # get prototypes for readonly and db-based prototypes
-        module_prots, db_prots = search_prototype(key, tags, return_iterators=True)
-        return PrototypeEvMore(caller, db_prots,
-                               session=session,
-                               show_non_use=show_non_use, show_non_edit=show_non_edit)
+    dbprot_query, modprot_list = search_prototype(key, tags, return_iterators=True)
 
+    if not dbprot_query and not modprot_list:
+        caller.msg("No prototypes found.", session=session)
+        return None
+
+    # get specific prototype (one value or exception)
+    return PrototypeEvMore(caller, (dbprot_query, modprot_list),
+                           session=session,
+                           show_non_use=show_non_use,
+                           show_non_edit=show_non_edit)
 
 def validate_prototype(
     prototype, protkey=None, protparents=None, is_prototype_base=True, strict=True, _flags=None

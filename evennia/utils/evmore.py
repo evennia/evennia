@@ -461,7 +461,7 @@ class EvMore(object):
         elif not isinstance(inp, str):
             # anything else not a str
             self.init_iterable(inp)
-            self._paginator = self.paginator_index
+            self._paginator = self.paginator_slice
         elif "\f" in inp:
             # string with \f line-break markers in it
             self.init_f_str(inp)
@@ -476,7 +476,7 @@ class EvMore(object):
         Paginator. The data operated upon is in `self._data`.
 
         Args:
-            pageno (int): The page number to view, from 1...N
+            pageno (int): The page number to view, from 0...N-1
         Returns:
             str: The page to display (without any decorations, those are added
                 by EvMore).
