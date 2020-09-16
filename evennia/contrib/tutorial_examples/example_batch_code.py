@@ -39,7 +39,7 @@
 #
 
 
-# HEADER
+#HEADER
 
 # everything in this block will be appended to the beginning of
 # all other #CODE blocks when they are executed.
@@ -51,7 +51,7 @@ from evennia import DefaultObject
 limbo = search_object("Limbo")[0]
 
 
-# CODE
+#CODE
 
 # This is the first code block. Within each block, Python
 # code works as normal. Note how we make use if imports and
@@ -67,7 +67,7 @@ red_button = create_object(
 # we take a look at what we created
 caller.msg("A %s was created." % red_button.key)
 
-# CODE
+#CODE
 
 # this code block has 'table' and 'chair' set as deletable
 # objects. This means that when the batchcode processor runs in

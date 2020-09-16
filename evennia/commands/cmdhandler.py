@@ -174,6 +174,27 @@ def _msg_err(receiver, stringtuple):
         )
 
 
+def _process_input(caller, prompt, result, cmd, generator):
+    """
+    Specifically handle the get_input value to send to _progressive_cmd_run as
+    part of yielding from a Command's `func`.
+
+    Args:
+        caller (Character, Account or Session): the caller.
+        prompt (str): The sent prompt.
+        result (str): The unprocessed answer.
+        cmd (Command): The command itself.
+        generator (GeneratorType): The generator.
+
+    Returns:
+        result (bool): Always `False` (stop processing).
+
+    """
+    # We call it using a Twisted deferLater to make sure the input is properly closed.
+    deferLater(reactor, 0, _progressive_cmd_run, cmd, generator, response=result)
+    return False
+
+
 def _progressive_cmd_run(cmd, generator, response=None):
     """
     Progressively call the command that was given in argument. Used
@@ -206,7 +227,15 @@ def _progressive_cmd_run(cmd, generator, response=None):
         else:
             value = generator.send(response)
     except StopIteration:
-        pass
+        # duplicated from cmdhandler._run_command, to have these
+        # run in the right order while staying inside the deferred
+        cmd.at_post_cmd()
+        if cmd.save_for_next:
+            # store a reference to this command, possibly
+            # accessible by the next command.
+            cmd.caller.ndb.last_cmd = copy(cmd)
+        else:
+            cmd.caller.ndb.last_cmd = None
     else:
         if isinstance(value, (int, float)):
             utils.delay(value, _progressive_cmd_run, cmd, generator)
@@ -214,27 +243,6 @@ def _progressive_cmd_run(cmd, generator, response=None):
             _GET_INPUT(cmd.caller, value, _process_input, cmd=cmd, generator=generator)
         else:
             raise ValueError("unknown type for a yielded value in command: {}".format(type(value)))
-
-
-def _process_input(caller, prompt, result, cmd, generator):
-    """
-    Specifically handle the get_input value to send to _progressive_cmd_run as
-    part of yielding from a Command's `func`.
-
-    Args:
-        caller (Character, Account or Session): the caller.
-        prompt (str): The sent prompt.
-        result (str): The unprocessed answer.
-        cmd (Command): The command itself.
-        generator (GeneratorType): The generator.
-
-    Returns:
-        result (bool): Always `False` (stop processing).
-
-    """
-    # We call it using a Twisted deferLater to make sure the input is properly closed.
-    deferLater(reactor, 0, _progressive_cmd_run, cmd, generator, response=result)
-    return False
 
 
 # custom Exceptions
@@ -632,19 +640,23 @@ def cmdhandler(
             if isinstance(ret, types.GeneratorType):
                 # cmd.func() is a generator, execute progressively
                 _progressive_cmd_run(cmd, ret)
-                yield None
+                ret = yield ret
+                # note that the _progressive_cmd_run will itself run
+                # the at_post_cmd etc as it finishes; this is a bit of
+                # code duplication but there seems to be no way to
+                # catch the StopIteration here (it's not in the same
+                # frame since this is in a deferred chain)
             else:
                 ret = yield ret
+                # post-command hook
+                yield cmd.at_post_cmd()
 
-            # post-command hook
-            yield cmd.at_post_cmd()
-
-            if cmd.save_for_next:
-                # store a reference to this command, possibly
-                # accessible by the next command.
-                caller.ndb.last_cmd = yield copy(cmd)
-            else:
-                caller.ndb.last_cmd = None
+                if cmd.save_for_next:
+                    # store a reference to this command, possibly
+                    # accessible by the next command.
+                    caller.ndb.last_cmd = yield copy(cmd)
+                else:
+                    caller.ndb.last_cmd = None
 
             # return result to the deferred
             returnValue(ret)

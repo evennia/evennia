@@ -56,9 +56,7 @@ without arguments starts a full interactive Python console.
   of texts (such as tables). New `justify` bool. Old `justify_kwargs` remains
   but is now only used to pass extra kwargs into the justify function.
 - EvMore `text` argument can now also be a list or a queryset. Querysets will be
-  sliced to only return the required data per page. EvMore takes a new kwarg
-  `page_formatter` which will be called for each page. This allows to customize
-  the display of queryset data, build a new EvTable per page etc.
+  sliced to only return the required data per page.
 - Improve performance of `find` and `objects` commands on large data sets (strikaco)
 - New `CHANNEL_HANDLER_CLASS` setting allows for replacing the ChannelHandler entirely.
 - Made `py` interactive mode support regular quit() and more verbose.
@@ -88,7 +86,13 @@ without arguments starts a full interactive Python console.
 - Make `INLINEFUNC_STACK_MAXSIZE` default visible in `settings_default.py`.
 - Change how `ic` finds puppets; non-priveleged users will use `_playable_characters` list as
   candidates, Builders+ will use list, local search and only global search if no match found.
-
+- Make `cmd.at_post_cmd()` always run after `cmd.func()`, even when the latter uses delays 
+  with yield.
+- `EvMore` support for db queries and django paginators as well as easier to override for custom
+  pagination (e.g. to create EvTables for every page instead of splittine one table)
+- Using `EvMore pagination`, dramatically improves performance of `spawn/list` and `scripts` listings 
+  (100x speed increase for displaying 1000+ prototypes/scripts).
+  
 
 ## Evennia 0.9 (2018-2019)
 

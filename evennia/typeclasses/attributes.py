@@ -778,6 +778,7 @@ class InMemoryAttributeBackend(IAttributeBackend):
         See parent class.
 
         strvalue has no meaning for InMemory attributes.
+
         """
         new_attr = self._attrclass(
             pk=self._next_id(), key=key, category=category, lock_storage=lockstring, value=value
