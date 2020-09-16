@@ -3,8 +3,10 @@ Unit tests for the prototypes and spawner
 
 """
 
-from random import randint
+from random import randint, sample
 import mock
+import uuid
+from time import time
 from anything import Something
 from django.test.utils import override_settings
 from evennia.utils.test_resources import EvenniaTest
@@ -628,8 +630,10 @@ class TestPrototypeStorage(EvenniaTest):
 
         # partial match
         with mock.patch("evennia.prototypes.prototypes._MODULE_PROTOTYPES", {}):
-            self.assertEqual(list(protlib.search_prototype("prot")), [prot1b, prot2, prot3])
-            self.assertEqual(list(protlib.search_prototype(tags="foo1")), [prot1b, prot2, prot3])
+            self.assertCountEqual(
+                protlib.search_prototype("prot"), [prot1b, prot2, prot3])
+            self.assertCountEqual(
+                protlib.search_prototype(tags="foo1"), [prot1b, prot2, prot3])
 
         self.assertTrue(str(str(protlib.list_prototypes(self.char1))))
 
@@ -1073,3 +1077,29 @@ class TestOLCMenu(TestEvMenu):
             ["node_index", "node_index", "node_index"],
         ],
     ]
+
+class PrototypeCrashTest(EvenniaTest):
+
+    # increase this to 1000 for optimization testing
+    num_prototypes = 10
+
+    def create(self, num=None):
+        if not num:
+            num = self.num_prototypes
+        # print(f"Creating {num} additional prototypes...")
+        for x in range(num):
+            prot = {
+                'prototype_key': str(uuid.uuid4()),
+                'some_attributes': [str(uuid.uuid4()) for x in range(10)],
+                'prototype_tags': list(sample(['demo', 'test', 'stuff'], 2)),
+            }
+            protlib.save_prototype(prot)
+
+    def test_prototype_dos(self, *args, **kwargs):
+        num_prototypes = self.num_prototypes
+        for x in range(2):
+            self.create(num_prototypes)
+            # print("Attempting to list prototypes...")
+            # start_time = time()
+            self.char1.execute_cmd('spawn/list')
+            # print(f"Prototypes listed in {time()-start_time} seconds.")

@@ -2099,6 +2099,10 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
         for num, result in enumerate(matches):
             # we need to consider Commands, where .aliases is a list
             aliases = result.aliases.all() if hasattr(result.aliases, "all") else result.aliases
+            # remove any pluralization aliases
+            aliases = [alias for alias in aliases if
+                       hasattr(alias, "category")
+                       and alias.category not in ("plural_key", )]
             error += _MULTIMATCH_TEMPLATE.format(
                 number=num + 1,
                 name=result.get_display_name(caller)

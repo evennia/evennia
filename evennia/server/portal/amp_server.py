@@ -160,7 +160,7 @@ class AMPServerProtocol(amp.AMPMultiConnectionProtocol):
 
         """
         # start the Server
-        print("Portal starting server ... {}".format(server_twistd_cmd))
+        print("Portal starting server ... ")
         process = None
         with open(settings.SERVER_LOG_FILE, "a") as logfile:
             # we link stdout to a file in order to catch

@@ -20,11 +20,11 @@ needed on the Evennia side.
 
 MSSPTable = {
     # Required fields
-    "NAME": "Evennia",
+    "NAME": "Mygame",  # usually the same as SERVERNAME
     # Generic
-    "CRAWL DELAY": "-1",  # limit how often crawler updates the listing. -1 for no limit
-    "HOSTNAME": "",  # current or new hostname
-    "PORT": ["4000"],  # most important port should be *last* in list!
+    "CRAWL DELAY": "-1",  # limit how often crawler may update the listing. -1 for no limit
+    "HOSTNAME": "",  # telnet hostname
+    "PORT": ["4000"],  # telnet port - most important port should be *last* in list!
     "CODEBASE": "Evennia",
     "CONTACT": "",  # email for contacting the mud
     "CREATED": "",  # year MUD was created
@@ -33,7 +33,7 @@ MSSPTable = {
     "LANGUAGE": "",  # name of language used, e.g. English
     "LOCATION": "",  # full English name of server country
     "MINIMUM AGE": "0",  # set to 0 if not applicable
-    "WEBSITE": "www.evennia.com",
+    "WEBSITE": "",  # http:// address to your game website
     # Categorisation
     "FAMILY": "Custom",  # evennia goes under 'Custom'
     "GENRE": "None",  # Adult, Fantasy, Historical, Horror, Modern, None, or Science Fiction
@@ -41,10 +41,10 @@ MSSPTable = {
     # Player versus Player, Player versus Environment,
     # Roleplaying, Simulation, Social or Strategy
     "GAMEPLAY": "",
-    "STATUS": "Open Beta",  # Alpha, Closed Beta, Open Beta, Live
+    "STATUS": "Open Beta",  # Allowed: Alpha, Closed Beta, Open Beta, Live
     "GAMESYSTEM": "Custom",  # D&D, d20 System, World of Darkness, etc. Use Custom if homebrew
     # Subgenre: LASG, Medieval Fantasy, World War II, Frankenstein,
-    # Cyberpunk, Dragonlance, etc. Or None if not available.
+    # Cyberpunk, Dragonlance, etc. Or None if not applicable.
     "SUBGENRE": "None",
     # World
     "AREAS": "0",
@@ -56,7 +56,7 @@ MSSPTable = {
     "LEVELS": "0",  # use 0 if level-less
     "RACES": "0",  # use 0 if race-less
     "SKILLS": "0",  # use 0 if skill-less
-    # Protocols set to 1 or 0)
+    # Protocols set to 1 or 0; should usually not be changed)
     "ANSI": "1",
     "GMCP": "1",
     "MSDP": "1",

@@ -159,7 +159,7 @@ class TestCreateMessage(EvenniaTest):
             locks=locks,
             tags=tags,
         )
-        self.assertEqual(msg.receivers, [self.char1, self.char2])
+        self.assertEqual(set(msg.receivers), set([self.char1, self.char2]))
         self.assertTrue(all(lock in msg.locks.all() for lock in locks.split(";")))
         self.assertEqual(msg.tags.all(), tags)
 

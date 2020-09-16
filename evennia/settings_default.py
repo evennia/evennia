@@ -740,9 +740,9 @@ CHANNEL_CONNECTINFO = None
 GAME_INDEX_ENABLED = False
 # This dict
 GAME_INDEX_LISTING = {
-    "game_name": SERVERNAME,
+    "game_name": "Mygame",  # usually SERVERNAME
     "game_status": "pre-alpha",  # pre-alpha, alpha, beta or launched
-    "short_description": GAME_SLOGAN,
+    "short_description": "",  # could be GAME_SLOGAN
     "long_description": "",
     "listing_contact": "",  # email
     "telnet_hostname": "",  # mygame.com
