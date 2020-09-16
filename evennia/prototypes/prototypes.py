@@ -167,7 +167,8 @@ for mod in settings.PROTOTYPE_MODULES:
                     if "prototype_locks" in prot
                     else "use:all();edit:false()"
                 ),
-                "prototype_tags": list(set(make_iter(prot.get("prototype_tags", [])) + ["module"])),
+                "prototype_tags": list(set(list(
+                    make_iter(prot.get("prototype_tags", []))) + ["module"])),
             }
         )
         _MODULE_PROTOTYPES[actual_prot_key] = prot
