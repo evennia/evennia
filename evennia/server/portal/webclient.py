@@ -22,6 +22,7 @@ from evennia.utils.utils import mod_import, class_from_module
 from evennia.utils.ansi import parse_ansi
 from evennia.utils.text2html import parse_html
 from autobahn.twisted.websocket import WebSocketServerProtocol
+from autobahn.exception import Disconnected
 
 _RE_SCREENREADER_REGEX = re.compile(
     r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE
@@ -150,7 +151,7 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
         # in case anyone wants to expose this functionality later.
         #
         # sendClose() under autobahn/websocket/interfaces.py
-        self.sendClose(CLOSE_NORMAL, reason)
+        ret = self.sendClose(CLOSE_NORMAL, reason)
 
     def onClose(self, wasClean, code=None, reason=None):
         """
@@ -191,7 +192,12 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
             line (str): Text to send.
 
         """
-        return self.sendMessage(line.encode())
+        try:
+            return self.sendMessage(line.encode())
+        except Disconnected:
+            # this can happen on an unclean close of certain browsers.
+            # it means this link is actually already closed.
+            self.disconnect(reason="Browser already closed.")
 
     def at_login(self):
         csession = self.get_client_session()
@@ -249,8 +255,6 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
                 return
         else:
             return
-        # just to be sure
-        text = to_str(text)
 
         flags = self.protocol_flags
 

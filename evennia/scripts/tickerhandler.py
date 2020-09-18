@@ -73,7 +73,7 @@ from evennia.scripts.scripts import ExtendedLoopingCall
 from evennia.server.models import ServerConfig
 from evennia.utils.logger import log_trace, log_err
 from evennia.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj
-from evennia.utils import variable_from_module
+from evennia.utils import variable_from_module, inherits_from
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
@@ -319,7 +319,6 @@ class TickerHandler(object):
             callback (function or method): This is either a stand-alone
                 function or class method on a typeclassed entitye (that is,
                 an entity that can be saved to the database).
-
         Returns:
             ret (tuple): This is a tuple of the form `(obj, path, callfunc)`,
                 where `obj` is the database object the callback is defined on
@@ -327,6 +326,8 @@ class TickerHandler(object):
                 the python-path to the stand-alone function (`None` if a method).
                 The `callfunc` is either the name of the method to call or the
                 callable function object itself.
+        Raises:
+            TypeError: If the callback is of an unsupported type.
 
         """
         outobj, outpath, outcallfunc = None, None, None
@@ -337,8 +338,15 @@ class TickerHandler(object):
             elif inspect.isfunction(callback):
                 outpath = "%s.%s" % (callback.__module__, callback.__name__)
                 outcallfunc = callback
+            else:
+                raise TypeError(f"{callback} is not a method or function.")
         else:
-            raise TypeError("%s is not a callable function or method." % callback)
+            raise TypeError(f"{callback} is not a callable function or method.")
+
+        if outobj and not inherits_from(outobj, "evennia.typeclasses.models.TypedObject"):
+            raise TypeError(f"{callback} is a method on a normal object - it must "
+                            "be either a method on a typeclass, or a stand-alone function.")
+
         return outobj, outpath, outcallfunc
 
     def _store_key(self, obj, path, interval, callfunc, idstring="", persistent=True):
@@ -504,12 +512,6 @@ class TickerHandler(object):
             when wanting to modify/remove the ticker later.
 
         """
-        if isinstance(callback, int):
-            raise RuntimeError(
-                "TICKER_HANDLER.add has changed: "
-                "the interval is now the first argument, callback the second."
-            )
-
         obj, path, callfunc = self._get_callback(callback)
         store_key = self._store_key(obj, path, interval, callfunc, idstring, persistent)
         kwargs["_obj"] = obj
