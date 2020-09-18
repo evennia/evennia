@@ -40,6 +40,7 @@ CLOSE_NORMAL = WebSocketServerProtocol.CLOSE_STATUS_CODE_NORMAL
 #   called when the browser is navigating away from the page
 GOING_AWAY = WebSocketServerProtocol.CLOSE_STATUS_CODE_GOING_AWAY
 
+STATE_CLOSING = WebSocketServerProtocol.STATE_CLOSING
 
 class WebSocketClient(WebSocketServerProtocol, Session):
     """
@@ -151,7 +152,7 @@ class WebSocketClient(WebSocketServerProtocol, Session):
         # in case anyone wants to expose this functionality later.
         #
         # sendClose() under autobahn/websocket/interfaces.py
-        self.sendClose(CLOSE_NORMAL, reason)
+        ret = self.sendClose(CLOSE_NORMAL, reason)
 
     def onClose(self, wasClean, code=None, reason=None):
         """
