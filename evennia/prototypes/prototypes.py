@@ -167,8 +167,9 @@ for mod in settings.PROTOTYPE_MODULES:
                     if "prototype_locks" in prot
                     else "use:all();edit:false()"
                 ),
-                "prototype_tags": list(set(list(
-                    make_iter(prot.get("prototype_tags", []))) + ["module"])),
+                "prototype_tags": list(
+                    set(list(make_iter(prot.get("prototype_tags", []))) + ["module"])
+                ),
             }
         )
         _MODULE_PROTOTYPES[actual_prot_key] = prot
@@ -392,35 +393,23 @@ def search_prototype(key=None, tags=None, require_single=False, return_iterators
         # exact match on tag(s)
         tags = make_iter(tags)
         tag_categories = ["db_prototype" for _ in tags]
-        db_matches = DbPrototype.objects.get_by_tag(
-            tags, tag_categories)
+        db_matches = DbPrototype.objects.get_by_tag(tags, tag_categories)
     else:
         db_matches = DbPrototype.objects.all()
 
     if key:
         # exact or partial match on key
-        exact_match = (
-            db_matches
-            .filter(
-                Q(db_key__iexact=key))
-            .order_by("db_key")
-        )
+        exact_match = db_matches.filter(Q(db_key__iexact=key)).order_by("db_key")
         if not exact_match:
             # try with partial match instead
-            db_matches = (
-                db_matches
-                .filter(
-                    Q(db_key__icontains=key))
-                .order_by("db_key")
-            )
+            db_matches = db_matches.filter(Q(db_key__icontains=key)).order_by("db_key")
         else:
             db_matches = exact_match
 
     # convert to prototype
     db_ids = db_matches.values_list("id", flat=True)
     db_matches = (
-        Attribute.objects
-        .filter(scriptdb__pk__in=db_ids, db_key="prototype")
+        Attribute.objects.filter(scriptdb__pk__in=db_ids, db_key="prototype")
         .values_list("db_value", flat=True)
         .order_by("scriptdb__db_key")
     )
@@ -501,7 +490,7 @@ class PrototypeEvMore(EvMore):
         else:
             # get the correct slice, adjusted for the db-prototypes
             pageno = max(0, pageno - self._npages_db)
-            return modprot_list[pageno * self.height: pageno * self.height + self.height]
+            return modprot_list[pageno * self.height : pageno * self.height + self.height]
 
     def page_formatter(self, page):
         """Input is a queryset page from django.Paginator"""
@@ -517,7 +506,7 @@ class PrototypeEvMore(EvMore):
             "|wDesc|n",
             border="tablecols",
             crop=True,
-            width=self.width
+            width=self.width,
         )
 
         for prototype in page:
@@ -554,8 +543,9 @@ class PrototypeEvMore(EvMore):
         return str(table)
 
 
-def list_prototypes(caller, key=None, tags=None, show_non_use=False,
-                    show_non_edit=True, session=None):
+def list_prototypes(
+    caller, key=None, tags=None, show_non_use=False, show_non_edit=True, session=None
+):
     """
     Collate a list of found prototypes based on search criteria and access.
 
@@ -581,10 +571,14 @@ def list_prototypes(caller, key=None, tags=None, show_non_use=False,
         return None
 
     # get specific prototype (one value or exception)
-    return PrototypeEvMore(caller, (dbprot_query, modprot_list),
-                           session=session,
-                           show_non_use=show_non_use,
-                           show_non_edit=show_non_edit)
+    return PrototypeEvMore(
+        caller,
+        (dbprot_query, modprot_list),
+        session=session,
+        show_non_use=show_non_use,
+        show_non_edit=show_non_edit,
+    )
+
 
 def validate_prototype(
     prototype, protkey=None, protparents=None, is_prototype_base=True, strict=True, _flags=None

@@ -176,17 +176,14 @@ def node_start(wizard):
             node_game_index_start,
             {},
         ),
-        "2": ("MSSP setup (for mud-list crawlers)",
-              node_mssp_start, {}
-              ),
+        "2": ("MSSP setup (for mud-list crawlers)", node_mssp_start, {}),
         # "3": ("Add Grapevine listing",
         #       node_grapevine_start, {}),
         # "4": ("Add IRC link",
         #      "node_irc_start", {}),
         # "5" ("Add RSS feed",
         #       "node_rss_start", {}),
-        "s": ("View and (optionally) Save created settings",
-              node_view_and_apply_settings, {}),
+        "s": ("View and (optionally) Save created settings", node_view_and_apply_settings, {}),
         "q": ("Quit", lambda *args: sys.exit(), {}),
     }
 
@@ -263,7 +260,7 @@ def node_game_index_fields(wizard, status=None):
         return True
 
     wizard.display(text)
-    wizard.game_index_listing['game_name'] = wizard.ask_input(
+    wizard.game_index_listing["game_name"] = wizard.ask_input(
         default=name_default, validator=name_validator
     )
 
@@ -494,8 +491,9 @@ def node_view_and_apply_settings(wizard):
 
     # game index
     game_index_save_text = ""
-    game_index_listing = (wizard.game_index_listing if
-                          hasattr(wizard, "game_index_listing") else None)
+    game_index_listing = (
+        wizard.game_index_listing if hasattr(wizard, "game_index_listing") else None
+    )
     if not game_index_listing and settings.GAME_INDEX_ENABLED:
         game_index_listing = settings.GAME_INDEX_LISTING
     if game_index_listing:

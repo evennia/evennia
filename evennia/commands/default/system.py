@@ -439,7 +439,7 @@ class ScriptEvMore(EvMore):
             "|wdesc|n",
             align="r",
             border="tablecols",
-            width=self.width
+            width=self.width,
         )
 
         for script in scripts:
@@ -570,7 +570,7 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
             caller.msg(string)
         else:
             # No stopping or validation. We just want to view things.
-            ScriptEvMore(caller, scripts.order_by('id'), session=self.session)
+            ScriptEvMore(caller, scripts.order_by("id"), session=self.session)
 
 
 class CmdObjects(COMMAND_DEFAULT_CLASS):
