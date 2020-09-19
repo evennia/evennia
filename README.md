@@ -70,8 +70,8 @@ Welcome!
 [wiki]: https://github.com/evennia/evennia/wiki
 [screenshot]: https://user-images.githubusercontent.com/294267/30773728-ea45afb6-a076-11e7-8820-49be2168a6b8.png
 [logo]: https://github.com/evennia/evennia/blob/master/evennia/web/website/static/website/images/evennia_logo.png
-[unittestciimg]: https://github.com/evennia/evennia/workflows/Evennia%20test-suite%20and%20coveralls/badge.svg
-[unittestcilink]: https://github.com/evennia/evennia/actions?query=workflow%3A%22Evennia+test-suite+and+coveralls%22
+[unittestciimg]: https://github.com/evennia/evennia/workflows/test-suite/badge.svg
+[unittestcilink]: https://github.com/evennia/evennia/actions?query=workflow%3Atest-suite
 [coverimg]: https://coveralls.io/repos/github/evennia/evennia/badge.svg?branch=master
 [coverlink]: https://coveralls.io/github/evennia/evennia?branch=master
 [introduction]: https://github.com/evennia/evennia/wiki/Evennia-Introduction
