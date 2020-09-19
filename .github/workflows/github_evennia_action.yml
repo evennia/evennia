@@ -14,10 +14,10 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
         python-version: [3.7, 3.8]
         TESTING_DB: ['sqlite3', 'postgresql', 'mysql']
-        fail-fast: True
 
     steps:
 
