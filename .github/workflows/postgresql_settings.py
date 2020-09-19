@@ -40,23 +40,13 @@ SERVERNAME = "testing_mygame"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.mysql",
+        "ENGINE": "django.db.backends.postgresql",
         "NAME": "evennia",
         "USER": "evennia",
         "PASSWORD": "password",
-        "HOST": "127.0.0.1",
-        "PORT": "",  # use default port
-        "OPTIONS": {
-            "charset": "utf8mb4",
-            "init_command": "set collation_connection=utf8mb4_unicode_ci",
-        },
-        "TEST": {
-            "NAME": "evennia",
-            "OPTIONS": {
-                "charset": "utf8mb4",
-                'init_command': 'set collation_connection=utf8mb4_unicode_ci'
-            },
-        },
+        "HOST": "localhost",
+        "PORT": "",  # use default
+        "TEST": {"NAME": "default"},
     }
 }
 
