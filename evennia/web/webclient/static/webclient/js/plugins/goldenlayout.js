@@ -535,6 +535,7 @@ let goldenlayout = (function () {
         onText: onText,
         getGL: function () { return myLayout; },
         addKnownType: addKnownType,
+        onTabCreate: onTabCreate,
     }
 }());
 window.plugin_handler.add("goldenlayout", goldenlayout);
