@@ -223,7 +223,7 @@ autodoc_default_options = {
 }
 
 autodoc_member_order = "bysource"
-autodoc_typehints = "description"
+# autodoc_typehints = "description"
 
 
 def autodoc_skip_member(app, what, name, obj, skip, options):
@@ -315,8 +315,7 @@ def setup(app):
     app.add_transform(AutoStructify)
 
     # build toctree file
-    sys.path.insert(1, os.path.join(
-        os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "docs"))
+    sys.path.insert(1, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
     from docs.pylib import auto_link_remapper
 
     auto_link_remapper.auto_link_remapper()

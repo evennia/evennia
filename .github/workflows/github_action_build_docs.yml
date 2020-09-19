@@ -36,6 +36,7 @@ jobs:
 
       # fail early here
       - name: Quick-test docs (no autodocs)
+        continue-on-error: true
         run: |
           cd docs/
           make quick
