@@ -1239,7 +1239,6 @@ class TestBuilding(CommandTest):
         )
 
     def test_spawn(self):
-
         def get_object(commandTest, obj_key):
             # A helper function to get a spawned object and
             # check that it exists in the process.

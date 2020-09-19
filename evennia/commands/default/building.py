@@ -3077,6 +3077,7 @@ class CmdScript(COMMAND_DEFAULT_CLASS):
             elif not self.switches:
                 # view all scripts
                 from evennia.commands.default.system import ScriptEvMore
+
                 ScriptEvMore(self.caller, scripts.order_by("id"), session=self.session)
                 return
             elif "start" in self.switches:

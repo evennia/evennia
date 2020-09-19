@@ -344,8 +344,10 @@ class TickerHandler(object):
             raise TypeError(f"{callback} is not a callable function or method.")
 
         if outobj and not inherits_from(outobj, "evennia.typeclasses.models.TypedObject"):
-            raise TypeError(f"{callback} is a method on a normal object - it must "
-                            "be either a method on a typeclass, or a stand-alone function.")
+            raise TypeError(
+                f"{callback} is a method on a normal object - it must "
+                "be either a method on a typeclass, or a stand-alone function."
+            )
 
         return outobj, outpath, outcallfunc
 

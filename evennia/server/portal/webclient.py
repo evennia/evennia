@@ -42,6 +42,7 @@ GOING_AWAY = WebSocketServerProtocol.CLOSE_STATUS_CODE_GOING_AWAY
 
 STATE_CLOSING = WebSocketServerProtocol.STATE_CLOSING
 
+
 class WebSocketClient(WebSocketServerProtocol, Session):
     """
     Implements the server-side of the Websocket connection.
