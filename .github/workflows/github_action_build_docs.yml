@@ -6,11 +6,11 @@ on:
   push:
     branches: [ master, develop ]
     paths:
-      - 'docs/source/**'
+      - 'docs/**'
   pull_request:
     branches: [ master, develop ]
     paths:
-      - 'docs/source/**'
+      - 'docs/**'
 
 jobs: 
   build:
@@ -53,6 +53,8 @@ jobs:
       - name: Deploy docs (only from master/develop branch)
         if: ${{ github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'}}
         run: |
+          git config --global user.email "docbuilder@evennia.com"
+          git config --global user.name "Doc builder mechanism"
           cd docs
           make mv-local
           echo "Would deploy here!"
