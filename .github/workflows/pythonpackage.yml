@@ -17,7 +17,7 @@ jobs:
       matrix:
         python-version: [3.7, 3.8]
         # TODO: mysql disabled, not able to connect to it so far
-        TESTING_DB: ['sqlite3', 'postgresql']  # , 'mysql']
+        TESTING_DB: ['sqlite3', 'postgresql', 'mysql']
       fail-fast: False
 
     steps:
@@ -36,6 +36,7 @@ jobs:
       uses: mirromutth/mysql-action@v1.1
       if: ${{ matrix.TESTING_DB == 'mysql'}}
       with:
+        host port: 3306
         character set server: 'utf8mb4'
         collation server: 'utf8mb4_unicode_ci'
         mysql database: 'evennia'
