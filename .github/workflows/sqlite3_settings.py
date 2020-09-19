@@ -36,30 +36,7 @@ from evennia.settings_default import *
 # This is the name of your game. Make it catchy!
 SERVERNAME = "testing_mygame"
 
-# Testing database types
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": "evennia",
-        "USER": "evennia",
-        "PASSWORD": "password",
-        "HOST": "127.0.0.1",
-        "PORT": "",  # use default port
-        "OPTIONS": {
-            "charset": "utf8mb4",
-            "init_command": "set collation_connection=utf8mb4_unicode_ci",
-        },
-        "TEST": {
-            "NAME": "evennia",
-            "OPTIONS": {
-                "charset": "utf8mb4",
-                'init_command': 'set collation_connection=utf8mb4_unicode_ci'
-            },
-        },
-    }
-}
-
+# Using default sqlite3 settings
 
 ######################################################################
 # Settings given in secret_settings.py override those in this file.

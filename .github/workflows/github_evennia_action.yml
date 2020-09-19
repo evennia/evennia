@@ -16,9 +16,8 @@ jobs:
     strategy:
       matrix:
         python-version: [3.7, 3.8]
-        # TODO: mysql disabled, not able to connect to it so far
         TESTING_DB: ['sqlite3', 'postgresql', 'mysql']
-        # fail-fast: false
+        fail-fast: false
 
     steps:
 
@@ -76,7 +75,7 @@ jobs:
     - name: Initialize evennia
       run: |
         evennia --init testing_mygame
-        cp .travis/${{ matrix.TESTING_DB }}_settings.py testing_mygame/server/conf/settings.py
+        cp .github/workflows/${{ matrix.TESTING_DB }}_settings.py testing_mygame/server/conf/settings.py
         cd testing_mygame
         evennia migrate
         evennia collectstatic --noinput
