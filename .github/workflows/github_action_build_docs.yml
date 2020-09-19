@@ -12,7 +12,7 @@ on:
     paths:
       - 'docs/**'
 
-jobs: 
+jobs:
   build:
     runs-on: ubuntu-latest
 
@@ -21,13 +21,13 @@ jobs:
         python-version: [3.7]
 
     steps:
-      - uses: actions/checkout@v2 
+      - uses: actions/checkout@v2
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-       
+
       - name: Install doc-building dependencies
         run: |
           python -m pip install --upgrade pip
@@ -36,10 +36,9 @@ jobs:
 
       # fail early here
       - name: Quick-test docs (no autodocs)
-        continue-on-error: true
         run: |
           cd docs/
-          make quick 
+          make quick
 
       # full game dir needed for mv-local
       - name: Set up evennia game dir
