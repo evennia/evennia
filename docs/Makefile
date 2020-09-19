@@ -112,6 +112,10 @@ quick:
 	@echo "Documentation built (single version, no autodocs)."
 	@echo "To see result, open evennia/docs/build/html/index.html in a browser."
 
+# abort on warnings too
+quickstrict:
+	SPHINXOPTS=-W make quick
+
 local:
 	make _check-env
 	make clean
