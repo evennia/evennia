@@ -315,8 +315,8 @@ def setup(app):
     app.add_transform(AutoStructify)
 
     # build toctree file
-    sys.path.insert(1, os.path.dirname(os.path.dirname(__file__)))
-    print("sys.path:", sys.path)
+    sys.path.insert(1, os.path.join(
+        os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "docs"))
     from docs.pylib import auto_link_remapper
 
     auto_link_remapper.auto_link_remapper()
