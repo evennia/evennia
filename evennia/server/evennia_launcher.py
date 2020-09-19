@@ -1278,8 +1278,11 @@ def check_main_evennia_dependencies():
         # only the main version (1.5, not 1.5.4.0)
         dversion_main = ".".join(dversion.split(".")[:2])
         if LooseVersion(dversion) < LooseVersion(DJANGO_MIN):
-            print(ERROR_DJANGO_MIN.format(dversion=dversion_main, django_min=DJANGO_MIN,
-                                          django_lt=DJANGO_LT))
+            print(
+                ERROR_DJANGO_MIN.format(
+                    dversion=dversion_main, django_min=DJANGO_MIN, django_lt=DJANGO_LT
+                )
+            )
             error = True
         elif LooseVersion(DJANGO_LT) <= LooseVersion(dversion_main):
             print(NOTE_DJANGO_NEW.format(dversion=dversion_main, django_rec=DJANGO_LT))

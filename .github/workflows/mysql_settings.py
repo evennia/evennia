@@ -44,18 +44,17 @@ DATABASES = {
         "NAME": "evennia",
         "USER": "evennia",
         "PASSWORD": "password",
-        "HOST": "localhost",
+        "HOST": "127.0.0.1",
         "PORT": "",  # use default port
         "OPTIONS": {
             "charset": "utf8mb4",
             "init_command": "set collation_connection=utf8mb4_unicode_ci",
         },
         "TEST": {
-            "NAME": "default",
+            "NAME": "evennia",
             "OPTIONS": {
                 "charset": "utf8mb4",
-                # 'init_command': 'set collation_connection=utf8mb4_unicode_ci'
-                "init_command": "SET NAMES 'utf8mb4'",
+                "init_command": "set collation_connection=utf8mb4_unicode_ci",
             },
         },
     }
