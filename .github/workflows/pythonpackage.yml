@@ -36,7 +36,6 @@ jobs:
       uses: mirromutth/mysql-action@v1.1
       if: ${{ matrix.TESTING_DB == 'mysql'}}
       with:
-        mysql version: '5.7'
         character set server: 'utf8mb4'
         collation server: 'utf8mb4_unicode_ci'
         mysql database: 'evennia'
@@ -73,7 +72,7 @@ jobs:
       if: ${{ github.ref == 'refs/heads/develop' }}
       run: pip install -r requirements_extra.txt
 
-    - name: Install and initialize evennia
+    - name: Initialize evennia
       run: |
         evennia --init testing_mygame
         cp .travis/${{ matrix.TESTING_DB }}_settings.py testing_mygame/server/conf/settings.py
@@ -87,16 +86,21 @@ jobs:
         coverage run --source=../evennia --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service ../bin/unix/evennia test --settings=settings --keepdb evennia
         coverage xml
 
-    # we only want to run coverall once, so we only do it for one of the matrix combinations
+    # we only want to run coverall/codacy once, so we only do it for one of the matrix combinations
+    # it's also not critical if pushing to either service fails (happens for PRs since env is not
+    # available outside of the evennia org)
     - name: Send data to Coveralls
       if: ${{ matrix.TESTING_DB == 'sqlite3' && matrix.python-version == 3.7 }}
+      continue-on-error: true
       env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
       run: |
         cd testing_mygame
         coveralls
+
     - name: Send data to Codacy
       if: ${{ matrix.TESTING_DB == 'sqlite3' && matrix.python-version == 3.7 }}
+      continue-on-error: true
       uses: codacy/codacy-coverage-reporter-action@master
       with:
         project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
