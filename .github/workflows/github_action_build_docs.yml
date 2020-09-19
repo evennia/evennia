@@ -34,12 +34,11 @@ jobs:
           cd docs/
           make install
 
-      # fail early here
+      # fail early here, run quickstrict with aborts also on warnings
       - name: Quick-test docs (no autodocs)
-        continue-on-error: true
         run: |
           cd docs/
-          make quick
+          make quickstrict
 
       # full game dir needed for mv-local
       - name: Set up evennia game dir
