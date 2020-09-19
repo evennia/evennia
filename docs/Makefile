@@ -56,7 +56,7 @@ _multiversion-check-env:
 _clean_api_index:
 	rm source/api/*
 
-# remove supervluous 'module' and 'package' text from api headers
+# remove superfluos 'module' and 'package' text from api headers
 _reformat_apidoc_headers:
 	for f in source/api/*.rst; do\
         perl -pi -e 's/(module|package)$$// if $$. == 1' $$f ;\
