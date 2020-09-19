@@ -339,7 +339,6 @@ class EvMore(object):
             # goto top of the text
             self.page_top()
 
-
     # default paginators - responsible for extracting a specific page number
 
     def paginator_index(self, pageno):
@@ -351,7 +350,7 @@ class EvMore(object):
         Paginate by slice. This is done with an eye on memory efficiency (usually for
         querysets); to avoid fetching all objects at the same time.
         """
-        return self._data[pageno * self.height: pageno * self.height + self.height]
+        return self._data[pageno * self.height : pageno * self.height + self.height]
 
     def paginator_django(self, pageno):
         """

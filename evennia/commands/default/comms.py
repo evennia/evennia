@@ -40,7 +40,6 @@ __all__ = (
     "CmdIRCStatus",
     "CmdRSS2Chan",
     "CmdGrapevine2Chan",
-
 )
 _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 
