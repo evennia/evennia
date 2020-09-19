@@ -37,9 +37,11 @@ jobs:
 
       - name: Quick-test docs (no autodocs)
         run: |
+          cd docs/
           make quick 
 
       - name: Deploy docs (only from master/develop branch)
         if: ${{ github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'}}
         run: |
+          cd docs/
           echo "Would deploy here!"
