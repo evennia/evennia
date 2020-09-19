@@ -18,7 +18,7 @@ jobs:
         python-version: [3.7, 3.8]
         # TODO: mysql disabled, not able to connect to it so far
         TESTING_DB: ['sqlite3', 'postgresql', 'mysql']
-        fail-fast: True
+        # fail-fast: false
 
     steps:
 
