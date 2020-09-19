@@ -16,6 +16,7 @@ import twisted
 import time
 
 from django.conf import settings
+from django.core.paginator import Paginator
 from evennia.server.sessionhandler import SESSIONS
 from evennia.scripts.models import ScriptDB
 from evennia.objects.models import ObjectDB
@@ -406,59 +407,71 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
         )
 
 
-# helper function. Kept outside so it can be imported and run
-# by other commands.
+class ScriptEvMore(EvMore):
+    """
+    Listing 1000+ Scripts can be very slow and memory-consuming. So
+    we use this custom EvMore child to build en EvTable only for
+    each page of the list.
 
+    """
 
-def format_script_list(scripts):
-    """Takes a list of scripts and formats the output."""
-    if not scripts:
-        return "<No scripts>"
+    def init_pages(self, scripts):
+        """Prepare the script list pagination"""
+        script_pages = Paginator(scripts, max(1, int(self.height / 2)))
+        super().init_pages(script_pages)
 
-    table = EvTable(
-        "|wdbref|n",
-        "|wobj|n",
-        "|wkey|n",
-        "|wintval|n",
-        "|wnext|n",
-        "|wrept|n",
-        "|wdb",
-        "|wtypeclass|n",
-        "|wdesc|n",
-        align="r",
-        border="tablecols",
-    )
+    def page_formatter(self, scripts):
+        """Takes a page of scripts and formats the output
+        into an EvTable."""
 
-    for script in scripts:
+        if not scripts:
+            return "<No scripts>"
 
-        nextrep = script.time_until_next_repeat()
-        if nextrep is None:
-            nextrep = "PAUSED" if script.db._paused_time else "--"
-        else:
-            nextrep = "%ss" % nextrep
-
-        maxrepeat = script.repeats
-        remaining = script.remaining_repeats() or 0
-        if maxrepeat:
-            rept = "%i/%i" % (maxrepeat - remaining, maxrepeat)
-        else:
-            rept = "-/-"
-
-        table.add_row(
-            script.id,
-            f"{script.obj.key}({script.obj.dbref})"
-            if (hasattr(script, "obj") and script.obj)
-            else "<Global>",
-            script.key,
-            script.interval if script.interval > 0 else "--",
-            nextrep,
-            rept,
-            "*" if script.persistent else "-",
-            script.typeclass_path.rsplit(".", 1)[-1],
-            crop(script.desc, width=20),
+        table = EvTable(
+            "|wdbref|n",
+            "|wobj|n",
+            "|wkey|n",
+            "|wintval|n",
+            "|wnext|n",
+            "|wrept|n",
+            "|wdb",
+            "|wtypeclass|n",
+            "|wdesc|n",
+            align="r",
+            border="tablecols",
+            width=self.width,
         )
 
-    return "%s" % table
+        for script in scripts:
+
+            nextrep = script.time_until_next_repeat()
+            if nextrep is None:
+                nextrep = "PAUSED" if script.db._paused_time else "--"
+            else:
+                nextrep = "%ss" % nextrep
+
+            maxrepeat = script.repeats
+            remaining = script.remaining_repeats() or 0
+            if maxrepeat:
+                rept = "%i/%i" % (maxrepeat - remaining, maxrepeat)
+            else:
+                rept = "-/-"
+
+            table.add_row(
+                script.id,
+                f"{script.obj.key}({script.obj.dbref})"
+                if (hasattr(script, "obj") and script.obj)
+                else "<Global>",
+                script.key,
+                script.interval if script.interval > 0 else "--",
+                nextrep,
+                rept,
+                "*" if script.persistent else "-",
+                script.typeclass_path.rsplit(".", 1)[-1],
+                crop(script.desc, width=20),
+            )
+
+        return str(table)
 
 
 class CmdScripts(COMMAND_DEFAULT_CLASS):
@@ -547,7 +560,7 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
                 caller.msg(string)
             else:
                 # multiple matches.
-                EvMore(caller, scripts, page_formatter=format_script_list)
+                ScriptEvMore(caller, scripts, session=self.session)
                 caller.msg("Multiple script matches. Please refine your search")
         elif self.switches and self.switches[0] in ("validate", "valid", "val"):
             # run validation on all found scripts
@@ -557,7 +570,7 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
             caller.msg(string)
         else:
             # No stopping or validation. We just want to view things.
-            EvMore(caller, scripts, page_formatter=format_script_list)
+            ScriptEvMore(caller, scripts.order_by("id"), session=self.session)
 
 
 class CmdObjects(COMMAND_DEFAULT_CLASS):

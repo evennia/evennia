@@ -81,7 +81,12 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         of incoming data.
         """
         # print(f"telnet dataReceived: {data}")
-        super().dataReceived(data)
+        try:
+            super().dataReceived(data)
+        except ValueError as err:
+            from evennia.utils import logger
+
+            logger.log_err(f"Malformed telnet input: {err}")
 
     def connectionMade(self):
         """

@@ -1,7 +1,7 @@
 # Evennia dependencies
 
 # general
-django >= 2.2.5, < 2.3
+django >= 2.2.5, < 3.0
 twisted >= 20.3.0, < 21.0.0
 pytz
 django-sekizai

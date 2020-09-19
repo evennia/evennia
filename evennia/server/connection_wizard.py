@@ -44,7 +44,7 @@ class ConnectionWizard(object):
                     resp = str(default)
 
             if resp.lower() in options:
-                self.display(f" Selected '{resp}'.")
+                # self.display(f" Selected '{resp}'.")
                 desc, callback, kwargs = options[resp.lower()]
                 callback(self, **kwargs)
             elif resp.lower() in ("quit", "q"):
@@ -161,8 +161,10 @@ class ConnectionWizard(object):
 
 def node_start(wizard):
     text = """
-    This wizard helps activate external networks with Evennia. It will create
-    a config that will be attached to the bottom of the game settings file.
+    This wizard helps to attach your Evennia server to external networks. It
+    will save to a file `server/conf/connection_settings.py` that will be
+    imported from the bottom of your game settings file. Once generated you can
+    also modify that file directly.
 
     Make sure you have at least started the game once before continuing!
 
@@ -174,11 +176,15 @@ def node_start(wizard):
             node_game_index_start,
             {},
         ),
-        # "2": ("Add MSSP information (for mud-list crawlers)",
-        #       node_mssp_start, {}),
+        "2": ("MSSP setup (for mud-list crawlers)", node_mssp_start, {}),
         # "3": ("Add Grapevine listing",
         #       node_grapevine_start, {}),
-        "2": ("View and Save created settings", node_view_and_apply_settings, {}),
+        # "4": ("Add IRC link",
+        #      "node_irc_start", {}),
+        # "5" ("Add RSS feed",
+        #       "node_rss_start", {}),
+        "s": ("View and (optionally) Save created settings", node_view_and_apply_settings, {}),
+        "q": ("Quit", lambda *args: sys.exit(), {}),
     }
 
     wizard.display(text)
@@ -189,13 +195,13 @@ def node_start(wizard):
 
 
 def node_game_index_start(wizard, **kwargs):
-    text = f"""
+    text = """
     The Evennia game index (http://games.evennia.com) lists both active Evennia
     games as well as games in various stages of development.
 
     You can put up your game in the index also if you are not (yet) open for
-    players.  If so, put 'None' for the connection details. Just tell us you
-    are out there and make us excited about your upcoming game!
+    players.  If so, put 'None' for the connection details - you are just telling
+    us that you are out there, making us excited about your upcoming game!
 
     Please check the listing online first to see that your exact game name is
     not colliding with an existing game-name in the list (be nice!).
@@ -222,9 +228,9 @@ def node_game_index_fields(wizard, status=None):
         - pre-alpha: a game in its very early stages, mostly unfinished or unstarted
         - alpha: a working concept, probably lots of bugs and incomplete features
         - beta: a working game, but expect bugs and changing features
-        - launched: a full, working game that may still be expanded upon and improved later
+        - launched: a full, working game (that may still be expanded upon and improved later)
 
-    Current value:
+    Current value (return to keep):
     {status_default}
     """
 
@@ -232,6 +238,31 @@ def node_game_index_fields(wizard, status=None):
 
     wizard.display(text)
     wizard.game_index_listing["game_status"] = wizard.ask_choice("Select one: ", options)
+
+    # game name
+
+    name_default = settings.SERVERNAME
+    text = f"""
+    Your game's name should usually be the same as `settings.SERVERNAME`, but
+    you can set it to something else here if you want.
+
+    Current value:
+    {name_default}
+    """
+
+    def name_validator(inp):
+        tmax = 80
+        tlen = len(inp)
+        if tlen > tmax:
+            print(f"The name must be shorter than {tmax} characters (was {tlen}).")
+            wizard.ask_continue()
+            return False
+        return True
+
+    wizard.display(text)
+    wizard.game_index_listing["game_name"] = wizard.ask_input(
+        default=name_default, validator=name_validator
+    )
 
     # short desc
 
@@ -249,7 +280,7 @@ def node_game_index_fields(wizard, status=None):
     def sdesc_validator(inp):
         tmax = 255
         tlen = len(inp)
-        if tlen > 255:
+        if tlen > tmax:
             print(f"The short desc must be shorter than {tmax} characters (was {tlen}).")
             wizard.ask_continue()
             return False
@@ -341,7 +372,7 @@ def node_game_index_fields(wizard, status=None):
     Evennia is its own web server and runs your game's website. Enter the
     URL of the website here, like http://yourwebsite.com, here.
 
-    Wtite 'None' if you are not offering a publicly visible website at this time.
+    Write 'None' if you are not offering a publicly visible website at this time.
 
     Current value:
     {website_default}
@@ -359,7 +390,7 @@ def node_game_index_fields(wizard, status=None):
     your specific URL here (when clicking this link you should launch into the
     web client)
 
-    Wtite 'None' if you don't want to list a publicly accessible webclient.
+    Write 'None' if you don't want to list a publicly accessible webclient.
 
     Current value:
     {webclient_default}
@@ -388,24 +419,26 @@ def node_game_index_fields(wizard, status=None):
 
 def node_mssp_start(wizard):
 
-    mssp_module = mod_import(settings.MSSP_META_MODULE)
-    filename = mssp_module.__file__
+    mssp_module = mod_import(settings.MSSP_META_MODULE or "server.conf.mssp")
+    try:
+        filename = mssp_module.__file__
+    except AttributeError:
+        filename = "server/conf/mssp.py"
 
     text = f"""
-    MSSP (Mud Server Status Protocol) allows online MUD-listing sites/crawlers
-    to continuously monitor your game and list information about it. Some of
-    this, like active player-count, Evennia will automatically add for you,
-    whereas many fields are manually added info about your game.
+    MSSP (Mud Server Status Protocol) has a vast amount of options so it must
+    be modified outside this wizard by directly editing its config file here:
+
+        '{filename}'
+
+    MSSP allows traditional online MUD-listing sites/crawlers to continuously
+    monitor your game and list information about it. Some of this, like active
+    player-count, Evennia will automatically add for you, whereas most fields
+    you need to set manually.
 
     To use MSSP you should generally have a publicly open game that external
     players can connect to. You also need to register at a MUD listing site to
-    tell them to list your game.
-
-    MSSP has a large number of configuration options and we found it was simply
-    a lot easier to set them in a file rather than using this wizard. So to
-    configure MSSP, edit the empty template listing found here:
-
-        '{filename}'
+    tell them to crawl your game.
     """
 
     wizard.display(text)
@@ -456,25 +489,32 @@ def node_view_and_apply_settings(wizard):
     pp = pprint.PrettyPrinter(indent=4)
     saves = False
 
-    game_index_txt = "No changes to save for Game Index."
-    if hasattr(wizard, "game_index_listing"):
-        if wizard.game_index_listing != settings.GAME_INDEX_LISTING:
-            game_index_txt = "No changes to save for Game Index."
-        else:
-            game_index_txt = "GAME_INDEX_ENABLED = True\n" "GAME_INDEX_LISTING = \\\n" + pp.pformat(
-                wizard.game_index_listing
-            )
-            saves = True
+    # game index
+    game_index_save_text = ""
+    game_index_listing = (
+        wizard.game_index_listing if hasattr(wizard, "game_index_listing") else None
+    )
+    if not game_index_listing and settings.GAME_INDEX_ENABLED:
+        game_index_listing = settings.GAME_INDEX_LISTING
+    if game_index_listing:
+        game_index_save_text = (
+            "GAME_INDEX_ENABLED = True\n"
+            "GAME_INDEX_LISTING = \\\n" + pp.pformat(game_index_listing)
+        )
+        saves = True
+    else:
+        game_index_save_text = "# No Game Index settings found."
 
-    text = game_index_txt
+    # potentially add other wizards in the future
+    text = game_index_save_text
 
     wizard.display(f"Settings to save:\n\n{text}")
 
     if saves:
-        if wizard.ask_yesno("Do you want to save these settings?") == "yes":
+        if wizard.ask_yesno("\nDo you want to save these settings?") == "yes":
             wizard.save_output = text
             _save_changes(wizard)
-            wizard.display("... saved!")
+            wizard.display("... saved!\nThe changes will apply after you reload your server.")
         else:
             wizard.display("... cancelled.")
     wizard.ask_continue()

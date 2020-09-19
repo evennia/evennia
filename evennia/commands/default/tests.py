@@ -1239,10 +1239,10 @@ class TestBuilding(CommandTest):
         )
 
     def test_spawn(self):
-        def getObject(commandTest, objKeyStr):
+        def get_object(commandTest, obj_key):
             # A helper function to get a spawned object and
             # check that it exists in the process.
-            query = search_object(objKeyStr)
+            query = search_object(obj_key)
             commandTest.assertIsNotNone(query)
             commandTest.assertTrue(bool(query))
             obj = query[0]
@@ -1271,7 +1271,7 @@ class TestBuilding(CommandTest):
         )
 
         self.call(building.CmdSpawn(), "/search ", "Key ")
-        self.call(building.CmdSpawn(), "/search test;test2", "")
+        self.call(building.CmdSpawn(), "/search test;test2", "No prototypes found.")
 
         self.call(
             building.CmdSpawn(),
@@ -1281,11 +1281,11 @@ class TestBuilding(CommandTest):
         )
 
         self.call(building.CmdSpawn(), "/list", "Key ")
-
         self.call(building.CmdSpawn(), "testprot", "Spawned Test Char")
-        # Tests that the spawned object's location is the same as the caharacter's location, since
+
+        # Tests that the spawned object's location is the same as the character's location, since
         # we did not specify it.
-        testchar = getObject(self, "Test Char")
+        testchar = get_object(self, "Test Char")
         self.assertEqual(testchar.location, self.char1.location)
         testchar.delete()
 
@@ -1302,7 +1302,7 @@ class TestBuilding(CommandTest):
             "'key':'goblin', 'location':'%s'}" % spawnLoc.dbref,
             "Spawned goblin",
         )
-        goblin = getObject(self, "goblin")
+        goblin = get_object(self, "goblin")
         # Tests that the spawned object's type is a DefaultCharacter.
         self.assertIsInstance(goblin, DefaultCharacter)
         self.assertEqual(goblin.location, spawnLoc)
@@ -1321,7 +1321,7 @@ class TestBuilding(CommandTest):
         # Tests "spawn <prototype_name>"
         self.call(building.CmdSpawn(), "testball", "Spawned Ball")
 
-        ball = getObject(self, "Ball")
+        ball = get_object(self, "Ball")
         self.assertEqual(ball.location, self.char1.location)
         self.assertIsInstance(ball, DefaultObject)
         ball.delete()
@@ -1331,7 +1331,7 @@ class TestBuilding(CommandTest):
         self.call(
             building.CmdSpawn(), "/n 'BALL'", "Spawned Ball"
         )  # /n switch is abbreviated form of /noloc
-        ball = getObject(self, "Ball")
+        ball = get_object(self, "Ball")
         self.assertIsNone(ball.location)
         ball.delete()
 
@@ -1350,7 +1350,7 @@ class TestBuilding(CommandTest):
             % spawnLoc.dbref,
             "Spawned Ball",
         )
-        ball = getObject(self, "Ball")
+        ball = get_object(self, "Ball")
         self.assertEqual(ball.location, spawnLoc)
         ball.delete()
 

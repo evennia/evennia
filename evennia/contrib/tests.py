@@ -895,7 +895,7 @@ class TestDice(CommandTest):
 # Test email-login
 
 
-from evennia.contrib import email_login   # noqa
+from evennia.contrib import email_login  # noqa
 
 
 class TestEmailLogin(CommandTest):

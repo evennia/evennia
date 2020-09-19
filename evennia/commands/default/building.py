@@ -3076,9 +3076,10 @@ class CmdScript(COMMAND_DEFAULT_CLASS):
                 result.append("No scripts defined on %s." % obj.get_display_name(caller))
             elif not self.switches:
                 # view all scripts
-                from evennia.commands.default.system import format_script_list
+                from evennia.commands.default.system import ScriptEvMore
 
-                result.append(format_script_list(scripts))
+                ScriptEvMore(self.caller, scripts.order_by("id"), session=self.session)
+                return
             elif "start" in self.switches:
                 num = sum([obj.scripts.start(script.key) for script in scripts])
                 result.append("%s scripts started on %s." % (num, obj.get_display_name(caller)))
@@ -3285,6 +3286,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
       spawn/search [prototype_keykey][;tag[,tag]]
       spawn/list [tag, tag, ...]
+      spawn/list modules    - list only module-based prototypes
       spawn/show [<prototype_key>]
       spawn/update <prototype_key>
 
@@ -3476,16 +3478,11 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
         elif query:
             self.caller.msg(f"No prototype named '{query}' was found.")
         else:
-            self.caller.msg(f"No prototypes found.")
+            self.caller.msg("No prototypes found.")
 
     def _list_prototypes(self, key=None, tags=None):
         """Display prototypes as a list, optionally limited by key/tags. """
-        table = protlib.list_prototypes(self.caller, key=key, tags=tags)
-        if not table:
-            return True
-        EvMore(
-            self.caller, str(table), exit_on_lastpage=True, justify_kwargs=False,
-        )
+        protlib.list_prototypes(self.caller, key=key, tags=tags, session=self.session)
 
     @interactive
     def _update_existing_objects(self, caller, prototype_key, quiet=False):

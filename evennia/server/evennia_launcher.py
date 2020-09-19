@@ -93,8 +93,8 @@ SRESET = chr(19)  # shutdown server in reset mode
 # requirements
 PYTHON_MIN = "3.7"
 TWISTED_MIN = "18.0.0"
-DJANGO_MIN = "2.1"
-DJANGO_REC = "2.2"
+DJANGO_MIN = "2.2.5"
+DJANGO_LT = "3.0"
 
 try:
     sys.path[1] = EVENNIA_ROOT
@@ -374,8 +374,8 @@ ERROR_NOTWISTED = """
     """
 
 ERROR_DJANGO_MIN = """
-    ERROR: Django {dversion} found. Evennia requires version {django_min}
-    or higher.
+    ERROR: Django {dversion} found. Evennia requires at least version {django_min} (but
+    no higher than {django_lt}).
 
     If you are using a virtualenv, use the command `pip install --upgrade -e evennia` where
     `evennia` is the folder to where you cloned the Evennia library. If not
@@ -386,14 +386,9 @@ ERROR_DJANGO_MIN = """
     any warnings and don't run `makemigrate` even if told to.
     """
 
-NOTE_DJANGO_MIN = """
-    NOTE: Django {dversion} found. This will work, but Django {django_rec} is
-    recommended for production.
-    """
-
 NOTE_DJANGO_NEW = """
     NOTE: Django {dversion} found. This is newer than Evennia's
-    recommended version ({django_rec}). It might work, but may be new
+    recommended version ({django_rec}). It might work, but is new
     enough to not be fully tested yet. Report any issues.
     """
 
@@ -1283,12 +1278,14 @@ def check_main_evennia_dependencies():
         # only the main version (1.5, not 1.5.4.0)
         dversion_main = ".".join(dversion.split(".")[:2])
         if LooseVersion(dversion) < LooseVersion(DJANGO_MIN):
-            print(ERROR_DJANGO_MIN.format(dversion=dversion_main, django_min=DJANGO_MIN))
+            print(
+                ERROR_DJANGO_MIN.format(
+                    dversion=dversion_main, django_min=DJANGO_MIN, django_lt=DJANGO_LT
+                )
+            )
             error = True
-        elif LooseVersion(DJANGO_MIN) <= LooseVersion(dversion) < LooseVersion(DJANGO_REC):
-            print(NOTE_DJANGO_MIN.format(dversion=dversion_main, django_rec=DJANGO_REC))
-        elif LooseVersion(DJANGO_REC) < LooseVersion(dversion_main):
-            print(NOTE_DJANGO_NEW.format(dversion=dversion_main, django_rec=DJANGO_REC))
+        elif LooseVersion(DJANGO_LT) <= LooseVersion(dversion_main):
+            print(NOTE_DJANGO_NEW.format(dversion=dversion_main, django_rec=DJANGO_LT))
     except ImportError:
         print(ERROR_NODJANGO)
         error = True

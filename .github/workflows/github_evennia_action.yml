@@ -1,7 +1,7 @@
 # This Evennia workflow will install Python dependencies, run tests with a variety of Python versions
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: Evennia test-suite and coveralls
+name: test-suite
 
 on:
   push:
@@ -14,11 +14,10 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
         python-version: [3.7, 3.8]
-        # TODO: mysql disabled, not able to connect to it so far
-        TESTING_DB: ['sqlite3', 'postgresql']  # , 'mysql']
-      fail-fast: False
+        TESTING_DB: ['sqlite3', 'postgresql', 'mysql']
 
     steps:
 
@@ -36,7 +35,7 @@ jobs:
       uses: mirromutth/mysql-action@v1.1
       if: ${{ matrix.TESTING_DB == 'mysql'}}
       with:
-        mysql version: '5.7'
+        host port: 3306
         character set server: 'utf8mb4'
         collation server: 'utf8mb4_unicode_ci'
         mysql database: 'evennia'
@@ -73,10 +72,10 @@ jobs:
       if: ${{ github.ref == 'refs/heads/develop' }}
       run: pip install -r requirements_extra.txt
 
-    - name: Install and initialize evennia
+    - name: Initialize evennia
       run: |
         evennia --init testing_mygame
-        cp .travis/${{ matrix.TESTING_DB }}_settings.py testing_mygame/server/conf/settings.py
+        cp .github/workflows/${{ matrix.TESTING_DB }}_settings.py testing_mygame/server/conf/settings.py
         cd testing_mygame
         evennia migrate
         evennia collectstatic --noinput
@@ -87,17 +86,50 @@ jobs:
         coverage run --source=../evennia --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service ../bin/unix/evennia test --settings=settings --keepdb evennia
         coverage xml
 
-    # we only want to run coverall once, so we only do it for one of the matrix combinations
+    # we only want to run coverall/codacy once, so we only do it for one of the matrix combinations
+    # it's also not critical if pushing to either service fails (happens for PRs since env is not
+    # available outside of the evennia org)
     - name: Send data to Coveralls
       if: ${{ matrix.TESTING_DB == 'sqlite3' && matrix.python-version == 3.7 }}
+      continue-on-error: true
       env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
       run: |
         cd testing_mygame
         coveralls
+
     - name: Send data to Codacy
       if: ${{ matrix.TESTING_DB == 'sqlite3' && matrix.python-version == 3.7 }}
+      continue-on-error: true
       uses: codacy/codacy-coverage-reporter-action@master
       with:
         project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
         coverage-reports: ./testing_mygame/coverage.xml
+
+  one:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - name: Dump job context
+        env:
+          JOB_CONTEXT: ${{ toJson(job) }}
+        run: echo "$JOB_CONTEXT"
+      - name: Dump steps context
+        env:
+          STEPS_CONTEXT: ${{ toJson(steps) }}
+        run: echo "$STEPS_CONTEXT"
+      - name: Dump runner context
+        env:
+          RUNNER_CONTEXT: ${{ toJson(runner) }}
+        run: echo "$RUNNER_CONTEXT"
+      - name: Dump strategy context
+        env:
+          STRATEGY_CONTEXT: ${{ toJson(strategy) }}
+        run: echo "$STRATEGY_CONTEXT"
+      - name: Dump matrix context
+        env:
+          MATRIX_CONTEXT: ${{ toJson(matrix) }}
+        run: echo "$MATRIX_CONTEXT"
