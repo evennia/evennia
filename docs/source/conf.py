@@ -316,7 +316,8 @@ def setup(app):
 
     # build toctree file
     sys.path.insert(1, os.path.join(os.path.dirname(os.path.dirname(__file__)), "docs"))
-    from ..docs.pylib import auto_link_remapper
+    print("sys.path:", sys.path)
+    from docs.pylib import auto_link_remapper
 
     auto_link_remapper.auto_link_remapper()
     print("Updated source/toc.md file")
