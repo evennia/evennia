@@ -20,7 +20,7 @@ author = "The Evennia developer community"
 
 # The full Evennia version covered by these docs, including alpha/beta/rc tags
 # This will be used for multi-version selection options.
-release = "0.9.1"
+release = "0.9.5"
 
 
 # -- General configuration ---------------------------------------------------
@@ -316,7 +316,7 @@ def setup(app):
 
     # build toctree file
     sys.path.insert(1, os.path.join(os.path.dirname(os.path.dirname(__file__)), "docs"))
-    from docs.pylib import auto_link_remapper
+    from ..docs.pylib import auto_link_remapper
 
     auto_link_remapper.auto_link_remapper()
     print("Updated source/toc.md file")
