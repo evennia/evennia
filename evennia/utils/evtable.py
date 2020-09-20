@@ -282,7 +282,7 @@ def wrap(text, width=_DEFAULT_WIDTH, **kwargs):
         text (str): Text to wrap.
         width (int, optional): Width to wrap `text` to.
 
-    Kwargs:
+    Keyword args:
         See TextWrapper class for available keyword args to customize
         wrapping behaviour.
 
@@ -303,7 +303,7 @@ def fill(text, width=_DEFAULT_WIDTH, **kwargs):
         text (str): Text to fill.
         width (int, optional): Width of fill area.
 
-    Kwargs:
+    Keyword args:
         See TextWrapper class for available keyword args to customize
         filling behaviour.
 
@@ -328,7 +328,7 @@ class EvCell(object):
         Args:
             data (str): The un-padded data of the entry.
 
-        Kwargs:
+        Keyword args:
             width (int): Desired width of cell. It will pad
                 to this size.
             height (int): Desired height of cell. it will pad
@@ -773,7 +773,7 @@ class EvCell(object):
         """
         Reformat the EvCell with new options
 
-        Kwargs:
+        Keyword args:
             The available keyword arguments are the same as for `EvCell.__init__`.
 
         Raises:
@@ -932,7 +932,7 @@ class EvColumn(object):
         Args:
             Text for each row in the column
 
-        Kwargs:
+        Keyword args:
             All `EvCell.__init_` keywords are available, these
             settings will be persistently applied to every Cell in the
             column.
@@ -947,7 +947,7 @@ class EvColumn(object):
         coherent and lined-up column. Will enforce column-specific
         options to cells.
 
-        Kwargs:
+        Keyword args:
             Extra keywords to modify the column setting. Same keywords
             as in `EvCell.__init__`.
 
@@ -979,7 +979,7 @@ class EvColumn(object):
                 use `ypos=0`. If not given, data will be inserted at the end
                 of the column.
 
-        Kwargs:
+        Keyword args:
             Available keywods as per `EvCell.__init__`.
 
         """
@@ -998,7 +998,7 @@ class EvColumn(object):
         """
         Change the options for the column.
 
-        Kwargs:
+        Keyword args:
             Keywords as per `EvCell.__init__`.
 
         """
@@ -1013,7 +1013,7 @@ class EvColumn(object):
             index (int): Index location of the cell in the column,
                 starting from 0 for the first row to Nrows-1.
 
-        Kwargs:
+        Keyword args:
             Keywords as per `EvCell.__init__`.
 
         """
@@ -1053,7 +1053,7 @@ class EvTable(object):
         Args:
             Header texts for the table.
 
-        Kwargs:
+        Keyword args:
             table (list of lists or list of `EvColumns`, optional):
                 This is used to build the table in a quick way.  If not
                 given, the table will start out empty and `add_` methods
@@ -1207,7 +1207,7 @@ class EvTable(object):
             nx (int): x size of table.
             ny (int): y size of table.
 
-        Kwargs:
+        Keyword args:
             Keywords as per `EvTable.__init__`.
 
         Returns:
@@ -1534,7 +1534,7 @@ class EvTable(object):
         Args:
             args (str): These strings will be used as the header texts.
 
-        Kwargs:
+        Keyword args:
             Same keywords as per `EvTable.__init__`. Will be applied
             to the new header's cells.
 
@@ -1558,7 +1558,7 @@ class EvTable(object):
                to input new column. If not given, column will be added to the end
                of the table. Uses Python indexing (so first column is `xpos=0`)
 
-        Kwargs:
+        Keyword args:
             Other keywords as per `Cell.__init__`.
 
         """
@@ -1622,7 +1622,7 @@ class EvTable(object):
                  input new row. If not given, will be added to the end of the table.
                  Uses Python indexing (so first row is `ypos=0`)
 
-        Kwargs:
+        Keyword args:
             Other keywords are as per `EvCell.__init__`.
 
         """
@@ -1661,7 +1661,7 @@ class EvTable(object):
         """
         Force a re-shape of the entire table.
 
-        Kwargs:
+        Keyword args:
             Table options as per `EvTable.__init__`.
 
         """
@@ -1697,7 +1697,7 @@ class EvTable(object):
             index (int): Which column to reformat. The column index is
                 given from 0 to Ncolumns-1.
 
-        Kwargs:
+        Keyword args:
             Column options as per `EvCell.__init__`.
 
         Raises:

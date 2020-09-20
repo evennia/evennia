@@ -548,7 +548,7 @@ def cmdhandler(
             is made available as `self.cmdstring` when the Command runs.
             If not given, the command will be assumed to be called as `cmdobj.key`.
 
-    Kwargs:
+    Keyword args:
         kwargs (any): other keyword arguments will be assigned as named variables on the
             retrieved command object *before* it is executed. This is unused
             in default Evennia but may be used by code to set custom flags or

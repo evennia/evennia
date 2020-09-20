@@ -130,7 +130,7 @@ def _set_property(caller, raw_string, **kwargs):
         caller (Object, Account): The user of the wizard.
         raw_string (str): Input from user on given node - the new value to set.
 
-    Kwargs:
+    Keyword args:
         test_parse (bool): If set (default True), parse raw_string for protfuncs and obj-refs and
             try to run result through literal_eval. The parser will be run in 'testing' mode and any
             parsing errors will shown to the user. Note that this is just for testing, the original
@@ -297,7 +297,7 @@ def _format_list_actions(*args, **kwargs):
     Args:
         actions (str): Available actions. The first letter of the action name will be assumed
             to be a shortcut.
-    Kwargs:
+    Keyword args:
         prefix (str): Default prefix to use.
     Returns:
         string (str): Formatted footer for adding to the node text.
@@ -428,7 +428,7 @@ def node_validate_prototype(caller, raw_string, **kwargs):
 
 def node_examine_entity(caller, raw_string, **kwargs):
     """
-    General node to view a text and then return to previous node.  Kwargs should contain "text" for
+    General node to view a text and then return to previous node.  Keyword args should contain "text" for
     the text to show and 'back" pointing to the node to return to.
     """
     text = kwargs.get("text", "Nothing was found here.")
@@ -1175,7 +1175,7 @@ def _add_attr(caller, attr_string, **kwargs):
                 attr = value
                 attr;category = value
                 attr;category;lockstring = value
-    Kwargs:
+    Keyword args:
         delete (str): If this is set, attr_string is
             considered the name of the attribute to delete and
             no further parsing happens.
@@ -1362,7 +1362,7 @@ def _add_tag(caller, tag_string, **kwargs):
             tagname;category
             tagname;category;data
 
-    Kwargs:
+    Keyword args:
         delete (str): If this is set, tag_string is considered
             the name of the tag to delete.
 
@@ -1911,7 +1911,7 @@ def _add_prototype_tag(caller, tag_string, **kwargs):
         caller (Object): Caller of menu.
         tag_string (str): Input from user - only tagname
 
-    Kwargs:
+    Keyword args:
         delete (str): If this is set, tag_string is considered
             the name of the tag to delete.
 
@@ -2139,7 +2139,7 @@ def _format_diff_text_and_options(diff, minimal=True, **kwargs):
         diff (dict): A diff as produced by `prototype_diff`.
         minimal (bool, optional): Don't show KEEPs.
 
-    Kwargs:
+    Keyword args:
         any (any): Forwarded into the generated options as arguments to the callable.
 
     Returns:

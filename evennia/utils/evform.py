@@ -188,7 +188,7 @@ class EvForm(object):
         """
         Initiate the form
 
-        Kwargs:
+        Keyword args:
             filename (str): Path to template file.
             cells (dict): A dictionary mapping of {id:text}
             tables (dict): A dictionary mapping of {id:EvTable}.
@@ -420,7 +420,7 @@ class EvForm(object):
             form (dict): A mapping for the form.
 
         Notes:
-            Kwargs are passed through to Cel creation.
+            Keyword args are passed through to Cel creation.
 
         """
         # clean kwargs (these cannot be overridden)

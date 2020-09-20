@@ -95,7 +95,7 @@ def gametime_to_realtime(format=False, **kwargs):
     in-game, you will be able to find the number of real-world seconds this
     corresponds to (hint: Interval events deal with real life seconds).
 
-    Kwargs:
+    Keyword args:
         format (bool): Formatting the output.
         days, month etc (int): These are the names of time units that must
             match the `settings.TIME_UNITS` dict keys.
@@ -131,7 +131,7 @@ def realtime_to_gametime(secs=0, mins=0, hrs=0, days=0, weeks=0, months=0, yrs=0
     interval would correspond to. This is usually a lot less
     interesting than the other way around.
 
-    Kwargs:
+    Keyword args:
         times (int): The various components of the time.
         format (bool): Formatting the output.
 

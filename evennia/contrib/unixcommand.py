@@ -98,7 +98,7 @@ class UnixCommandParser(argparse.ArgumentParser):
             epilog (str): the epilog to show below options.
             command (Command): the command calling the parser.
 
-        Kwargs:
+        Keyword args:
             Additional keyword arguments are directly sent to
             `argparse.ArgumentParser`.  You will find them on the
             [parser's documentation](https://docs.python.org/2/library/argparse.html).

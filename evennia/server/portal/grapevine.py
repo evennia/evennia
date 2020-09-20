@@ -303,7 +303,7 @@ class GrapevineClient(WebSocketClientProtocol, Session):
         """
         Send data grapevine -> Evennia
 
-        Kwargs:
+        Keyword args:
             data (dict): Converted json data.
 
         """

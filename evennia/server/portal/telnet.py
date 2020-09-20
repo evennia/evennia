@@ -360,7 +360,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         """
         Data User -> Evennia
 
-        Kwargs:
+        Keyword args:
             kwargs (any): Options from the protocol.
 
         """
@@ -373,7 +373,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         """
         Data Evennia -> User
 
-        Kwargs:
+        Keyword args:
             kwargs (any): Options to the protocol
         """
         self.sessionhandler.data_out(self, **kwargs)
@@ -387,7 +387,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         Args:
             text (str): The first argument is always the text string to send. No other arguments
                 are considered.
-        Kwargs:
+        Keyword args:
             options (dict): Send-option flags
                    - mxp: Enforce MXP link support.
                    - ansi: Enforce no ANSI colors.
