@@ -118,7 +118,7 @@ quickstrict:
 
 local:
 	make _check-env
-	make clean
+	# make clean
 	make _autodoc-index
 	make _html-build
 	@echo ""

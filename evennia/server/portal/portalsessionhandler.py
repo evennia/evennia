@@ -225,16 +225,16 @@ class PortalSessionHandler(SessionHandler):
     def server_connect(self, protocol_path="", config=dict()):
         """
         Called by server to force the initialization of a new protocol
-        instance. Server wants this instance to get a unique sessid
-        and to be connected back as normal. This is used to initiate
-        irc/rss etc connections.
+        instance. Server wants this instance to get a unique sessid and to be
+        connected back as normal. This is used to initiate irc/rss etc
+        connections.
 
         Args:
-            protocol_path (st): Full python path to the class factory
+            protocol_path (str): Full python path to the class factory
                 for the protocol used, eg
                 'evennia.server.portal.irc.IRCClientFactory'
             config (dict): Dictionary of configuration options, fed as
-                **kwarg to protocol class' __init__ method.
+                `**kwarg` to protocol class `__init__` method.
 
         Raises:
             RuntimeError: If The correct factory class is not found.
