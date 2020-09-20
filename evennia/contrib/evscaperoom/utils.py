@@ -27,7 +27,7 @@ def create_evscaperoom_object(
     Note that for the purpose of the Evscaperoom, we only allow one instance
     of each *name*, deleting the old version if it already exists.
 
-    Kwargs:
+    Keyword args:
         typeclass (str): This can take just the class-name in the evscaperoom's
             objects.py module. Otherwise, a full path is needed.
         key (str): Name of object.
@@ -69,7 +69,7 @@ def create_fantasy_word(length=5, capitalize=True):
     """
     Create a random semi-pronouncable 'word'.
 
-    Kwargs:
+    Keyword args:
         length (int): The desired length of the 'word'.
         capitalize (bool): If the return should be capitalized or not
     Returns:

@@ -219,7 +219,7 @@ class BaseState(object):
         """
         This is a convenience-wrapper for quickly building EvscapeRoom objects.
 
-        Kwargs:
+        Keyword args:
             typeclass (str): This can take just the class-name in the evscaperoom's
                 objects.py module. Otherwise, a full path or the actual class
                 is needed (for custom state objects, just give the class directly).

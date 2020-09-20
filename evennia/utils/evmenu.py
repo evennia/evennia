@@ -416,7 +416,7 @@ class EvMenu(object):
                 the menu. Deactivate for production use! When the debug flag is active, the
                 `persistent` flag is deactivated.
 
-        Kwargs:
+        Keyword args:
             any (any): All kwargs will become initialization variables on `caller.ndb._menutree`,
                 to be available at run.
 
@@ -744,9 +744,9 @@ class EvMenu(object):
 
         Returns:
             goto (str, callable or None): The goto directive in the option.
-            goto_kwargs (dict): Kwargs for `goto` if the former is callable, otherwise empty.
+            goto_kwargs (dict): Keyword args for `goto` if the former is callable, otherwise empty.
             execute (callable or None): Executable given by the `exec` directive.
-            exec_kwargs (dict): Kwargs for `execute` if it's callable, otherwise empty.
+            exec_kwargs (dict): Keyword args for `execute` if it's callable, otherwise empty.
 
         """
         goto_kwargs, exec_kwargs = {}, {}
@@ -789,7 +789,7 @@ class EvMenu(object):
             raw_string (str): The raw default string entered on the
                 previous node (only used if the node accepts it as an
                 argument)
-        Kwargs:
+        Keyword args:
             any: Extra arguments to goto callables.
 
         """

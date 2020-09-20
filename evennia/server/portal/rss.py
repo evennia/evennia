@@ -88,7 +88,7 @@ class RSSReader(Session):
         """
         Data RSS -> Evennia.
 
-        Kwargs:
+        Keyword args:
             text (str): Incoming text
             kwargs (any): Options from protocol.
 
