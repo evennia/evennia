@@ -1,8 +1,10 @@
 
+
+
 # VERSION WARNING
 
 > This is the experimental static v0.9 documentation of Evennia, _automatically_ generated from the 
-> [evennia wiki](https://github.com/evennia/evennia/wiki/) at 2020-06-12 22:36:53.868703.
+> [evennia wiki](https://github.com/evennia/evennia/wiki/) at 2020-09-20 19:55:46.634441.
 > There are known conversion issues which  will _not_ be addressed in this version - refer to 
 > the original wiki if you have trouble.
 >
