@@ -321,7 +321,7 @@ class EvMenuCmdSet(CmdSet):
 # -------------------------------------------------------------
 
 
-class EvMenu(object):
+class EvMenu:
     """
     This object represents an operational menu. It is initialized from
     a menufile.py instruction.
