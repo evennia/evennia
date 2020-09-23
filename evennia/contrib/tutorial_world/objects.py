@@ -647,7 +647,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
         """called when the object is first created."""
         super().at_object_creation()
 
-        self.aliases.add(["secret passage", "passage", "crack", "opening", "secret door"])
+        self.aliases.add(["secret passage", "passage", "crack", "opening", "secret"])
 
         # starting root positions. H1/H2 are the horizontally hanging roots,
         # V1/V2 the vertically hanging ones. Each can have three positions:
@@ -688,6 +688,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
         # start a 45 second timer before closing again. We store the deferred so it can be
         # killed in unittesting.
         self.deferred = delay(45, self.reset)
+        return True
 
     def _translate_position(self, root, ipos):
         """Translates the position into words"""
@@ -740,7 +741,7 @@ class CrumblingWall(TutorialObject, DefaultExit):
                 "The wall is old and covered with roots that here and there have permeated the stone. "
                 "The roots (or whatever they are - some of them are covered in small nondescript flowers) "
                 "crisscross the wall, making it hard to clearly see its stony surface. Maybe you could "
-                "try to |wshift|n or |wmove|n them.\n"
+                "try to |wshift|n or |wmove|n them (like '|wshift red up|n').\n"
             ]
             # display the root positions to help with the puzzle
             for key, pos in self.db.root_pos.items():
