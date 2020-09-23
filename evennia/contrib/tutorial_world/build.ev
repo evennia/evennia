@@ -294,14 +294,14 @@ start
  on the sign.
 # Set a climbable object for discovering a hidden exit
 #
-@create/drop gnarled old trees;tree;trees;gnarled : tutorial_world.objects.TutorialClimbable
+@create/drop gnarled old tree;tree;trees;gnarled : tutorial_world.objects.TutorialClimbable
 #
-@desc trees = Only the sturdiest of trees survive at the edge of the
- moor. A small group of huddling black things has dug in near the
+@desc tree = Only the sturdiest of trees survive at the edge of the
+ moor. A small huddling black thing has dug in near the
  cliff edge, eternally pummeled by wind and salt to become an integral
  part of the gloomy scenery.
 #
-@lock trees = get:false()
+@lock tree = get:false()
 #
 @set trees/get_err_msg =
  The group of old trees have withstood the eternal wind for hundreds
@@ -475,7 +475,7 @@ north
 # regular exits back to the cliff, that is handled by the bridge
 # typeclass itself.
 #
-@dig The old bridge;bridge;tut#05
+@dig The old bridge;bridge;east;e;tut#05
  : tutorial_world.rooms.BridgeRoom
  = old bridge;east;e;bridge;hangbridge
 #
