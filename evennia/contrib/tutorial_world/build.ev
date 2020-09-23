@@ -104,16 +104,8 @@ tutorial
 # ... and describe it.
 #
 @desc
- |gWelcome to the Evennia tutorial!|n
-
-
- The following tutorial consists of a small single-player quest
- area. The various rooms are designed to show off some of the power
- and possibilities of the Evennia mud creation system. At any time
- during this tutorial you can use the |wtutorial|n (or |wtut|n)
- command to get some background info about the room or certain objects
- to see what is going on "behind the scenes".
-
+ |gWelcome to the Evennia tutorial-world!|n
+ This small quest shows some examples of Evennia usage.
 
  To get into the mood of this miniature quest, imagine you are an
  adventurer out to find fame and fortune. You have heard rumours of an
@@ -126,14 +118,17 @@ tutorial
  and rain screaming in your face you stand where the moor meet the sea
  along a high, rocky coast ...
 
+Try 'tutorial' to get behind-the-scenes help anywhere, and 'give up'
+if you want to abort.
 
- |g(write 'start' or 'begin' to start the tutorial. Try 'tutorial'
- to get behind-the-scenes help anywhere.)|n
+|gwrite 'begin' to start your quest!|n
+
+
 #
 # Show that the tutorial command works ...
 #
 @set here/tutorial_info =
- You just tried the tutorial command. Use it in various rooms to see
+ You just tried the |wtutorial|G command. Use it in various rooms to see
 what's technically going on and what you could try in each room. The
 intro room assigns some properties to your character, like a simple
 "health" property used when fighting. Other rooms and puzzles might do
