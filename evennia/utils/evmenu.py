@@ -190,7 +190,8 @@ _CMD_NOINPUT = cmdhandler.CMD_NOINPUT
 from django.utils.translation import gettext as _
 
 _ERR_NOT_IMPLEMENTED = _(
-    "Menu node '{nodename}' is either not implemented or " "caused an error. Make another choice."
+    "Menu node '{nodename}' is either not implemented or caused an error. "
+    "Make another choice or try 'q' to abort."
 )
 _ERR_GENERAL = _("Error in menu node '{nodename}'.")
 _ERR_NO_OPTION_DESC = _("No description.")
@@ -537,11 +538,18 @@ class EvMenu:
         menu_cmdset.priority = int(cmdset_priority)
         self.caller.cmdset.add(menu_cmdset, permanent=persistent)
 
+        reserved_startnode_kwargs = set(("nodename", "raw_string"))
         startnode_kwargs = {}
         if isinstance(startnode_input, (tuple, list)) and len(startnode_input) > 1:
             startnode_input, startnode_kwargs = startnode_input[:2]
             if not isinstance(startnode_kwargs, dict):
                 raise EvMenuError("startnode_input must be either a str or a tuple (str, dict).")
+            clashing_kwargs = reserved_startnode_kwargs.intersection(set(startnode_kwargs.keys()))
+            if clashing_kwargs:
+                raise RuntimeError(
+                    f"Evmenu startnode_inputs includes kwargs {tuple(clashing_kwargs)} that "
+                    "clashes with EvMenu's internal usage.")
+
         # start the menu
         self.goto(self._startnode, startnode_input, **startnode_kwargs)
 
@@ -986,7 +994,7 @@ class EvMenu:
         """
         cmd = strip_ansi(raw_string.strip().lower())
 
-        if cmd in self.options:
+        if self.options and cmd in self.options:
             # this will take precedence over the default commands
             # below
             goto, goto_kwargs, execfunc, exec_kwargs = self.options[cmd]

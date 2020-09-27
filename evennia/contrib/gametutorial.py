@@ -43,71 +43,112 @@ not move on until that command has been tried).
 """
 
 import re
+from ast import literal_eval
 
 from evennia import EvMenu
 from fnmatch import fnmatch
+# i18n
+from django.utils.translation import gettext as _
 
-# support # NODE name, #NODE name ...
 _RE_NODE = re.compile(r"#\s*?NODE\s+?(?P<nodename>\S+?)$", re.I + re.M)
 _RE_OPTIONS_SEP = re.compile(r"##\s*?OPTIONS\s*?$", re.I + re.M)
 _RE_CALLABLE = re.compile(r"\S+?\(\)", re.I + re.M)
+_RE_CALLABLE = re.compile(
+    r"(?P<funcname>\S+?)(?:\((?P<kwargs>[\S\s]+?=[\S\s]+?)\)|\(\))", re.I+re.M)
+
+_HELP_NO_OPTION_MATCH = _("Choose an option or try 'help'.")
+
+_OPTION_INPUT_MARKER = ">"
+_OPTION_ALIAS_MARKER = ";"
+_OPTION_SEP_MARKER = ":"
+_OPTION_CALL_MARKER = "->"
+_OPTION_COMMENT_START = "#"
 
 
-def gotofunc(caller, raw_string, **kwargs):
+# Input/option/goto handler functions that allows for dynamically generated
+# nodes read from the menu template.
+
+def _generated_goto_func(caller, raw_string, **kwargs):
     goto = kwargs['goto']
-    callables = kwargs['callables']
+    goto_callables = kwargs['goto_callables']
+    current_nodename = kwargs['current_nodename']
+
     if _RE_CALLABLE.match(goto):
         gotofunc = goto.strip()[:-2]
-        if gotofunc in callables:
-            return callables[gotofunc](caller, raw_string, **kwargs)
-    return goto
+        if gotofunc in goto_callables:
+            goto = goto_callables[gotofunc](caller, raw_string, **kwargs)
+    if goto is None:
+        return goto, {"generated_nodename": current_nodename}
+    caller.msg(_HELP_NO_OPTION_MATCH)
+    return goto, {"generated_nodename": goto}
 
-def inputgotofunc(caller, raw_string, **kwargs):
+
+def _generated_input_goto_func(caller, raw_string, **kwargs):
     gotomap = kwargs['gotomap']
-    callables = kwargs['callables']
+    goto_callables = kwargs['goto_callables']
+    current_nodename = kwargs['current_nodename']
 
     # start with glob patterns
     for pattern, goto in gotomap.items():
         if fnmatch(raw_string.lower(), pattern):
-            if _RE_CALLABLE.match(goto):
-                gotofunc = goto.strip()[:-2]
-                if gotofunc in callables:
-                    return callables[gotofunc](caller, raw_string, **kwargs)
-            return goto
+            match = _RE_CALLABLE.match(goto)
+            print(f"goto {goto} -> match: {match}")
+            if match:
+                gotofunc = match.group("funcname")
+                gotokwargs = match.group("kwargs") or ""
+                print(f"gotofunc: {gotofunc}, {gotokwargs}")
+                if gotofunc in goto_callables:
+                    for kwarg in gotokwargs.split(","):
+                        if kwarg and "=" in kwarg:
+                            print(f"kwarg {kwarg}")
+                            key, value = [part.strip() for part in kwarg.split("=", 1)]
+                            try:
+                                key = literal_eval(key)
+                            except ValueError:
+                                pass
+                            try:
+                                value = literal_eval(value)
+                            except ValueError:
+                                pass
+                            kwargs[key] = value
+                    goto = goto_callables[gotofunc](caller, raw_string, **kwargs)
+            if goto is None:
+                return goto, {"generated_nodename": current_nodename}
+            return goto, {"generated_nodename": goto}
     # no glob pattern match; try regex
     for pattern, goto in gotomap.items():
         if re.match(pattern, raw_string.lower(), flags=re.I + re.M):
             if _RE_CALLABLE.match(goto):
                 gotofunc = goto.strip()[:-2]
-                if gotofunc in callables:
-                    return callables[gotofunc](caller, raw_string, **kwargs)
-            return goto
+                if gotofunc in goto_callables:
+                    goto = goto_callables[gotofunc](caller, raw_string, **kwargs)
+            if goto is None:
+                return goto, {"generated_nodename": current_nodename}
+            return goto, {"generated_nodename": goto}
     # no match, rerun current node
-    return None
+    caller.msg(_HELP_NO_OPTION_MATCH)
+    return None, {"generated_nodename": current_nodename}
 
 
-def generated_node(caller, raw_string, text="", options=None,
-                   nodename="", **kwargs):
+def _generated_node(caller, raw_string, generated_nodename="", **kwargs):
+    text, options = caller.db._generated_menu_contents[generated_nodename]
     return text, options
 
 
-class ParseMenuForm:
+def parse_menu_template(caller, menu_template, goto_callables=None):
+    """
+    Parse menu-template string
 
-    def __init__(self, caller, formstr, callables=None):
-        self.caller = caller
-        self.formstr = formstr
-        self.callables = callables or {}
-        self.menutree = self.parse(formstr)
+    Args:
+        caller (Object or Account): Entity using the menu.
+        menu_template (str): Menu described using the templating format.
+        goto_callables (dict, optional): Mapping between call-names and callables
+            on the form `callable(caller, raw_string, **kwargs)`. These are what is
+            available to use in the `menu_template` string.
 
-    def _generate_node(self, nodename, text, options):
-        """
-        Generate a node from the parsed string
-        """
-        def node(caller, raw_string, nodename=nodename, **kwargs):
-            return text, options
-        return node
+    """
 
-    def _parse_options(self, optiontxt):
+    def _parse_options(nodename, optiontxt, goto_callables):
         """
         Parse option section into option dict.
         """
@@ -117,40 +158,40 @@ class ParseMenuForm:
         inputparsemap = {}
 
         for inum, optline in enumerate(optionlist):
-            if optline.startswith("#") or not ":" in optline:
+            if (optline.startswith(_OPTION_COMMENT_START)
+                    or _OPTION_SEP_MARKER not in optline):
                 # skip comments or invalid syntax
                 continue
             key = ""
             desc = ""
             pattern = None
 
-            key, goto = [part.strip() for part in optline.split(":", 1)]
+            key, goto = [part.strip() for part in optline.split(_OPTION_SEP_MARKER, 1)]
 
             # desc -> goto
-            if "->" in goto:
-                desc, goto = [part.strip() for part in goto.split("->", 1)]
+            if _OPTION_CALL_MARKER in goto:
+                desc, goto = [part.strip() for part in goto.split(_OPTION_CALL_MARKER, 1)]
 
-            # parse key [pattern]
-            key = [part.strip() for part in key.split(";")]
+            # parse key [;aliases|pattern]
+            key = [part.strip() for part in key.split(_OPTION_ALIAS_MARKER)]
             if not key:
                 # fall back to this being the Nth option
                 key = [f"{inum + 1}"]
             main_key = key[0]
 
-            if main_key.startswith(">input"):
-                key[0] = "_default"
-                pattern = main_key[6:].strip()
-
-            if pattern is not None:
+            if main_key.startswith(_OPTION_INPUT_MARKER):
                 # if we have a pattern, build the arguments for _default later
+                pattern = main_key[len(_OPTION_INPUT_MARKER):].strip()
                 inputparsemap[pattern] = goto
+                print(f"registering input goto {pattern} -> {goto}")
             else:
-                # a regular goto string target
+                # a regular goto string/callable target
                 option = {
                     "key": key,
-                    "goto": (gotofunc, {
+                    "goto": (_generated_goto_func, {
                         "goto": goto,
-                        "callables": self.callables})
+                        "current_nodename": nodename,
+                        "goto_callables": goto_callables})
                 }
                 if desc:
                     option["desc"] = desc
@@ -160,58 +201,94 @@ class ParseMenuForm:
             # if this exists we must create a _default entry too
             options.append({
                 "key": "_default",
-                "goto": (inputgotofunc, {
+                "goto": (_generated_input_goto_func, {
                     "gotomap": inputparsemap,
-                    "callables": self.callables
+                    "current_nodename": nodename,
+                    "goto_callables": goto_callables
                 })
             })
 
         return options
 
-    def parse(self, formstr):
+    def _parse(caller, menu_template, goto_callables):
         """
         Parse the menu string format into a node tree.
         """
         nodetree = {}
-        errors = []
-        splits = _RE_NODE.split(formstr)
+        splits = _RE_NODE.split(menu_template)
         splits = splits[1:] if splits else []
 
         # from evennia import set_trace;set_trace(term_size=(140,120))
-
+        content_map = {}
         for node_ind in range(0, len(splits), 2):
             nodename, nodetxt = splits[node_ind], splits[node_ind + 1]
             text, *optiontxt = _RE_OPTIONS_SEP.split(nodetxt, maxsplit=2)
-            options = self._parse_options(optiontxt)
-            nodetree[nodename] = self._generate_node(nodename, text, options)
+            options = _parse_options(nodename, optiontxt, goto_callables)
+            content_map[nodename] = (text, options)
+            nodetree[nodename] = _generated_node
+        caller.db._generated_menu_contents = content_map
 
         return nodetree
 
+    return _parse(caller, menu_template, goto_callables)
 
-# class GameTutor(EvMenu):
-#
-#     # tutorial helpers
-#
-#     @staticmethod
-#     def nextprev(prevnode, nextnode, **kwargs):
-#         """
-#         Add return to options to add a prev/next entry
-#         """
-#         if kwargs:
-#             prevnode = (prevnode, kwargs)
-#             nextnode = (nextnode, kwargs)
-#
-#         return (
-#             {"key": ("|w[p]|nrev", "prev", "p"),
-#              "goto": prevnode},
-#             {"key": ("|w[n]|next", "next", "n"),
-#              "goto": nextnode}
-#         )
+
+def template2menu(caller, menu_template, goto_callables=None,
+                  startnode="start", startnode_input=None, persistent=False,
+                  **kwargs):
+    """
+    Helper function to generate and start an EvMenu based on a menu template
+    string.
+
+    Args:
+        caller (Object or Account): The entity using the menu.
+        menu_template (str): The menu-template string describing the content
+            and structure of the menu. It can also be the python-path to, or a module
+            containing a `MENU_TEMPLATE` global variable with the template.
+        goto_callables (dict, optional): Mapping of callable-names to
+            module-global objects to reference by name in the menu-template.
+            Must be on the form `callable(caller, raw_string, **kwargs)`.
+        startnode (str, optional): The name of the startnode, if not 'start'.
+        startnode_input (str or tuple, optional): If a string, the `raw_string`
+            arg to pass into the starting node.  Otherwise should be on form
+            `(raw_string, {kwargs})`, where `raw_string` and `**kwargs` will be
+            passed into the start node.
+        persistent (bool, optional): If the generated menu should be persistent.
+        **kwargs: Other kwargs will be passed to EvMenu.
+
+
+    """
+    goto_callables = goto_callables or {}
+    startnode_raw = ""
+    startnode_kwargs = {"generated_nodename": startnode}
+    if isinstance(startnode_input, str):
+        startnode_raw = startnode_input
+    elif isinstance(startnode_input, (tuple, list)):
+        startnode_raw = startnode_input[0]
+        startnode_kwargs.update(startnode_input[1])
+
+    menu_tree = parse_menu_template(caller, menu_template, goto_callables)
+    EvMenu(caller, menu_tree,
+           startnode_input=(startnode_raw, startnode_kwargs),
+           persistent=True, **kwargs)
+
+
+def gotonode3(caller, raw_string, **kwargs):
+    print("in gotonode3", caller, raw_string, kwargs)
+    return None
+
+def foo(caller, raw_string, **kwargs):
+    print("in foo", caller, raw_string, kwargs)
+    return "node2"
+
+def bar(caller, raw_string, **kwargs):
+    print("in bar", caller, raw_string, kwargs)
+    return "bar"
 
 
 def test_generator(caller):
 
-    MENU_DESC = \
+    MENU_TEMPLATE = \
     """
     # node start
 
@@ -227,10 +304,11 @@ def test_generator(caller):
     3: node3 -> gotonode3()
     next;n: node2
     top: start
-    >input: return to go back -> start
-    >input foo*: foo()
-    >input bar*: bar()
-
+    > foo*: foo()
+    > bar*: bar(a=4, boo=groo)
+    > [5,6]0+?: foo()
+    > great: node2
+    > fail: bar()
 
     # node node1
 
@@ -244,7 +322,7 @@ def test_generator(caller):
     back: start
     to node 2: node2
     run foo (rerun node): foo()
-
+    >: return to go back -> start
 
     # node node2
 
@@ -262,29 +340,16 @@ def test_generator(caller):
     ## options
 
     back: back to start -> start
+    end: end
+
+    # node end
+
+    In node end!
 
     """
 
-    def gotonode3(caller, raw_string, **kwargs):
-        print("in gotonode3", caller, raw_string, kwargs)
-        return None
-
-    def foo(caller, raw_string, **kwargs):
-        print("in foo", caller, raw_string, kwargs)
-        return "node2"
-
-    def bar(caller, raw_string, **kwargs):
-        print("in bar", caller, raw_string, kwargs)
-        return "bar"
-
     callables = {"gotonode3": gotonode3, "foo": foo, "bar": bar}
-
-    mform = ParseMenuForm(caller, MENU_DESC, callables)
-
-    if isinstance(caller, str):
-        print(mform.menutree)
-    else:
-        EvMenu(caller, mform.menutree)
+    template2menu(caller, MENU_TEMPLATE, callables)
 
 
 if __name__ == "__main__":
