@@ -42,6 +42,7 @@ not move on until that command has been tried).
 
 """
 
+import sys
 import re
 from ast import literal_eval
 
@@ -52,7 +53,7 @@ from fnmatch import fnmatch
 from django.utils.translation import gettext as _
 
 _RE_NODE = re.compile(r"#\s*?NODE\s+?(?P<nodename>\S+?)$", re.I + re.M)
-_RE_OPTIONS_SEP = re.compile(r"##\s*?OPTIONS\s*?$", re.I + re.M)
+_RE_OPTIONS_SEP = re.compile(r"##\s*?OPTIONS*?\s*?$", re.I + re.M)
 _RE_CALLABLE = re.compile(r"\S+?\(\)", re.I + re.M)
 _RE_CALLABLE = re.compile(
     r"(?P<funcname>\S+?)(?:\((?P<kwargs>[\S\s]+?=[\S\s]+?)\)|\(\))", re.I + re.M
@@ -133,8 +134,8 @@ def _generated_input_goto_func(caller, raw_string, **kwargs):
     return None, {"generated_nodename": current_nodename}
 
 
-def _generated_node(caller, raw_string, generated_nodename="", **kwargs):
-    text, options = caller.db._generated_menu_contents[generated_nodename]
+def _generated_node(caller, raw_string, **kwargs):
+    text, options = caller.db._generated_menu_contents[kwargs["_current_nodename"]]
     return text, options
 
 
@@ -249,7 +250,6 @@ def template2menu(
     menu_template,
     goto_callables=None,
     startnode="start",
-    startnode_input=None,
     persistent=False,
     **kwargs,
 ):
@@ -266,30 +266,17 @@ def template2menu(
             module-global objects to reference by name in the menu-template.
             Must be on the form `callable(caller, raw_string, **kwargs)`.
         startnode (str, optional): The name of the startnode, if not 'start'.
-        startnode_input (str or tuple, optional): If a string, the `raw_string`
-            arg to pass into the starting node.  Otherwise should be on form
-            `(raw_string, {kwargs})`, where `raw_string` and `**kwargs` will be
-            passed into the start node.
         persistent (bool, optional): If the generated menu should be persistent.
-        **kwargs: Other kwargs will be passed to EvMenu.
+        **kwargs: All kwargs will be passed into EvMenu.
 
 
     """
     goto_callables = goto_callables or {}
-    startnode_raw = ""
-    startnode_kwargs = {"generated_nodename": startnode}
-    if isinstance(startnode_input, str):
-        startnode_raw = startnode_input
-    elif isinstance(startnode_input, (tuple, list)):
-        startnode_raw = startnode_input[0]
-        startnode_kwargs.update(startnode_input[1])
-
     menu_tree = parse_menu_template(caller, menu_template, goto_callables)
     EvMenu(
         caller,
         menu_tree,
-        startnode_input=(startnode_raw, startnode_kwargs),
-        persistent=True,
+        persistent=persistent,
         **kwargs,
     )
 
@@ -308,6 +295,17 @@ def bar(caller, raw_string, **kwargs):
     print("in bar", caller, raw_string, kwargs)
     return "bar"
 
+
+def customcall(caller, raw_string, **kwargs):
+    return "start"
+
+def customnode(caller, raw_string, **kwargs):
+    text = "This is a custom node!"
+    options = {
+        "desc": "Go back",
+        "goto": customcall
+    }
+    return text, options
 
 def test_generator(caller):
 
@@ -344,6 +342,7 @@ def test_generator(caller):
     back: start
     to node 2: node2
     run foo (rerun node): foo()
+    customnode: Go to custom node -> customnode
     >: return to go back -> start
 
     # node node2
@@ -371,7 +370,13 @@ def test_generator(caller):
     """
 
     callables = {"gotonode3": gotonode3, "foo": foo, "bar": bar}
-    template2menu(caller, MENU_TEMPLATE, callables)
+    dct = parse_menu_template(caller, MENU_TEMPLATE, callables)
+    dct["customnode"] = customnode
+
+    EvMenu(caller, dct)
+
+
+    # template2menu(caller, MENU_TEMPLATE, callables)
 
 
 if __name__ == "__main__":
