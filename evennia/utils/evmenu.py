@@ -548,7 +548,8 @@ class EvMenu:
             if clashing_kwargs:
                 raise RuntimeError(
                     f"Evmenu startnode_inputs includes kwargs {tuple(clashing_kwargs)} that "
-                    "clashes with EvMenu's internal usage.")
+                    "clashes with EvMenu's internal usage."
+                )
 
         # start the menu
         self.goto(self._startnode, startnode_input, **startnode_kwargs)
