@@ -6,7 +6,7 @@
 let goldenlayout = (function () {
 
     var myLayout;
-    var knownTypes = ["all", "untagged"];
+    var knownTypes = ["all", "untagged", "testing"];
     var untagged = [];
 
     var newTabConfig = {
