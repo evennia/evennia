@@ -1584,7 +1584,7 @@ def get_input(caller, prompt, callback, session=None, *args, **kwargs):
 #
 # -------------------------------------------------------------
 
-_RE_NODE = re.compile(r"##\s*?NODE\s+?(?P<nodename>\S+?)$", re.I + re.M)
+_RE_NODE = re.compile(r"##\s*?NODE\s+?(?P<nodename>\S[\S\s]*?)$", re.I + re.M)
 _RE_OPTIONS_SEP = re.compile(r"##\s*?OPTIONS\s*?$", re.I + re.M)
 _RE_CALLABLE = re.compile(r"\S+?\(\)", re.I + re.M)
 _RE_CALLABLE = re.compile(
@@ -1650,7 +1650,7 @@ def _generated_input_goto_func(caller, raw_string, **kwargs):
             return goto, {"generated_nodename": goto}
     # no glob pattern match; try regex
     for pattern, goto in gotomap.items():
-        if re.match(pattern, raw_string.lower(), flags=re.I + re.M):
+        if pattern and re.match(pattern, raw_string.lower(), flags=re.I + re.M):
             if _RE_CALLABLE.match(goto):
                 gotofunc = goto.strip()[:-2]
                 if gotofunc in goto_callables:
@@ -1748,6 +1748,7 @@ def parse_menu_template(caller, menu_template, goto_callables=None):
                 }
             )
 
+        print(f"nodename: {nodename}, options: {options}")
         return options
 
     def _parse(caller, menu_template, goto_callables):
