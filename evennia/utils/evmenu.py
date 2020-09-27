@@ -477,7 +477,7 @@ class EvMenu:
         self.test_nodetext = ""
 
         # assign kwargs as initialization vars on ourselves.
-        if set(
+        reserved_clash = set(
             (
                 "_startnode",
                 "_menutree",
@@ -491,9 +491,10 @@ class EvMenu:
                 "cmdset_mergetype",
                 "auto_quit",
             )
-        ).intersection(set(kwargs.keys())):
+        ).intersection(set(kwargs.keys()))
+        if reserved_clash:
             raise RuntimeError(
-                "One or more of the EvMenu `**kwargs` is reserved by EvMenu for internal use."
+                f"One or more of the EvMenu `**kwargs` ({list(reserved_clash)}) is reserved by EvMenu for internal use."
             )
         for key, val in kwargs.items():
             setattr(self, key, val)
