@@ -179,6 +179,7 @@ let options2 = (function () {
         onLoggedIn: onLoggedIn,
         onOptionsUI: onOptionsUI,
         onPrompt: onPrompt,
+        onOptionCheckboxChanged: onOptionCheckboxChanged,
     }
 })();
 window.plugin_handler.add("options2", options2);
