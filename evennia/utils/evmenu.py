@@ -329,6 +329,19 @@ class EvMenuError(RuntimeError):
     pass
 
 
+class EvMenuGotoAbortMessage(RuntimeError):
+    """
+    This can be raised by a goto-callable to abort the goto flow.  The message
+    stored with the executable will be sent to the caller who will remain on
+    the current node. This can be used to pass single-line returns without
+    re-running the entire node with text and options.
+
+    Example:
+        raise EvMenuGotoMessage("That makes no sense.")
+
+    """
+
+
 # -------------------------------------------------------------
 #
 # Menu command and command set
@@ -795,6 +808,8 @@ class EvMenu:
 
     def run_exec(self, nodename, raw_string, **kwargs):
         """
+        NOTE: This is deprecated. Use `goto` directly instead.
+
         Run a function or node as a callback (with the 'exec' option key).
 
         Args:
@@ -1100,24 +1115,29 @@ class EvMenu:
         """
         cmd = strip_ansi(raw_string.strip().lower())
 
-        if self.options and cmd in self.options:
-            # this will take precedence over the default commands
-            # below
-            goto, goto_kwargs, execfunc, exec_kwargs = self.options[cmd]
-            self.run_exec_then_goto(execfunc, goto, raw_string, exec_kwargs, goto_kwargs)
-        elif self.auto_look and cmd in ("look", "l"):
-            self.display_nodetext()
-        elif self.auto_help and cmd in ("help", "h"):
-            self.display_helptext()
-        elif self.auto_quit and cmd in ("quit", "q", "exit"):
-            self.close_menu()
-        elif self.debug_mode and cmd.startswith("menudebug"):
-            self.print_debug_info(cmd[9:].strip())
-        elif self.default:
-            goto, goto_kwargs, execfunc, exec_kwargs = self.default
-            self.run_exec_then_goto(execfunc, goto, raw_string, exec_kwargs, goto_kwargs)
-        else:
-            self.caller.msg(_HELP_NO_OPTION_MATCH, session=self._session)
+        try:
+            if self.options and cmd in self.options:
+                # this will take precedence over the default commands
+                # below
+                goto, goto_kwargs, execfunc, exec_kwargs = self.options[cmd]
+                self.run_exec_then_goto(execfunc, goto, raw_string, exec_kwargs, goto_kwargs)
+            elif self.auto_look and cmd in ("look", "l"):
+                self.display_nodetext()
+            elif self.auto_help and cmd in ("help", "h"):
+                self.display_helptext()
+            elif self.auto_quit and cmd in ("quit", "q", "exit"):
+                self.close_menu()
+            elif self.debug_mode and cmd.startswith("menudebug"):
+                self.print_debug_info(cmd[9:].strip())
+            elif self.default:
+                goto, goto_kwargs, execfunc, exec_kwargs = self.default
+                self.run_exec_then_goto(execfunc, goto, raw_string, exec_kwargs, goto_kwargs)
+            else:
+                self.caller.msg(_HELP_NO_OPTION_MATCH, session=self._session)
+        except EvMenuGotoAbortMessage as err:
+            # custom interrupt from inside a goto callable - print the message and 
+            # stay on the current node.
+            self.caller.msg(str(err), session=self._session)
 
     def display_nodetext(self):
         self.caller.msg(self.nodetext, session=self._session)
@@ -1603,20 +1623,37 @@ _OPTION_COMMENT_START = "#"
 # Input/option/goto handler functions that allows for dynamically generated
 # nodes read from the menu template.
 
+def _process_callable(caller, goto, goto_callables, raw_string,
+                      current_nodename, kwargs):
+    match = _RE_CALLABLE.match(goto)
+    if match:
+        gotofunc = match.group("funcname")
+        gotokwargs = match.group("kwargs") or ""
+        if gotofunc in goto_callables:
+            for kwarg in gotokwargs.split(","):
+                if kwarg and "=" in kwarg:
+                    key, value = [part.strip() for part in kwarg.split("=", 1)]
+                    try:
+                        key = literal_eval(key)
+                    except ValueError:
+                        pass
+                    try:
+                        value = literal_eval(value)
+                    except ValueError:
+                        pass
+                    kwargs[key] = value
+            goto = goto_callables[gotofunc](caller, raw_string, **kwargs)
+    if goto is None:
+        return goto, {"generated_nodename": current_nodename}
+    return goto, {"generated_nodename": goto}
+
 
 def _generated_goto_func(caller, raw_string, **kwargs):
     goto = kwargs["goto"]
     goto_callables = kwargs["goto_callables"]
     current_nodename = kwargs["current_nodename"]
-
-    if _RE_CALLABLE.match(goto):
-        gotofunc = goto.strip()[:-2]
-        if gotofunc in goto_callables:
-            goto = goto_callables[gotofunc](caller, raw_string, **kwargs)
-    if goto is None:
-        return goto, {"generated_nodename": current_nodename}
-    caller.msg(_HELP_NO_OPTION_MATCH)
-    return goto, {"generated_nodename": goto}
+    return _process_callable(caller, goto, goto_callables, raw_string,
+                             current_nodename, kwargs)
 
 
 def _generated_input_goto_func(caller, raw_string, **kwargs):
@@ -1627,40 +1664,16 @@ def _generated_input_goto_func(caller, raw_string, **kwargs):
     # start with glob patterns
     for pattern, goto in gotomap.items():
         if fnmatch(raw_string.lower(), pattern):
-            match = _RE_CALLABLE.match(goto)
-            if match:
-                gotofunc = match.group("funcname")
-                gotokwargs = match.group("kwargs") or ""
-                if gotofunc in goto_callables:
-                    for kwarg in gotokwargs.split(","):
-                        if kwarg and "=" in kwarg:
-                            key, value = [part.strip() for part in kwarg.split("=", 1)]
-                            try:
-                                key = literal_eval(key)
-                            except ValueError:
-                                pass
-                            try:
-                                value = literal_eval(value)
-                            except ValueError:
-                                pass
-                            kwargs[key] = value
-                    goto = goto_callables[gotofunc](caller, raw_string, **kwargs)
-            if goto is None:
-                return goto, {"generated_nodename": current_nodename}
-            return goto, {"generated_nodename": goto}
+            return _process_callable(caller, goto, goto_callables, raw_string,
+                                     current_nodename, kwargs)
     # no glob pattern match; try regex
     for pattern, goto in gotomap.items():
         if pattern and re.match(pattern, raw_string.lower(), flags=re.I + re.M):
-            if _RE_CALLABLE.match(goto):
-                gotofunc = goto.strip()[:-2]
-                if gotofunc in goto_callables:
-                    goto = goto_callables[gotofunc](caller, raw_string, **kwargs)
-            if goto is None:
-                return goto, {"generated_nodename": current_nodename}
-            return goto, {"generated_nodename": goto}
-    # no match, rerun current node
-    caller.msg(_HELP_NO_OPTION_MATCH)
-    return None, {"generated_nodename": current_nodename}
+            return _process_callable(caller, goto, goto_callables, raw_string,
+                                     current_nodename, kwargs)
+    # no match, show error
+    
+    raise EvMenuGotoAbortMessage(_HELP_NO_OPTION_MATCH)
 
 
 def _generated_node(caller, raw_string, **kwargs):
@@ -1715,6 +1728,7 @@ def parse_menu_template(caller, menu_template, goto_callables=None):
                 # if we have a pattern, build the arguments for _default later
                 pattern = main_key[len(_OPTION_INPUT_MARKER):].strip()
                 inputparsemap[pattern] = goto
+                print(f"main_key {main_key} {pattern} {goto}")
             else:
                 # a regular goto string/callable target
                 option = {
@@ -1748,7 +1762,6 @@ def parse_menu_template(caller, menu_template, goto_callables=None):
                 }
             )
 
-        print(f"nodename: {nodename}, options: {options}")
         return options
 
     def _parse(caller, menu_template, goto_callables):

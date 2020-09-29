@@ -170,5 +170,4 @@ GOTO_CALLABLES = {
 def testmenu(caller):
     menutree = parse_menu_template(caller, MENU_TEMPLATE, GOTO_CALLABLES)
     # we'll use a custom EvMenu child later
-    EvMenu(caller, menutree, auto_help=False)
-
+    EvMenu(caller, menutree)
