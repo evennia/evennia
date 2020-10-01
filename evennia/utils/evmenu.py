@@ -358,6 +358,10 @@ class CmdEvMenuNode(Command):
     aliases = [_CMD_NOMATCH]
     locks = "cmd:all()"
     help_category = "Menu"
+    auto_help_display_key = "<menu commands>"
+
+    def get_help(self):
+        return "Menu commands are explained within the menu."
 
     def func(self):
         """
@@ -1135,7 +1139,7 @@ class EvMenu:
             else:
                 self.caller.msg(_HELP_NO_OPTION_MATCH, session=self._session)
         except EvMenuGotoAbortMessage as err:
-            # custom interrupt from inside a goto callable - print the message and 
+            # custom interrupt from inside a goto callable - print the message and
             # stay on the current node.
             self.caller.msg(str(err), session=self._session)
 
@@ -1672,7 +1676,7 @@ def _generated_input_goto_func(caller, raw_string, **kwargs):
             return _process_callable(caller, goto, goto_callables, raw_string,
                                      current_nodename, kwargs)
     # no match, show error
-    
+
     raise EvMenuGotoAbortMessage(_HELP_NO_OPTION_MATCH)
 
 
