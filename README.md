@@ -1,3 +1,4 @@
+Loger -- An Amazing Project
 # Evennia MUD/MU\* Creation System ![evennia logo][logo]
 [![Build Status][unittestciimg]][unittestcilink] [![Coverage Status][coverimg]][coverlink]
 
