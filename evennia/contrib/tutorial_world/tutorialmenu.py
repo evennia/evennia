@@ -60,7 +60,55 @@ The box is made of wood. On it, letters are engraved, reading:
     it's because you are playing with Builder-privileges or higher. Regular
     players will not see the numbers.
 
-    Write |ynext|n to leave the cabin and continue with the tutorial.
+    Next look at the |wdoor|n.
+
+"""
+
+_DOOR_DESC_OUT = """
+This is a solid wooden door leading to the outside of the cabin. Some
+text is written on it:
+
+    This is an |wexit|n. An exit is often named by its compass-direction like
+    |weast|n, |wwest|n, |wnorthwest|n and so on, but it could be named
+    anything, like this door. To use the exit, you just write its name. So by
+    writing |ydoor|n you will leave the cabin.
+
+"""
+
+_DOOR_DESC_IN = """
+This is a solid wooden door leading to the inside of the cabin. On
+are some carved text:
+
+    This exit leads back into the cabin. An exit is just like any object,
+    so while has a name, it can also have aliases. To get back inside
+    you can both write |ydoor|n but also |yin|n.
+
+"""
+
+_MEADOW_DESC = """
+This is a lush meadow, just outside a cozy cabin. It's surrounded
+by trees and sunlight filters down from a clear blue sky.
+
+There is a |wstone|n here. Try looking at it.
+
+"""
+
+_STONE_DESC = """
+This is a fist-sized stone covered in runes:
+
+    To pick me up, use
+
+    |yget stone|n
+
+    You can see what you carry with the |yinventory|n (|yi|n).
+
+    To drop me again, just write
+
+    |ydrop stone|n
+
+    Use |ynext|n when you are done exploring and want to
+    continue with the tutorial.
+
 """
 
 def _maintain_demo_room(caller, delete=False):
@@ -73,47 +121,88 @@ def _maintain_demo_room(caller, delete=False):
 
     if delete:
         if roomdata:
-            prev_loc, room, obj = roomdata
+            # we delete directly for simplicity. We need to delete
+            # in specific order to avoid deleting rooms moves
+            # its contents to their default home-location
+            prev_loc, room1, box, room2, stone, door_out, door_in = roomdata
             caller.location = prev_loc
-            obj.delete()
-            room.delete()
+            box.delete()
+            stone.delete()
+            door_out.delete()
+            door_in.delete()
+            room1.delete()
+            room2.delete()
             del caller.db.tutorial_world_demo_room_data
     elif not roomdata:
-        room = create_object("evennia.objects.objects.DefaultRoom",
+        # create and describe the cabin and box
+        room1 = create_object("evennia.objects.objects.DefaultRoom",
                              key="A small, cozy cabin")
-        room.db.desc = _ROOM_DESC.strip()
-        obj = create_object("evennia.objects.objects.DefaultObject",
-                            key="A small wooden box")
-        obj.db.desc = _BOX_DESC.strip()
-        obj.location = room
-        # move caller into room and store
-        caller.db.tutorial_world_demo_room_data = (caller.location, room, obj)
-        caller.location = room
+        room1.db.desc = _ROOM_DESC.strip()
+        box = create_object("evennia.objects.objects.DefaultObject",
+                            key="small wooden box")
+        box.db.desc = _BOX_DESC.strip()
+        box.location = room1
 
-class DemoCommandSet1(CmdSet):
+        # create and describe the meadow and stone
+        room2 = create_object("evennia.objects.objects.DefaultRoom",
+                              key="A lush summer meadow")
+        room2.db.desc = _MEADOW_DESC.strip()
+        stone = create_object("evennia.objects.objects.DefaultObject",
+                              key="carved stone")
+        stone.db.desc = _STONE_DESC.strip()
+
+        # make the linking exits
+        door_out = create_object("evennia.objects.objects.DefaultExit",
+                                 key="Door",
+                                 location=room1,
+                                 destination=room2)
+        door_out.db.desc = _DOOR_DESC_OUT.strip()
+        door_in = create_object("evennia.objects.objects.DefaultExit",
+                                key="entrance to the cabin",
+                                aliases=["door", "in"],
+                                location=room2,
+                                destination=room1)
+        door_in.db.desc = _DOOR_DESC_IN.strip()
+
+        # store references for easy removal later
+        caller.db.tutorial_world_demo_room_data = (caller.location,
+                                                   room1, box,
+                                                   room2, stone,
+                                                   door_out, door_in)
+        # move caller into room
+        caller.location = room1
+
+class DemoCommandSetRoom(CmdSet):
     """
     Demo the `look` command.
     """
-    key = "cmd_demo_cmdset_1"
+    key = "cmd_demo_cmdset_room"
     priority = 2
+    no_exits = False
 
     def at_cmdset_creation(self):
         from evennia import default_cmds
+        self.add(default_cmds.CmdHelp())
         self.add(default_cmds.CmdLook())
+        self.add(default_cmds.CmdGet())
+        self.add(default_cmds.CmdDrop())
+        self.add(default_cmds.CmdExamine())
+        self.add(default_cmds.CmdPy())
 
-def goto_command_demo_1(caller, raw_string, **kwargs):
-    """Generate a little room environment for testing out some commands."""
+def goto_command_demo_room(caller, raw_string, **kwargs):
+    """Generate a little 2-room environment for testing out some commands."""
     _maintain_demo_room(caller)
-    caller.cmdset.add(DemoCommandSet1)  # TODO - make persistent
-    return "command_demo_1"
+    caller.cmdset.remove(DemoCommandSetRoom)
+    caller.cmdset.add(DemoCommandSetRoom)  # TODO - make persistent
+    return "command_demo_room"
 
 # resources for the general command demo
 
-class DemoCommandSet2(CmdSet):
+class DemoCommandSetHelp(CmdSet):
     """
     Demo other commands.
     """
-    key = "cmd_demo_cmdset_2"
+    key = "cmd_demo_cmdset_help"
     priority = 2
 
     def at_cmdset_creation(self):
@@ -121,11 +210,11 @@ class DemoCommandSet2(CmdSet):
         self.add(default_cmds.CmdHelp())
 
 
-def goto_command_demo_2(caller, raw_string, **kwargs):
+def goto_command_demo_help(caller, raw_string, **kwargs):
     _maintain_demo_room(caller, delete=True)
-    caller.cmdset.remove(DemoCommandSet1)
-    caller.cmdset.add(DemoCommandSet2)  # TODO - make persistent
-    return "command_demo_2"
+    caller.cmdset.remove(DemoCommandSetRoom)
+    caller.cmdset.add(DemoCommandSetHelp)  # TODO - make persistent
+    return "command_demo_help"
 
 
 def command_passthrough(caller, raw_string, **kwargs):
@@ -142,18 +231,20 @@ MENU_TEMPLATE = """
 
 ## NODE start
 
-Welcome to |cEvennia|n! From this menu you can learn some more about the system and
-also the basics of how to play a text-based game. You can exit this menu at
-any time by using "q" or "quit".
+Welcome to the |cEvennia|n intro! From this menu you can learn some more about
+the system and also the basics of how to play a text-based game. You can exit
+this menu at any time by using "q" or "quit".
 
-Select an option you want to learn more about below.
+For (a lot) more help, check out the documentation at http://www.evennia.com.
+
+Write |wnext|n to continue or select a number to jump to that lesson.
 
 ## OPTIONS
 
-    1: About evennia -> about_evennia
+    1 (next);1;next;n: About Evennia -> about_evennia
     2: What is a MUD/MU*? -> about_muds
     3: Using the webclient -> using webclient
-    4: Using commands -> goto_command_demo_1()
+    4: Playing the game -> goto_command_demo_help()
 
 # ---------------------------------------------------------------------------------
 
@@ -163,8 +254,8 @@ Evennia is a game engine for creating multiplayer online text-games.
 
 ## OPTIONS
 
-    back: start
-    next: about MUDs -> about_muds
+    back;b: Start -> start
+    next;n: About MUDs -> about_muds
     >: about_muds
 
 # ---------------------------------------------------------------------------------
@@ -177,9 +268,9 @@ to graphical MMORPG-style games like World of Warcraft.
 
 ## OPTIONS
 
-    back: about_evennia
-    next: using the webclient -> using webclient
-    back to top: start
+    back;b: About Evennia -> about_evennia
+    next;n: Using the webclient -> using webclient
+    back to top;t: start
     >: using webclient
 
 # ---------------------------------------------------------------------------------
@@ -207,13 +298,15 @@ There is also some |wextra|n info to learn about customizing the webclient.
 
 ## OPTIONS
 
-    back: about_muds
-    extra: more details about customizing the webclient -> customizing the webclient
-    next: general command tutorial -> goto_command_demo_1()
+    back: About MUDs -> about_muds
+    extra: Customizing the webclient -> customizing the webclient
+    next: Playing the game -> goto_command_demo_help()
     back to top: start
-    >: back
+    >: goto_command_demo_help()
 
 # ---------------------------------------------------------------------------------
+
+# this is a dead-end 'leaf' of the menu
 
 ## NODE customizing the webclient
 
@@ -241,63 +334,37 @@ to a web client pane with a specific tag that you set yourself.
 ## OPTIONS
 
     back: using webclient
-    next: general command input -> goto_command_demo_1()
-    back to top: start
     > test *: send tagged message to new pane -> send_testing_tagged()
 
 # ---------------------------------------------------------------------------------
 
-# we get here via goto_command_demo_1()
+# we get here via goto_command_demo_help()
 
-## NODE command_demo_1
+## NODE command_demo_help
 
 Evennia has about 90 default commands. They include useful administration/building
 commands and a few limited "in-game" commands to serve as examples. They are intended
 to be changed, extended and modified as you please.
 
-The most important and common command you have is '|ylook|n'. It's also
-abbreviated '|yl|n' since it's used so much. It displays/redisplays your current
-location.
+First to try is |yhelp|n. This lists all commands |wcurrently|n available to you.
 
-Try |ylook|n now. You have been transported to a sunny cabin to look around in.
+Use |yhelp <topic>|n to get specific help. Try |yhelp help|n to get help on using
+the help command. For your game you could add help about your game, lore, rules etc
+as well.
 
-## OPTIONS
+At the moment you only have |whelp|n and some |wChannel Names|n (the '<menu commands>'
+is just a placeholder to indicate you are using this menu).
 
-    back: using webclient
-    next: help on help -> goto_command_demo_2()
-    back to top: start
-
-
-# ---------------------------------------------------------------------------------
-
-# we get here via goto_command_demo_2()
-
-## NODE command_demo_2
-
-Evennia commands can change meaning depending on context. We left the sunny
-cabin now and if you try |ylook|n again you will just re-display this menu
-(try it!). Instead you have some other commands available to try out.
-
-First is |yhelp|n. This lists all commands |wcurrently|n available to you. In
-the future you could also add your own topics about your game, world, rules etc.
-
-Only a few commands are made available while in this tutorial. Once you exit
-you'll find a lot more!
-
-(ignore the the <menu commands>, it's just indicating that you have the ability
-to use the default functionality of this tutorial menu, like choosing options).
-
-Use |yhelp help|n to see how to use the help command. Most often you'll just do
-
-    help <topic>
-
-In the coming pages we'll test out these available commands.
+We'll add more commands as we get to them in this tutorial - but we'll only
+cover a small handfull. Once you exit you'll find a lot more! Now let's try
+those channels ...
 
 ## OPTIONS
 
-    back: back to the cabin -> goto_command_demo_1()
-    next: talk on channels -> talk on channels
+    back: Using the webclient -> using webclient
+    next: Channel commands -> talk on channels
     back to top: start
+    >: talk on channels
 
 # ---------------------------------------------------------------------------------
 
@@ -315,13 +382,34 @@ channel can see it. If someone else is on your server, you may get a reply!
 Evennia can link its in-game channels to external chat networks. This allows
 you to talk with people not actually logged into the game. For
 example, the online Evennia-demo links its |wpublic|n channel to the #evennia
-IRC support channel, which in turn links to a Discord channel!
+IRC support channel.
 
 ## OPTIONS
 
-    back: help on help -> goto_command_demo_2()
+    back: help on help -> goto_command_demo_help()
+    next: Moving and exploring -> goto_command_demo_room()
+    back to top: start
+    >: goto_command_demo_room()
+
+# ---------------------------------------------------------------------------------
+
+# we get here via goto_command_demo_room()
+
+## NODE command_demo_room
+
+Another important command is '|ylook|n'. It's also abbreviated '|yl|n' since
+it's used so much. Looking displays/redisplays your current location. So far in
+this tutorial, using 'look' would just redisplay the menu.
+
+Try |ylook|n now. You have been quietly transported to a sunny cabin to look
+around in. Explore a little. Use |ynext|n when you are done.
+
+## OPTIONS
+
+    back: Channel commands -> talk on channels
     next: end
     back to top: start
+
 
 # ---------------------------------------------------------------------------------
 
@@ -338,8 +426,8 @@ GOTO_CALLABLES = {
     "send_testing_tagged": send_testing_tagged,
     "do_nothing": do_nothing,
     "send_string": send_string,
-    "goto_command_demo_1": goto_command_demo_1,
-    "goto_command_demo_2": goto_command_demo_2,
+    "goto_command_demo_help": goto_command_demo_help,
+    "goto_command_demo_room": goto_command_demo_room,
 }
 
 class TutorialEvMenu(EvMenu):
