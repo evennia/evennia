@@ -319,6 +319,31 @@ class TagHandler(object):
             getattr(self.obj, self._m2m_fieldname).add(tagobj)
             self._setcache(tagstr, category, tagobj)
 
+    def has(self, key=None, category=None, return_list=False):
+        """
+        Checks if the given Tag (or list of Tags) exists on the object.
+
+        Args:
+            key (str or iterable): The Tag key or keys to check for.
+                If `None`, search by category.
+            category (str or None): Limit the check to Tags with this
+                category (note, that `None` is the default category).
+
+        Returns:
+            has_tag (bool or list): If the Tag exists on this object or not.
+             If `key` was given as an iterable then the return is a list of booleans.
+
+        """
+        ret = []
+        category = category.strip().lower() if category is not None else None
+        for key_str in make_iter(key):
+            key_str = key_str.strip().lower()
+            ret.extend(bool(tag) for tag in self._getcache(key_str, category))
+
+        if return_list:
+            return ret
+        return ret[0] if len(ret) == 1 else ret
+
     def get(self, key=None, default=None, category=None, return_tagobj=False, return_list=False):
         """
         Get the tag for the given key, category or combination of the two.
