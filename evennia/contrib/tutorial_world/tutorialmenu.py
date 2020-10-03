@@ -179,6 +179,7 @@ class DemoCommandSetRoom(CmdSet):
     key = "cmd_demo_cmdset_room"
     priority = 2
     no_exits = False
+    no_objs = False
 
     def at_cmdset_creation(self):
         from evennia import default_cmds

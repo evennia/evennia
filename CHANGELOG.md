@@ -5,7 +5,7 @@
 - new `drop:holds()` lock default to limit dropping nonsensical things. Access check
   defaults to True for backwards-compatibility in 0.9, will be False in 1.0
 
-### Already in master
+### Evennia 0.95 (master)
 - `is_typeclass(obj (Object), exact (bool))` now defaults to exact=False
 - `py` command now reroutes stdout to output results in-game client. `py`
 without arguments starts a full interactive Python console.
@@ -74,7 +74,12 @@ without arguments starts a full interactive Python console.
   pagination (e.g. to create EvTables for every page instead of splittine one table)
 - Using `EvMore pagination`, dramatically improves performance of `spawn/list` and `scripts` listings 
   (100x speed increase for displaying 1000+ prototypes/scripts).
-  
+- `EvMenu` now uses the more logically named `.ndb._evmenu` instead of `.ndb._menutree` to store itself. 
+  Both still work for backward compatibility, but `_menutree` is deprecated.
+- `EvMenu.msg(txt)` added as a central place to send text to the user, makes it easier to override.
+  Default `EvMenu.msg` sends with OOB type="menu" for use with OOB and webclient pane-redirects.
+- New EvMenu templating system for quickly building simpler EvMenus without as much code.
+
 
 ## Evennia 0.9 (2018-2019)
 

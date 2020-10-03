@@ -57,7 +57,7 @@ both one or two arguments interchangeably. It also accepts nodes
 that takes **kwargs.
 
 The menu tree itself is available on the caller as
-`caller.ndb._menutree`. This makes it a convenient place to store
+`caller.ndb._evmenu`. This makes it a convenient place to store
 temporary state variables between nodes, since this NAttribute is
 deleted when the menu is exited.
 
@@ -390,28 +390,28 @@ class CmdEvMenuNode(Command):
         caller = self.caller
         # we store Session on the menu since this can be hard to
         # get in multisession environemtns if caller is an Account.
-        menu = caller.ndb._menutree
+        menu = caller.ndb._evmenu
         if not menu:
             if _restore(caller):
                 return
             orig_caller = caller
             caller = caller.account if hasattr(caller, "account") else None
-            menu = caller.ndb._menutree if caller else None
+            menu = caller.ndb._evmenu if caller else None
             if not menu:
                 if caller and _restore(caller):
                     return
                 caller = self.session
-                menu = caller.ndb._menutree
+                menu = caller.ndb._evmenu
                 if not menu:
                     # can't restore from a session
-                    err = "Menu object not found as %s.ndb._menutree!" % orig_caller
+                    err = "Menu object not found as %s.ndb._evmenu!" % orig_caller
                     orig_caller.msg(
                         err
                     )  # don't give the session as a kwarg here, direct to original
                     raise EvMenuError(err)
         # we must do this after the caller with the menu has been correctly identified since it
         # can be either Account, Object or Session (in the latter case this info will be superfluous).
-        caller.ndb._menutree._session = self.session
+        caller.ndb._evmenu._session = self.session
         # we have a menu, use it.
         menu.parse_input(self.raw_string)
 
@@ -539,16 +539,16 @@ class EvMenu:
                 `persistent` flag is deactivated.
 
         Kwargs:
-            any (any): All kwargs will become initialization variables on `caller.ndb._menutree`,
+            any (any): All kwargs will become initialization variables on `caller.ndb._evmenu`,
                 to be available at run.
 
         Raises:
             EvMenuError: If the start/end node is not found in menu tree.
 
         Notes:
-            While running, the menu is stored on the caller as `caller.ndb._menutree`. Also
+            While running, the menu is stored on the caller as `caller.ndb._evmenu`. Also
             the current Session (from the Command, so this is still valid in multisession
-            environments) is available through `caller.ndb._menutree._session`. The `_menutree`
+            environments) is available through `caller.ndb._evmenu._session`. The `_evmenu`
             property is a good one for storing intermediary data on between nodes since it
             will be automatically deleted when the menu closes.
 
@@ -621,15 +621,18 @@ class EvMenu:
         for key, val in kwargs.items():
             setattr(self, key, val)
 
-        if self.caller.ndb._menutree:
+        if self.caller.ndb._evmenu:
             # an evmenu already exists - we try to close it cleanly. Note that this will
             # not fire the previous menu's end node.
             try:
-                self.caller.ndb._menutree.close_menu()
+                self.caller.ndb._evmenu.close_menu()
             except Exception:
                 pass
 
         # store ourself on the object
+        self.caller.ndb._evmenu = self
+
+        # DEPRECATED - for backwards-compatibility
         self.caller.ndb._menutree = self
 
         if persistent:
@@ -649,7 +652,7 @@ class EvMenu:
                 caller.attributes.add("_menutree_saved", (self.__class__, (menudata,), calldict))
                 caller.attributes.add("_menutree_saved_startnode", (startnode, startnode_input))
             except Exception as err:
-                caller.msg(_ERROR_PERSISTENT_SAVING.format(error=err), session=self._session)
+                self.msg(_ERROR_PERSISTENT_SAVING.format(error=err))
                 logger.log_trace(_TRACE_PERSISTENT_SAVING)
                 persistent = False
 
@@ -761,7 +764,7 @@ class EvMenu:
                 ret = callback(self.caller)
         except EvMenuError:
             errmsg = _ERR_GENERAL.format(nodename=callback)
-            self.caller.msg(errmsg, self._session)
+            self.msg(errmsg)
             logger.log_trace()
             raise
 
@@ -786,7 +789,7 @@ class EvMenu:
         try:
             node = self._menutree[nodename]
         except KeyError:
-            self.caller.msg(_ERR_NOT_IMPLEMENTED.format(nodename=nodename), session=self._session)
+            self.msg(_ERR_NOT_IMPLEMENTED.format(nodename=nodename))
             raise EvMenuError
         try:
             kwargs["_current_nodename"] = nodename
@@ -796,11 +799,11 @@ class EvMenu:
             else:
                 nodetext, options = ret, None
         except KeyError:
-            self.caller.msg(_ERR_NOT_IMPLEMENTED.format(nodename=nodename), session=self._session)
+            self.msg(_ERR_NOT_IMPLEMENTED.format(nodename=nodename))
             logger.log_trace()
             raise EvMenuError
         except Exception:
-            self.caller.msg(_ERR_GENERAL.format(nodename=nodename), session=self._session)
+            self.msg(_ERR_GENERAL.format(nodename=nodename))
             logger.log_trace()
             raise
 
@@ -809,6 +812,23 @@ class EvMenu:
         self.test_nodetext = nodetext
 
         return nodetext, options
+
+    def msg(self, txt):
+        """
+        This is a central point for sending return texts to the caller. It
+        allows for a central point to add custom messaging when creating custom
+        EvMenu overrides.
+
+        Args:
+            txt (str): The text to send.
+
+        Notes:
+            By default this will send to the same session provided to EvMenu
+            (if `session` kwarg was provided to `EvMenu.__init__`). It will
+            also send it with a `type=menu` for the benefit of OOB/webclient.
+
+        """
+        self.caller.msg(text=(txt, {"type": "menu"}), session=self._session)
 
     def run_exec(self, nodename, raw_string, **kwargs):
         """
@@ -856,7 +876,7 @@ class EvMenu:
                     ret, kwargs = ret[:2]
         except EvMenuError as err:
             errmsg = "Error in exec '%s' (input: '%s'): %s" % (nodename, raw_string.rstrip(), err)
-            self.caller.msg("|r%s|n" % errmsg)
+            self.msg("|r%s|n" % errmsg)
             logger.log_trace(errmsg)
             return
 
@@ -1038,7 +1058,7 @@ class EvMenu:
             # avoid multiple calls from different sources
             self._quitting = True
             self.caller.cmdset.remove(EvMenuCmdSet)
-            del self.caller.ndb._menutree
+            del self.caller.ndb._evmenu
             if self._persistent:
                 self.caller.attributes.remove("_menutree_saved")
                 self.caller.attributes.remove("_menutree_saved_startnode")
@@ -1102,7 +1122,7 @@ class EvMenu:
                 )
                 + "\n |y... END MENU DEBUG|n"
             )
-        self.caller.msg(debugtxt)
+        self.msg(debugtxt)
 
     def parse_input(self, raw_string):
         """
@@ -1137,17 +1157,17 @@ class EvMenu:
                 goto, goto_kwargs, execfunc, exec_kwargs = self.default
                 self.run_exec_then_goto(execfunc, goto, raw_string, exec_kwargs, goto_kwargs)
             else:
-                self.caller.msg(_HELP_NO_OPTION_MATCH, session=self._session)
+                self.msg(_HELP_NO_OPTION_MATCH)
         except EvMenuGotoAbortMessage as err:
             # custom interrupt from inside a goto callable - print the message and
             # stay on the current node.
-            self.caller.msg(str(err), session=self._session)
+            self.msg(str(err))
 
     def display_nodetext(self):
-        self.caller.msg(self.nodetext, session=self._session)
+        self.msg(self.nodetext)
 
     def display_helptext(self):
-        self.caller.msg(self.helptext, session=self._session)
+        self.msg(self.helptext)
 
     # formatters - override in a child class
 
@@ -1732,7 +1752,6 @@ def parse_menu_template(caller, menu_template, goto_callables=None):
                 # if we have a pattern, build the arguments for _default later
                 pattern = main_key[len(_OPTION_INPUT_MARKER):].strip()
                 inputparsemap[pattern] = goto
-                print(f"main_key {main_key} {pattern} {goto}")
             else:
                 # a regular goto string/callable target
                 option = {
