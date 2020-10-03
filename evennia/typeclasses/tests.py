@@ -168,4 +168,4 @@ class TestTypedObjectManager(EvenniaTest):
 
     def test_does_not_have_tag_category_only(self):
         self.obj1.tags.add("tagC", "categoryC")
-        self.assertTrue(self.obj1.tags.has(category="categoryD"))
+        self.assertFalse(self.obj1.tags.has(category="categoryD"))
