@@ -336,12 +336,18 @@ class TagHandler(object):
         """
         ret = []
         category = category.strip().lower() if category is not None else None
-        for tag_str in make_iter(tag):
-            tag_str = tag_str.strip().lower()
-            ret.extend(bool(tag) for tag in self._getcache(tag_str, category))
+        if tag:
+            for tag_str in make_iter(tag):
+                tag_str = tag_str.strip().lower()
+                ret.extend(bool(tag) for tag in self._getcache(tag_str, category))
+        elif category:
+            ret.extend(bool(tag) for tag in self._getcache(category=category))
+        else:
+            raise ValueError("Either tag or category must be provided.")
 
         if return_list:
             return ret
+
         return ret[0] if len(ret) == 1 else ret
 
     def get(self, key=None, default=None, category=None, return_tagobj=False, return_list=False):
