@@ -1064,6 +1064,8 @@ class EvMenu:
                 self.caller.attributes.remove("_menutree_saved_startnode")
             if self.cmd_on_exit is not None:
                 self.cmd_on_exit(self.caller, self)
+            # special for template-generated menues
+            del self.caller.db._evmenu_template_contents
 
     def print_debug_info(self, arg):
         """
@@ -1701,7 +1703,7 @@ def _generated_input_goto_func(caller, raw_string, **kwargs):
 
 
 def _generated_node(caller, raw_string, **kwargs):
-    text, options = caller.db._generated_menu_contents[kwargs["_current_nodename"]]
+    text, options = caller.db._evmenu_template_contents[kwargs["_current_nodename"]]
     return text, options
 
 
@@ -1803,7 +1805,7 @@ def parse_menu_template(caller, menu_template, goto_callables=None):
             options = _parse_options(nodename, optiontxt, goto_callables)
             content_map[nodename] = (text, options)
             nodetree[nodename] = _generated_node
-        caller.db._generated_menu_contents = content_map
+        caller.db._evmenu_template_contents = content_map
 
         return nodetree
 
