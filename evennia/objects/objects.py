@@ -1940,12 +1940,12 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             # whisper mode
             msg_type = "whisper"
             msg_self = (
-                '{self} whisper to {all_receivers}, "{speech}"' if msg_self is True else msg_self
+                '{self} whisper to {all_receivers}, "|n{speech}|n"' if msg_self is True else msg_self
             )
-            msg_receivers = msg_receivers or '{object} whispers: "{speech}"'
+            msg_receivers = msg_receivers or '{object} whispers: "|n{speech}|n"'
             msg_location = None
         else:
-            msg_self = '{self} say, "{speech}"' if msg_self is True else msg_self
+            msg_self = '{self} say, "|n{speech}|n"' if msg_self is True else msg_self
             msg_location = msg_location or '{object} says, "{speech}"'
             msg_receivers = msg_receivers or message
 

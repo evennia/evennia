@@ -1659,6 +1659,12 @@ def _process_callable(caller, goto, goto_callables, raw_string,
             for kwarg in gotokwargs.split(","):
                 if kwarg and "=" in kwarg:
                     key, value = [part.strip() for part in kwarg.split("=", 1)]
+                    if key in ("evmenu_goto", "evmenu_gotomap", "_current_nodename",
+                               "evmenu_current_nodename", "evmenu_goto_callables"):
+                        raise RuntimeError(
+                            f"EvMenu template error: goto-callable '{goto}' uses a "
+                            f"kwarg ({key}) that is reserved for the EvMenu templating "
+                            "system. Rename the kwarg.")
                     try:
                         key = literal_eval(key)
                     except ValueError:
@@ -1675,17 +1681,17 @@ def _process_callable(caller, goto, goto_callables, raw_string,
 
 
 def _generated_goto_func(caller, raw_string, **kwargs):
-    goto = kwargs["goto"]
-    goto_callables = kwargs["goto_callables"]
-    current_nodename = kwargs["current_nodename"]
+    goto = kwargs["evmenu_goto"]
+    goto_callables = kwargs["evmenu_goto_callables"]
+    current_nodename = kwargs["evmenu_current_nodename"]
     return _process_callable(caller, goto, goto_callables, raw_string,
                              current_nodename, kwargs)
 
 
 def _generated_input_goto_func(caller, raw_string, **kwargs):
-    gotomap = kwargs["gotomap"]
-    goto_callables = kwargs["goto_callables"]
-    current_nodename = kwargs["current_nodename"]
+    gotomap = kwargs["evmenu_gotomap"]
+    goto_callables = kwargs["evmenu_goto_callables"]
+    current_nodename = kwargs["evmenu_current_nodename"]
 
     # start with glob patterns
     for pattern, goto in gotomap.items():
@@ -1761,9 +1767,9 @@ def parse_menu_template(caller, menu_template, goto_callables=None):
                     "goto": (
                         _generated_goto_func,
                         {
-                            "goto": goto,
-                            "current_nodename": nodename,
-                            "goto_callables": goto_callables,
+                            "evmenu_goto": goto,
+                            "evmenu_current_nodename": nodename,
+                            "evmenu_goto_callables": goto_callables,
                         },
                     ),
                 }
@@ -1779,9 +1785,9 @@ def parse_menu_template(caller, menu_template, goto_callables=None):
                     "goto": (
                         _generated_input_goto_func,
                         {
-                            "gotomap": inputparsemap,
-                            "current_nodename": nodename,
-                            "goto_callables": goto_callables,
+                            "evmenu_gotomap": inputparsemap,
+                            "evmenu_current_nodename": nodename,
+                            "evmenu_goto_callables": goto_callables,
                         },
                     ),
                 }

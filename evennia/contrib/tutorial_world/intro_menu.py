@@ -1,9 +1,14 @@
 """
-Game tutor
+Intro menu / game tutor
 
 Evennia contrib - Griatch 2020
 
-This contrib is a tutorial menu using the EvMenu menu-templating system.
+This contrib is an intro-menu for general MUD and evennia usage using the
+EvMenu menu-templating system.
+
+EvMenu templating is a way to create a menu using a string-format instead
+of creating all nodes manually. Of course, for full functionality one must
+still create the goto-callbacks.
 
 """
 
@@ -11,24 +16,92 @@ from evennia import create_object
 from evennia import CmdSet
 from evennia.utils.evmenu import parse_menu_template, EvMenu
 
-# goto callables
+# Goto callbacks and helper resources for the menu
 
 
 def do_nothing(caller, raw_string, **kwargs):
+    """
+    Re-runs the current node
+    """
     return None
+
 
 def send_testing_tagged(caller, raw_string, **kwargs):
-    caller.msg(("This is a message tagged with 'testing' and "
-                "should appear in the pane you selected!\n "
-                f"You wrote: '{raw_string}'", {"type": "testing"}))
+    """
+    Test to send a message to a pane tagged with 'testing' in the webclient.
+
+    """
+    caller.msg(
+        (
+            "This is a message tagged with 'testing' and "
+            "should appear in the pane you selected!\n "
+            f"You wrote: '{raw_string}'",
+            {"type": "testing"},
+        )
+    )
     return None
 
-def send_string(caller, raw_string, **kwargs):
-    caller.msg(raw_string)
-    return None
+
+# Resources for the first help-command demo
 
 
-# resources for the look-demo
+class DemoCommandSetHelp(CmdSet):
+    """
+    Demo the help command
+    """
+
+    key = "Help Demo Set"
+    priority = 2
+
+    def at_cmdset_creation(self):
+        from evennia import default_cmds
+
+        self.add(default_cmds.CmdHelp())
+
+
+def goto_command_demo_help(caller, raw_string, **kwargs):
+    "Sets things up before going to the help-demo node"
+    _maintain_demo_room(caller, delete=True)
+    caller.cmdset.remove(DemoCommandSetRoom)
+    caller.cmdset.remove(DemoCommandSetComms)
+    caller.cmdset.add(DemoCommandSetHelp)  # TODO - make persistent
+    return kwargs.get("gotonode") or "command_demo_help"
+
+
+# Resources for the comms demo
+
+
+class DemoCommandSetComms(CmdSet):
+    """
+    Demo communications
+    """
+
+    key = "Color Demo Set"
+    priority = 2
+    no_exits = True
+    no_objs = True
+
+    def at_cmdset_creation(self):
+        from evennia import default_cmds
+
+        self.add(default_cmds.CmdHelp())
+        self.add(default_cmds.CmdSay())
+        self.add(default_cmds.CmdPose())
+        self.add(default_cmds.CmdPage())
+        self.add(default_cmds.CmdColorTest())
+
+
+def goto_command_demo_comms(caller, raw_string, **kwargs):
+    """
+    Setup and go to the color demo node.
+    """
+    caller.cmdset.remove(DemoCommandSetHelp)
+    caller.cmdset.remove(DemoCommandSetRoom)
+    caller.cmdset.add(DemoCommandSetComms)
+    return kwargs.get("gotonode") or "comms_demo_start"
+
+
+# Resources for the room demo
 
 _ROOM_DESC = """
 This is a small and comfortable wood cabin. Bright sunlight is shining in
@@ -111,6 +184,7 @@ This is a fist-sized stone covered in runes:
 
 """
 
+
 def _maintain_demo_room(caller, delete=False):
     """
     Handle the creation/cleanup of demo assets. We store them
@@ -135,98 +209,95 @@ def _maintain_demo_room(caller, delete=False):
             del caller.db.tutorial_world_demo_room_data
     elif not roomdata:
         # create and describe the cabin and box
-        room1 = create_object("evennia.objects.objects.DefaultRoom",
-                             key="A small, cozy cabin")
+        room1 = create_object("evennia.objects.objects.DefaultRoom", key="A small, cozy cabin")
         room1.db.desc = _ROOM_DESC.strip()
-        box = create_object("evennia.objects.objects.DefaultObject",
-                            key="small wooden box")
+        box = create_object(
+            "evennia.objects.objects.DefaultObject", key="small wooden box", location=room1
+        )
         box.db.desc = _BOX_DESC.strip()
-        box.location = room1
 
         # create and describe the meadow and stone
-        room2 = create_object("evennia.objects.objects.DefaultRoom",
-                              key="A lush summer meadow")
+        room2 = create_object("evennia.objects.objects.DefaultRoom", key="A lush summer meadow")
         room2.db.desc = _MEADOW_DESC.strip()
-        stone = create_object("evennia.objects.objects.DefaultObject",
-                              key="carved stone")
+        stone = create_object(
+            "evennia.objects.objects.DefaultObject", key="carved stone", location=room2
+        )
         stone.db.desc = _STONE_DESC.strip()
 
         # make the linking exits
-        door_out = create_object("evennia.objects.objects.DefaultExit",
-                                 key="Door",
-                                 location=room1,
-                                 destination=room2)
+        door_out = create_object(
+            "evennia.objects.objects.DefaultExit", key="Door", location=room1, destination=room2
+        )
         door_out.db.desc = _DOOR_DESC_OUT.strip()
-        door_in = create_object("evennia.objects.objects.DefaultExit",
-                                key="entrance to the cabin",
-                                aliases=["door", "in"],
-                                location=room2,
-                                destination=room1)
+        door_in = create_object(
+            "evennia.objects.objects.DefaultExit",
+            key="entrance to the cabin",
+            aliases=["door", "in", "entrance"],
+            location=room2,
+            destination=room1,
+        )
         door_in.db.desc = _DOOR_DESC_IN.strip()
 
         # store references for easy removal later
-        caller.db.tutorial_world_demo_room_data = (caller.location,
-                                                   room1, box,
-                                                   room2, stone,
-                                                   door_out, door_in)
+        caller.db.tutorial_world_demo_room_data = (
+            caller.location,
+            room1,
+            box,
+            room2,
+            stone,
+            door_out,
+            door_in,
+        )
         # move caller into room
         caller.location = room1
 
+
 class DemoCommandSetRoom(CmdSet):
     """
-    Demo the `look` command.
+    Demo some general in-game commands command.
     """
-    key = "cmd_demo_cmdset_room"
+
+    key = "Room Demo Set"
     priority = 2
     no_exits = False
     no_objs = False
 
     def at_cmdset_creation(self):
         from evennia import default_cmds
+
         self.add(default_cmds.CmdHelp())
         self.add(default_cmds.CmdLook())
         self.add(default_cmds.CmdGet())
         self.add(default_cmds.CmdDrop())
+        self.add(default_cmds.CmdInventory())
         self.add(default_cmds.CmdExamine())
         self.add(default_cmds.CmdPy())
 
+
 def goto_command_demo_room(caller, raw_string, **kwargs):
-    """Generate a little 2-room environment for testing out some commands."""
+    """
+    Setup and go to the demo-room node. Generates a little 2-room environment
+    for testing out some commands.
+    """
     _maintain_demo_room(caller)
-    caller.cmdset.remove(DemoCommandSetRoom)
+    caller.cmdset.remove(DemoCommandSetHelp)
+    caller.cmdset.remove(DemoCommandSetComms)
     caller.cmdset.add(DemoCommandSetRoom)  # TODO - make persistent
     return "command_demo_room"
 
-# resources for the general command demo
 
-class DemoCommandSetHelp(CmdSet):
-    """
-    Demo other commands.
-    """
-    key = "cmd_demo_cmdset_help"
-    priority = 2
+# register all callables that can be used in the menu template
 
-    def at_cmdset_creation(self):
-        from evennia import default_cmds
-        self.add(default_cmds.CmdHelp())
+GOTO_CALLABLES = {
+    "send_testing_tagged": send_testing_tagged,
+    "do_nothing": do_nothing,
+    "goto_command_demo_help": goto_command_demo_help,
+    "goto_command_demo_comms": goto_command_demo_comms,
+    "goto_command_demo_room": goto_command_demo_room,
+}
 
 
-def goto_command_demo_help(caller, raw_string, **kwargs):
-    _maintain_demo_room(caller, delete=True)
-    caller.cmdset.remove(DemoCommandSetRoom)
-    caller.cmdset.add(DemoCommandSetHelp)  # TODO - make persistent
-    return "command_demo_help"
-
-
-def command_passthrough(caller, raw_string, **kwargs):
-    cmd = kwargs.get("cmd")
-    on_success = kwargs.get('on_success')
-    if cmd:
-        caller.execute_cmd(cmd)
-    else:
-        caller.execute_cmd(raw_string)
-    return on_success
-
+# Main menu definition
 
 MENU_TEMPLATE = """
 
@@ -245,7 +316,10 @@ Write |wnext|n to continue or select a number to jump to that lesson.
     1 (next);1;next;n: About Evennia -> about_evennia
     2: What is a MUD/MU*? -> about_muds
     3: Using the webclient -> using webclient
-    4: Playing the game -> goto_command_demo_help()
+    4: The help command -> goto_command_demo_help()
+    5: Communicating with others -> goto_command_demo_help(gotonode='talk on channels')
+    6: Using colors -> goto_command_demo_comms(gotonode='testing_colors')
+    7: Moving and exploring -> goto_command_demo_room()
 
 # ---------------------------------------------------------------------------------
 
@@ -271,7 +345,7 @@ to graphical MMORPG-style games like World of Warcraft.
 
     back;b: About Evennia -> about_evennia
     next;n: Using the webclient -> using webclient
-    back to top;t: start
+    back to start;start;t: start
     >: using webclient
 
 # ---------------------------------------------------------------------------------
@@ -299,10 +373,10 @@ There is also some |wextra|n info to learn about customizing the webclient.
 
 ## OPTIONS
 
-    back: About MUDs -> about_muds
+    back;b: About MUDs -> about_muds
     extra: Customizing the webclient -> customizing the webclient
-    next: Playing the game -> goto_command_demo_help()
-    back to top: start
+    next;n: Playing the game -> goto_command_demo_help()
+    back to start;start: start
     >: goto_command_demo_help()
 
 # ---------------------------------------------------------------------------------
@@ -334,7 +408,7 @@ to a web client pane with a specific tag that you set yourself.
 
 ## OPTIONS
 
-    back: using webclient
+    back;b: using webclient
     > test *: send tagged message to new pane -> send_testing_tagged()
 
 # ---------------------------------------------------------------------------------
@@ -357,21 +431,21 @@ At the moment you only have |whelp|n and some |wChannel Names|n (the '<menu comm
 is just a placeholder to indicate you are using this menu).
 
 We'll add more commands as we get to them in this tutorial - but we'll only
-cover a small handfull. Once you exit you'll find a lot more! Now let's try
+cover a small handful. Once you exit you'll find a lot more! Now let's try
 those channels ...
 
 ## OPTIONS
 
-    back: Using the webclient -> using webclient
-    next: Channel commands -> talk on channels
-    back to top: start
+    back;b: Using the webclient -> using webclient
+    next;n: Talk on Channels -> talk on channels
+    back to start;start: start
     >: talk on channels
 
 # ---------------------------------------------------------------------------------
 
 ## NODE talk on channels
 
-|wChannels|n are like in-game chatrooms. The |wChannel names|n help-category
+|wChannels|n are like in-game chatrooms. The |wChannel Names|n help-category
 holds the names of the channels available to you right now. One such channel is
 |wpublic|n. Use |yhelp public|n to see how to use it. Try it:
 
@@ -387,10 +461,103 @@ IRC support channel.
 
 ## OPTIONS
 
-    back: help on help -> goto_command_demo_help()
-    next: Moving and exploring -> goto_command_demo_room()
-    back to top: start
-    >: goto_command_demo_room()
+    back;b: Finding help -> goto_command_demo_help()
+    next;n: Talk to people in-game -> goto_command_demo_comms()
+    back to start;start: start
+
+# ---------------------------------------------------------------------------------
+
+# we get here via goto_command_demo_comms()
+
+## NODE comms_demo_start
+
+You can also chat with people inside the game. If you try |yhelp|n now you'll
+find you have a few more commands available for trying this out.
+
+    |ysay Hello there!|n
+    |y"Hello there!|n
+
+|wsay|n is used to talk to people in the same location you are. Everyone in the
+room will see what you have to say. A single quote |y"|n is a  convenient shortcut.
+
+    |ypose smiles|n
+    |y:smiles|n
+
+|wpose|n (or |wemote|n) describes what you do to those nearby. This is a very simple
+command by default, but it can be extended to much more complex parsing in order to
+include other people/objects in the emote, reference things by a short-description etc.
+
+## OPTIONS
+
+    next;n: Paging people -> paging_people
+    back;b: Talk on Channels -> talk on channels
+    back to start;start: start
+
+# ---------------------------------------------------------------------------------
+
+## NODE paging_people
+
+Halfway between talking on a |wChannel|n and chatting in your current location
+with |wsay|n and |wpose|n, you can also |wpage|n people. This is like a private
+message only they can see.
+
+    |ypage <name> = Hello there!
+    page <name1>, <name2> = Hello both of you!|n
+
+If you are alone on the server, put your own name as |w<name>|n to test it and
+page yourself. Write just |ypage|n to see your latest pages. This will also show
+you if anyone paged you while you were offline.
+
+(By the way - do you think that the use of |y=|n above is strange? This is a
+MUSH/MUX-style of syntax.  If you don't like it, you can change it for your own
+game by simply changing how the |wpose|n command parses its input.)
+
+
+## OPTIONS
+
+    next;n: Using colors -> testing_colors
+    back;b: Talk to people in-game -> comms_demo_start
+    back to start;start: start
+
+# ---------------------------------------------------------------------------------
+
+## NODE testing_colors
+
+You can add color in your text by the help of tags. However, remember that not
+everyone will see your colors - it depends on their client (and some use
+screenreaders). Using color can also make text harder to read. So use it
+sparingly.
+
+To start coloring something |rred|n, add a ||r (red) marker and then
+end with ||n (to go back to neutral/no-color):
+
+    |ysay This is a ||rred||n text!
+    say This is a ||Rdark red||n text!|n
+
+You can also change the background:
+
+    |ysay This is a ||[x||bblue text on a light-grey background!|n
+
+There are 16 base colors and as many background colors (called ANSI colors). Some
+clients also supports so-called Xterm256 which gives a total of 256 colors. These are
+given as |w||rgb|n, where r, g, b are the components of red, green and blue from 0-5:
+
+    |ysay This is ||050solid green!|n
+    |ysay This is ||520an orange color!|n
+    |ysay This is ||[005||555white on bright blue background!|n
+
+If you don't see the expected colors from the above examples, it's because your
+client does not support it - try out the Evennia webclient instead. To see all
+color codes printed, try
+
+    |ycolor ansi
+    |ycolor xterm
+
+## OPTIONS
+
+    next;n: Moving and Exploring -> goto_command_demo_room()
+    back;b: Paging people -> paging_people
+    back to start;start: start
 
 # ---------------------------------------------------------------------------------
 
@@ -398,42 +565,36 @@ IRC support channel.
 
 ## NODE command_demo_room
 
-Another important command is '|ylook|n'. It's also abbreviated '|yl|n' since
-it's used so much. Looking displays/redisplays your current location. So far in
-this tutorial, using 'look' would just redisplay the menu.
+For exploring the game, a very important command is '|ylook|n'. It's also
+abbreviated '|yl|n' since it's used so much. Looking displays/redisplays your
+current location. You can also use it to look closer at items in the world. So
+far in this tutorial, using 'look' would just redisplay the menu.
 
 Try |ylook|n now. You have been quietly transported to a sunny cabin to look
-around in. Explore a little. Use |ynext|n when you are done.
+around in. Explore a little and use |ynext|n when you are done.
 
 ## OPTIONS
 
-    back: Channel commands -> talk on channels
-    next: end
-    back to top: start
-
+    back;b: Channel commands -> talk on channels
+    next;n: end
+    back to start;start: start
 
 # ---------------------------------------------------------------------------------
 
 ## NODE end
 
-Thankyou for going through the tutorial!
+Thank you for going through the tutorial!
 
 
 """
 
 
-GOTO_CALLABLES = {
-    "command_passthrough": command_passthrough,
-    "send_testing_tagged": send_testing_tagged,
-    "do_nothing": do_nothing,
-    "send_string": send_string,
-    "goto_command_demo_help": goto_command_demo_help,
-    "goto_command_demo_room": goto_command_demo_room,
-}
-
 class TutorialEvMenu(EvMenu):
     def close_menu(self):
         """Custom cleanup actions when closing menu"""
+        self.caller.cmdset.remove(DemoCommandSetHelp)
+        self.caller.cmdset.remove(DemoCommandSetRoom)
+        self.caller.cmdset.remove(DemoCommandSetComms)
         _maintain_demo_room(self.caller, delete=True)
         super().close_menu()
 
