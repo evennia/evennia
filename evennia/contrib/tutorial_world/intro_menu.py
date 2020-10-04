@@ -229,8 +229,11 @@ def _maintain_demo_room(caller, delete=False):
 
         # make the linking exits
         door_out = create_object(
-            "evennia.objects.objects.DefaultExit", key="Door", location=room1,
-            destination=room2, locks=["get:false()"],
+            "evennia.objects.objects.DefaultExit",
+            key="Door",
+            location=room1,
+            destination=room2,
+            locks=["get:false()"],
         )
         door_out.db.desc = _DOOR_DESC_OUT.strip()
         door_in = create_object(
@@ -239,7 +242,7 @@ def _maintain_demo_room(caller, delete=False):
             aliases=["door", "in", "entrance"],
             location=room2,
             destination=room1,
-            locks=["get:false()"]
+            locks=["get:false()"],
         )
         door_in.db.desc = _DOOR_DESC_IN.strip()
 
@@ -574,10 +577,9 @@ If you are alone on the server, put your own name as |w<name>|n to test it and
 page yourself. Write just |ypage|n to see your latest pages. This will also show
 you if anyone paged you while you were offline.
 
-(By the way - do you think that the use of |y=|n above is strange? This is a
-MUSH/MUX-style of syntax.  If you don't like it, you can change it for your own
-game by simply changing how the |wpose|n command parses its input.)
-
+(By the way - depending on which games you are used to, you may think that the
+use of |y=|n above is strange. This is a MUSH/MUX-style of syntax. For your own
+game you can change the |wpose|n command to work however you prefer).
 
 ## OPTIONS
 
@@ -721,7 +723,18 @@ Thanks for trying out the tutorial!
 """
 
 
+# -------------------------------------------------------------------------------------------
+#
+# EvMenu implementation and access function
+#
+# -------------------------------------------------------------------------------------------
+
+
 class TutorialEvMenu(EvMenu):
+    """
+    Custom EvMenu for displaying the intro-menu
+    """
+
     def close_menu(self):
         """Custom cleanup actions when closing menu"""
         self.caller.cmdset.remove(DemoCommandSetHelp)
@@ -743,16 +756,18 @@ class TutorialEvMenu(EvMenu):
             else:
                 other.append((key, desc))
         navigation = (
-            (" " + " |W|||n ".join(navigation) + " |W|||n " + "|wQ|Wuit|n")
-            if navigation
-            else ""
+            (" " + " |W|||n ".join(navigation) + " |W|||n " + "|wQ|Wuit|n") if navigation else ""
         )
         other = super().options_formatter(other)
         sep = "\n\n" if navigation and other else ""
 
         return f"{navigation}{sep}{other}"
 
-def testmenu(caller):
+
+def init_menu(caller):
+    """
+    Call to initialize the menu.
+
+    """
     menutree = parse_menu_template(caller, MENU_TEMPLATE, GOTO_CALLABLES)
-    # we'll use a custom EvMenu child later
     TutorialEvMenu(caller, menutree)

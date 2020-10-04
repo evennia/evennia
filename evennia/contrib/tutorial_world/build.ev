@@ -105,21 +105,24 @@ tutorial
 #
 @desc
  |gWelcome to the Evennia tutorial-world!|n
+
  This small quest shows some examples of Evennia usage.
 
- To get into the mood of this miniature quest, imagine you are an
- adventurer out to find fame and fortune. You have heard rumours of an
- old castle ruin by the coast. In its depth a warrior princess was
- buried together with her powerful magical weapon - a valuable prize,
- if it's true.  Of course this is a chance to adventure that you
- cannot turn down!
+ |gDo you want help with how to play? Write |yintro|g to get an introduction to
+ Evennia and the basics of playing!|n
 
- You reach the coast in the midst of a raging thunderstorm. With wind
- and rain screaming in your face you stand where the moor meet the sea
- along a high, rocky coast ...
+ To get into the mood of this miniature quest, imagine you are an adventurer
+ out to find fame and fortune. You have heard rumours of an old castle ruin by
+ the coast. In its depth a warrior princess was buried together with her
+ powerful magical weapon - a valuable prize, if it's true.  Of course this is a
+ chance to adventure that you cannot turn down!
 
-Try 'tutorial' to get behind-the-scenes help anywhere, and 'give up'
-if you want to abort.
+ You reach the coast in the midst of a raging thunderstorm. With wind and rain
+ screaming in your face you stand where the moor meet the sea along a high,
+ rocky coast ...
+
+Try '|yintro|n' for usage help. During the quest, write '|ytutorial|n' to get
+behind-the-scenes help anywhere, and '|ygive up|n' to abandon the quest.
 
 |gwrite 'begin' to start your quest!|n
 

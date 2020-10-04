@@ -385,6 +385,31 @@ SUPERUSER_WARNING = (
 #
 # -------------------------------------------------------------
 
+class CmdEvenniaIntro(Command):
+    """
+    Start the Evennia intro wizard.
+
+    Usage:
+        intro
+
+    """
+    key = "intro"
+
+    def func(self):
+        from .intro_menu import init_menu
+        # quell also superusers
+        if self.caller.account:
+            self.caller.account.execute_cmd("quell")
+            self.caller.msg("(Auto-quelling)")
+        init_menu(self.caller)
+
+
+class CmdSetEvenniaIntro(CmdSet):
+    key = "Evennia Intro StartSet"
+
+    def at_cmdset_creation(self):
+        self.add(CmdEvenniaIntro())
+
 
 class IntroRoom(TutorialRoom):
     """
@@ -404,6 +429,7 @@ class IntroRoom(TutorialRoom):
             "This assigns the health Attribute to "
             "the account."
         )
+        self.cmdset.add(CmdSetEvenniaIntro, permanent=True)
 
     def at_object_receive(self, character, source_location):
         """
@@ -425,7 +451,6 @@ class IntroRoom(TutorialRoom):
             if character.account:
                 character.account.execute_cmd("quell")
                 character.msg("(Auto-quelling while in tutorial-world)")
-
 
 # -------------------------------------------------------------
 #
