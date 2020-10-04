@@ -327,3 +327,16 @@ class TestMenuTemplateParse(EvenniaTest):
 
     def test_template2menu(self):
         evmenu.template2menu(self.char1, self.menu_template, self.goto_callables)
+
+    def test_parse_menu_fail(self):
+        template = """
+        ## NODE
+
+        Text
+
+        ## OPTIONS
+
+        next: callnode2(invalid)
+        """
+        with self.assertRaises(RuntimeError):
+            evmenu.parse_menu_template(self.char1, template, self.goto_callables)

@@ -1634,7 +1634,7 @@ _RE_NODE = re.compile(r"##\s*?NODE\s+?(?P<nodename>\S[\S\s]*?)$", re.I + re.M)
 _RE_OPTIONS_SEP = re.compile(r"##\s*?OPTIONS\s*?$", re.I + re.M)
 _RE_CALLABLE = re.compile(r"\S+?\(\)", re.I + re.M)
 _RE_CALLABLE = re.compile(
-    r"(?P<funcname>\S+?)(?:\((?P<kwargs>[\S\s]+?=[\S\s]+?)\)|\(\))", re.I + re.M
+    r"(?P<funcname>\S+?)(?:\((?P<kwargs>[\S\s]+?)\)|\(\))", re.I + re.M
 )
 
 _HELP_NO_OPTION_MATCH = _("Choose an option or try 'help'.")
@@ -1664,23 +1664,23 @@ def _process_callable(caller, goto, goto_callables, raw_string,
         gotokwargs = match.group("kwargs") or ""
         if gotofunc in goto_callables:
             for kwarg in gotokwargs.split(","):
-                if kwarg and "=" in kwarg:
-                    key, value = [part.strip() for part in kwarg.split("=", 1)]
-                    if key in ("evmenu_goto", "evmenu_gotomap", "_current_nodename",
-                               "evmenu_current_nodename", "evmenu_goto_callables"):
-                        raise RuntimeError(
-                            f"EvMenu template error: goto-callable '{goto}' uses a "
-                            f"kwarg ({key}) that is reserved for the EvMenu templating "
-                            "system. Rename the kwarg.")
-                    try:
-                        key = literal_eval(key)
-                    except ValueError:
-                        pass
-                    try:
-                        value = literal_eval(value)
-                    except ValueError:
-                        pass
-                    kwargs[key] = value
+                key, value = [part.strip() for part in kwarg.split("=", 1)]
+                if key in ("evmenu_goto", "evmenu_gotomap", "_current_nodename",
+                           "evmenu_current_nodename", "evmenu_goto_callables"):
+                    raise RuntimeError(
+                        f"EvMenu template error: goto-callable '{goto}' uses a "
+                        f"kwarg ({kwarg}) that is reserved for the EvMenu templating "
+                        "system. Rename the kwarg.")
+                try:
+                    key = literal_eval(key)
+                except ValueError:
+                    pass
+                try:
+                    value = literal_eval(value)
+                except ValueError:
+                    pass
+                kwargs[key] = value
+
             goto = goto_callables[gotofunc](caller, raw_string, **kwargs)
     if goto is None:
         return goto, {"generated_nodename": current_nodename}
@@ -1755,6 +1755,23 @@ def parse_menu_template(caller, menu_template, goto_callables=None):
         dict: A `{"node": nodefunc}` menutree suitable to pass into EvMenu.
 
     """
+    def _validate_kwarg(goto, kwarg):
+        """
+        Validate goto-callable kwarg is on correct form.
+        """
+        if not "=" in kwarg:
+            raise RuntimeError(
+                f"EvMenu template error: goto-callable '{goto}' has a "
+                f"non-kwarg argument ({kwarg}). All callables in the "
+                "template must have only keyword-arguments, or no "
+                "args at all.")
+        key, _ = [part.strip() for part in kwarg.split("=", 1)]
+        if key in ("evmenu_goto", "evmenu_gotomap", "_current_nodename",
+                   "evmenu_current_nodename", "evmenu_goto_callables"):
+            raise RuntimeError(
+                f"EvMenu template error: goto-callable '{goto}' uses a "
+                f"kwarg ({kwarg}) that is reserved for the EvMenu templating "
+                "system. Rename the kwarg.")
 
     def _parse_options(nodename, optiontxt, goto_callables):
         """
@@ -1778,6 +1795,14 @@ def parse_menu_template(caller, menu_template, goto_callables=None):
             # desc -> goto
             if _OPTION_CALL_MARKER in goto:
                 desc, goto = [part.strip() for part in goto.split(_OPTION_CALL_MARKER, 1)]
+
+            # validate callable
+            match = _RE_CALLABLE.match(goto)
+            if match:
+                kwargs = match.group("kwargs")
+                if kwargs:
+                    for kwarg in kwargs.split(','):
+                        _validate_kwarg(goto, kwarg)
 
             # parse key [;aliases|pattern]
             key = [part.strip() for part in key.split(_OPTION_ALIAS_MARKER)]

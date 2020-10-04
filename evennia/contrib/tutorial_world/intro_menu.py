@@ -290,8 +290,18 @@ def goto_command_demo_room(caller, raw_string, **kwargs):
     _maintain_demo_room(caller)
     caller.cmdset.remove(DemoCommandSetHelp)
     caller.cmdset.remove(DemoCommandSetComms)
-    caller.cmdset.add(DemoCommandSetRoom)  # TODO - make persistent
+    caller.cmdset.add(DemoCommandSetRoom)
     return "command_demo_room"
+
+
+def goto_cleanup_cmdsets(caller, raw_strings, **kwargs):
+    """
+    Cleanup all cmdsets.
+    """
+    caller.cmdset.remove(DemoCommandSetHelp)
+    caller.cmdset.remove(DemoCommandSetComms)
+    caller.cmdset.remove(DemoCommandSetRoom)
+    return kwargs.get("gotonode")
 
 
 # register all callables that can be used in the menu template
@@ -302,6 +312,7 @@ GOTO_CALLABLES = {
     "goto_command_demo_help": goto_command_demo_help,
     "goto_command_demo_comms": goto_command_demo_comms,
     "goto_command_demo_room": goto_command_demo_room,
+    "goto_cleanup_cmdsets": goto_cleanup_cmdsets,
 }
 
 
@@ -365,7 +376,7 @@ gaming style you like and possibly any new ones you can come up with!
 ## OPTIONS
 
     next;n: About Evennia -> about_evennia
-    back to start;start;t: start
+    back to start;back;start;t: start
     >: about_evennia
 
 # ---------------------------------------------------------------------------------
@@ -498,7 +509,7 @@ those channels ...
 ## OPTIONS
 
     next;n: Talk on Channels -> talk on channels
-    back;b: Using the webclient -> using webclient
+    back;b: Using the webclient -> goto_cleanup_cmdsets(gotonode='using webclient')
     back to start;start: start
     >: talk on channels
 
@@ -556,7 +567,7 @@ include other people/objects in the emote, reference things by a short-descripti
 ## OPTIONS
 
     next;n: Paging people -> paging_people
-    back;b: Talk on Channels -> talk on channels
+    back;b: Talk on Channels -> goto_command_demo_help(gotonode='talk on channels')
     back to start;start: start
     >: paging_people
 
@@ -627,7 +638,7 @@ color codes printed, try
 ## OPTIONS
 
     next;n: Moving and Exploring -> goto_command_demo_room()
-    back;b: Paging people -> paging_people
+    back;b: Paging people -> goto_command_demo_comms(gotonode='paging_people')
     back to start;start: start
     >: goto_command_demo_room()
 
@@ -650,7 +661,7 @@ around in. Explore a little and use |ynext|n when you are done.
 ## OPTIONS
 
     next;n: Conclusions -> conclusions
-    back;b: Channel commands -> testing_colors
+    back;b: Channel commands -> goto_command_demo_comms(gotonode='testing_colors')
     back to start;start: start
     >: conclusions
 
@@ -667,13 +678,11 @@ if you get stuck!
 Write |ynext|n to end this wizard and continue to the tutorial-world quest!
 If you want there is also some |wextra|n info for where to go beyond that.
 
-Good luck!
-
 ## OPTIONS
 
-    extra: Some more help on where to go next -> post scriptum
-    next;next;n: end
-    back;b: goto_command_demo_room()
+    extra: Where to go next -> post scriptum
+    next;next;n: End -> end
+    back;b: Moving and Exploring -> goto_command_demo_room()
     back to start;start: start
     >: end
 
@@ -718,7 +727,7 @@ back: conclusions
 
 ## NODE end
 
-Thanks for trying out the tutorial!
+|gGood luck!|n
 
 """
 
