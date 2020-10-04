@@ -808,17 +808,34 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
                 lastpages = pages[-number:]
             else:
                 lastpages = pages
-            template = "|w%s|n |c%s|n to |c%s|n: %s"
-            lastpages = "\n ".join(
-                template
-                % (
-                    utils.datetime_format(page.date_created),
-                    ",".join(obj.key for obj in page.senders),
-                    "|n,|c ".join([obj.name for obj in page.receivers]),
-                    page.message,
+            to_template = "|w{date}|n{sender}|n |cto {receiver}|n:> {message}"
+            from_template = "|w{date}|n{receiver}|n |gfrom {sender}|n:< {message}"
+            listing = []
+            for page in lastpages:
+                receiver = ""
+                sender = ""
+                template = from_template
+                sending = False
+                if self.caller in page.senders:
+                    template = to_template
+                    sending = True
+
+                if len(page.receivers) > 1 or sending:
+                    receiver = "|n,|c ".join([obj.name for obj in page.receivers])
+
+                if len(page.senders) > 1 or not sending:
+                    sender = "|n,|c".join(obj.key for obj in page.senders)
+
+                listing.append(
+                    template.format(
+                        date=utils.datetime_format(page.date_created),
+                        sender=sender,
+                        receiver=receiver,
+                        message=page.message,
+                    )
+
                 )
-                for page in lastpages
-            )
+            lastpages = "\n ".join(listing)
 
             if lastpages:
                 string = "Your latest pages:\n %s" % lastpages
