@@ -1651,6 +1651,13 @@ _OPTION_COMMENT_START = "#"
 
 def _process_callable(caller, goto, goto_callables, raw_string,
                       current_nodename, kwargs):
+    """
+    Central helper for parsing a goto-callable (`funcname(**kwargs)`) out of
+    the right-hand-side of the template options and map this to an actual
+    callable registered with the template generator. This involves parsing the
+    func-name and running literal-eval on its kwargs.
+
+    """
     match = _RE_CALLABLE.match(goto)
     if match:
         gotofunc = match.group("funcname")
@@ -1681,6 +1688,12 @@ def _process_callable(caller, goto, goto_callables, raw_string,
 
 
 def _generated_goto_func(caller, raw_string, **kwargs):
+    """
+    This rerouter handles normal direct goto func call matches.
+
+    key : ... -> goto_callable(**kwargs)
+
+    """
     goto = kwargs["evmenu_goto"]
     goto_callables = kwargs["evmenu_goto_callables"]
     current_nodename = kwargs["evmenu_current_nodename"]
@@ -1689,9 +1702,18 @@ def _generated_goto_func(caller, raw_string, **kwargs):
 
 
 def _generated_input_goto_func(caller, raw_string, **kwargs):
+    """
+    This goto-func acts as a rerouter for >-type line parsing (by acting as the
+    _default option). The patterns discovered in the menu maps to different
+    *actual* goto-funcs. We map to those here.
+
+    >pattern: ... -> goto_callable
+
+    """
     gotomap = kwargs["evmenu_gotomap"]
     goto_callables = kwargs["evmenu_goto_callables"]
     current_nodename = kwargs["evmenu_current_nodename"]
+    raw_string = raw_string.strip("\n")  # strip is necessary to catch empty return
 
     # start with glob patterns
     for pattern, goto in gotomap.items():
@@ -1704,18 +1726,23 @@ def _generated_input_goto_func(caller, raw_string, **kwargs):
             return _process_callable(caller, goto, goto_callables, raw_string,
                                      current_nodename, kwargs)
     # no match, show error
-
     raise EvMenuGotoAbortMessage(_HELP_NO_OPTION_MATCH)
 
 
 def _generated_node(caller, raw_string, **kwargs):
+    """
+    Every node in the templated menu will be this node, but with dynamically
+    changing text/options. It must be a global function like this because
+    otherwise we could not make the templated-menu persistent.
+
+    """
     text, options = caller.db._evmenu_template_contents[kwargs["_current_nodename"]]
     return text, options
 
 
 def parse_menu_template(caller, menu_template, goto_callables=None):
     """
-    Parse menu-template string
+    Parse menu-template string. The main function of the EvMenu templating system.
 
     Args:
         caller (Object or Account): Entity using the menu.
@@ -1723,6 +1750,9 @@ def parse_menu_template(caller, menu_template, goto_callables=None):
         goto_callables (dict, optional): Mapping between call-names and callables
             on the form `callable(caller, raw_string, **kwargs)`. These are what is
             available to use in the `menu_template` string.
+
+    Returns:
+        dict: A `{"node": nodefunc}` menutree suitable to pass into EvMenu.
 
     """
 
@@ -1828,7 +1858,8 @@ def template2menu(
 ):
     """
     Helper function to generate and start an EvMenu based on a menu template
-    string.
+    string. This will internall call `parse_menu_template` and run a default
+    EvMenu with its results.
 
     Args:
         caller (Object or Account): The entity using the menu.

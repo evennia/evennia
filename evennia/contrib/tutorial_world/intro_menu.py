@@ -107,17 +107,18 @@ _ROOM_DESC = """
 This is a small and comfortable wood cabin. Bright sunlight is shining in
 through the windows.
 
-Use |ylook box|n or |yl box|n to examine the box in this room.
+Use |ylook sign|n or |yl sign|n to examine the wooden sign nailed to the wall.
+
 """
 
-_BOX_DESC = """
-The box is made of wood. On it, letters are engraved, reading:
+_SIGN_DESC = """
+The small sign reads:
 
     Good! Now try '|ylook small|n'.
 
-    You'll get an error! There are two things that 'small' could refer to here
-    - the 'small box' or the 'small, cozy cabin' itself.  You will get a list of the
-    possibilities.
+    ... You'll get a multi-match error! There are two things that 'small' could
+    refer to here - the 'small wooden sign' or the 'small, cozy cabin' itself.  You will
+    get a list of the possibilities.
 
     You could either tell Evennia which one you wanted by picking a unique part
     of their name (like '|ylook cozy|n') or use the number in the list to pick
@@ -133,7 +134,7 @@ The box is made of wood. On it, letters are engraved, reading:
     it's because you are playing with Builder-privileges or higher. Regular
     players will not see the numbers.
 
-    Next look at the |wdoor|n.
+    Next try |ylook door|n.
 
 """
 
@@ -162,7 +163,7 @@ _MEADOW_DESC = """
 This is a lush meadow, just outside a cozy cabin. It's surrounded
 by trees and sunlight filters down from a clear blue sky.
 
-There is a |wstone|n here. Try looking at it.
+There is a |wstone|n here. Try looking at it!
 
 """
 
@@ -198,9 +199,9 @@ def _maintain_demo_room(caller, delete=False):
             # we delete directly for simplicity. We need to delete
             # in specific order to avoid deleting rooms moves
             # its contents to their default home-location
-            prev_loc, room1, box, room2, stone, door_out, door_in = roomdata
+            prev_loc, room1, sign, room2, stone, door_out, door_in = roomdata
             caller.location = prev_loc
-            box.delete()
+            sign.delete()
             stone.delete()
             door_out.delete()
             door_in.delete()
@@ -210,15 +211,17 @@ def _maintain_demo_room(caller, delete=False):
     elif not roomdata:
         # create and describe the cabin and box
         room1 = create_object("evennia.objects.objects.DefaultRoom", key="A small, cozy cabin")
-        room1.db.desc = _ROOM_DESC.strip()
-        box = create_object(
-            "evennia.objects.objects.DefaultObject", key="small wooden box", location=room1
+        room1.db.desc = _ROOM_DESC.lstrip()
+        sign = create_object(
+            "evennia.objects.objects.DefaultObject", key="small wooden sign", location=room1
         )
-        box.db.desc = _BOX_DESC.strip()
+        sign.db.desc = _SIGN_DESC.strip()
+        sign.locks.add("get:false()")
+        sign.db.get_err_msg = "The sign is nailed to the wall. It's not budging."
 
         # create and describe the meadow and stone
         room2 = create_object("evennia.objects.objects.DefaultRoom", key="A lush summer meadow")
-        room2.db.desc = _MEADOW_DESC.strip()
+        room2.db.desc = _MEADOW_DESC.lstrip()
         stone = create_object(
             "evennia.objects.objects.DefaultObject", key="carved stone", location=room2
         )
@@ -226,7 +229,8 @@ def _maintain_demo_room(caller, delete=False):
 
         # make the linking exits
         door_out = create_object(
-            "evennia.objects.objects.DefaultExit", key="Door", location=room1, destination=room2
+            "evennia.objects.objects.DefaultExit", key="Door", location=room1,
+            destination=room2, locks=["get:false()"],
         )
         door_out.db.desc = _DOOR_DESC_OUT.strip()
         door_in = create_object(
@@ -235,6 +239,7 @@ def _maintain_demo_room(caller, delete=False):
             aliases=["door", "in", "entrance"],
             location=room2,
             destination=room1,
+            locks=["get:false()"]
         )
         door_in.db.desc = _DOOR_DESC_IN.strip()
 
@@ -242,7 +247,7 @@ def _maintain_demo_room(caller, delete=False):
         caller.db.tutorial_world_demo_room_data = (
             caller.location,
             room1,
-            box,
+            sign,
             room2,
             stone,
             door_out,
@@ -303,62 +308,110 @@ MENU_TEMPLATE = """
 
 ## NODE start
 
-Welcome to the |cEvennia|n intro! From this menu you can learn some more about
-the system and also the basics of how to play a text-based game. You can exit
-this menu at any time by using "q" or "quit".
+|g** Evennia introduction wizard **|n
 
-For (a lot) more help, check out the documentation at http://www.evennia.com.
+If you feel lost you can learn some of the basics of how to play a text-based
+game here. You can also learn a little about the system and how to find more
+help. You can exit this tutorial-wizard at any time by entering '|yq|n' or '|yquit|n'.
 
-Write |wnext|n to continue or select a number to jump to that lesson.
+Press |y<return>|n or write |ynext|n to step forward. Or select a number to jump to.
 
 ## OPTIONS
 
-    1 (next);1;next;n: About Evennia -> about_evennia
-    2: What is a MUD/MU*? -> about_muds
+    1 (next);1;next;n: What is a MUD/MU*? -> about_muds
+    2: About Evennia -> about_evennia
     3: Using the webclient -> using webclient
     4: The help command -> goto_command_demo_help()
     5: Communicating with others -> goto_command_demo_help(gotonode='talk on channels')
     6: Using colors -> goto_command_demo_comms(gotonode='testing_colors')
     7: Moving and exploring -> goto_command_demo_room()
-
-# ---------------------------------------------------------------------------------
-
-## NODE about_evennia
-
-Evennia is a game engine for creating multiplayer online text-games.
-
-## OPTIONS
-
-    back;b: Start -> start
-    next;n: About MUDs -> about_muds
+    8: Conclusions & next steps-> conclusions
     >: about_muds
 
 # ---------------------------------------------------------------------------------
 
 ## NODE about_muds
 
-The term MUD stands for Multi-user-Dungeon or -Dimension. These are the precursor
-to graphical MMORPG-style games like World of Warcraft.
+|g** About MUDs **|n
 
+The term '|wMUD|n' stands for Multi-user-Dungeon or -Dimension. A MUD is
+primarily played by inserting text |wcommands|n and getting text back.
+
+MUDS were the |wprecursors|n to graphical MMORPG-style games like World of
+Warcraft. While not as mainstream as they once were, comparing a text-game to a
+graphical game is like comparing a book to a movie - it's just a different
+experience altogether.
+
+MUDs are |wdifferent|n from Interactive Fiction (IF) in that they are multiplayer
+and usually has a consistent game world with many stories and protagonists
+acting at the same time.
+
+Like there are many different styles of graphical MMOs, there are |wmany
+variations|n of MUDs: They can be slow-paced or fast. They can cover fantasy,
+sci-fi, horror or other genres. They can allow PvP or not and be casual or
+hardcore, strategic, tactical, turn-based or play in real-time.
+
+Whereas 'MUD' is arguably the most well-known term, there are other terms
+centered around particular game engines - such as MUSH, MOO, MUX, MUCK, LPMuds,
+ROMs, Diku and others. Many people that played MUDs in the past used one of
+these existing families of text game-servers, whether they knew it or not.
+
+|cEvennia|n is a newer text game engine designed to emulate almost any existing
+gaming style you like and possibly any new ones you can come up with!
 
 ## OPTIONS
 
-    back;b: About Evennia -> about_evennia
-    next;n: Using the webclient -> using webclient
+    next;n: About Evennia -> about_evennia
     back to start;start;t: start
+    >: about_evennia
+
+# ---------------------------------------------------------------------------------
+
+## NODE about_evennia
+
+|g** About Evennia **|n
+
+|cEvennia|n is a Python game engine for creating multiplayer online text-games
+(aka MUDs, MUSHes, MUX, MOOs...). It is open-source and |wfree to use|n, also for
+commercial projects (BSD license).
+
+Out of the box, Evennia provides a |wfull, if empty game|n. Whereas you can play
+via traditional telnet MUD-clients, the server runs your game's website and
+offers a |wHTML5 webclient|n so that people can play your game in their browser
+without downloading anything extra.
+
+Evennia deliberately |wdoes not|n hard-code any game-specific things like
+combat-systems, races, skills, etc. They would not match what just you wanted
+anyway! Whereas we do have optional contribs with many examples, most of our
+users use them as inspiration to make their own thing.
+
+Evennia is developed entirely in |wPython|n, using modern developer practices.
+The advantage of text is that even a solo developer or small team can
+realistically make a competitive multiplayer game (as compared to a graphical
+MMORPG which is one of the most expensive game types in existence to develop).
+Many also use Evennia as a |wfun way to learn Python|n!
+
+## OPTIONS
+
+    next;n: Using the webclient -> using webclient
+    back;b: About MUDs -> about_muds
     >: using webclient
 
 # ---------------------------------------------------------------------------------
 
 ## NODE using webclient
 
-|rNote: This is only relevant if you use Evennia's HTML5 web client. If you use a
+|g** Using the Webclient **|n
+
+|RNote: This is only relevant if you use Evennia's HTML5 web client. If you use a
 third-party (telnet) mud-client, you can skip this section.|n
 
-Evennia's web client is (when you install the server locally) found by pointing
-your web browser to
+Evennia's web client is (for a local install) found by pointing your browser to
+
     |yhttp://localhost:4001/webclient|n
+
 For a live example, the public Evennia demo can be found at
+
     |yhttps://demo.evennia.com/webclient|n
 
 The web client starts out having two panes - the input-pane for entering commands
@@ -373,9 +426,9 @@ There is also some |wextra|n info to learn about customizing the webclient.
 
 ## OPTIONS
 
-    back;b: About MUDs -> about_muds
     extra: Customizing the webclient -> customizing the webclient
     next;n: Playing the game -> goto_command_demo_help()
+    back;b: About Evennia -> about_evennia
     back to start;start: start
     >: goto_command_demo_help()
 
@@ -384,6 +437,8 @@ There is also some |wextra|n info to learn about customizing the webclient.
 # this is a dead-end 'leaf' of the menu
 
 ## NODE customizing the webclient
+
+|g** Extra hints on customizing the Webclient **|n
 
 |y1)|n The panes of the webclient can be resized and you can create additional panes.
 
@@ -410,6 +465,7 @@ to a web client pane with a specific tag that you set yourself.
 
     back;b: using webclient
     > test *: send tagged message to new pane -> send_testing_tagged()
+    >: using webclient
 
 # ---------------------------------------------------------------------------------
 
@@ -417,7 +473,9 @@ to a web client pane with a specific tag that you set yourself.
 
 ## NODE command_demo_help
 
-Evennia has about 90 default commands. They include useful administration/building
+|g** Playing the game **|n
+
+Evennia has about |w90 default commands|n. They include useful administration/building
 commands and a few limited "in-game" commands to serve as examples. They are intended
 to be changed, extended and modified as you please.
 
@@ -436,14 +494,16 @@ those channels ...
 
 ## OPTIONS
 
-    back;b: Using the webclient -> using webclient
     next;n: Talk on Channels -> talk on channels
+    back;b: Using the webclient -> using webclient
     back to start;start: start
     >: talk on channels
 
 # ---------------------------------------------------------------------------------
 
 ## NODE talk on channels
+
+|g** Talk on Channels **|n
 
 |wChannels|n are like in-game chatrooms. The |wChannel Names|n help-category
 holds the names of the channels available to you right now. One such channel is
@@ -461,9 +521,10 @@ IRC support channel.
 
 ## OPTIONS
 
-    back;b: Finding help -> goto_command_demo_help()
     next;n: Talk to people in-game -> goto_command_demo_comms()
+    back;b: Finding help -> goto_command_demo_help()
     back to start;start: start
+    >: goto_command_demo_comms()
 
 # ---------------------------------------------------------------------------------
 
@@ -471,14 +532,16 @@ IRC support channel.
 
 ## NODE comms_demo_start
 
+|g** Talk to people in-game **|n
+
 You can also chat with people inside the game. If you try |yhelp|n now you'll
 find you have a few more commands available for trying this out.
 
     |ysay Hello there!|n
-    |y"Hello there!|n
+    |y'Hello there!|n
 
 |wsay|n is used to talk to people in the same location you are. Everyone in the
-room will see what you have to say. A single quote |y"|n is a  convenient shortcut.
+room will see what you have to say. A single quote |y'|n is a  convenient shortcut.
 
     |ypose smiles|n
     |y:smiles|n
@@ -492,10 +555,13 @@ include other people/objects in the emote, reference things by a short-descripti
     next;n: Paging people -> paging_people
     back;b: Talk on Channels -> talk on channels
     back to start;start: start
+    >: paging_people
 
 # ---------------------------------------------------------------------------------
 
 ## NODE paging_people
+
+|g** Paging people **|n
 
 Halfway between talking on a |wChannel|n and chatting in your current location
 with |wsay|n and |wpose|n, you can also |wpage|n people. This is like a private
@@ -518,10 +584,13 @@ game by simply changing how the |wpose|n command parses its input.)
     next;n: Using colors -> testing_colors
     back;b: Talk to people in-game -> comms_demo_start
     back to start;start: start
+    >: testing_colors
 
 # ---------------------------------------------------------------------------------
 
 ## NODE testing_colors
+
+|g** U|rs|yi|gn|wg |c|yc|wo|rl|bo|gr|cs |g**|n
 
 You can add color in your text by the help of tags. However, remember that not
 everyone will see your colors - it depends on their client (and some use
@@ -558,12 +627,15 @@ color codes printed, try
     next;n: Moving and Exploring -> goto_command_demo_room()
     back;b: Paging people -> paging_people
     back to start;start: start
+    >: goto_command_demo_room()
 
 # ---------------------------------------------------------------------------------
 
 # we get here via goto_command_demo_room()
 
 ## NODE command_demo_room
+
+|gMoving and Exploring|n
 
 For exploring the game, a very important command is '|ylook|n'. It's also
 abbreviated '|yl|n' since it's used so much. Looking displays/redisplays your
@@ -575,16 +647,76 @@ around in. Explore a little and use |ynext|n when you are done.
 
 ## OPTIONS
 
-    back;b: Channel commands -> talk on channels
-    next;n: end
+    next;n: Conclusions -> conclusions
+    back;b: Channel commands -> testing_colors
     back to start;start: start
+    >: conclusions
 
 # ---------------------------------------------------------------------------------
 
+## NODE conclusions
+
+|gConclusions|n
+
+That concludes this little quick-intro to using the base game commands of
+Evennia. With this you should be able to continue exploring and also find help
+if you get stuck!
+
+Write |ynext|n to end this wizard and continue to the tutorial-world quest!
+If you want there is also some |wextra|n info for where to go beyond that.
+
+Good luck!
+
+## OPTIONS
+
+    extra: Some more help on where to go next -> post scriptum
+    next;next;n: end
+    back;b: goto_command_demo_room()
+    back to start;start: start
+    >: end
+
+# ---------------------------------------------------------------------------------
+
+## NODE post scriptum
+
+|gWhere to next?|n
+
+After playing through the tutorial-world quest, if you aim to make a game with
+Evennia you are wise to take a look at the |wEvennia documentation|n at
+
+    |yhttps://github.com/evennia/evennia/wiki|n
+
+- You can start by trying to build some stuff by following the |wBuilder quick-start|n:
+
+    |yhttps://github.com/evennia/evennia/wiki/Building-Quickstart|n
+
+- The tutorial-world may or may not be your cup of tea, but it does show off
+  several |wuseful tools|n of Evennia. You may want to check out how it works:
+
+    |yhttps://github.com/evennia/evennia/wiki/Tutorial-World-Introduction|n
+
+- You can then continue looking through the |wTutorials|n and pick one that
+  fits your level of understanding.
+
+    |yhttps://github.com/evennia/evennia/wiki/Tutorials|n
+
+- Make sure to |wjoin our forum|n and connect to our |wsupport chat|n! The
+  Evennia community is very active and friendly and no question is too simple.
+  You will often quickly get help. You can everything you need linked from
+
+    |yhttp://www.evennia.com|n
+
+# ---------------------------------------------------------------------------------
+
+## OPTIONS
+
+back: conclusions
+>: conclusions
+
+
 ## NODE end
 
-Thank you for going through the tutorial!
-
+Thanks for trying out the tutorial!
 
 """
 
@@ -598,6 +730,27 @@ class TutorialEvMenu(EvMenu):
         _maintain_demo_room(self.caller, delete=True)
         super().close_menu()
 
+    def options_formatter(self, optionslist):
+
+        navigation_keys = ("next", "back", "back to start")
+
+        other = []
+        navigation = []
+        for key, desc in optionslist:
+            if key in navigation_keys:
+                desc = f" ({desc})" if desc else ""
+                navigation.append(f"|lc{key}|lt|w{key}|n|le{desc}")
+            else:
+                other.append((key, desc))
+        navigation = (
+            (" " + " |W|||n ".join(navigation) + " |W|||n " + "|wQ|Wuit|n")
+            if navigation
+            else ""
+        )
+        other = super().options_formatter(other)
+        sep = "\n\n" if navigation and other else ""
+
+        return f"{navigation}{sep}{other}"
 
 def testmenu(caller):
     menutree = parse_menu_template(caller, MENU_TEMPLATE, GOTO_CALLABLES)
