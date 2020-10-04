@@ -1664,24 +1664,25 @@ def _process_callable(caller, goto, goto_callables, raw_string,
         gotokwargs = match.group("kwargs") or ""
         if gotofunc in goto_callables:
             for kwarg in gotokwargs.split(","):
-                key, value = [part.strip() for part in kwarg.split("=", 1)]
-                if key in ("evmenu_goto", "evmenu_gotomap", "_current_nodename",
-                           "evmenu_current_nodename", "evmenu_goto_callables"):
-                    raise RuntimeError(
-                        f"EvMenu template error: goto-callable '{goto}' uses a "
-                        f"kwarg ({kwarg}) that is reserved for the EvMenu templating "
-                        "system. Rename the kwarg.")
-                try:
-                    key = literal_eval(key)
-                except ValueError:
-                    pass
-                try:
-                    value = literal_eval(value)
-                except ValueError:
-                    pass
-                kwargs[key] = value
+                if kwarg and "=" in kwarg:
+                    key, value = [part.strip() for part in kwarg.split("=", 1)]
+                    if key in ("evmenu_goto", "evmenu_gotomap", "_current_nodename",
+                               "evmenu_current_nodename", "evmenu_goto_callables"):
+                        raise RuntimeError(
+                            f"EvMenu template error: goto-callable '{goto}' uses a "
+                            f"kwarg ({kwarg}) that is reserved for the EvMenu templating "
+                            "system. Rename the kwarg.")
+                    try:
+                        key = literal_eval(key)
+                    except ValueError:
+                        pass
+                    try:
+                        value = literal_eval(value)
+                    except ValueError:
+                        pass
+                    kwargs[key] = value
 
-            goto = goto_callables[gotofunc](caller, raw_string, **kwargs)
+                goto = goto_callables[gotofunc](caller, raw_string, **kwargs)
     if goto is None:
         return goto, {"generated_nodename": current_nodename}
     return goto, {"generated_nodename": goto}
