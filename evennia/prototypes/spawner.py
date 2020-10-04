@@ -9,7 +9,7 @@ There  main function is `spawn(*prototype)`, where the `prototype`
 is a dictionary like this:
 
 ```python
-from evennia.prototypes import prototypes
+from evennia.prototypes import prototypes, spawner
 
 prot = {
  "prototype_key": "goblin",
@@ -22,7 +22,10 @@ prot = {
  "tags": ["mob", "evil", ('greenskin','mob')]
  "attrs": [("weapon", "sword")]
 }
+# spawn something with the prototype
+goblin = spawner.spawn(prot)
 
+# make this into a db-saved prototype (optional)
 prot = prototypes.create_prototype(prot)
 
 ```
@@ -82,13 +85,13 @@ import random
 
 {
  "prototype_key": "goblin_wizard",
- "prototype_parent": GOBLIN,
+ "prototype_parent": "GOBLIN",
  "key": "goblin wizard",
  "spells": ["fire ball", "lighting bolt"]
  }
 
 GOBLIN_ARCHER = {
- "prototype_parent": GOBLIN,
+ "prototype_parent": "GOBLIN",
  "key": "goblin archer",
  "attack_skill": (random, (5, 10))"
  "attacks": ["short bow"]
@@ -104,7 +107,7 @@ ARCHWIZARD = {
 
 GOBLIN_ARCHWIZARD = {
  "key" : "goblin archwizard"
- "prototype_parent": (GOBLIN_WIZARD, ARCHWIZARD),
+ "prototype_parent": ("GOBLIN_WIZARD", "ARCHWIZARD"),
 }
 ```
 

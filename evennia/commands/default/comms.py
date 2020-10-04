@@ -808,27 +808,42 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
                 lastpages = pages[-number:]
             else:
                 lastpages = pages
-            to_template = "|w{date}|n{sender}|n |cto {receiver}|n:> {message}"
-            from_template = "|w{date}|n{receiver}|n |gfrom {sender}|n:< {message}"
+            to_template = "|w{date}{clr} {sender}|nto{clr}{receiver}|n:> {message}"
+            from_template = "|w{date}{clr} {receiver}|nfrom{clr}{sender}|n:< {message}"
             listing = []
+            prev_selfsend = False
             for page in lastpages:
-                receiver = ""
-                sender = ""
-                template = from_template
-                sending = False
-                if self.caller in page.senders:
+                multi_send = len(page.senders) > 1
+                multi_recv = len(page.receivers) > 1
+                sending = self.caller in page.senders
+                # self-messages all look like sends, so we assume they always
+                # come in close pairs and treat the second of the pair as the recv.
+                selfsend = sending and self.caller in page.receivers
+                if selfsend:
+                    if prev_selfsend:
+                        # this is actually a receive of a self-message
+                        sending = False
+                        prev_selfsend = False
+                    else:
+                        prev_selfsend = True
+
+                clr = "|c" if sending else "|g"
+
+                sender = f"|n,{clr}".join(obj.key for obj in page.senders)
+                receiver = f"|n,{clr}".join([obj.name for obj in page.receivers])
+                if sending:
                     template = to_template
-                    sending = True
-
-                if len(page.receivers) > 1 or sending:
-                    receiver = "|n,|c ".join([obj.name for obj in page.receivers])
-
-                if len(page.senders) > 1 or not sending:
-                    sender = "|n,|c".join(obj.key for obj in page.senders)
+                    sender =  f"{sender} " if multi_send else ""
+                    receiver = f" {receiver}" if multi_recv else f" {receiver}"
+                else:
+                    template = from_template
+                    receiver = f"{receiver} " if multi_recv else ""
+                    sender = f" {sender} " if multi_send else f" {sender}"
 
                 listing.append(
                     template.format(
                         date=utils.datetime_format(page.date_created),
+                        clr=clr,
                         sender=sender,
                         receiver=receiver,
                         message=page.message,
