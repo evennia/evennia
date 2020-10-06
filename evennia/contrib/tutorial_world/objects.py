@@ -834,6 +834,7 @@ class CmdAttack(Command):
         "stab",
         "slash",
         "chop",
+        "bash",
         "parry",
         "defend",
     ]
@@ -876,7 +877,7 @@ class CmdAttack(Command):
             tstring = "%s stabs at you with %s. " % (self.caller.key, self.obj.key)
             ostring = "%s stabs at %s with %s. " % (self.caller.key, target.key, self.obj.key)
             self.caller.db.combat_parry_mode = False
-        elif cmdstring in ("slash", "chop"):
+        elif cmdstring in ("slash", "chop", "bash"):
             hit = float(self.obj.db.hit)  # un modified due to slash
             damage = self.obj.db.damage  # un modified due to slash
             string = "You slash with %s. " % self.obj.key
@@ -1151,7 +1152,13 @@ class WeaponRack(TutorialObject):
         self.db.rack_id = "weaponrack_1"
         # these are prototype names from the prototype
         # dictionary above.
-        self.db.get_weapon_msg = "You find |c%s|n."
+        self.db.get_weapon_msg = """
+        You find |c%s|n. While carrying this weapon, these actions are available:
+            |wstab/thrust/pierce <target>|n - poke at the enemy. More damage but harder to hit.
+            |wslash/chop/bash <target>|n - swipe at the enemy. Less damage but easier to hit.
+            |wdefend/parry|n - protect yourself and make yourself harder to hit.
+        """.strip()
+
         self.db.no_more_weapons_msg = "you find nothing else of use."
         self.db.available_weapons = ["knife", "dagger", "sword", "club"]
 
