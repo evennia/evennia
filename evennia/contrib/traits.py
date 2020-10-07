@@ -1400,9 +1400,3 @@ class GaugeTrait(CounterTrait):
         Fills the gauge to its maximum allowed by base + mod
         """
         del self.current
-
-
-class UpdatingTrait(CounterTrait):
-    """
-    This is a trait that
-    """
