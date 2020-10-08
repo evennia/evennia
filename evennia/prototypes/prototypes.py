@@ -330,7 +330,7 @@ def search_prototype(key=None, tags=None, require_single=False, return_iterators
     """
     Find prototypes based on key and/or tags, or all prototypes.
 
-    Kwargs:
+    Keyword Args:
         key (str): An exact or partial key to query for.
         tags (str or list): Tag key or keys to query for. These
             will always be applied with the 'db_protototype'
@@ -730,7 +730,7 @@ def protfunc_parser(value, available_functions=None, testing=False, stacktrace=F
             behave differently.
         stacktrace (bool, optional): If set, print the stack parsing process of the protfunc-parser.
 
-    Kwargs:
+    Keyword Args:
         session (Session): Passed to protfunc. Session of the entity spawning the prototype.
         protototype (dict): Passed to protfunc. The dict this protfunc is a part of.
         current_key(str): Passed to protfunc. The key in the prototype that will hold this value.

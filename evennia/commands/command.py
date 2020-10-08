@@ -343,7 +343,7 @@ class Command(object, metaclass=CommandMeta):
             session (Session, optional): Supply data only to a unique
                 session (ignores the value of `self.msg_all_sessions`).
 
-        Kwargs:
+        Keyword Args:
             options (dict): Options to the protocol.
             any (any): All other keywords are interpreted as th
                 name of send-instructions.
@@ -369,7 +369,7 @@ class Command(object, metaclass=CommandMeta):
             obj (Object or Account, optional): Object or Account on which to call the execute_cmd.
                 If not given, self.caller will be used.
 
-        Kwargs:
+        Keyword Args:
             Other keyword arguments will be added to the found command
             object instace as variables before it executes.  This is
             unused by default Evennia but may be used to set flags and
@@ -517,7 +517,7 @@ Command {self} has no defined `func()` - showing on-command variables:
         Args:
             *args (str): Column headers. If not colored explicitly, these will get colors
                 from user options.
-        Kwargs:
+        Keyword Args:
             any (str, int or dict): EvTable options, including, optionally a `table` dict
                 detailing the contents of the table.
         Returns:
@@ -570,7 +570,7 @@ Command {self} has no defined `func()` - showing on-command variables:
         """
         Helper for formatting a string into a pretty display, for a header, separator or footer.
 
-        Kwargs:
+        Keyword Args:
             header_text (str): Text to include in header.
             fill_character (str): This single character will be used to fill the width of the
                 display.

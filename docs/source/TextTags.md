@@ -190,7 +190,7 @@ def crop(*args, **kwargs):
             crop in characters.
         suffix (str, optional): End string to mark the fact that a part
             of the string was cropped. Defaults to `[...]`.
-    Kwargs:
+    Keyword Args:
         session (Session): Session performing the crop.
     Example:
         `$crop(text, 50, [...])`

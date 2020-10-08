@@ -134,7 +134,7 @@ def pad(*args, **kwargs):
         fillchar (str, optional): Character used for padding. Defaults to a
             space.
 
-    Kwargs:
+    Keyword Args:
         session (Session): Session performing the pad.
 
     Example:
@@ -164,7 +164,7 @@ def crop(*args, **kwargs):
             crop in characters.
         suffix (str, optional): End string to mark the fact that a part
             of the string was cropped. Defaults to `[...]`.
-    Kwargs:
+    Keyword Args:
         session (Session): Session performing the crop.
 
     Example:
@@ -189,7 +189,7 @@ def space(*args, **kwargs):
     Args:
         spaces (int, optional): The number of spaces to insert.
 
-    Kwargs:
+    Keyword Args:
         session (Session): Session performing the crop.
 
     Example:
@@ -212,7 +212,7 @@ def clr(*args, **kwargs):
         text (str, optional): Text
         endclr (str, optional): The color to use at the end of the string. Defaults
             to `|n` (reset-color).
-    Kwargs:
+    Keyword Args:
         session (Session): Session object triggering inlinefunc.
 
     Example:
@@ -369,7 +369,7 @@ def parse_inlinefunc(string, strip=False, available_funcs=None, stacktrace=False
         available_funcs (dict, optional): Define an alternative source of functions to parse for.
             If unset, use the functions found through `settings.INLINEFUNC_MODULES`.
         stacktrace (bool, optional): If set, print the stacktrace to log.
-    Kwargs:
+    Keyword Args:
         session (Session): This is sent to this function by Evennia when triggering
             it. It is passed to the inlinefunc.
         kwargs (any): All other kwargs are also passed on to the inlinefunc.

@@ -101,7 +101,7 @@ def funcname(a, b, c, d=False, **kwargs):
         c (list): A list argument.
         d (bool, optional): An optional keyword argument.
 
-    Kwargs:
+    Keyword Args:
         test (list): A test keyword.
 
     Returns:
@@ -165,13 +165,13 @@ Args:
 and
 
 ```
-Kwargs:
+Keyword Args:
    argname (type): text
 ```
 
 mean the same thing! Which one is used depends on the function or
 method documented, but there are no hard rules; If there is a large
-`**kwargs` block in the function, using the `Kwargs:` block may be a
+`**kwargs` block in the function, using the `Keyword Args:` block may be a
 good idea, for a small number of arguments though, just using `Args:`
 and marking keywords as `optional` will shorten the docstring and make
 it easier to read.

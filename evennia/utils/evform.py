@@ -188,7 +188,7 @@ class EvForm(object):
         """
         Initiate the form
 
-        Kwargs:
+        Keyword Args:
             filename (str): Path to template file.
             cells (dict): A dictionary mapping of {id:text}
             tables (dict): A dictionary mapping of {id:EvTable}.
