@@ -326,12 +326,15 @@ class TagHandler(object):
         Args:
             tag (str or iterable): The Tag key or tags to check for.
                 If `None`, search by category.
-            category (str or None): Limit the check to Tags with this
+            category (str, optional): Limit the check to Tags with this
                 category (note, that `None` is the default category).
 
         Returns:
             has_tag (bool or list): If the Tag exists on this object or not.
              If `tag` was given as an iterable then the return is a list of booleans.
+
+        Raises:
+            ValueError: If neither `tag` nor `category` is given.
 
         """
         ret = []
