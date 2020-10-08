@@ -69,12 +69,11 @@ The order of the plugins defined in `base.html` is important.  All the callbacks
 * `oob.js` Defines onSend. Allows the user to test/send Out Of Band json messages to the server.
 * `options.js` Defines most callbacks. Provides a popup-based UI to coordinate options settings with the server.
 * `options2.js` Defines most callbacks. Provides a goldenlayout-based version of the options/settings tab.  Integrates with other plugins via the custom onOptionsUI callback.
-* `popups.js` Provides default popups/Dialog UI for other plugins to use. 
-* `splithandler.js` Defines onText. Provides an older, less-flexible alternative to goldenlayout for multi-window UI to automatically separate out screen real-estate by type of message. 
+* `popups.js` Provides default popups/Dialog UI for other plugins to use.  
 
 # Writing your own Plugins
 
-So, you love the functionality of the webclient, but your game has specific types of text that need to be separated out into their own space, visually.  There are two plugins to help with this.  The Goldenlayout plugin framework, and the older Splithandler framework.
+So, you love the functionality of the webclient, but your game has specific types of text that need to be separated out into their own space, visually.  The Goldenlayout plugin framework can help with this.
 
 ## GoldenLayout
 
@@ -189,73 +188,3 @@ window.plugin_handler.add("myplugin", myplugin);
 You can then add "mycomponent" to an item's componentName in your goldenlayout_default_config.js.
 
 Make sure to stop your server, evennia collectstatic, and restart your server.  Then make sure to clear your browser cache before loading the webclient page.
-
-
-## Older Splithandler
-The splithandler.js plugin provides a means to do this, but you don't want to have to force every player to set up their own layout every time they use the client.
-
-Let's create a `mygame/web/static_overrides/webclient/js/plugins/layout.js` plugin!
-
-First up, follow the directions in Customizing the Web Client section above to override the base.html.
-
-Next, add the new plugin to your copy of base.html:
-```
-<script src={% static "webclient/js/plugins/layout.js" %} language="javascript" type="text/javascript"></script>
-```
-Remember, plugins are load-order dependent, so make sure the new `<script>` tag comes after the splithandler.js
-
-And finally create the layout.js file and add the minimum skeleton of a plugin to it:
-
-```
-// my new plugin
-var my_plugin = (function () {
-    let init = function () {
-        console.log("myplugin! Hello World!");
-    }
-
-    return {
-        init: init,
-    }
-})();
-plugin_handler.add("myplugin", my_plugin);
-```
-
-Now, `evennia stop`, `evennia collectstatic`, and `evennia start` and then load the webclient up in your browser.
-Enable developer options and look in the console, and you should see the message 'myplugin! Hello World!'
-
-Since our layout.js plugin is going to use the splithandler, let's enhance this by adding a check to make sure the splithandler.js plugin has been loaded:
-
-change the above init function to:
-```
-let init = function () {
-    let splithandler = plugins['splithandler'];
-    if( splithandler ) {
-        console.log("MyPlugin initialized");
-    } else {
-        alert('MyPlugin requires the splithandler.js plugin. Please contact the game maintainer to correct this');
-    }
-}
-```
-
-And finally, the splithandler.js provides provides two functions to cut up the screen real-estate:
-    `dynamic_split( pane_name_to_cut_apart, direction_of_split, new_pane_name1, new_pane_name2, text_flow_pane1, text_flow_pane2, array_of_split_percentages )`
-and
-    `set_pane_types( pane_to_set, array_of_known_message_types_to_assign)`
-
-In this case, we'll cut it into 3 panes, 1 bigger, two smaller, and assign 'help' messages to the top-right pane:
-```
-let init = function () {
-    let splithandler = plugins['splithandler'];
-    if( splithandler ) {
-        splithandler.dynamic_split("main","horizontal","left","right","linefeed","linefeed",[50,50]);
-        splithandler.dynamic_split("right","vertical","help","misc","replace","replace",[50,50]);
-        splithandler.set_pane_types('help', ['help']);
-
-        console.log("MyPlugin initialized");
-    } else {
-        alert('MyPlugin requires the splithandler.js plugin. Please contact the game maintainer to correct this');
-    }
-}
-```
-
-`evennia stop`, `evennia collectstatic`, and `evennia start` once more, and force-reload your browser page to clear any cached version.  You should now have a nicely split layout.
