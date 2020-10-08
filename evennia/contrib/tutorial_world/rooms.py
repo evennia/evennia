@@ -69,12 +69,14 @@ class CmdTutorial(Command):
             target = caller.search(self.args.strip())
             if not target:
                 return
-        helptext = target.db.tutorial_info
-        if helptext:
-            caller.msg("|G%s|n" % helptext)
-        else:
-            caller.msg("|RSorry, there is no tutorial help available here.|n")
+        helptext = target.db.tutorial_info or ""
 
+        if helptext:
+            helptext = f" |G{helptext}|n"
+        else:
+            helptext = " |RSorry, there is no tutorial help available here.|n"
+        helptext += "\n\n (Write 'give up' if you want to abandon your quest.)"
+        caller.msg(helptext)
 
 # for the @detail command we inherit from MuxCommand, since
 # we want to make use of MuxCommand's pre-parsing of '=' in the
@@ -200,6 +202,26 @@ class CmdTutorialLook(default_cmds.CmdLook):
         looking_at_obj.at_desc(looker=caller)
         return
 
+class CmdTutorialGiveUp(default_cmds.MuxCommand):
+    """
+    Give up the tutorial-world quest and return to Limbo, the start room of the
+    server.
+
+    """
+    key = "give up"
+    aliases = ['abort']
+
+    def func(self):
+        outro_room = OutroRoom.objects.all()
+        if outro_room:
+            outro_room = outro_room[0]
+        else:
+            self.caller.msg("That didn't work (seems like a bug). "
+                            "Try to use the |wteleport|n command instead.")
+            return
+
+        self.caller.move_to(outro_room)
+
 
 class TutorialRoomCmdSet(CmdSet):
     """
@@ -216,6 +238,7 @@ class TutorialRoomCmdSet(CmdSet):
         self.add(CmdTutorial())
         self.add(CmdTutorialSetDetail())
         self.add(CmdTutorialLook())
+        self.add(CmdTutorialGiveUp())
 
 
 class TutorialRoom(DefaultRoom):
@@ -362,6 +385,31 @@ SUPERUSER_WARNING = (
 #
 # -------------------------------------------------------------
 
+class CmdEvenniaIntro(Command):
+    """
+    Start the Evennia intro wizard.
+
+    Usage:
+        intro
+
+    """
+    key = "intro"
+
+    def func(self):
+        from .intro_menu import init_menu
+        # quell also superusers
+        if self.caller.account:
+            self.caller.account.execute_cmd("quell")
+            self.caller.msg("(Auto-quelling)")
+        init_menu(self.caller)
+
+
+class CmdSetEvenniaIntro(CmdSet):
+    key = "Evennia Intro StartSet"
+
+    def at_cmdset_creation(self):
+        self.add(CmdEvenniaIntro())
+
 
 class IntroRoom(TutorialRoom):
     """
@@ -381,6 +429,7 @@ class IntroRoom(TutorialRoom):
             "This assigns the health Attribute to "
             "the account."
         )
+        self.cmdset.add(CmdSetEvenniaIntro, permanent=True)
 
     def at_object_receive(self, character, source_location):
         """
@@ -396,8 +445,12 @@ class IntroRoom(TutorialRoom):
 
         if character.is_superuser:
             string = "-" * 78 + SUPERUSER_WARNING + "-" * 78
-            character.msg("|r%s|n" % string.format(name=character.key, quell="|w@quell|r"))
-
+            character.msg("|r%s|n" % string.format(name=character.key, quell="|wquell|r"))
+        else:
+            # quell user
+            if character.account:
+                character.account.execute_cmd("quell")
+                character.msg("(Auto-quelling while in tutorial-world)")
 
 # -------------------------------------------------------------
 #
@@ -617,7 +670,7 @@ class BridgeCmdSet(CmdSet):
     """This groups the bridge commands. We will store it on the room."""
 
     key = "Bridge commands"
-    priority = 1  # this gives it precedence over the normal look/help commands.
+    priority = 2  # this gives it precedence over the normal look/help commands.
 
     def at_cmdset_creation(self):
         """Called at first cmdset creation"""
@@ -679,7 +732,7 @@ class BridgeRoom(WeatherRoom):
         self.db.east_exit = "gate"
         self.db.fall_exit = "cliffledge"
         # add the cmdset on the room.
-        self.cmdset.add_default(BridgeCmdSet)
+        self.cmdset.add(BridgeCmdSet, permanent=True)
         # since the default Character's at_look() will access the room's
         # return_description (this skips the cmdset) when
         # first entering it, we need to explicitly turn off the room
@@ -1108,3 +1161,8 @@ class OutroRoom(TutorialRoom):
                 if obj.typeclass_path.startswith("evennia.contrib.tutorial_world"):
                     obj.delete()
             character.tags.clear(category="tutorial_world")
+
+    def at_object_leave(self, character, destination):
+        if character.account:
+            character.account.execute_cmd("unquell")
+

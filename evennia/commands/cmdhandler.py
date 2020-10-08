@@ -494,6 +494,11 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
             cmdset = None
         for cset in (cset for cset in local_obj_cmdsets if cset):
             cset.duplicates = cset.old_duplicates
+        # important - this syncs the CmdSetHandler's .current field with the
+        # true current cmdset!
+        if cmdset:
+            caller.cmdset.current = cmdset
+
         returnValue(cmdset)
     except ErrorReported:
         raise

@@ -6,7 +6,7 @@
 let goldenlayout = (function () {
 
     var myLayout;
-    var knownTypes = ["all", "untagged"];
+    var knownTypes = ["all", "untagged", "testing"];
     var untagged = [];
 
     var newTabConfig = {
@@ -404,10 +404,12 @@ let goldenlayout = (function () {
 
 
     //
+    // returns an array of pane divs that the given message should be sent to
     //
-    var onText = function (args, kwargs) {
+    var routeMessage = function (args, kwargs) {
         // If the message is not itself tagged, we"ll assume it
         // should go into any panes with "all" and "untagged" set
+        var divArray = [];
         var msgtype = "untagged";
 
         if ( kwargs && "type" in kwargs ) {
@@ -419,37 +421,47 @@ let goldenlayout = (function () {
             }
         }
 
-        let messageDelivered = false;
         let components = myLayout.root.getItemsByType("component");
-
         components.forEach( function (component) {
-            if( component.hasId("inputComponent") ) { return; } // ignore the input component
+            if( component.hasId("inputComponent") ) { return; } // ignore input components
 
-            let textDiv = component.container.getElement().children(".content");
-            let attrTypes = textDiv.attr("types");
+            let destDiv = component.container.getElement().children(".content");
+            let attrTypes = destDiv.attr("types");
             let paneTypes = attrTypes ? attrTypes.split(" ") : [];
-            let updateMethod = textDiv.attr("updateMethod");
-            let txt = args[0];
 
             // is this message type listed in this pane"s types (or is this pane catching "all")
             if( paneTypes.includes(msgtype) || paneTypes.includes("all") ) {
-                routeMsg( textDiv, txt, updateMethod );
-                messageDelivered = true;
+                divArray.push(destDiv);
             }
 
             // is this pane catching "upmapped" messages?
             // And is this message type listed in the untagged types array?
             if( paneTypes.includes("untagged") && untagged.includes(msgtype) ) {
-                routeMsg( textDiv, txt, updateMethod );
-                messageDelivered = true;
+                divArray.push(destDiv);
             }
         });
 
-        if ( messageDelivered ) {
-            return true;
-        }
-        // unhandled message
-        return false;
+        return divArray;
+    }
+
+
+    //
+    //
+    var onText = function (args, kwargs) {
+        // are any panes set to receive this text message?
+        var divs = routeMessage(args, kwargs);
+
+        var msgHandled = false;
+        divs.forEach( function (div) {
+            let updateMethod = div.attr("updateMethod");
+            let txt = args[0];
+
+            // yes, so add this text message to the target div
+            routeMsg( div, txt, updateMethod );
+            msgHandled = true;
+        });
+
+        return msgHandled;
     }
 
 
@@ -536,6 +548,7 @@ let goldenlayout = (function () {
         getGL: function () { return myLayout; },
         addKnownType: addKnownType,
         onTabCreate: onTabCreate,
+        routeMessage: routeMessage,
     }
 }());
 window.plugin_handler.add("goldenlayout", goldenlayout);
