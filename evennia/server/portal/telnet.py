@@ -388,18 +388,19 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             text (str): The first argument is always the text string to send. No other arguments
                 are considered.
         Keyword Args:
-            options (dict): Send-option flags
-            - mxp: Enforce MXP link support.
-            - ansi: Enforce no ANSI colors.
-            - xterm256: Enforce xterm256 colors, regardless of TTYPE.
-            - noxterm256: Enforce no xterm256 color support, regardless of TTYPE.
-            - nocolor: Strip all Color, regardless of ansi/xterm256 setting.
-            - raw: Pass string through without any ansi processing
-              (i.e. include Evennia ansi markers but do not
-              convert them into ansi tokens)
-            - echo: Turn on/off line echo on the client. Turn
-              off line echo for client, for example for password.
-              Note that it must be actively turned back on again!
+            options (dict): Send-option flags:
+
+                - mxp: Enforce MXP link support.
+                - ansi: Enforce no ANSI colors.
+                - xterm256: Enforce xterm256 colors, regardless of TTYPE.
+                - noxterm256: Enforce no xterm256 color support, regardless of TTYPE.
+                - nocolor: Strip all Color, regardless of ansi/xterm256 setting.
+                - raw: Pass string through without any ansi processing
+                  (i.e. include Evennia ansi markers but do not
+                  convert them into ansi tokens)
+                - echo: Turn on/off line echo on the client. Turn
+                  off line echo for client, for example for password.
+                  Note that it must be actively turned back on again!
 
         """
         text = args[0] if args else ""
