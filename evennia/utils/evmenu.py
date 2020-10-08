@@ -538,7 +538,7 @@ class EvMenu:
                 the menu. Deactivate for production use! When the debug flag is active, the
                 `persistent` flag is deactivated.
 
-        Kwargs:
+        Keyword Args:
             any (any): All kwargs will become initialization variables on `caller.ndb._evmenu`,
                 to be available at run.
 
@@ -943,7 +943,7 @@ class EvMenu:
             raw_string (str): The raw default string entered on the
                 previous node (only used if the node accepts it as an
                 argument)
-        Kwargs:
+        Keyword Args:
             any: Extra arguments to goto callables.
 
         """

@@ -125,7 +125,7 @@ class MonitorHandler(object):
             persistent (bool, optional): If False, the monitor will survive
                 a server reload but not a cold restart. This is default.
 
-        Kwargs:
+        Keyword Args:
             session (Session): If this keyword is given, the monitorhandler will
                 correctly analyze it and remove the monitor if after a reload/reboot
                 the session is no longer valid.

@@ -470,7 +470,7 @@ def spend_action(character, actions, action_name=None):
         character (obj): Character spending the action
         actions (int) or 'all': Number of actions to spend, or 'all' to spend all actions
 
-    Kwargs:
+    Keyword Args:
         action_name (str or None): If a string is given, sets character's last action in
         combat to provided string
     """
@@ -643,7 +643,7 @@ class TBRangeTurnHandler(DefaultScript):
         Args:
             to_init (object): Object to initialize range field for.
 
-        Kwargs:
+        Keyword Args:
             anchor_obj (object): Object to copy range values from, or None for a random object.
             add_distance (int): Distance to put between to_init object and anchor object.
 

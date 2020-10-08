@@ -343,7 +343,7 @@ class ServerSession(Session):
         """
         Update the protocol_flags and sync them with Portal.
 
-        Kwargs:
+        Keyword Args:
             key, value - A key:value pair to set in the
                 protocol_flags dictionary.
 
@@ -361,7 +361,7 @@ class ServerSession(Session):
         """
         Sending data from Evennia->Client
 
-        Kwargs:
+        Keyword Args:
             text (str or tuple)
             any (str or tuple): Send-commands identified
                 by their keys. Or "options", carrying options
@@ -375,14 +375,15 @@ class ServerSession(Session):
         Receiving data from the client, sending it off to
         the respective inputfuncs.
 
-        Kwargs:
-            kwargs (any): Incoming data from protocol on
+        Keyword Args:
+            any: Incoming data from protocol on
                 the form `{"commandname": ((args), {kwargs}),...}`
         Notes:
             This method is here in order to give the user
             a single place to catch and possibly process all incoming data from
             the client. It should usually always end by sending
             this data off to `self.sessionhandler.call_inputfuncs(self, **kwargs)`.
+
         """
         self.sessionhandler.call_inputfuncs(self, **kwargs)
 
@@ -392,9 +393,7 @@ class ServerSession(Session):
 
         Args:
             text (str): String input.
-
-        Kwargs:
-            any (str or tuple): Send-commands identified
+            kwargs (str or tuple): Send-commands identified
                 by their keys. Or "options", carrying options
                 for the protocol(s).
 
@@ -421,7 +420,7 @@ class ServerSession(Session):
             session (Session): This is here to make API consistent with
                 Account/Object.execute_cmd. If given, data is passed to
                 that Session, otherwise use self.
-        Kwargs:
+        Keyword Args:
             Other keyword arguments will be added to the found command
             object instace as variables before it executes.  This is
             unused by default Evennia but may be used to set flags and

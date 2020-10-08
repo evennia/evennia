@@ -1029,7 +1029,7 @@ def delay(timedelay, callback, *args, **kwargs):
         callback (callable): Will be called as `callback(*args, **kwargs)`
             after `timedelay` seconds.
         args (any, optional): Will be used as arguments to callback
-    Kwargs:
+    Keyword Args:
         persistent (bool, optional): should make the delay persistent
             over a reboot or reload
         any (any): Will be used as keyword arguments to callback.
@@ -1073,7 +1073,7 @@ def run_async(to_execute, *args, **kwargs):
             The callable will be executed using ProcPool, or in a thread
             if ProcPool is not available.
 
-    Kwargs:
+    Keyword Args:
         at_return (callable): Should point to a callable with one
             argument.  It will be called with the return value from
             to_execute.
@@ -1888,7 +1888,7 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
         quiet (bool, optional): If `True`, no messages will be echoed to caller
             on errors.
 
-    Kwargs:
+    Keyword Args:
         nofound_string (str): Replacement string to echo on a notfound error.
         multimatch_string (str): Replacement string to echo on a multimatch error.
 
@@ -1953,7 +1953,7 @@ class LimitedSizeOrderedDict(OrderedDict):
         """
         Limited-size ordered dict.
 
-        Kwargs:
+        Keyword Args:
             size_limit (int): Use this to limit the number of elements
                 alloweds to be in this list. By default the overshooting elements
                 will be removed in FIFO order.

@@ -183,7 +183,7 @@ class Ticker(object):
             store_key (str): Unique storage hash for this ticker subscription.
             args (any, optional): Arguments to call the hook method with.
 
-        Kwargs:
+        Keyword Args:
             _start_delay (int): If set, this will be
                 used to delay the start of the trigger instead of
                 `interval`.
