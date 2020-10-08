@@ -145,3 +145,29 @@ class TestTypedObjectManager(EvenniaTest):
         self.assertEqual(tagobj.db_key, "tag4")
         self.assertEqual(tagobj.db_category, "category4")
         self.assertEqual(tagobj.db_data, "data4")
+
+
+class TestTags(EvenniaTest):
+    def test_has_tag_key_only(self):
+        self.obj1.tags.add("tagC")
+        self.assertTrue(self.obj1.tags.has("tagC"))
+
+    def test_has_tag_key_with_category(self):
+        self.obj1.tags.add("tagC", "categoryC")
+        self.assertTrue(self.obj1.tags.has("tagC", "categoryC"))
+
+    def test_does_not_have_tag_key_only(self):
+        self.obj1.tags.add("tagC")
+        self.assertFalse(self.obj1.tags.has("tagD"))
+
+    def test_does_not_have_tag_key_with_category(self):
+        self.obj1.tags.add("tagC", "categoryC")
+        self.assertFalse(self.obj1.tags.has("tagD", "categoryD"))
+
+    def test_has_tag_category_only(self):
+        self.obj1.tags.add("tagC", "categoryC")
+        self.assertTrue(self.obj1.tags.has(category="categoryC"))
+
+    def test_does_not_have_tag_category_only(self):
+        self.obj1.tags.add("tagC", "categoryC")
+        self.assertFalse(self.obj1.tags.has(category="categoryD"))
