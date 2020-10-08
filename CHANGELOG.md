@@ -2,8 +2,9 @@
 
 ## Evennia 1.0 (2019-) (WIP)
 
-- new `drop:holds()` lock default to limit dropping nonsensical things. Access check
+- New `drop:holds()` lock default to limit dropping nonsensical things. Access check
   defaults to True for backwards-compatibility in 0.9, will be False in 1.0
+- Add `tags.has()` method for checking if an object has a tag or tags (PR by ChrisLR)
 
 ### Evennia 0.95 (master)
 - `is_typeclass(obj (Object), exact (bool))` now defaults to exact=False
