@@ -20,9 +20,7 @@ This implements the following telnet OOB communication protocols:
 - GMCP (Generic Mud Communication Protocol) as per
   http://www.ironrealms.com/rapture/manual/files/FeatGMCP-txt.html#Generic_MUD_Communication_Protocol%28GMCP%29
 
-Following the lead of KaVir's protocol snippet, we first check if
-client supports MSDP and if not, we fallback to GMCP with a MSDP
-header where applicable.
+----
 
 """
 import re

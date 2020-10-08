@@ -182,6 +182,16 @@ class AjaxWebClient(resource.Resource):
         csessid = self.get_client_sessid(request)
 
         remote_addr = request.getClientIP()
+
+        if remote_addr in settings.UPSTREAM_IPS and request.getHeader("x-forwarded-for"):
+            addresses = [x.strip() for x in request.getHeader("x-forwarded-for").split(",")]
+            addresses.reverse()
+
+            for addr in addresses:
+                if addr not in settings.UPSTREAM_IPS:
+                    remote_addr = addr
+                    break
+
         host_string = "%s (%s:%s)" % (
             _SERVERNAME,
             request.getRequestHostname(),

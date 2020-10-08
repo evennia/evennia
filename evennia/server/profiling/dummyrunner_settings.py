@@ -52,6 +52,8 @@ TIMESTEP with a chance given by CHANCE_OF_ACTION by in the order given
 (no randomness) and allows for setting up a more complex chain of
 commands (such as creating an account and logging in).
 
+----
+
 """
 # Dummy runner settings
 

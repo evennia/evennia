@@ -2429,13 +2429,13 @@ class CmdExamine(ObjManipCommand):
             )
         return output
 
-    def format_output(self, obj, avail_cmdset):
+    def format_output(self, obj, current_cmdset):
         """
         Helper function that creates a nice report about an object.
 
         Args:
             obj (any): Object to analyze.
-            avail_cmdset (CmdSet): Current cmdset for object.
+            current_cmdset (CmdSet): Current cmdset for object.
 
         Returns:
             str: The formatted string.
@@ -2513,15 +2513,36 @@ class CmdExamine(ObjManipCommand):
         # cmdsets
         if not (len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "_EMPTY_CMDSET"):
             # all() returns a 'stack', so make a copy to sort.
+
+            def _format_options(cmdset):
+                """helper for cmdset-option display"""
+                def _truefalse(string, value):
+                    if value is None:
+                        return ""
+                    if value:
+                        return f"{string}: T"
+                    return f"{string}: F"
+                options = ", ".join(
+                    _truefalse(opt, getattr(cmdset, opt))
+                    for opt in ("no_exits", "no_objs", "no_channels", "duplicates")
+                    if getattr(cmdset, opt) is not None
+                )
+                options = ", " + options if options else ""
+                return options
+
+            # cmdset stored on us
             stored_cmdsets = sorted(obj.cmdset.all(), key=lambda x: x.priority, reverse=True)
-            output["Stored Cmdset(s)"] = "\n  " + "\n  ".join(
-                f"{cmdset.path} [{cmdset.key}] ({cmdset.mergetype}, prio {cmdset.priority})"
-                for cmdset in stored_cmdsets
-                if cmdset.key != "_EMPTY_CMDSET"
-            )
+            stored = []
+            for cmdset in stored_cmdsets:
+                if cmdset.key == "_EMPTY_CMDSET":
+                    continue
+                options = _format_options(cmdset)
+                stored.append(
+                    f"{cmdset.path} [{cmdset.key}] ({cmdset.mergetype}, prio {cmdset.priority}{options})")
+            output["Stored Cmdset(s)"] = "\n  " + "\n  ".join(stored)
 
             # this gets all components of the currently merged set
-            all_cmdsets = [(cmdset.key, cmdset) for cmdset in avail_cmdset.merged_from]
+            all_cmdsets = [(cmdset.key, cmdset) for cmdset in current_cmdset.merged_from]
             # we always at least try to add account- and session sets since these are ignored
             # if we merge on the object level.
             if hasattr(obj, "account") and obj.account:
@@ -2551,15 +2572,24 @@ class CmdExamine(ObjManipCommand):
                     pass
             all_cmdsets = [cmdset for cmdset in dict(all_cmdsets).values()]
             all_cmdsets.sort(key=lambda x: x.priority, reverse=True)
-            output["Merged Cmdset(s)"] = "\n  " + "\n  ".join(
-                f"{cmdset.path} [{cmdset.key}] ({cmdset.mergetype} prio {cmdset.priority})"
-                for cmdset in all_cmdsets
-            )
-            # list the commands available to this object
-            avail_cmdset = sorted([cmd.key for cmd in avail_cmdset if cmd.access(obj, "cmd")])
 
-            cmdsetstr = "\n" + utils.fill(", ".join(avail_cmdset), indent=2)
+            # the resulting merged cmdset
+            options = _format_options(current_cmdset)
+            merged = [
+                f"<Current merged cmdset> ({current_cmdset.mergetype} prio {current_cmdset.priority}{options})"]
+
+            # the merge stack
+            for cmdset in all_cmdsets:
+                options = _format_options(cmdset)
+                merged.append(
+                    f"{cmdset.path} [{cmdset.key}] ({cmdset.mergetype} prio {cmdset.priority}{options})")
+            output["Merged Cmdset(s)"] = "\n  " + "\n  ".join(merged)
+
+            # list the commands available to this object
+            current_commands = sorted([cmd.key for cmd in current_cmdset if cmd.access(obj, "cmd")])
+            cmdsetstr = "\n" + utils.fill(", ".join(current_commands), indent=2)
             output[f"Commands available to {obj.key} (result of Merged CmdSets)"] = str(cmdsetstr)
+
         # scripts
         if hasattr(obj, "scripts") and hasattr(obj.scripts, "all") and obj.scripts.all():
             output["Scripts"] = "\n  " + f"{obj.scripts}"

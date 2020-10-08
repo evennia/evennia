@@ -104,36 +104,34 @@ tutorial
 # ... and describe it.
 #
 @desc
- |gWelcome to the Evennia tutorial!|n
+ |gWelcome to the Evennia tutorial-world!|n
+
+ This small quest shows some examples of Evennia usage.
+
+ |gDo you want help with how to play? Write |yintro|g to get an introduction to
+ Evennia and the basics of playing!|n
+
+ To get into the mood of this miniature quest, imagine you are an adventurer
+ out to find fame and fortune. You have heard rumours of an old castle ruin by
+ the coast. In its depth a warrior princess was buried together with her
+ powerful magical weapon - a valuable prize, if it's true.  Of course this is a
+ chance to adventure that you cannot turn down!
+
+ You reach the coast in the midst of a raging thunderstorm. With wind and rain
+ screaming in your face you stand where the moor meet the sea along a high,
+ rocky coast ...
+
+Try '|yintro|n' for usage help. During the quest, write '|ytutorial|n' to get
+behind-the-scenes help anywhere, and '|ygive up|n' to abandon the quest.
+
+|gwrite 'begin' to start your quest!|n
 
 
- The following tutorial consists of a small single-player quest
- area. The various rooms are designed to show off some of the power
- and possibilities of the Evennia mud creation system. At any time
- during this tutorial you can use the |wtutorial|n (or |wtut|n)
- command to get some background info about the room or certain objects
- to see what is going on "behind the scenes".
-
-
- To get into the mood of this miniature quest, imagine you are an
- adventurer out to find fame and fortune. You have heard rumours of an
- old castle ruin by the coast. In its depth a warrior princess was
- buried together with her powerful magical weapon - a valuable prize,
- if it's true.  Of course this is a chance to adventure that you
- cannot turn down!
-
- You reach the coast in the midst of a raging thunderstorm. With wind
- and rain screaming in your face you stand where the moor meet the sea
- along a high, rocky coast ...
-
-
- |g(write 'start' or 'begin' to start the tutorial. Try 'tutorial'
- to get behind-the-scenes help anywhere.)|n
 #
 # Show that the tutorial command works ...
 #
 @set here/tutorial_info =
- You just tried the tutorial command. Use it in various rooms to see
+ You just tried the |wtutorial|G command. Use it in various rooms to see
 what's technically going on and what you could try in each room. The
 intro room assigns some properties to your character, like a simple
 "health" property used when fighting. Other rooms and puzzles might do
@@ -294,14 +292,14 @@ start
  on the sign.
 # Set a climbable object for discovering a hidden exit
 #
-@create/drop gnarled old trees;tree;trees;gnarled : tutorial_world.objects.TutorialClimbable
+@create/drop gnarled old tree;tree;trees;gnarled : tutorial_world.objects.TutorialClimbable
 #
-@desc trees = Only the sturdiest of trees survive at the edge of the
- moor. A small group of huddling black things has dug in near the
+@desc tree = Only the sturdiest of trees survive at the edge of the
+ moor. A small huddling black thing has dug in near the
  cliff edge, eternally pummeled by wind and salt to become an integral
  part of the gloomy scenery.
 #
-@lock trees = get:false()
+@lock tree = get:false()
 #
 @set trees/get_err_msg =
  The group of old trees have withstood the eternal wind for hundreds
@@ -475,7 +473,7 @@ north
 # regular exits back to the cliff, that is handled by the bridge
 # typeclass itself.
 #
-@dig The old bridge;bridge;tut#05
+@dig The old bridge;bridge;east;e;tut#05
  : tutorial_world.rooms.BridgeRoom
  = old bridge;east;e;bridge;hangbridge
 #

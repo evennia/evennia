@@ -294,10 +294,12 @@ class CmdHelp(Command):
             hdict_topic = defaultdict(list)
             # create the dictionaries {category:[topic, topic ...]} required by format_help_list
             # Filter commands that should be reached by the help
-            # system, but not be displayed in the table.
+            # system, but not be displayed in the table, or be displayed differently.
             for cmd in all_cmds:
                 if self.should_list_cmd(cmd, caller):
-                    hdict_cmd[cmd.help_category].append(cmd.key)
+                    key = (cmd.auto_help_display_key
+                           if hasattr(cmd, "auto_help_display_key") else cmd.key)
+                    hdict_cmd[cmd.help_category].append(key)
             [hdict_topic[topic.help_category].append(topic.key) for topic in all_topics]
             # report back
             self.msg_help(self.format_help_list(hdict_cmd, hdict_topic))
@@ -308,7 +310,6 @@ class CmdHelp(Command):
 
         for match_query in [f"{query}~1", f"{query}*"]:
             # We first do an exact word-match followed by a start-by query
-
             matches, suggestions = help_search_with_index(
                 match_query, entries, suggestion_maxnum=self.suggestion_maxnum
             )

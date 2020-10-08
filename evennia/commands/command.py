@@ -147,6 +147,9 @@ class Command(object, metaclass=CommandMeta):
     arg_regex - (optional) raw string regex defining how the argument part of
                 the command should look in order to match for this command
                 (e.g. must it be a space between cmdname and arg?)
+    auto_help_display_key - (optional) if given, this replaces the string shown
+        in the auto-help listing. This is particularly useful for system-commands
+        whose actual key is not really meaningful.
 
     (Note that if auto_help is on, this initial string is also used by the
     system to create the help entry for the command, so it's a good idea to
