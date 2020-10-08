@@ -31,15 +31,15 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
 
     # Attribute manager methods
     def get_attribute(
-        self, key=None, category=None, value=None, strvalue=None, obj=None, attrtype=None, **kwargs
-    ):
+            self, key=None, category=None, value=None, strvalue=None,
+            obj=None, attrtype=None, **kwargs):
         """
         Return Attribute objects by key, by category, by value, by
-        strvalue, by object (it is stored on) or with a combination of
+        `strvalue`, by object (it is stored on) or with a combination of
         those criteria.
 
-        Attrs:
-            key (str, optional): The attribute's key to search for
+        Args:
+            key (str, optional): The attribute's key to search for.
             category (str, optional): The category of the attribute(s)
                 to search for.
             value (str, optional): The attribute value to search for.
@@ -52,7 +52,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
                 precedence if given.
             obj (Object, optional): On which object the Attribute to
                 search for is.
-            attrype (str, optional): An attribute-type to search for.
+            attrtype (str, optional): An attribute-type to search for.
                 By default this is either `None` (normal Attributes) or
                 `"nick"`.
             kwargs (any): Currently unused. Reserved for future use.
@@ -84,7 +84,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         """
         Get a nick, in parallel to `get_attribute`.
 
-        Attrs:
+        Args:
             key (str, optional): The nicks's key to search for
             category (str, optional): The category of the nicks(s) to search for.
             value (str, optional): The attribute value to search for. Note that this
@@ -170,7 +170,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         Return Tag objects by key, by category, by object (it is
         stored on) or with a combination of those criteria.
 
-        Attrs:
+        Args:
             key (str, optional): The Tag's key to search for
             category (str, optional): The Tag of the attribute(s)
                 to search for.

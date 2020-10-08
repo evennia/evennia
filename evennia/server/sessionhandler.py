@@ -177,11 +177,13 @@ class SessionHandler(dict):
                 send-instruction, with the keyword itself being the name
                 of the instruction (like "text"). Suitable values for each
                 keyword are:
-                    - arg                ->  [[arg], {}]
-                    - [args]             ->  [[args], {}]
-                    - {kwargs}           ->  [[], {kwargs}]
-                    - [args, {kwargs}]   ->  [[arg], {kwargs}]
-                    - [[args], {kwargs}] ->  [[args], {kwargs}]
+                ::
+
+                    arg                ->  [[arg], {}]
+                    [args]             ->  [[args], {}]
+                    {kwargs}           ->  [[], {kwargs}]
+                    [args, {kwargs}]   ->  [[arg], {kwargs}]
+                    [[args], {kwargs}] ->  [[args], {kwargs}]
 
         Returns:
             kwargs (dict): A cleaned dictionary of cmdname:[[args],{kwargs}] pairs,
@@ -761,7 +763,7 @@ class ServerSessionHandler(SessionHandler):
         Given a client identification hash (for session types that offer them)
         return all sessions with a matching hash.
 
-        Args
+        Args:
             csessid (str): The session hash.
         Returns:
             sessions (list): The sessions with matching .csessid, if any.
@@ -827,7 +829,7 @@ class ServerSessionHandler(SessionHandler):
         """
         Split incoming data into its inputfunc counterparts.
         This should be called by the serversession.data_in
-        as sessionhandler.call_inputfunc(self, **kwargs).
+        as `sessionhandler.call_inputfunc(self, **kwargs)`.
 
         We also intercept OOB communication here.
 
