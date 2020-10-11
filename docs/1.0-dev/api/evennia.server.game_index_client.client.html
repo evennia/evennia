@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.server.game_index_client.client &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +25,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.server.game_index_client.client</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -39,16 +37,16 @@
   <div class="section" id="module-evennia.server.game_index_client.client">
 <span id="evennia-server-game-index-client-client"></span><h1>evennia.server.game_index_client.client<a class="headerlink" href="#module-evennia.server.game_index_client.client" title="Permalink to this headline">¶</a></h1>
 <p>The client for sending data to the Evennia Game Index</p>
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.server.game_index_client.client.EvenniaGameIndexClient">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.game_index_client.client.</code><code class="sig-name descname">EvenniaGameIndexClient</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">on_bad_request</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/game_index_client/client.html#EvenniaGameIndexClient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.game_index_client.client.EvenniaGameIndexClient" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.server.game_index_client.client.</code><code class="sig-name descname">EvenniaGameIndexClient</code><span class="sig-paren">(</span><em class="sig-param">on_bad_request=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/game_index_client/client.html#EvenniaGameIndexClient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.game_index_client.client.EvenniaGameIndexClient" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This client class is used for gathering and sending game details to the
 Evennia Game Index. Since EGI is in the early goings, this isn’t
 incredibly configurable as far as to what is being sent.</p>
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.game_index_client.client.EvenniaGameIndexClient.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">on_bad_request</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/game_index_client/client.html#EvenniaGameIndexClient.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.game_index_client.client.EvenniaGameIndexClient.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">on_bad_request=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/game_index_client/client.html#EvenniaGameIndexClient.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.game_index_client.client.EvenniaGameIndexClient.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>on_bad_request</strong> – Optional callable to trigger when a bad request
@@ -57,34 +55,34 @@ was sent. This is almost always going to be due to bad config.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.game_index_client.client.EvenniaGameIndexClient.send_game_details">
-<code class="sig-name descname">send_game_details</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/game_index_client/client.html#EvenniaGameIndexClient.send_game_details"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.game_index_client.client.EvenniaGameIndexClient.send_game_details" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">send_game_details</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/game_index_client/client.html#EvenniaGameIndexClient.send_game_details"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.game_index_client.client.EvenniaGameIndexClient.send_game_details" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is where the magic happens. Send details about the game to the
 Evennia Game Index.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.game_index_client.client.EvenniaGameIndexClient.handle_egd_response">
-<code class="sig-name descname">handle_egd_response</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">response</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/game_index_client/client.html#EvenniaGameIndexClient.handle_egd_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.game_index_client.client.EvenniaGameIndexClient.handle_egd_response" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">handle_egd_response</code><span class="sig-paren">(</span><em class="sig-param">response</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/game_index_client/client.html#EvenniaGameIndexClient.handle_egd_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.game_index_client.client.EvenniaGameIndexClient.handle_egd_response" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.server.game_index_client.client.SimpleResponseReceiver">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.game_index_client.client.</code><code class="sig-name descname">SimpleResponseReceiver</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">status_code</span></em>, <em class="sig-param"><span class="n">d</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/game_index_client/client.html#SimpleResponseReceiver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.game_index_client.client.SimpleResponseReceiver" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.server.game_index_client.client.</code><code class="sig-name descname">SimpleResponseReceiver</code><span class="sig-paren">(</span><em class="sig-param">status_code</em>, <em class="sig-param">d</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/game_index_client/client.html#SimpleResponseReceiver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.game_index_client.client.SimpleResponseReceiver" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.internet.protocol.Protocol</span></code></p>
 <p>Used for pulling the response body out of an HTTP response.</p>
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.game_index_client.client.SimpleResponseReceiver.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">status_code</span></em>, <em class="sig-param"><span class="n">d</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/game_index_client/client.html#SimpleResponseReceiver.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.game_index_client.client.SimpleResponseReceiver.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">status_code</em>, <em class="sig-param">d</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/game_index_client/client.html#SimpleResponseReceiver.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.game_index_client.client.SimpleResponseReceiver.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.game_index_client.client.SimpleResponseReceiver.dataReceived">
-<code class="sig-name descname">dataReceived</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/game_index_client/client.html#SimpleResponseReceiver.dataReceived"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.game_index_client.client.SimpleResponseReceiver.dataReceived" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">dataReceived</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/game_index_client/client.html#SimpleResponseReceiver.dataReceived"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.game_index_client.client.SimpleResponseReceiver.dataReceived" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called whenever data is received.</p>
 <p>Use this method to translate to a higher-level message.  Usually, some
 callback will be made upon the receipt of each complete protocol
@@ -98,7 +96,7 @@ differing chunk sizes, down to one byte at a time.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.game_index_client.client.SimpleResponseReceiver.connectionLost">
 <code class="sig-name descname">connectionLost</code><span class="sig-paren">(</span><em class="sig-param">reason=&lt;twisted.python.failure.Failure twisted.internet.error.ConnectionDone: Connection was closed cleanly.&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/game_index_client/client.html#SimpleResponseReceiver.connectionLost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.game_index_client.client.SimpleResponseReceiver.connectionLost" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when the connection is shut down.</p>
@@ -109,40 +107,40 @@ to this Protocol.  The connection has been closed.</p>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.server.game_index_client.client.StringProducer">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.game_index_client.client.</code><code class="sig-name descname">StringProducer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">body</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/game_index_client/client.html#StringProducer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.game_index_client.client.StringProducer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.server.game_index_client.client.</code><code class="sig-name descname">StringProducer</code><span class="sig-paren">(</span><em class="sig-param">body</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/game_index_client/client.html#StringProducer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.game_index_client.client.StringProducer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Used for feeding a request body to the tx HTTP client.</p>
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.game_index_client.client.StringProducer.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">body</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/game_index_client/client.html#StringProducer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.game_index_client.client.StringProducer.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">body</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/game_index_client/client.html#StringProducer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.game_index_client.client.StringProducer.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.game_index_client.client.StringProducer.startProducing">
-<code class="sig-name descname">startProducing</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">consumer</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/game_index_client/client.html#StringProducer.startProducing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.game_index_client.client.StringProducer.startProducing" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">startProducing</code><span class="sig-paren">(</span><em class="sig-param">consumer</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/game_index_client/client.html#StringProducer.startProducing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.game_index_client.client.StringProducer.startProducing" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.game_index_client.client.StringProducer.pauseProducing">
 <code class="sig-name descname">pauseProducing</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/game_index_client/client.html#StringProducer.pauseProducing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.game_index_client.client.StringProducer.pauseProducing" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.game_index_client.client.StringProducer.stopProducing">
 <code class="sig-name descname">stopProducing</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/game_index_client/client.html#StringProducer.stopProducing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.game_index_client.client.StringProducer.stopProducing" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.server.game_index_client.client.QuietHTTP11ClientFactory">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.game_index_client.client.</code><code class="sig-name descname">QuietHTTP11ClientFactory</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">quiescentCallback</span></em>, <em class="sig-param"><span class="n">metadata</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/game_index_client/client.html#QuietHTTP11ClientFactory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.game_index_client.client.QuietHTTP11ClientFactory" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.server.game_index_client.client.</code><code class="sig-name descname">QuietHTTP11ClientFactory</code><span class="sig-paren">(</span><em class="sig-param">quiescentCallback</em>, <em class="sig-param">metadata</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/game_index_client/client.html#QuietHTTP11ClientFactory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.game_index_client.client.QuietHTTP11ClientFactory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.web.client._HTTP11ClientFactory</span></code></p>
 <p>Silences the obnoxious factory start/stop messages in the default client.</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.server.game_index_client.client.QuietHTTP11ClientFactory.noisy">
 <code class="sig-name descname">noisy</code><em class="property"> = False</em><a class="headerlink" href="#evennia.server.game_index_client.client.QuietHTTP11ClientFactory.noisy" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -152,7 +150,6 @@ to this Protocol.  The connection has been closed.</p>
 </div>
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -181,7 +178,7 @@ to this Protocol.  The connection has been closed.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.server.game_index_client.client.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.1/api/evennia.server.game_index_client.client.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../0.9.5/api/evennia.server.game_index_client.client.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -197,13 +194,12 @@ to this Protocol.  The connection has been closed.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.server.game_index_client.client</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

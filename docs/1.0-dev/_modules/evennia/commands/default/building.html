@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.commands.default.building &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -28,8 +27,7 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.building</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -2470,13 +2468,13 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">output</span></div>
 
-<div class="viewcode-block" id="CmdExamine.format_output"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_output">[docs]</a>    <span class="k">def</span> <span class="nf">format_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">avail_cmdset</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdExamine.format_output"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_output">[docs]</a>    <span class="k">def</span> <span class="nf">format_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">current_cmdset</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper function that creates a nice report about an object.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            obj (any): Object to analyze.</span>
-<span class="sd">            avail_cmdset (CmdSet): Current cmdset for object.</span>
+<span class="sd">            current_cmdset (CmdSet): Current cmdset for object.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            str: The formatted string.</span>
@@ -2554,15 +2552,36 @@
         <span class="c1"># cmdsets</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">all</span><span class="p">())</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;_EMPTY_CMDSET&quot;</span><span class="p">):</span>
             <span class="c1"># all() returns a &#39;stack&#39;, so make a copy to sort.</span>
+
+            <span class="k">def</span> <span class="nf">_format_options</span><span class="p">(</span><span class="n">cmdset</span><span class="p">):</span>
+                <span class="sd">&quot;&quot;&quot;helper for cmdset-option display&quot;&quot;&quot;</span>
+                <span class="k">def</span> <span class="nf">_truefalse</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+                    <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{string}</span><span class="s2">: T&quot;</span>
+                    <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{string}</span><span class="s2">: F&quot;</span>
+                <span class="n">options</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">_truefalse</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cmdset</span><span class="p">,</span> <span class="n">opt</span><span class="p">))</span>
+                    <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;no_exits&quot;</span><span class="p">,</span> <span class="s2">&quot;no_objs&quot;</span><span class="p">,</span> <span class="s2">&quot;no_channels&quot;</span><span class="p">,</span> <span class="s2">&quot;duplicates&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cmdset</span><span class="p">,</span> <span class="n">opt</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="p">)</span>
+                <span class="n">options</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span> <span class="o">+</span> <span class="n">options</span> <span class="k">if</span> <span class="n">options</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+                <span class="k">return</span> <span class="n">options</span>
+
+            <span class="c1"># cmdset stored on us</span>
             <span class="n">stored_cmdsets</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">priority</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Stored Cmdset(s)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                <span class="n">f</span><span class="s2">&quot;</span><span class="si">{cmdset.path}</span><span class="s2"> [</span><span class="si">{cmdset.key}</span><span class="s2">] (</span><span class="si">{cmdset.mergetype}</span><span class="s2">, prio </span><span class="si">{cmdset.priority}</span><span class="s2">)&quot;</span>
-                <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">stored_cmdsets</span>
-                <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;_EMPTY_CMDSET&quot;</span>
-            <span class="p">)</span>
+            <span class="n">stored</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">stored_cmdsets</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;_EMPTY_CMDSET&quot;</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">options</span> <span class="o">=</span> <span class="n">_format_options</span><span class="p">(</span><span class="n">cmdset</span><span class="p">)</span>
+                <span class="n">stored</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">f</span><span class="s2">&quot;</span><span class="si">{cmdset.path}</span><span class="s2"> [</span><span class="si">{cmdset.key}</span><span class="s2">] (</span><span class="si">{cmdset.mergetype}</span><span class="s2">, prio </span><span class="si">{cmdset.priority}{options}</span><span class="s2">)&quot;</span><span class="p">)</span>
+            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Stored Cmdset(s)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">stored</span><span class="p">)</span>
 
             <span class="c1"># this gets all components of the currently merged set</span>
-            <span class="n">all_cmdsets</span> <span class="o">=</span> <span class="p">[(</span><span class="n">cmdset</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">)</span> <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">avail_cmdset</span><span class="o">.</span><span class="n">merged_from</span><span class="p">]</span>
+            <span class="n">all_cmdsets</span> <span class="o">=</span> <span class="p">[(</span><span class="n">cmdset</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">)</span> <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">current_cmdset</span><span class="o">.</span><span class="n">merged_from</span><span class="p">]</span>
             <span class="c1"># we always at least try to add account- and session sets since these are ignored</span>
             <span class="c1"># if we merge on the object level.</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;account&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">account</span><span class="p">:</span>
@@ -2592,15 +2611,24 @@
                     <span class="k">pass</span>
             <span class="n">all_cmdsets</span> <span class="o">=</span> <span class="p">[</span><span class="n">cmdset</span> <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">(</span><span class="n">all_cmdsets</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
             <span class="n">all_cmdsets</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">priority</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Merged Cmdset(s)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                <span class="n">f</span><span class="s2">&quot;</span><span class="si">{cmdset.path}</span><span class="s2"> [</span><span class="si">{cmdset.key}</span><span class="s2">] (</span><span class="si">{cmdset.mergetype}</span><span class="s2"> prio </span><span class="si">{cmdset.priority}</span><span class="s2">)&quot;</span>
-                <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">all_cmdsets</span>
-            <span class="p">)</span>
-            <span class="c1"># list the commands available to this object</span>
-            <span class="n">avail_cmdset</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">cmd</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">avail_cmdset</span> <span class="k">if</span> <span class="n">cmd</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;cmd&quot;</span><span class="p">)])</span>
 
-            <span class="n">cmdsetstr</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">utils</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">avail_cmdset</span><span class="p">),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="c1"># the resulting merged cmdset</span>
+            <span class="n">options</span> <span class="o">=</span> <span class="n">_format_options</span><span class="p">(</span><span class="n">current_cmdset</span><span class="p">)</span>
+            <span class="n">merged</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">f</span><span class="s2">&quot;&lt;Current merged cmdset&gt; (</span><span class="si">{current_cmdset.mergetype}</span><span class="s2"> prio </span><span class="si">{current_cmdset.priority}{options}</span><span class="s2">)&quot;</span><span class="p">]</span>
+
+            <span class="c1"># the merge stack</span>
+            <span class="k">for</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="n">all_cmdsets</span><span class="p">:</span>
+                <span class="n">options</span> <span class="o">=</span> <span class="n">_format_options</span><span class="p">(</span><span class="n">cmdset</span><span class="p">)</span>
+                <span class="n">merged</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">f</span><span class="s2">&quot;</span><span class="si">{cmdset.path}</span><span class="s2"> [</span><span class="si">{cmdset.key}</span><span class="s2">] (</span><span class="si">{cmdset.mergetype}</span><span class="s2"> prio </span><span class="si">{cmdset.priority}{options}</span><span class="s2">)&quot;</span><span class="p">)</span>
+            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Merged Cmdset(s)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">merged</span><span class="p">)</span>
+
+            <span class="c1"># list the commands available to this object</span>
+            <span class="n">current_commands</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">cmd</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">current_cmdset</span> <span class="k">if</span> <span class="n">cmd</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;cmd&quot;</span><span class="p">)])</span>
+            <span class="n">cmdsetstr</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">utils</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">current_commands</span><span class="p">),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
             <span class="n">output</span><span class="p">[</span><span class="n">f</span><span class="s2">&quot;Commands available to </span><span class="si">{obj.key}</span><span class="s2"> (result of Merged CmdSets)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cmdsetstr</span><span class="p">)</span>
+
         <span class="c1"># scripts</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;scripts&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">scripts</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
             <span class="n">output</span><span class="p">[</span><span class="s2">&quot;Scripts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{obj.scripts}</span><span class="s2">&quot;</span>
@@ -3117,9 +3145,10 @@
                 <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;No scripts defined on </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">))</span>
             <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
                 <span class="c1"># view all scripts</span>
-                <span class="kn">from</span> <span class="nn">evennia.commands.default.system</span> <span class="k">import</span> <span class="n">format_script_list</span>
+                <span class="kn">from</span> <span class="nn">evennia.commands.default.system</span> <span class="k">import</span> <span class="n">ScriptEvMore</span>
 
-                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">format_script_list</span><span class="p">(</span><span class="n">scripts</span><span class="p">))</span>
+                <span class="n">ScriptEvMore</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">scripts</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">),</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+                <span class="k">return</span>
             <span class="k">elif</span> <span class="s2">&quot;start&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
                 <span class="n">num</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">obj</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">script</span><span class="o">.</span><span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">script</span> <span class="ow">in</span> <span class="n">scripts</span><span class="p">])</span>
                 <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> scripts started on </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">)))</span>
@@ -3326,6 +3355,7 @@
 
 <span class="sd">      spawn/search [prototype_keykey][;tag[,tag]]</span>
 <span class="sd">      spawn/list [tag, tag, ...]</span>
+<span class="sd">      spawn/list modules    - list only module-based prototypes</span>
 <span class="sd">      spawn/show [&lt;prototype_key&gt;]</span>
 <span class="sd">      spawn/update &lt;prototype_key&gt;</span>
 
@@ -3517,16 +3547,11 @@
         <span class="k">elif</span> <span class="n">query</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;No prototype named &#39;</span><span class="si">{query}</span><span class="s2">&#39; was found.&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;No prototypes found.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;No prototypes found.&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_list_prototypes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Display prototypes as a list, optionally limited by key/tags. &quot;&quot;&quot;</span>
-        <span class="n">table</span> <span class="o">=</span> <span class="n">protlib</span><span class="o">.</span><span class="n">list_prototypes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">table</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="n">EvMore</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">table</span><span class="p">),</span> <span class="n">exit_on_lastpage</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">justify_kwargs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="n">protlib</span><span class="o">.</span><span class="n">list_prototypes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
 
     <span class="nd">@interactive</span>
     <span class="k">def</span> <span class="nf">_update_existing_objects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">prototype_key</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -3832,7 +3857,6 @@
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">err</span><span class="p">)</span></div></div>
 </pre></div>
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -3854,7 +3878,7 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="building.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../../0.9.1/index.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../../../../0.9.5/index.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -3872,13 +3896,12 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.building</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

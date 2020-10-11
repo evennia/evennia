@@ -1,0 +1,214 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.utils.validatorfuncs &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-evennia.utils.validatorfuncs">
+<span id="evennia-utils-validatorfuncs"></span><h1>evennia.utils.validatorfuncs<a class="headerlink" href="#module-evennia.utils.validatorfuncs" title="Permalink to this headline">¶</a></h1>
+<p>Contains all the validation functions.</p>
+<p>All validation functions must have a checker (probably a session) and entry arg.</p>
+<p>They can employ more paramters at your leisure.</p>
+<dl class="function">
+<dt id="evennia.utils.validatorfuncs.text">
+<code class="sig-prename descclassname">evennia.utils.validatorfuncs.</code><code class="sig-name descname">text</code><span class="sig-paren">(</span><em class="sig-param">entry</em>, <em class="sig-param">option_key='Text'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/validatorfuncs.html#text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.validatorfuncs.text" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="evennia.utils.validatorfuncs.color">
+<code class="sig-prename descclassname">evennia.utils.validatorfuncs.</code><code class="sig-name descname">color</code><span class="sig-paren">(</span><em class="sig-param">entry</em>, <em class="sig-param">option_key='Color'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/validatorfuncs.html#color"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.validatorfuncs.color" title="Permalink to this definition">¶</a></dt>
+<dd><p>The color should be just a color character, so ‘r’ if red color is desired.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="evennia.utils.validatorfuncs.datetime">
+<code class="sig-prename descclassname">evennia.utils.validatorfuncs.</code><code class="sig-name descname">datetime</code><span class="sig-paren">(</span><em class="sig-param">entry</em>, <em class="sig-param">option_key='Datetime'</em>, <em class="sig-param">account=None</em>, <em class="sig-param">from_tz=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/validatorfuncs.html#datetime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.validatorfuncs.datetime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process a datetime string in standard forms while accounting for the
+inputer’s timezone. Always returns a result in UTC.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>entry</strong> (<em>str</em>) – A date string from a user.</p></li>
+<li><p><strong>option_key</strong> (<em>str</em>) – Name to display this datetime as.</p></li>
+<li><p><strong>account</strong> (<a class="reference internal" href="evennia.accounts.models.html#evennia.accounts.models.AccountDB" title="evennia.accounts.models.AccountDB"><em>AccountDB</em></a>) – The Account performing this lookup. Unless <strong>from_tz</strong> is provided,
+the account’s timezone option will be used.</p></li>
+<li><p><strong>from_tz</strong> (<em>pytz.timezone</em>) – An instance of a pytz timezone object from the
+user. If not provided, tries to use the timezone option of <strong>account</strong>.
+If neither one is provided, defaults to UTC.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>datetime in UTC.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If encountering a malformed timezone, date string or other format error.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="evennia.utils.validatorfuncs.duration">
+<code class="sig-prename descclassname">evennia.utils.validatorfuncs.</code><code class="sig-name descname">duration</code><span class="sig-paren">(</span><em class="sig-param">entry</em>, <em class="sig-param">option_key='Duration'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/validatorfuncs.html#duration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.validatorfuncs.duration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take a string and derive a datetime timedelta from it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>entry</strong> (<em>string</em>) – This is a string from user-input. The intended format is, for example: “5d 2w 90s” for
+‘five days, two weeks, and ninety seconds.’ Invalid sections are ignored.</p></li>
+<li><p><strong>option_key</strong> (<em>str</em>) – Name to display this query as.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>timedelta</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="evennia.utils.validatorfuncs.future">
+<code class="sig-prename descclassname">evennia.utils.validatorfuncs.</code><code class="sig-name descname">future</code><span class="sig-paren">(</span><em class="sig-param">entry</em>, <em class="sig-param">option_key='Future Datetime'</em>, <em class="sig-param">from_tz=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/validatorfuncs.html#future"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.validatorfuncs.future" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="evennia.utils.validatorfuncs.signed_integer">
+<code class="sig-prename descclassname">evennia.utils.validatorfuncs.</code><code class="sig-name descname">signed_integer</code><span class="sig-paren">(</span><em class="sig-param">entry</em>, <em class="sig-param">option_key='Signed Integer'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/validatorfuncs.html#signed_integer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.validatorfuncs.signed_integer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="evennia.utils.validatorfuncs.positive_integer">
+<code class="sig-prename descclassname">evennia.utils.validatorfuncs.</code><code class="sig-name descname">positive_integer</code><span class="sig-paren">(</span><em class="sig-param">entry</em>, <em class="sig-param">option_key='Positive Integer'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/validatorfuncs.html#positive_integer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.validatorfuncs.positive_integer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="evennia.utils.validatorfuncs.unsigned_integer">
+<code class="sig-prename descclassname">evennia.utils.validatorfuncs.</code><code class="sig-name descname">unsigned_integer</code><span class="sig-paren">(</span><em class="sig-param">entry</em>, <em class="sig-param">option_key='Unsigned Integer'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/validatorfuncs.html#unsigned_integer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.validatorfuncs.unsigned_integer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="evennia.utils.validatorfuncs.boolean">
+<code class="sig-prename descclassname">evennia.utils.validatorfuncs.</code><code class="sig-name descname">boolean</code><span class="sig-paren">(</span><em class="sig-param">entry</em>, <em class="sig-param">option_key='True/False'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/validatorfuncs.html#boolean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.validatorfuncs.boolean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simplest check in computer logic, right? This will take user input to flick the switch on or off
+:param entry: A value such as True, On, Enabled, Disabled, False, 0, or 1.
+:type entry: str
+:param option_key: What kind of Boolean we are setting. What Option is this for?
+:type option_key: str</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Boolean</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="evennia.utils.validatorfuncs.timezone">
+<code class="sig-prename descclassname">evennia.utils.validatorfuncs.</code><code class="sig-name descname">timezone</code><span class="sig-paren">(</span><em class="sig-param">entry</em>, <em class="sig-param">option_key='Timezone'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/validatorfuncs.html#timezone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.validatorfuncs.timezone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes user input as string, and partial matches a Timezone.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>entry</strong> (<em>str</em>) – The name of the Timezone.</p></li>
+<li><p><strong>option_key</strong> (<em>str</em>) – What this Timezone is used for.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A PYTZ timezone.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="evennia.utils.validatorfuncs.email">
+<code class="sig-prename descclassname">evennia.utils.validatorfuncs.</code><code class="sig-name descname">email</code><span class="sig-paren">(</span><em class="sig-param">entry</em>, <em class="sig-param">option_key='Email Address'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/validatorfuncs.html#email"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.validatorfuncs.email" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="evennia.utils.validatorfuncs.lock">
+<code class="sig-prename descclassname">evennia.utils.validatorfuncs.</code><code class="sig-name descname">lock</code><span class="sig-paren">(</span><em class="sig-param">entry</em>, <em class="sig-param">option_key='locks'</em>, <em class="sig-param">access_options=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/validatorfuncs.html#lock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.validatorfuncs.lock" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.utils.validatorfuncs.rst.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../1.0-dev/api/evennia.utils.validatorfuncs.html">1.0-dev (develop branch)</a></li>
+  <li><a href="evennia.utils.validatorfuncs.html">0.9.5 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

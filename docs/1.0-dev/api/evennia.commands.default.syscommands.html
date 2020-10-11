@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.commands.default.syscommands &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +25,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.syscommands</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -52,95 +50,95 @@ interesting effects. An example is using the NoMatch system command
 to implement a line-editor where you don’t have to start each
 line with a command (if there is no match to a known command,
 the line is just added to the editor buffer).</p>
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.commands.default.syscommands.SystemNoInput">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.syscommands.</code><code class="sig-name descname">SystemNoInput</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/syscommands.html#SystemNoInput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.syscommands.SystemNoInput" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.syscommands.</code><code class="sig-name descname">SystemNoInput</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/syscommands.html#SystemNoInput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.syscommands.SystemNoInput" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
 <p>This is called when there is no input given</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.commands.default.syscommands.SystemNoInput.key">
 <code class="sig-name descname">key</code><em class="property"> = '__noinput_command'</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemNoInput.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.commands.default.syscommands.SystemNoInput.locks">
 <code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemNoInput.locks" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.commands.default.syscommands.SystemNoInput.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/syscommands.html#SystemNoInput.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.syscommands.SystemNoInput.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Do nothing.</p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.commands.default.syscommands.SystemNoInput.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemNoInput.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.commands.default.syscommands.SystemNoInput.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemNoInput.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.commands.default.syscommands.SystemNoInput.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemNoInput.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.commands.default.syscommands.SystemNoInput.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': '__noinput_command', 'tags': '', 'text': '\n    This is called when there is no input given\n    '}</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemNoInput.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.commands.default.syscommands.SystemNoMatch">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.syscommands.</code><code class="sig-name descname">SystemNoMatch</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/syscommands.html#SystemNoMatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.syscommands.SystemNoMatch" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.syscommands.</code><code class="sig-name descname">SystemNoMatch</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/syscommands.html#SystemNoMatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.syscommands.SystemNoMatch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
 <p>No command was found matching the given input.</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.commands.default.syscommands.SystemNoMatch.key">
 <code class="sig-name descname">key</code><em class="property"> = '__nomatch_command'</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemNoMatch.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.commands.default.syscommands.SystemNoMatch.locks">
 <code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemNoMatch.locks" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.commands.default.syscommands.SystemNoMatch.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/syscommands.html#SystemNoMatch.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.syscommands.SystemNoMatch.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is given the failed raw string as input.</p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.commands.default.syscommands.SystemNoMatch.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemNoMatch.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.commands.default.syscommands.SystemNoMatch.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemNoMatch.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.commands.default.syscommands.SystemNoMatch.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemNoMatch.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.commands.default.syscommands.SystemNoMatch.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': '__nomatch_command', 'tags': '', 'text': '\n    No command was found matching the given input.\n    '}</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemNoMatch.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.commands.default.syscommands.SystemMultimatch">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.syscommands.</code><code class="sig-name descname">SystemMultimatch</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/syscommands.html#SystemMultimatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.syscommands.SystemMultimatch" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.syscommands.</code><code class="sig-name descname">SystemMultimatch</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/syscommands.html#SystemMultimatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.syscommands.SystemMultimatch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
 <p>Multiple command matches.</p>
 <p>The cmdhandler adds a special attribute ‘matches’ to this
@@ -153,62 +151,62 @@ without said command name. <strong>cmdobj</strong> is the Command instance, the 
 the same as len(cmdname) and mratio is a measure of how big a part of the
 full input string the cmdname takes up - an exact match would be 1.0. Finally,
 the <strong>raw_cmdname</strong> is the cmdname unmodified by eventual prefix-stripping.</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.commands.default.syscommands.SystemMultimatch.key">
 <code class="sig-name descname">key</code><em class="property"> = '__multimatch_command'</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemMultimatch.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.commands.default.syscommands.SystemMultimatch.locks">
 <code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemMultimatch.locks" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.commands.default.syscommands.SystemMultimatch.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/syscommands.html#SystemMultimatch.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.syscommands.SystemMultimatch.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Handle multiple-matches by using the at_search_result default handler.</p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.commands.default.syscommands.SystemMultimatch.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemMultimatch.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.commands.default.syscommands.SystemMultimatch.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemMultimatch.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.commands.default.syscommands.SystemMultimatch.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemMultimatch.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.commands.default.syscommands.SystemMultimatch.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': '__multimatch_command', 'tags': '', 'text': &quot;\n    Multiple command matches.\n\n    The cmdhandler adds a special attribute 'matches' to this\n    system command.\n\n      matches = [(cmdname, args, cmdobj, cmdlen, mratio, raw_cmdname) , (cmdname, ...), ...]\n\n    Here, `cmdname` is the command's name and `args` the rest of the incoming string,\n    without said command name. `cmdobj` is the Command instance, the cmdlen is\n    the same as len(cmdname) and mratio is a measure of how big a part of the\n    full input string the cmdname takes up - an exact match would be 1.0. Finally,\n    the `raw_cmdname` is the cmdname unmodified by eventual prefix-stripping.\n\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemMultimatch.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.commands.default.syscommands.SystemSendToChannel">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.syscommands.</code><code class="sig-name descname">SystemSendToChannel</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/syscommands.html#SystemSendToChannel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.syscommands.SystemSendToChannel" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.syscommands.</code><code class="sig-name descname">SystemSendToChannel</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/syscommands.html#SystemSendToChannel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.syscommands.SystemSendToChannel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
 <p>This is a special command that the cmdhandler calls
 when it detects that the command given matches
 an existing Channel object key (or alias).</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.commands.default.syscommands.SystemSendToChannel.key">
 <code class="sig-name descname">key</code><em class="property"> = '__send_to_channel_command'</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemSendToChannel.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.commands.default.syscommands.SystemSendToChannel.locks">
 <code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemSendToChannel.locks" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.commands.default.syscommands.SystemSendToChannel.parse">
 <code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/syscommands.html#SystemSendToChannel.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.syscommands.SystemSendToChannel.parse" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is called by the cmdhandler once the command name
@@ -281,29 +279,29 @@ strings, but case is preserved.</p>
 </div></blockquote>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.commands.default.syscommands.SystemSendToChannel.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/syscommands.html#SystemSendToChannel.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.syscommands.SystemSendToChannel.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new message and send it to channel, using
 the already formatted input.</p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.commands.default.syscommands.SystemSendToChannel.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemSendToChannel.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.commands.default.syscommands.SystemSendToChannel.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemSendToChannel.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.commands.default.syscommands.SystemSendToChannel.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemSendToChannel.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.commands.default.syscommands.SystemSendToChannel.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': '__send_to_channel_command', 'tags': '', 'text': '\n    This is a special command that the cmdhandler calls\n    when it detects that the command given matches\n    an existing Channel object key (or alias).\n    '}</em><a class="headerlink" href="#evennia.commands.default.syscommands.SystemSendToChannel.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -313,7 +311,6 @@ the already formatted input.</p>
 </div>
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -342,7 +339,7 @@ the already formatted input.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.commands.default.syscommands.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.1/api/evennia.commands.default.syscommands.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../0.9.5/api/evennia.commands.default.syscommands.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -358,13 +355,12 @@ the already formatted input.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.syscommands</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

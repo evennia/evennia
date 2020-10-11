@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.tutorial_examples.bodyfunctions &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +25,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorial_examples.bodyfunctions</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -46,47 +44,47 @@ character make observations and notices at irregular intervals.</p>
 </dl>
 <p>The script will only send messages to the object it is stored on, so
 make sure to put it on yourself or you won’t see any messages!</p>
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.tutorial_examples.bodyfunctions.BodyFunctions">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_examples.bodyfunctions.</code><code class="sig-name descname">BodyFunctions</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/bodyfunctions.html#BodyFunctions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.bodyfunctions.BodyFunctions" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_examples.bodyfunctions.</code><code class="sig-name descname">BodyFunctions</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/bodyfunctions.html#BodyFunctions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.bodyfunctions.BodyFunctions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript" title="evennia.scripts.scripts.DefaultScript"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript</span></code></a></p>
 <p>This class defines the script itself</p>
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.tutorial_examples.bodyfunctions.BodyFunctions.at_script_creation">
 <code class="sig-name descname">at_script_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/bodyfunctions.html#BodyFunctions.at_script_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.bodyfunctions.BodyFunctions.at_script_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Only called once, when script is first created.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.tutorial_examples.bodyfunctions.BodyFunctions.at_repeat">
 <code class="sig-name descname">at_repeat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/bodyfunctions.html#BodyFunctions.at_repeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.bodyfunctions.BodyFunctions.at_repeat" title="Permalink to this definition">¶</a></dt>
 <dd><p>This gets called every self.interval seconds. We make
 a random check here so as to only return 33% of the time.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.tutorial_examples.bodyfunctions.BodyFunctions.send_random_message">
 <code class="sig-name descname">send_random_message</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/bodyfunctions.html#BodyFunctions.send_random_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.bodyfunctions.BodyFunctions.send_random_message" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.tutorial_examples.bodyfunctions.BodyFunctions.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.tutorial_examples.bodyfunctions.BodyFunctions.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.DoesNotExist" title="evennia.scripts.scripts.DefaultScript.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.DoesNotExist</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DoesNotExist</span></code></p>
 </dd></dl>
 
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.tutorial_examples.bodyfunctions.BodyFunctions.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.tutorial_examples.bodyfunctions.BodyFunctions.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned" title="evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.tutorial_examples.bodyfunctions.BodyFunctions.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorial_examples.bodyfunctions.BodyFunctions'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.bodyfunctions.BodyFunctions.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.tutorial_examples.bodyfunctions.BodyFunctions.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'BodyFunctions'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.bodyfunctions.BodyFunctions.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -96,7 +94,6 @@ a random check here so as to only return 33% of the time.</p>
 </div>
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -125,7 +122,7 @@ a random check here so as to only return 33% of the time.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.contrib.tutorial_examples.bodyfunctions.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.1/api/evennia.contrib.tutorial_examples.bodyfunctions.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../0.9.5/api/evennia.contrib.tutorial_examples.bodyfunctions.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -141,13 +138,12 @@ a random check here so as to only return 33% of the time.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorial_examples.bodyfunctions</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.tutorial_examples.mirror &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +25,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorial_examples.mirror</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -40,9 +38,9 @@
 <span id="evennia-contrib-tutorial-examples-mirror"></span><h1>evennia.contrib.tutorial_examples.mirror<a class="headerlink" href="#module-evennia.contrib.tutorial_examples.mirror" title="Permalink to this headline">¶</a></h1>
 <p>TutorialMirror</p>
 <p>A simple mirror object to experiment with.</p>
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.tutorial_examples.mirror.TutorialMirror">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_examples.mirror.</code><code class="sig-name descname">TutorialMirror</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/mirror.html#TutorialMirror"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.mirror.TutorialMirror" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_examples.mirror.</code><code class="sig-name descname">TutorialMirror</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/mirror.html#TutorialMirror"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.mirror.TutorialMirror" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject</span></code></a></p>
 <p>A simple mirror object that
 - echoes back the description of the object looking at it
@@ -50,9 +48,9 @@
 <blockquote>
 <div><p>sender, if given, otherwise to the location of the mirror.</p>
 </div></blockquote>
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.tutorial_examples.mirror.TutorialMirror.return_appearance">
-<code class="sig-name descname">return_appearance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">looker</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/mirror.html#TutorialMirror.return_appearance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.mirror.TutorialMirror.return_appearance" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">return_appearance</code><span class="sig-paren">(</span><em class="sig-param">looker</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/mirror.html#TutorialMirror.return_appearance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.mirror.TutorialMirror.return_appearance" title="Permalink to this definition">¶</a></dt>
 <dd><p>This formats the description of this object. Called by the ‘look’ command.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -65,9 +63,9 @@ overriding the call (unused by default).</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.tutorial_examples.mirror.TutorialMirror.msg">
-<code class="sig-name descname">msg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">from_obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/mirror.html#TutorialMirror.msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.mirror.TutorialMirror.msg" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">msg</code><span class="sig-paren">(</span><em class="sig-param">text=None</em>, <em class="sig-param">from_obj=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_examples/mirror.html#TutorialMirror.msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_examples.mirror.TutorialMirror.msg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simply override .msg to echo back to the messenger or to the current
 location.</p>
 <dl class="field-list simple">
@@ -85,24 +83,24 @@ on all entities in it.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.tutorial_examples.mirror.TutorialMirror.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.tutorial_examples.mirror.TutorialMirror.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.DoesNotExist" title="evennia.objects.objects.DefaultObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject.DoesNotExist</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DoesNotExist</span></code></p>
 </dd></dl>
 
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.tutorial_examples.mirror.TutorialMirror.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.tutorial_examples.mirror.TutorialMirror.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.MultipleObjectsReturned" title="evennia.objects.objects.DefaultObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject.MultipleObjectsReturned</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.tutorial_examples.mirror.TutorialMirror.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorial_examples.mirror.TutorialMirror'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.mirror.TutorialMirror.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.tutorial_examples.mirror.TutorialMirror.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'TutorialMirror'</em><a class="headerlink" href="#evennia.contrib.tutorial_examples.mirror.TutorialMirror.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -112,7 +110,6 @@ on all entities in it.</p></li>
 </div>
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -141,7 +138,7 @@ on all entities in it.</p></li>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.contrib.tutorial_examples.mirror.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.1/index.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -157,13 +154,12 @@ on all entities in it.</p></li>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorial_examples.mirror</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

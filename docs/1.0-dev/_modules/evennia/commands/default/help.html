@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.commands.default.help &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -28,8 +27,7 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.help</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -335,10 +333,12 @@
             <span class="n">hdict_topic</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
             <span class="c1"># create the dictionaries {category:[topic, topic ...]} required by format_help_list</span>
             <span class="c1"># Filter commands that should be reached by the help</span>
-            <span class="c1"># system, but not be displayed in the table.</span>
+            <span class="c1"># system, but not be displayed in the table, or be displayed differently.</span>
             <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">all_cmds</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_list_cmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
-                    <span class="n">hdict_cmd</span><span class="p">[</span><span class="n">cmd</span><span class="o">.</span><span class="n">help_category</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cmd</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+                    <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">cmd</span><span class="o">.</span><span class="n">auto_help_display_key</span>
+                           <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="s2">&quot;auto_help_display_key&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">cmd</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+                    <span class="n">hdict_cmd</span><span class="p">[</span><span class="n">cmd</span><span class="o">.</span><span class="n">help_category</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
             <span class="p">[</span><span class="n">hdict_topic</span><span class="p">[</span><span class="n">topic</span><span class="o">.</span><span class="n">help_category</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">topic</span><span class="o">.</span><span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="n">all_topics</span><span class="p">]</span>
             <span class="c1"># report back</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg_help</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format_help_list</span><span class="p">(</span><span class="n">hdict_cmd</span><span class="p">,</span> <span class="n">hdict_topic</span><span class="p">))</span>
@@ -349,7 +349,6 @@
 
         <span class="k">for</span> <span class="n">match_query</span> <span class="ow">in</span> <span class="p">[</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{query}</span><span class="s2">~1&quot;</span><span class="p">,</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{query}</span><span class="s2">*&quot;</span><span class="p">]:</span>
             <span class="c1"># We first do an exact word-match followed by a start-by query</span>
-
             <span class="n">matches</span><span class="p">,</span> <span class="n">suggestions</span> <span class="o">=</span> <span class="n">help_search_with_index</span><span class="p">(</span>
                 <span class="n">match_query</span><span class="p">,</span> <span class="n">entries</span><span class="p">,</span> <span class="n">suggestion_maxnum</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">suggestion_maxnum</span>
             <span class="p">)</span>
@@ -585,7 +584,6 @@
                 <span class="p">)</span></div></div>
 </pre></div>
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -607,7 +605,7 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="help.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../../0.9.1/index.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../../../../0.9.5/index.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -625,13 +623,12 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.help</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

@@ -1,0 +1,255 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Developer Central &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="developer-central">
+<h1>Developer Central<a class="headerlink" href="#developer-central" title="Permalink to this headline">¶</a></h1>
+<p>This page serves as a central nexus for information on using Evennia as well as developing the
+library itself.</p>
+<div class="section" id="general-evennia-development-information">
+<h2>General Evennia development information<a class="headerlink" href="#general-evennia-development-information" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="Coding-Introduction.html"><span class="doc">Introduction to coding with Evennia</span></a></p></li>
+<li><p><a class="reference internal" href="Licensing.html"><span class="doc">Evennia Licensing FAQ</span></a></p></li>
+<li><p><a class="reference internal" href="Contributing.html"><span class="doc">Contributing to Evennia</span></a></p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/CODING_STYLE.md">Code Style Guide</a> (Important!)</p></li>
+<li><p><a class="reference internal" href="Using-MUX-as-a-Standard.html"><span class="doc">Policy for ‘MUX-like’ default commands</span></a></p></li>
+<li><p><a class="reference internal" href="Version-Control.html"><span class="doc">Setting up a Git environment for coding</span></a></p></li>
+<li><p><a class="reference internal" href="Using-Travis.html"><span class="doc">Getting started with Travis and Github for continuous integration testing</span></a></p></li>
+<li><p><a class="reference internal" href="Game-Planning.html"><span class="doc">Planning your own Evennia game</span></a></p></li>
+<li><p><a class="reference internal" href="First-Steps-Coding.html"><span class="doc">First steps coding Evennia</span></a></p></li>
+<li><p><a class="reference external" href="Internationalization.html#translating-evennia">Translating Evennia</a></p></li>
+<li><p><a class="reference internal" href="Quirks.html"><span class="doc">Evennia Quirks</span></a> to keep in mind.</p></li>
+<li><p><a class="reference internal" href="Setting-up-PyCharm.html"><span class="doc">Directions for configuring PyCharm with Evennia on Windows</span></a></p></li>
+</ul>
+</div>
+<div class="section" id="evennia-api">
+<h2>Evennia API<a class="headerlink" href="#evennia-api" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="Directory-Overview.html"><span class="doc">Directory Overview</span></a></p></li>
+<li><p><a class="reference internal" href="Evennia-API.html"><span class="doc">evennia - the flat API</span></a></p>
+<ul>
+<li><p><a class="reference internal" href="Execute-Python-Code.html"><span class="doc">Running and Testing Python code</span></a></p></li>
+</ul>
+</li>
+</ul>
+<div class="section" id="core-components-and-protocols">
+<h3>Core components and protocols<a class="headerlink" href="#core-components-and-protocols" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="Portal-And-Server.html"><span class="doc">Server and Portal</span></a></p>
+<ul>
+<li><p><a class="reference internal" href="Sessions.html"><span class="doc">Sessions</span></a></p></li>
+<li><p><a class="reference internal" href="Server-Conf.html"><span class="doc">Configuration and module plugins</span></a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="Messagepath.html"><span class="doc">The message path</span></a></p>
+<ul>
+<li><p><a class="reference internal" href="OOB.html"><span class="doc">OOB</span></a> - Out-of-band communication</p></li>
+<li><p><a class="reference internal" href="Inputfuncs.html"><span class="doc">Inputfuncs</span></a></p></li>
+<li><p><a class="reference internal" href="Custom-Protocols.html"><span class="doc">Adding new protocols (client APIs) and services</span></a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="New-Models.html"><span class="doc">Adding new database models</span></a></p></li>
+<li><p><a class="reference internal" href="Unit-Testing.html"><span class="doc">Unit Testing</span></a></p></li>
+<li><p><a class="reference internal" href="Profiling.html"><span class="doc">Running profiling</span></a></p></li>
+<li><p><a class="reference internal" href="Debugging.html"><span class="doc">Debugging your code</span></a></p></li>
+</ul>
+</div>
+<div class="section" id="in-game-commands">
+<h3>In-game Commands<a class="headerlink" href="#in-game-commands" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="Command-System.html"><span class="doc">Command System overview</span></a></p></li>
+<li><p><a class="reference internal" href="Commands.html"><span class="doc">Commands</span></a></p></li>
+<li><p><a class="reference internal" href="Command-Sets.html"><span class="doc">Command Sets</span></a></p></li>
+<li><p><a class="reference external" href="Help-System.html#command-auto-help-system">Command Auto-help</a></p></li>
+</ul>
+</div>
+<div class="section" id="typeclasses-and-related-concepts">
+<h3>Typeclasses and related concepts<a class="headerlink" href="#typeclasses-and-related-concepts" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="Typeclasses.html"><span class="doc">General about Typeclasses</span></a></p></li>
+<li><p><a class="reference internal" href="Objects.html"><span class="doc">Objects</span></a></p>
+<ul>
+<li><p><a class="reference external" href="Objects.html#characters">Characters</a></p></li>
+<li><p><a class="reference external" href="Objects.html#rooms">Rooms</a></p></li>
+<li><p><a class="reference external" href="Objects.html#exits">Exits</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="Accounts.html"><span class="doc">Accounts</span></a></p></li>
+<li><p><a class="reference internal" href="Communications.html"><span class="doc">Communications</span></a></p>
+<ul>
+<li><p><a class="reference external" href="Communications.html#channels">Channels</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="Scripts.html"><span class="doc">Scripts</span></a></p>
+<ul>
+<li><p><a class="reference external" href="Scripts.html#Global-Scripts">Global Scripts</a></p></li>
+<li><p><a class="reference internal" href="TickerHandler.html"><span class="doc">TickerHandler</span></a></p></li>
+<li><p><a class="reference external" href="Coding-Utils.html#utilsdelay">utils.delay</a></p></li>
+<li><p><a class="reference internal" href="MonitorHandler.html"><span class="doc">MonitorHandler</span></a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="Attributes.html"><span class="doc">Attributes</span></a></p></li>
+<li><p><a class="reference internal" href="Nicks.html"><span class="doc">Nicks</span></a></p></li>
+<li><p><a class="reference internal" href="Tags.html"><span class="doc">Tags</span></a></p>
+<ul>
+<li><p><a class="reference external" href="Tags.html#using-aliases-and-permissions">Tags for Aliases and Permissions</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="web">
+<h3>Web<a class="headerlink" href="#web" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="Web-Features.html"><span class="doc">Web features overview</span></a></p></li>
+<li><p><a class="reference internal" href="Webclient.html"><span class="doc">The Webclient</span></a></p></li>
+<li><p><a class="reference internal" href="Web-Tutorial.html"><span class="doc">Web tutorials</span></a></p></li>
+</ul>
+</div>
+<div class="section" id="other-systems">
+<h3>Other systems<a class="headerlink" href="#other-systems" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="Locks.html"><span class="doc">Locks</span></a></p>
+<ul>
+<li><p><a class="reference external" href="Locks.html#permissions">Permissions</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="Help-System.html"><span class="doc">Help System</span></a></p></li>
+<li><p><a class="reference internal" href="Signals.html"><span class="doc">Signals</span></a></p></li>
+<li><p><a class="reference internal" href="Coding-Utils.html"><span class="doc">General coding utilities</span></a></p>
+<ul>
+<li><p><a class="reference external" href="api/evennia.utils.utils.html">Utils in evennia.utils.utils</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="Coding-Utils.html#game-time">Game time</a></p></li>
+<li><p><a class="reference internal" href="EvMenu.html"><span class="doc">Game Menus</span></a> (EvMenu)</p></li>
+<li><p><a class="reference internal" href="EvMore.html"><span class="doc">Text paging/scrolling</span></a> (EvMore)</p></li>
+<li><p><a class="reference internal" href="EvEditor.html"><span class="doc">Text Line Editor</span></a> (EvEditor)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia.utils.evtable">Text Tables</a> (EvTable)</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia.utils.evform">Text Form generation</a> (EvForm)</p></li>
+<li><p><a class="reference internal" href="Spawner-and-Prototypes.html"><span class="doc">Spawner and Prototypes</span></a></p></li>
+<li><p><a class="reference external" href="TextTags.html#inline-functions">Inlinefuncs</a></p></li>
+<li><p><a class="reference internal" href="Async-Process.html"><span class="doc">Asynchronous execution</span></a></p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="developer-brainstorms-and-whitepages">
+<h2>Developer brainstorms and whitepages<a class="headerlink" href="#developer-brainstorms-and-whitepages" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="API-refactoring.html"><span class="doc">API refactoring</span></a>, discussing what parts of the Evennia API needs a
+refactoring/cleanup/simplification</p></li>
+<li><p><a class="reference internal" href="Docs-refactoring.html"><span class="doc">Docs refactoring</span></a>, discussing how to reorganize and structure this wiki/docs
+better going forward</p></li>
+<li><p><a class="reference internal" href="Webclient-brainstorm.html"><span class="doc">Webclient brainstorm</span></a>, some ideas for a future webclient gui</p></li>
+<li><p><a class="reference internal" href="Roadmap.html"><span class="doc">Roadmap</span></a>, a tentative list of future major features</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/CHANGELOG.md">Change log</a> of big Evennia updates
+over time</p></li>
+</ul>
+<p>zY1RoZGc6MQ#gid=0
+[issues]: https://github.com/evennia/evennia/issues</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Developer Central</a><ul>
+<li><a class="reference internal" href="#general-evennia-development-information">General Evennia development information</a></li>
+<li><a class="reference internal" href="#evennia-api">Evennia API</a><ul>
+<li><a class="reference internal" href="#core-components-and-protocols">Core components and protocols</a></li>
+<li><a class="reference internal" href="#in-game-commands">In-game Commands</a></li>
+<li><a class="reference internal" href="#typeclasses-and-related-concepts">Typeclasses and related concepts</a></li>
+<li><a class="reference internal" href="#web">Web</a></li>
+<li><a class="reference internal" href="#other-systems">Other systems</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#developer-brainstorms-and-whitepages">Developer brainstorms and whitepages</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Developer-Central.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Developer-Central.html">0.9.5 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

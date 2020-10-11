@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.utils.evmenu &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -28,8 +27,7 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.utils.evmenu</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -98,7 +96,7 @@
 <span class="sd">that takes `**kwargs`.</span>
 
 <span class="sd">The menu tree itself is available on the caller as</span>
-<span class="sd">`caller.ndb._menutree`. This makes it a convenient place to store</span>
+<span class="sd">`caller.ndb._evmenu`. This makes it a convenient place to store</span>
 <span class="sd">temporary state variables between nodes, since this NAttribute is</span>
 <span class="sd">deleted when the menu is exited.</span>
 
@@ -206,10 +204,113 @@
 
 <span class="sd">----</span>
 
+
+<span class="sd">## Menu generation from template string</span>
+
+<span class="sd">In evmenu.py is a helper function `parse_menu_template` that parses a</span>
+<span class="sd">template-string and outputs a menu-tree dictionary suitable to pass into</span>
+<span class="sd">EvMenu:</span>
+<span class="sd">::</span>
+
+<span class="sd">    menutree = evmenu.parse_menu_template(caller, menu_template, goto_callables)</span>
+<span class="sd">    EvMenu(caller, menutree)</span>
+
+<span class="sd">For maximum flexibility you can inject normally-created nodes in the menu tree</span>
+<span class="sd">before passing it to EvMenu. If that&#39;s not needed, you can also create a menu</span>
+<span class="sd">in one step with:</span>
+<span class="sd">::</span>
+
+<span class="sd">    evmenu.template2menu(caller, menu_template, goto_callables)</span>
+
+<span class="sd">The `goto_callables` is a mapping `{&quot;funcname&quot;: callable, ...}`, where each</span>
+<span class="sd">callable must be a module-global function on the form</span>
+<span class="sd">`funcname(caller, raw_string, **kwargs)` (like any goto-callable). The</span>
+<span class="sd">`menu_template` is a multi-line string on the following form:</span>
+<span class="sd">::</span>
+
+<span class="sd">    ## node start</span>
+
+<span class="sd">    This is the text of the start node.</span>
+<span class="sd">    The text area can have multiple lines, line breaks etc.</span>
+
+<span class="sd">    Each option below is one of these forms</span>
+<span class="sd">        key: desc -&gt; gotostr_or_func</span>
+<span class="sd">        key: gotostr_or_func</span>
+<span class="sd">        &gt;: gotostr_or_func</span>
+<span class="sd">        &gt; glob/regex: gotostr_or_func</span>
+
+<span class="sd">    ## options</span>
+
+<span class="sd">        # comments are only allowed from beginning of line.</span>
+<span class="sd">        # Indenting is not necessary, but good for readability</span>
+
+<span class="sd">        1: Option number 1 -&gt; node1</span>
+<span class="sd">        2: Option number 2 -&gt; node2</span>
+<span class="sd">        next: This steps next -&gt; go_back()</span>
+<span class="sd">        # the -&gt; can be ignored if there is no desc</span>
+<span class="sd">        back: go_back(from_node=start)</span>
+<span class="sd">        abort: abort</span>
+
+<span class="sd">    ## node node1</span>
+
+<span class="sd">    Text for Node1. Enter a message!</span>
+<span class="sd">    &lt;return&gt; to go back.</span>
+
+<span class="sd">    ## options</span>
+
+<span class="sd">        # Starting the option-line with &gt;</span>
+<span class="sd">        # allows to perform different actions depending on</span>
+<span class="sd">        # what is inserted.</span>
+
+<span class="sd">        # this catches everything starting with foo</span>
+<span class="sd">        &gt; foo*: handle_foo_message()</span>
+
+<span class="sd">        # regex are also allowed (this catches number inputs)</span>
+<span class="sd">        &gt; [0-9]+?: handle_numbers()</span>
+
+<span class="sd">        # this catches the empty return</span>
+<span class="sd">        &gt;: start</span>
+
+<span class="sd">        # this catches everything else</span>
+<span class="sd">        &gt; *: handle_message(from_node=node1)</span>
+
+<span class="sd">    ## node node2</span>
+
+<span class="sd">    Text for Node2. Just go back.</span>
+
+<span class="sd">    ## options</span>
+
+<span class="sd">        &gt;: start</span>
+
+<span class="sd">    # node abort</span>
+
+<span class="sd">    This exits the menu since there is no `## options` section.</span>
+
+<span class="sd">Each menu node is defined by a `# node &lt;name&gt;` containing the text of the node,</span>
+<span class="sd">followed by `## options` Also `## NODE` and `## OPTIONS` work. No python code</span>
+<span class="sd">logics is allowed in the template, this code is not evaluated but parsed. More</span>
+<span class="sd">advanced dynamic usage requires a full node-function (which can be added to the</span>
+<span class="sd">generated dict, as said).</span>
+
+<span class="sd">Adding `(..)` to a goto treats it as a callable and it must then be included in</span>
+<span class="sd">the `goto_callable` mapping. Only named keywords (or no args at all) are</span>
+<span class="sd">allowed, these will be added to the `**kwargs` going into the callable. Quoting</span>
+<span class="sd">strings is only needed if wanting to pass strippable spaces, otherwise the</span>
+<span class="sd">key:values will be converted to strings/numbers with literal_eval before passed</span>
+<span class="sd">into the callable.</span>
+
+<span class="sd">The `&gt; ` option takes a glob or regex to perform different actions depending on user</span>
+<span class="sd">input. Make sure to sort these in increasing order of generality since they</span>
+<span class="sd">will be tested in sequence.</span>
+
+
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
+
+<span class="kn">from</span> <span class="nn">ast</span> <span class="k">import</span> <span class="n">literal_eval</span>
+<span class="kn">from</span> <span class="nn">fnmatch</span> <span class="k">import</span> <span class="n">fnmatch</span>
 
 <span class="kn">from</span> <span class="nn">inspect</span> <span class="k">import</span> <span class="n">isfunction</span><span class="p">,</span> <span class="n">getargspec</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
@@ -219,6 +320,9 @@
 <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="k">import</span> <span class="n">strip_ansi</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">mod_import</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">pad</span><span class="p">,</span> <span class="n">to_str</span><span class="p">,</span> <span class="n">m_len</span><span class="p">,</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">dedent</span><span class="p">,</span> <span class="n">crop</span>
 <span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="k">import</span> <span class="n">cmdhandler</span>
+
+<span class="c1"># i18n</span>
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="k">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 
 <span class="c1"># read from protocol NAWS later?</span>
 <span class="n">_MAX_TEXT_WIDTH</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CLIENT_DEFAULT_WIDTH</span>
@@ -230,11 +334,10 @@
 
 <span class="c1"># Return messages</span>
 
-<span class="c1"># i18n</span>
-<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="k">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 
 <span class="n">_ERR_NOT_IMPLEMENTED</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
-    <span class="s2">&quot;Menu node &#39;</span><span class="si">{nodename}</span><span class="s2">&#39; is either not implemented or &quot;</span> <span class="s2">&quot;caused an error. Make another choice.&quot;</span>
+    <span class="s2">&quot;Menu node &#39;</span><span class="si">{nodename}</span><span class="s2">&#39; is either not implemented or caused an error. &quot;</span>
+    <span class="s2">&quot;Make another choice or try &#39;q&#39; to abort.&quot;</span>
 <span class="p">)</span>
 <span class="n">_ERR_GENERAL</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Error in menu node &#39;</span><span class="si">{nodename}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
 <span class="n">_ERR_NO_OPTION_DESC</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;No description.&quot;</span><span class="p">)</span>
@@ -268,6 +371,19 @@
     <span class="k">pass</span></div>
 
 
+<div class="viewcode-block" id="EvMenuGotoAbortMessage"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenuGotoAbortMessage">[docs]</a><span class="k">class</span> <span class="nc">EvMenuGotoAbortMessage</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This can be raised by a goto-callable to abort the goto flow.  The message</span>
+<span class="sd">    stored with the executable will be sent to the caller who will remain on</span>
+<span class="sd">    the current node. This can be used to pass single-line returns without</span>
+<span class="sd">    re-running the entire node with text and options.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        raise EvMenuGotoMessage(&quot;That makes no sense.&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
 <span class="c1"># -------------------------------------------------------------</span>
 <span class="c1">#</span>
 <span class="c1"># Menu command and command set</span>
@@ -284,6 +400,10 @@
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="n">_CMD_NOMATCH</span><span class="p">]</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Menu&quot;</span>
+    <span class="n">auto_help_display_key</span> <span class="o">=</span> <span class="s2">&quot;&lt;menu commands&gt;&quot;</span>
+
+<div class="viewcode-block" id="CmdEvMenuNode.get_help"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.CmdEvMenuNode.get_help">[docs]</a>    <span class="k">def</span> <span class="nf">get_help</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Menu commands are explained within the menu.&quot;</span></div>
 
 <div class="viewcode-block" id="CmdEvMenuNode.func"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.CmdEvMenuNode.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -312,28 +432,28 @@
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="c1"># we store Session on the menu since this can be hard to</span>
         <span class="c1"># get in multisession environemtns if caller is an Account.</span>
-        <span class="n">menu</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span>
+        <span class="n">menu</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_evmenu</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">menu</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">_restore</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
                 <span class="k">return</span>
             <span class="n">orig_caller</span> <span class="o">=</span> <span class="n">caller</span>
             <span class="n">caller</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">account</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;account&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
-            <span class="n">menu</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span> <span class="k">if</span> <span class="n">caller</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">menu</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_evmenu</span> <span class="k">if</span> <span class="n">caller</span> <span class="k">else</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">menu</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">caller</span> <span class="ow">and</span> <span class="n">_restore</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
                     <span class="k">return</span>
                 <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span>
-                <span class="n">menu</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span>
+                <span class="n">menu</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_evmenu</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">menu</span><span class="p">:</span>
                     <span class="c1"># can&#39;t restore from a session</span>
-                    <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;Menu object not found as </span><span class="si">%s</span><span class="s2">.ndb._menutree!&quot;</span> <span class="o">%</span> <span class="n">orig_caller</span>
+                    <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;Menu object not found as </span><span class="si">%s</span><span class="s2">.ndb._evmenu!&quot;</span> <span class="o">%</span> <span class="n">orig_caller</span>
                     <span class="n">orig_caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
                         <span class="n">err</span>
                     <span class="p">)</span>  <span class="c1"># don&#39;t give the session as a kwarg here, direct to original</span>
                     <span class="k">raise</span> <span class="n">EvMenuError</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
         <span class="c1"># we must do this after the caller with the menu has been correctly identified since it</span>
         <span class="c1"># can be either Account, Object or Session (in the latter case this info will be superfluous).</span>
-        <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_evmenu</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span>
         <span class="c1"># we have a menu, use it.</span>
         <span class="n">menu</span><span class="o">.</span><span class="n">parse_input</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_string</span><span class="p">)</span></div></div>
 
@@ -365,7 +485,7 @@
 <span class="c1"># -------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="EvMenu"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu">[docs]</a><span class="k">class</span> <span class="nc">EvMenu</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="EvMenu"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu">[docs]</a><span class="k">class</span> <span class="nc">EvMenu</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This object represents an operational menu. It is initialized from</span>
 <span class="sd">    a menufile.py instruction.</span>
@@ -466,9 +586,9 @@
 <span class="sd">            EvMenuError: If the start/end node is not found in menu tree.</span>
 
 <span class="sd">        Notes:</span>
-<span class="sd">            While running, the menu is stored on the caller as `caller.ndb._menutree`. Also</span>
+<span class="sd">            While running, the menu is stored on the caller as `caller.ndb._evmenu`. Also</span>
 <span class="sd">            the current Session (from the Command, so this is still valid in multisession</span>
-<span class="sd">            environments) is available through `caller.ndb._menutree._session`. The `_menutree`</span>
+<span class="sd">            environments) is available through `caller.ndb._evmenu._session`. The `_evmenu`</span>
 <span class="sd">            property is a good one for storing intermediary data on between nodes since it</span>
 <span class="sd">            will be automatically deleted when the menu closes.</span>
 
@@ -519,7 +639,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">test_nodetext</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
         <span class="c1"># assign kwargs as initialization vars on ourselves.</span>
-        <span class="k">if</span> <span class="nb">set</span><span class="p">(</span>
+        <span class="n">reserved_clash</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
             <span class="p">(</span>
                 <span class="s2">&quot;_startnode&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;_menutree&quot;</span><span class="p">,</span>
@@ -533,22 +653,26 @@
                 <span class="s2">&quot;cmdset_mergetype&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;auto_quit&quot;</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">())):</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+        <span class="k">if</span> <span class="n">reserved_clash</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="s2">&quot;One or more of the EvMenu `**kwargs` is reserved by EvMenu for internal use.&quot;</span>
+                <span class="n">f</span><span class="s2">&quot;One or more of the EvMenu `**kwargs` ({list(reserved_clash)}) is reserved by EvMenu for internal use.&quot;</span>
             <span class="p">)</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_evmenu</span><span class="p">:</span>
             <span class="c1"># an evmenu already exists - we try to close it cleanly. Note that this will</span>
             <span class="c1"># not fire the previous menu&#39;s end node.</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">close_menu</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_evmenu</span><span class="o">.</span><span class="n">close_menu</span><span class="p">()</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                 <span class="k">pass</span>
 
         <span class="c1"># store ourself on the object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_evmenu</span> <span class="o">=</span> <span class="bp">self</span>
+
+        <span class="c1"># DEPRECATED - for backwards-compatibility</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span> <span class="o">=</span> <span class="bp">self</span>
 
         <span class="k">if</span> <span class="n">persistent</span><span class="p">:</span>
@@ -568,7 +692,7 @@
                 <span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;_menutree_saved&quot;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="p">(</span><span class="n">menudata</span><span class="p">,),</span> <span class="n">calldict</span><span class="p">))</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;_menutree_saved_startnode&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">startnode</span><span class="p">,</span> <span class="n">startnode_input</span><span class="p">))</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_ERROR_PERSISTENT_SAVING</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="n">err</span><span class="p">),</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_ERROR_PERSISTENT_SAVING</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="n">err</span><span class="p">))</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="n">_TRACE_PERSISTENT_SAVING</span><span class="p">)</span>
                 <span class="n">persistent</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -578,11 +702,19 @@
         <span class="n">menu_cmdset</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">cmdset_priority</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">menu_cmdset</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="n">persistent</span><span class="p">)</span>
 
+        <span class="n">reserved_startnode_kwargs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">((</span><span class="s2">&quot;nodename&quot;</span><span class="p">,</span> <span class="s2">&quot;raw_string&quot;</span><span class="p">))</span>
         <span class="n">startnode_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">startnode_input</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">startnode_input</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">startnode_input</span><span class="p">,</span> <span class="n">startnode_kwargs</span> <span class="o">=</span> <span class="n">startnode_input</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">startnode_kwargs</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">EvMenuError</span><span class="p">(</span><span class="s2">&quot;startnode_input must be either a str or a tuple (str, dict).&quot;</span><span class="p">)</span>
+            <span class="n">clashing_kwargs</span> <span class="o">=</span> <span class="n">reserved_startnode_kwargs</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">startnode_kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+            <span class="k">if</span> <span class="n">clashing_kwargs</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="n">f</span><span class="s2">&quot;Evmenu startnode_inputs includes kwargs {tuple(clashing_kwargs)} that &quot;</span>
+                    <span class="s2">&quot;clashes with EvMenu&#39;s internal usage.&quot;</span>
+                <span class="p">)</span>
+
         <span class="c1"># start the menu</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">goto</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_startnode</span><span class="p">,</span> <span class="n">startnode_input</span><span class="p">,</span> <span class="o">**</span><span class="n">startnode_kwargs</span><span class="p">)</span></div>
 
@@ -672,7 +804,7 @@
                 <span class="n">ret</span> <span class="o">=</span> <span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">EvMenuError</span><span class="p">:</span>
             <span class="n">errmsg</span> <span class="o">=</span> <span class="n">_ERR_GENERAL</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nodename</span><span class="o">=</span><span class="n">callback</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">errmsg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">errmsg</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
             <span class="k">raise</span>
 
@@ -697,20 +829,21 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_menutree</span><span class="p">[</span><span class="n">nodename</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_ERR_NOT_IMPLEMENTED</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nodename</span><span class="o">=</span><span class="n">nodename</span><span class="p">),</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_ERR_NOT_IMPLEMENTED</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nodename</span><span class="o">=</span><span class="n">nodename</span><span class="p">))</span>
             <span class="k">raise</span> <span class="n">EvMenuError</span>
         <span class="k">try</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;_current_nodename&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nodename</span>
             <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_safe_call</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">nodetext</span><span class="p">,</span> <span class="n">options</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">nodetext</span><span class="p">,</span> <span class="n">options</span> <span class="o">=</span> <span class="n">ret</span><span class="p">,</span> <span class="kc">None</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_ERR_NOT_IMPLEMENTED</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nodename</span><span class="o">=</span><span class="n">nodename</span><span class="p">),</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_ERR_NOT_IMPLEMENTED</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nodename</span><span class="o">=</span><span class="n">nodename</span><span class="p">))</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
             <span class="k">raise</span> <span class="n">EvMenuError</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_ERR_GENERAL</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nodename</span><span class="o">=</span><span class="n">nodename</span><span class="p">),</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_ERR_GENERAL</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nodename</span><span class="o">=</span><span class="n">nodename</span><span class="p">))</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
             <span class="k">raise</span>
 
@@ -720,8 +853,27 @@
 
         <span class="k">return</span> <span class="n">nodetext</span><span class="p">,</span> <span class="n">options</span>
 
+<div class="viewcode-block" id="EvMenu.msg"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">txt</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is a central point for sending return texts to the caller. It</span>
+<span class="sd">        allows for a central point to add custom messaging when creating custom</span>
+<span class="sd">        EvMenu overrides.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            txt (str): The text to send.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            By default this will send to the same session provided to EvMenu</span>
+<span class="sd">            (if `session` kwarg was provided to `EvMenu.__init__`). It will</span>
+<span class="sd">            also send it with a `type=menu` for the benefit of OOB/webclient.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;menu&quot;</span><span class="p">}),</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="EvMenu.run_exec"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.run_exec">[docs]</a>    <span class="k">def</span> <span class="nf">run_exec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodename</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        NOTE: This is deprecated. Use `goto` directly instead.</span>
+
 <span class="sd">        Run a function or node as a callback (with the &#39;exec&#39; option key).</span>
 
 <span class="sd">        Args:</span>
@@ -764,7 +916,7 @@
                     <span class="n">ret</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
         <span class="k">except</span> <span class="n">EvMenuError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
             <span class="n">errmsg</span> <span class="o">=</span> <span class="s2">&quot;Error in exec &#39;</span><span class="si">%s</span><span class="s2">&#39; (input: &#39;</span><span class="si">%s</span><span class="s2">&#39;): </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">nodename</span><span class="p">,</span> <span class="n">raw_string</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(),</span> <span class="n">err</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|r</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="n">errmsg</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|r</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="n">errmsg</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="n">errmsg</span><span class="p">)</span>
             <span class="k">return</span>
 
@@ -945,12 +1097,14 @@
             <span class="c1"># avoid multiple calls from different sources</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_quitting</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">EvMenuCmdSet</span><span class="p">)</span>
-            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_evmenu</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_persistent</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;_menutree_saved&quot;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;_menutree_saved_startnode&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmd_on_exit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">cmd_on_exit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cmd_on_exit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="c1"># special for template-generated menues</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_evmenu_template_contents</span></div>
 
 <div class="viewcode-block" id="EvMenu.print_debug_info"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.print_debug_info">[docs]</a>    <span class="k">def</span> <span class="nf">print_debug_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1009,7 +1163,7 @@
                 <span class="p">)</span>
                 <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> |y... END MENU DEBUG|n&quot;</span>
             <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">debugtxt</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">debugtxt</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvMenu.parse_input"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.parse_input">[docs]</a>    <span class="k">def</span> <span class="nf">parse_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1026,30 +1180,35 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">cmd</span> <span class="o">=</span> <span class="n">strip_ansi</span><span class="p">(</span><span class="n">raw_string</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
 
-        <span class="k">if</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">:</span>
-            <span class="c1"># this will take precedence over the default commands</span>
-            <span class="c1"># below</span>
-            <span class="n">goto</span><span class="p">,</span> <span class="n">goto_kwargs</span><span class="p">,</span> <span class="n">execfunc</span><span class="p">,</span> <span class="n">exec_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="n">cmd</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">run_exec_then_goto</span><span class="p">(</span><span class="n">execfunc</span><span class="p">,</span> <span class="n">goto</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">exec_kwargs</span><span class="p">,</span> <span class="n">goto_kwargs</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_look</span> <span class="ow">and</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;look&quot;</span><span class="p">,</span> <span class="s2">&quot;l&quot;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">display_nodetext</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_help</span> <span class="ow">and</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;help&quot;</span><span class="p">,</span> <span class="s2">&quot;h&quot;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">display_helptext</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_quit</span> <span class="ow">and</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;quit&quot;</span><span class="p">,</span> <span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="s2">&quot;exit&quot;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">close_menu</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug_mode</span> <span class="ow">and</span> <span class="n">cmd</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;menudebug&quot;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">print_debug_info</span><span class="p">(</span><span class="n">cmd</span><span class="p">[</span><span class="mi">9</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">:</span>
-            <span class="n">goto</span><span class="p">,</span> <span class="n">goto_kwargs</span><span class="p">,</span> <span class="n">execfunc</span><span class="p">,</span> <span class="n">exec_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">run_exec_then_goto</span><span class="p">(</span><span class="n">execfunc</span><span class="p">,</span> <span class="n">goto</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">exec_kwargs</span><span class="p">,</span> <span class="n">goto_kwargs</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_HELP_NO_OPTION_MATCH</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="ow">and</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">:</span>
+                <span class="c1"># this will take precedence over the default commands</span>
+                <span class="c1"># below</span>
+                <span class="n">goto</span><span class="p">,</span> <span class="n">goto_kwargs</span><span class="p">,</span> <span class="n">execfunc</span><span class="p">,</span> <span class="n">exec_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="n">cmd</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">run_exec_then_goto</span><span class="p">(</span><span class="n">execfunc</span><span class="p">,</span> <span class="n">goto</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">exec_kwargs</span><span class="p">,</span> <span class="n">goto_kwargs</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_look</span> <span class="ow">and</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;look&quot;</span><span class="p">,</span> <span class="s2">&quot;l&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">display_nodetext</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_help</span> <span class="ow">and</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;help&quot;</span><span class="p">,</span> <span class="s2">&quot;h&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">display_helptext</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_quit</span> <span class="ow">and</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;quit&quot;</span><span class="p">,</span> <span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="s2">&quot;exit&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">close_menu</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug_mode</span> <span class="ow">and</span> <span class="n">cmd</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;menudebug&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">print_debug_info</span><span class="p">(</span><span class="n">cmd</span><span class="p">[</span><span class="mi">9</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">:</span>
+                <span class="n">goto</span><span class="p">,</span> <span class="n">goto_kwargs</span><span class="p">,</span> <span class="n">execfunc</span><span class="p">,</span> <span class="n">exec_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">run_exec_then_goto</span><span class="p">(</span><span class="n">execfunc</span><span class="p">,</span> <span class="n">goto</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">exec_kwargs</span><span class="p">,</span> <span class="n">goto_kwargs</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_HELP_NO_OPTION_MATCH</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">EvMenuGotoAbortMessage</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="c1"># custom interrupt from inside a goto callable - print the message and</span>
+            <span class="c1"># stay on the current node.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="EvMenu.display_nodetext"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.display_nodetext">[docs]</a>    <span class="k">def</span> <span class="nf">display_nodetext</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodetext</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodetext</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EvMenu.display_helptext"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.display_helptext">[docs]</a>    <span class="k">def</span> <span class="nf">display_helptext</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">helptext</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">helptext</span><span class="p">)</span></div>
 
     <span class="c1"># formatters - override in a child class</span>
 
@@ -1501,225 +1660,293 @@
 
 <span class="c1"># -------------------------------------------------------------</span>
 <span class="c1">#</span>
-<span class="c1"># test menu strucure and testing command</span>
+<span class="c1"># Menu generation from menu template string</span>
 <span class="c1">#</span>
 <span class="c1"># -------------------------------------------------------------</span>
 
+<span class="n">_RE_NODE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;##\s*?NODE\s+?(?P&lt;nodename&gt;\S[\S\s]*?)$&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
+<span class="n">_RE_OPTIONS_SEP</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;##\s*?OPTIONS\s*?$&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
+<span class="n">_RE_CALLABLE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\S+?\(\)&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
+<span class="n">_RE_CALLABLE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="sa">r</span><span class="s2">&quot;(?P&lt;funcname&gt;\S+?)(?:\((?P&lt;kwargs&gt;[\S\s]+?)\)|\(\))&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">M</span>
+<span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">_generate_goto</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;test_dynamic_node&quot;</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;replaced!&quot;</span><span class="p">}</span>
+<span class="n">_HELP_NO_OPTION_MATCH</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Choose an option or try &#39;help&#39;.&quot;</span><span class="p">)</span>
 
-
-<div class="viewcode-block" id="test_start_node"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.test_start_node">[docs]</a><span class="k">def</span> <span class="nf">test_start_node</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
-    <span class="n">menu</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    This is an example menu.</span>
-
-<span class="s2">    If you enter anything except the valid options, your input will be</span>
-<span class="s2">    recorded and you will be brought to a menu entry showing your</span>
-<span class="s2">    input.</span>
-
-<span class="s2">    Select options or use &#39;quit&#39; to exit the menu.</span>
-
-<span class="s2">    The menu was initialized with two variables: </span><span class="si">%s</span><span class="s2"> and </span><span class="si">%s</span><span class="s2">.</span>
-<span class="s2">    &quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">(</span>
-        <span class="n">menu</span><span class="o">.</span><span class="n">testval</span><span class="p">,</span>
-        <span class="n">menu</span><span class="o">.</span><span class="n">testval2</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="n">options</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;|yS|net&quot;</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">),</span>
-            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Set an attribute on yourself.&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;exec&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">caller</span><span class="p">:</span> <span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;menuattrtest&quot;</span><span class="p">,</span> <span class="s2">&quot;Test value&quot;</span><span class="p">),</span>
-            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;test_set_node&quot;</span><span class="p">,</span>
-        <span class="p">},</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;|yL|nook&quot;</span><span class="p">,</span> <span class="s2">&quot;l&quot;</span><span class="p">),</span>
-            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Look and see a custom message.&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;test_look_node&quot;</span><span class="p">,</span>
-        <span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;|yV|niew&quot;</span><span class="p">,</span> <span class="s2">&quot;v&quot;</span><span class="p">),</span> <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;View your own name&quot;</span><span class="p">,</span> <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;test_view_node&quot;</span><span class="p">},</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;|yD|nynamic&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">),</span>
-            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Dynamic node&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_generate_goto</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;test_dynamic_node&quot;</span><span class="p">}),</span>
-        <span class="p">},</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;|yQ|nuit&quot;</span><span class="p">,</span> <span class="s2">&quot;quit&quot;</span><span class="p">,</span> <span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="s2">&quot;Q&quot;</span><span class="p">),</span>
-            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Quit this menu example.&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;test_end_node&quot;</span><span class="p">,</span>
-        <span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;_default&quot;</span><span class="p">,</span> <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;test_displayinput_node&quot;</span><span class="p">},</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
+<span class="n">_OPTION_INPUT_MARKER</span> <span class="o">=</span> <span class="s2">&quot;&gt;&quot;</span>
+<span class="n">_OPTION_ALIAS_MARKER</span> <span class="o">=</span> <span class="s2">&quot;;&quot;</span>
+<span class="n">_OPTION_SEP_MARKER</span> <span class="o">=</span> <span class="s2">&quot;:&quot;</span>
+<span class="n">_OPTION_CALL_MARKER</span> <span class="o">=</span> <span class="s2">&quot;-&gt;&quot;</span>
+<span class="n">_OPTION_COMMENT_START</span> <span class="o">=</span> <span class="s2">&quot;#&quot;</span>
 
 
-<div class="viewcode-block" id="test_look_node"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.test_look_node">[docs]</a><span class="k">def</span> <span class="nf">test_look_node</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;This is a custom look location!&quot;</span>
-    <span class="n">options</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;|yL|nook&quot;</span><span class="p">,</span> <span class="s2">&quot;l&quot;</span><span class="p">),</span>
-        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Go back to the previous menu.&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;test_start_node&quot;</span><span class="p">,</span>
-    <span class="p">}</span>
-    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
+<span class="c1"># Input/option/goto handler functions that allows for dynamically generated</span>
+<span class="c1"># nodes read from the menu template.</span>
 
-
-<div class="viewcode-block" id="test_set_node"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.test_set_node">[docs]</a><span class="k">def</span> <span class="nf">test_set_node</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The attribute &#39;menuattrtest&#39; was set to</span>
-
-<span class="sd">            |w%s|n</span>
-
-<span class="sd">    (check it with examine after quitting the menu).</span>
-
-<span class="sd">    This node&#39;s has only one option, and one of its key aliases is the</span>
-<span class="sd">    string &quot;_default&quot;, meaning it will catch any input, in this case</span>
-<span class="sd">    to return to the main menu.  So you can e.g. press &lt;return&gt; to go</span>
-<span class="sd">    back now.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-        <span class="o">%</span> <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">menuattrtest</span><span class="p">,</span>  <span class="c1"># optional help text for this node</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This is the help entry for this node. It is created by returning</span>
-<span class="sd">    the node text as a tuple - the second string in that tuple will be</span>
-<span class="sd">    used as the help text.</span>
-<span class="sd">    &quot;&quot;&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="n">options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;back (default)&quot;</span><span class="p">,</span> <span class="s2">&quot;_default&quot;</span><span class="p">),</span> <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;test_start_node&quot;</span><span class="p">}</span>
-    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
-
-
-<div class="viewcode-block" id="test_view_node"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.test_view_node">[docs]</a><span class="k">def</span> <span class="nf">test_view_node</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Your name is |g%s|n!</span>
-
-<span class="sd">    click |lclook|lthere|le to trigger a look command under MXP.</span>
-<span class="sd">    This node&#39;s option has no explicit key (nor the &quot;_default&quot; key</span>
-<span class="sd">    set), and so gets assigned a number automatically. You can infact</span>
-<span class="sd">    -always- use numbers (1...N) to refer to listed options also if you</span>
-<span class="sd">    don&#39;t see a string option key (try it!).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-        <span class="o">%</span> <span class="n">caller</span><span class="o">.</span><span class="n">key</span>
-    <span class="p">)</span>
-    <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;executed_from_dynamic_node&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="c1"># we are calling this node as a exec, skip return values</span>
-        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|gCalled from dynamic node:|n </span><span class="se">\n</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
-        <span class="k">return</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;back to main&quot;</span><span class="p">,</span> <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;test_start_node&quot;</span><span class="p">}</span>
-        <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
-
-
-<div class="viewcode-block" id="test_displayinput_node"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.test_displayinput_node">[docs]</a><span class="k">def</span> <span class="nf">test_displayinput_node</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">):</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    You entered the text:</span>
-
-<span class="sd">        &quot;|w%s|n&quot;</span>
-
-<span class="sd">    ... which could now be handled or stored here in some way if this</span>
-<span class="sd">    was not just an example.</span>
-
-<span class="sd">    This node has an option with a single alias &quot;_default&quot;, which</span>
-<span class="sd">    makes it hidden from view. It catches all input (except the</span>
-<span class="sd">    in-menu help/quit commands) and will, in this case, bring you back</span>
-<span class="sd">    to the start node.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-        <span class="o">%</span> <span class="n">raw_string</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
-    <span class="p">)</span>
-    <span class="n">options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;_default&quot;</span><span class="p">,</span> <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;test_start_node&quot;</span><span class="p">}</span>
-    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
-
-
-<span class="k">def</span> <span class="nf">_test_call</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_input</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="n">mode</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mode&quot;</span><span class="p">,</span> <span class="s2">&quot;exec&quot;</span><span class="p">)</span>
-
-    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|y&#39;</span><span class="si">{}</span><span class="s2">&#39; |n_test_call|y function called with</span><span class="se">\n</span><span class="s2"> &quot;</span>
-        <span class="s1">&#39;caller: |n</span><span class="si">{}</span><span class="se">\n</span><span class="s1"> |yraw_input: &quot;|n</span><span class="si">{}</span><span class="s1">|y&quot; </span><span class="se">\n</span><span class="s1"> kwargs: |n</span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="n">mode</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">raw_input</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(),</span> <span class="n">kwargs</span>
-        <span class="p">)</span>
-    <span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;exec&quot;</span><span class="p">:</span>
-        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;random&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()}</span>
-        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;function modify kwargs to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kwargs</span><span class="p">))</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|ypassing function kwargs without modification.|n&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="s2">&quot;test_dynamic_node&quot;</span><span class="p">,</span> <span class="n">kwargs</span>
-
-
-<div class="viewcode-block" id="test_dynamic_node"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.test_dynamic_node">[docs]</a><span class="k">def</span> <span class="nf">test_dynamic_node</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    This is a dynamic node with input:</span>
-<span class="s2">        </span><span class="si">{}</span><span class="s2"></span>
-<span class="s2">    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-        <span class="n">kwargs</span>
-    <span class="p">)</span>
-    <span class="n">options</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;pass a new random number to this node&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;test_dynamic_node&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;random&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()}),</span>
-        <span class="p">},</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;execute a func with kwargs&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;exec&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_test_call</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="s2">&quot;exec&quot;</span><span class="p">,</span> <span class="s2">&quot;test_random&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()}),</span>
-        <span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;dynamic_goto&quot;</span><span class="p">,</span> <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_test_call</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="s2">&quot;goto&quot;</span><span class="p">,</span> <span class="s2">&quot;goto_input&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">})},</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;exec test_view_node with kwargs&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;exec&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;test_view_node&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;executed_from_dynamic_node&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}),</span>
-            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;test_dynamic_node&quot;</span><span class="p">,</span>
-        <span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;back to main&quot;</span><span class="p">,</span> <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;test_start_node&quot;</span><span class="p">},</span>
-    <span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
-
-
-<div class="viewcode-block" id="test_end_node"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.test_end_node">[docs]</a><span class="k">def</span> <span class="nf">test_end_node</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    This is the end of the menu and since it has no options the menu</span>
-<span class="s2">    will exit here, followed by a call of the &quot;look&quot; command.</span>
-<span class="s2">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="kc">None</span></div>
-
-
-<div class="viewcode-block" id="CmdTestMenu"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.CmdTestMenu">[docs]</a><span class="k">class</span> <span class="nc">CmdTestMenu</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_process_callable</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">goto</span><span class="p">,</span> <span class="n">goto_callables</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span>
+                      <span class="n">current_nodename</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Test menu</span>
-
-<span class="sd">    Usage:</span>
-<span class="sd">      testmenu &lt;menumodule&gt;</span>
-
-<span class="sd">    Starts a demo menu from a menu node definition module.</span>
+<span class="sd">    Central helper for parsing a goto-callable (`funcname(**kwargs)`) out of</span>
+<span class="sd">    the right-hand-side of the template options and map this to an actual</span>
+<span class="sd">    callable registered with the template generator. This involves parsing the</span>
+<span class="sd">    func-name and running literal-eval on its kwargs.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">_RE_CALLABLE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">goto</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+        <span class="n">gotofunc</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;funcname&quot;</span><span class="p">)</span>
+        <span class="n">gotokwargs</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;kwargs&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">gotofunc</span> <span class="ow">in</span> <span class="n">goto_callables</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">kwarg</span> <span class="ow">in</span> <span class="n">gotokwargs</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">kwarg</span> <span class="ow">and</span> <span class="s2">&quot;=&quot;</span> <span class="ow">in</span> <span class="n">kwarg</span><span class="p">:</span>
+                    <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="p">[</span><span class="n">part</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">kwarg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+                    <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;evmenu_goto&quot;</span><span class="p">,</span> <span class="s2">&quot;evmenu_gotomap&quot;</span><span class="p">,</span> <span class="s2">&quot;_current_nodename&quot;</span><span class="p">,</span>
+                               <span class="s2">&quot;evmenu_current_nodename&quot;</span><span class="p">,</span> <span class="s2">&quot;evmenu_goto_callables&quot;</span><span class="p">):</span>
+                        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                            <span class="n">f</span><span class="s2">&quot;EvMenu template error: goto-callable &#39;</span><span class="si">{goto}</span><span class="s2">&#39; uses a &quot;</span>
+                            <span class="n">f</span><span class="s2">&quot;kwarg (</span><span class="si">{kwarg}</span><span class="s2">) that is reserved for the EvMenu templating &quot;</span>
+                            <span class="s2">&quot;system. Rename the kwarg.&quot;</span><span class="p">)</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">key</span> <span class="o">=</span> <span class="n">literal_eval</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                        <span class="k">pass</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">value</span> <span class="o">=</span> <span class="n">literal_eval</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                        <span class="k">pass</span>
+                    <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;testmenu&quot;</span>
+                <span class="n">goto</span> <span class="o">=</span> <span class="n">goto_callables</span><span class="p">[</span><span class="n">gotofunc</span><span class="p">](</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">goto</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">goto</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;generated_nodename&quot;</span><span class="p">:</span> <span class="n">current_nodename</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">goto</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;generated_nodename&quot;</span><span class="p">:</span> <span class="n">goto</span><span class="p">}</span>
 
-<div class="viewcode-block" id="CmdTestMenu.func"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.CmdTestMenu.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: testmenu menumodule&quot;</span><span class="p">)</span>
-            <span class="k">return</span>
-        <span class="c1"># start menu</span>
-        <span class="n">EvMenu</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
-            <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;test_start_node&quot;</span><span class="p">,</span>
-            <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">cmdset_mergetype</span><span class="o">=</span><span class="s2">&quot;Replace&quot;</span><span class="p">,</span>
-            <span class="n">testval</span><span class="o">=</span><span class="s2">&quot;val&quot;</span><span class="p">,</span>
-            <span class="n">testval2</span><span class="o">=</span><span class="s2">&quot;val2&quot;</span><span class="p">,</span>
-        <span class="p">)</span></div></div>
+<span class="k">def</span> <span class="nf">_generated_goto_func</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This rerouter handles normal direct goto func call matches.</span>
+
+<span class="sd">    key : ... -&gt; goto_callable(**kwargs)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">goto</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;evmenu_goto&quot;</span><span class="p">]</span>
+    <span class="n">goto_callables</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;evmenu_goto_callables&quot;</span><span class="p">]</span>
+    <span class="n">current_nodename</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;evmenu_current_nodename&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">_process_callable</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">goto</span><span class="p">,</span> <span class="n">goto_callables</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span>
+                             <span class="n">current_nodename</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_generated_input_goto_func</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This goto-func acts as a rerouter for &gt;-type line parsing (by acting as the</span>
+<span class="sd">    _default option). The patterns discovered in the menu maps to different</span>
+<span class="sd">    *actual* goto-funcs. We map to those here.</span>
+
+<span class="sd">    &gt;pattern: ... -&gt; goto_callable</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gotomap</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;evmenu_gotomap&quot;</span><span class="p">]</span>
+    <span class="n">goto_callables</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;evmenu_goto_callables&quot;</span><span class="p">]</span>
+    <span class="n">current_nodename</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;evmenu_current_nodename&quot;</span><span class="p">]</span>
+    <span class="n">raw_string</span> <span class="o">=</span> <span class="n">raw_string</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># strip is necessary to catch empty return</span>
+
+    <span class="c1"># start with glob patterns</span>
+    <span class="k">for</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">goto</span> <span class="ow">in</span> <span class="n">gotomap</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">fnmatch</span><span class="p">(</span><span class="n">raw_string</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">pattern</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">_process_callable</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">goto</span><span class="p">,</span> <span class="n">goto_callables</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span>
+                                     <span class="n">current_nodename</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+    <span class="c1"># no glob pattern match; try regex</span>
+    <span class="k">for</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">goto</span> <span class="ow">in</span> <span class="n">gotomap</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">pattern</span> <span class="ow">and</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">raw_string</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">I</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">M</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">_process_callable</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">goto</span><span class="p">,</span> <span class="n">goto_callables</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span>
+                                     <span class="n">current_nodename</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+    <span class="c1"># no match, show error</span>
+    <span class="k">raise</span> <span class="n">EvMenuGotoAbortMessage</span><span class="p">(</span><span class="n">_HELP_NO_OPTION_MATCH</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_generated_node</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Every node in the templated menu will be this node, but with dynamically</span>
+<span class="sd">    changing text/options. It must be a global function like this because</span>
+<span class="sd">    otherwise we could not make the templated-menu persistent.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text</span><span class="p">,</span> <span class="n">options</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_evmenu_template_contents</span><span class="p">[</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;_current_nodename&quot;</span><span class="p">]]</span>
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
+
+
+<div class="viewcode-block" id="parse_menu_template"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.parse_menu_template">[docs]</a><span class="k">def</span> <span class="nf">parse_menu_template</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">menu_template</span><span class="p">,</span> <span class="n">goto_callables</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse menu-template string. The main function of the EvMenu templating system.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        caller (Object or Account): Entity using the menu.</span>
+<span class="sd">        menu_template (str): Menu described using the templating format.</span>
+<span class="sd">        goto_callables (dict, optional): Mapping between call-names and callables</span>
+<span class="sd">            on the form `callable(caller, raw_string, **kwargs)`. These are what is</span>
+<span class="sd">            available to use in the `menu_template` string.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: A `{&quot;node&quot;: nodefunc}` menutree suitable to pass into EvMenu.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_validate_kwarg</span><span class="p">(</span><span class="n">goto</span><span class="p">,</span> <span class="n">kwarg</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate goto-callable kwarg is on correct form.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s2">&quot;=&quot;</span> <span class="ow">in</span> <span class="n">kwarg</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="n">f</span><span class="s2">&quot;EvMenu template error: goto-callable &#39;</span><span class="si">{goto}</span><span class="s2">&#39; has a &quot;</span>
+                <span class="n">f</span><span class="s2">&quot;non-kwarg argument (</span><span class="si">{kwarg}</span><span class="s2">). All callables in the &quot;</span>
+                <span class="s2">&quot;template must have only keyword-arguments, or no &quot;</span>
+                <span class="s2">&quot;args at all.&quot;</span><span class="p">)</span>
+        <span class="n">key</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="p">[</span><span class="n">part</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">kwarg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;evmenu_goto&quot;</span><span class="p">,</span> <span class="s2">&quot;evmenu_gotomap&quot;</span><span class="p">,</span> <span class="s2">&quot;_current_nodename&quot;</span><span class="p">,</span>
+                   <span class="s2">&quot;evmenu_current_nodename&quot;</span><span class="p">,</span> <span class="s2">&quot;evmenu_goto_callables&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="n">f</span><span class="s2">&quot;EvMenu template error: goto-callable &#39;</span><span class="si">{goto}</span><span class="s2">&#39; uses a &quot;</span>
+                <span class="n">f</span><span class="s2">&quot;kwarg (</span><span class="si">{kwarg}</span><span class="s2">) that is reserved for the EvMenu templating &quot;</span>
+                <span class="s2">&quot;system. Rename the kwarg.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_parse_options</span><span class="p">(</span><span class="n">nodename</span><span class="p">,</span> <span class="n">optiontxt</span><span class="p">,</span> <span class="n">goto_callables</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse option section into option dict.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">optiontxt</span> <span class="o">=</span> <span class="n">optiontxt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">optiontxt</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">optionlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">optline</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">optline</span> <span class="ow">in</span> <span class="n">optiontxt</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)]</span>
+        <span class="n">inputparsemap</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">inum</span><span class="p">,</span> <span class="n">optline</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">optionlist</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">optline</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">_OPTION_COMMENT_START</span><span class="p">)</span> <span class="ow">or</span> <span class="n">_OPTION_SEP_MARKER</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">optline</span><span class="p">:</span>
+                <span class="c1"># skip comments or invalid syntax</span>
+                <span class="k">continue</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="n">key</span><span class="p">,</span> <span class="n">goto</span> <span class="o">=</span> <span class="p">[</span><span class="n">part</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">optline</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">_OPTION_SEP_MARKER</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+
+            <span class="c1"># desc -&gt; goto</span>
+            <span class="k">if</span> <span class="n">_OPTION_CALL_MARKER</span> <span class="ow">in</span> <span class="n">goto</span><span class="p">:</span>
+                <span class="n">desc</span><span class="p">,</span> <span class="n">goto</span> <span class="o">=</span> <span class="p">[</span><span class="n">part</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">goto</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">_OPTION_CALL_MARKER</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+
+            <span class="c1"># validate callable</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">_RE_CALLABLE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">goto</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                <span class="n">kwargs</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;kwargs&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">kwarg</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">):</span>
+                        <span class="n">_validate_kwarg</span><span class="p">(</span><span class="n">goto</span><span class="p">,</span> <span class="n">kwarg</span><span class="p">)</span>
+
+            <span class="c1"># parse key [;aliases|pattern]</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="p">[</span><span class="n">part</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">_OPTION_ALIAS_MARKER</span><span class="p">)]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="p">:</span>
+                <span class="c1"># fall back to this being the Nth option</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="s2">&quot;{inum + 1}&quot;</span><span class="p">]</span>
+            <span class="n">main_key</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">main_key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">_OPTION_INPUT_MARKER</span><span class="p">):</span>
+                <span class="c1"># if we have a pattern, build the arguments for _default later</span>
+                <span class="n">pattern</span> <span class="o">=</span> <span class="n">main_key</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">_OPTION_INPUT_MARKER</span><span class="p">):]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="n">inputparsemap</span><span class="p">[</span><span class="n">pattern</span><span class="p">]</span> <span class="o">=</span> <span class="n">goto</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># a regular goto string/callable target</span>
+                <span class="n">option</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span>
+                    <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
+                        <span class="n">_generated_goto_func</span><span class="p">,</span>
+                        <span class="p">{</span>
+                            <span class="s2">&quot;evmenu_goto&quot;</span><span class="p">:</span> <span class="n">goto</span><span class="p">,</span>
+                            <span class="s2">&quot;evmenu_current_nodename&quot;</span><span class="p">:</span> <span class="n">nodename</span><span class="p">,</span>
+                            <span class="s2">&quot;evmenu_goto_callables&quot;</span><span class="p">:</span> <span class="n">goto_callables</span><span class="p">,</span>
+                        <span class="p">},</span>
+                    <span class="p">),</span>
+                <span class="p">}</span>
+                <span class="k">if</span> <span class="n">desc</span><span class="p">:</span>
+                    <span class="n">option</span><span class="p">[</span><span class="s2">&quot;desc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">desc</span>
+                <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">option</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">inputparsemap</span><span class="p">:</span>
+            <span class="c1"># if this exists we must create a _default entry too</span>
+            <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;_default&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span>
+                        <span class="n">_generated_input_goto_func</span><span class="p">,</span>
+                        <span class="p">{</span>
+                            <span class="s2">&quot;evmenu_gotomap&quot;</span><span class="p">:</span> <span class="n">inputparsemap</span><span class="p">,</span>
+                            <span class="s2">&quot;evmenu_current_nodename&quot;</span><span class="p">:</span> <span class="n">nodename</span><span class="p">,</span>
+                            <span class="s2">&quot;evmenu_goto_callables&quot;</span><span class="p">:</span> <span class="n">goto_callables</span><span class="p">,</span>
+                        <span class="p">},</span>
+                    <span class="p">),</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">options</span>
+
+    <span class="k">def</span> <span class="nf">_parse</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">menu_template</span><span class="p">,</span> <span class="n">goto_callables</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse the menu string format into a node tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nodetree</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">splits</span> <span class="o">=</span> <span class="n">_RE_NODE</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">menu_template</span><span class="p">)</span>
+        <span class="n">splits</span> <span class="o">=</span> <span class="n">splits</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">splits</span> <span class="k">else</span> <span class="p">[]</span>
+
+        <span class="c1"># from evennia import set_trace;set_trace(term_size=(140,120))</span>
+        <span class="n">content_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">node_ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">splits</span><span class="p">),</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">nodename</span><span class="p">,</span> <span class="n">nodetxt</span> <span class="o">=</span> <span class="n">splits</span><span class="p">[</span><span class="n">node_ind</span><span class="p">],</span> <span class="n">splits</span><span class="p">[</span><span class="n">node_ind</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">text</span><span class="p">,</span> <span class="o">*</span><span class="n">optiontxt</span> <span class="o">=</span> <span class="n">_RE_OPTIONS_SEP</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">nodetxt</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">options</span> <span class="o">=</span> <span class="n">_parse_options</span><span class="p">(</span><span class="n">nodename</span><span class="p">,</span> <span class="n">optiontxt</span><span class="p">,</span> <span class="n">goto_callables</span><span class="p">)</span>
+            <span class="n">content_map</span><span class="p">[</span><span class="n">nodename</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+            <span class="n">nodetree</span><span class="p">[</span><span class="n">nodename</span><span class="p">]</span> <span class="o">=</span> <span class="n">_generated_node</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_evmenu_template_contents</span> <span class="o">=</span> <span class="n">content_map</span>
+
+        <span class="k">return</span> <span class="n">nodetree</span>
+
+    <span class="k">return</span> <span class="n">_parse</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">menu_template</span><span class="p">,</span> <span class="n">goto_callables</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="template2menu"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.template2menu">[docs]</a><span class="k">def</span> <span class="nf">template2menu</span><span class="p">(</span>
+    <span class="n">caller</span><span class="p">,</span>
+    <span class="n">menu_template</span><span class="p">,</span>
+    <span class="n">goto_callables</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;start&quot;</span><span class="p">,</span>
+    <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper function to generate and start an EvMenu based on a menu template</span>
+<span class="sd">    string. This will internall call `parse_menu_template` and run a default</span>
+<span class="sd">    EvMenu with its results.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        caller (Object or Account): The entity using the menu.</span>
+<span class="sd">        menu_template (str): The menu-template string describing the content</span>
+<span class="sd">            and structure of the menu. It can also be the python-path to, or a module</span>
+<span class="sd">            containing a `MENU_TEMPLATE` global variable with the template.</span>
+<span class="sd">        goto_callables (dict, optional): Mapping of callable-names to</span>
+<span class="sd">            module-global objects to reference by name in the menu-template.</span>
+<span class="sd">            Must be on the form `callable(caller, raw_string, **kwargs)`.</span>
+<span class="sd">        startnode (str, optional): The name of the startnode, if not &#39;start&#39;.</span>
+<span class="sd">        persistent (bool, optional): If the generated menu should be persistent.</span>
+<span class="sd">        **kwargs: All kwargs will be passed into EvMenu.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        EvMenu: The generated EvMenu.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">goto_callables</span> <span class="o">=</span> <span class="n">goto_callables</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="n">menu_tree</span> <span class="o">=</span> <span class="n">parse_menu_template</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">menu_template</span><span class="p">,</span> <span class="n">goto_callables</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">EvMenu</span><span class="p">(</span>
+        <span class="n">caller</span><span class="p">,</span>
+        <span class="n">menu_tree</span><span class="p">,</span>
+        <span class="n">persistent</span><span class="o">=</span><span class="n">persistent</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span></div>
 </pre></div>
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -1741,7 +1968,7 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="evmenu.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../0.9.1/index.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../../../0.9.5/index.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -1759,13 +1986,12 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.utils.evmenu</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

@@ -1,0 +1,343 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.contrib.menu_login &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.menu_login</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A login menu using EvMenu.</span>
+
+<span class="sd">Contribution - Vincent-lg 2016, Griatch 2019 (rework for modern EvMenu)</span>
+
+<span class="sd">This changes the Evennia login to ask for the account name and password in</span>
+<span class="sd">sequence instead of requiring you to enter both at once. </span>
+
+<span class="sd">To install, add this line to the settings file (`mygame/server/conf/settings.py`):</span>
+
+<span class="sd">    CMDSET_UNLOGGEDIN = &quot;evennia.contrib.menu_login.UnloggedinCmdSet&quot;</span>
+
+<span class="sd">Reload the server and the new connection method will be active. Note that you must</span>
+<span class="sd">independently change the connection screen to match this login style, by editing </span>
+<span class="sd">`mygame/server/conf/connection_screens.py`.</span>
+
+<span class="sd">This uses Evennia&#39;s menu system EvMenu and is triggered by a command that is </span>
+<span class="sd">called automatically when a new user connects.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">CmdSet</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">syscmdkeys</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="k">import</span> <span class="n">EvMenu</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">random_string_from_module</span><span class="p">,</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">callables_from_module</span>
+
+<span class="n">_CONNECTION_SCREEN_MODULE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CONNECTION_SCREEN_MODULE</span>
+<span class="n">_GUEST_ENABLED</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">GUEST_ENABLED</span>
+<span class="n">_ACCOUNT</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_ACCOUNT_TYPECLASS</span><span class="p">)</span>
+<span class="n">_GUEST</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_GUEST_TYPECLASS</span><span class="p">)</span>
+
+<span class="n">_ACCOUNT_HELP</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;Enter the name you used to log into the game before, &quot;</span> <span class="s2">&quot;or a new account-name if you are new.&quot;</span>
+<span class="p">)</span>
+<span class="n">_PASSWORD_HELP</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;Password should be a minimum of 8 characters (preferably longer) and &quot;</span>
+    <span class="s2">&quot;can contain a mix of letters, spaces, digits and @/./+/-/_/&#39;/, only.&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Menu nodes</span>
+
+
+<span class="k">def</span> <span class="nf">_show_help</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Echo help message, then re-run node that triggered it&quot;&quot;&quot;</span>
+    <span class="n">help_entry</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;help_entry&quot;</span><span class="p">]</span>
+    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">help_entry</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># re-run calling node</span>
+
+
+<div class="viewcode-block" id="node_enter_username"><a class="viewcode-back" href="../../../api/evennia.contrib.menu_login.html#evennia.contrib.menu_login.node_enter_username">[docs]</a><span class="k">def</span> <span class="nf">node_enter_username</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_text</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Start node of menu</span>
+<span class="sd">    Start login by displaying the connection screen and ask for a user name.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_check_input</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &#39;Goto-callable&#39;, set up to be called from the _default option below.</span>
+
+<span class="sd">        Called when user enters a username string. Check if this username already exists and set the flag</span>
+<span class="sd">        &#39;new_user&#39; if not. Will also directly login if the username is &#39;guest&#39;</span>
+<span class="sd">        and GUEST_ENABLED is True.</span>
+
+<span class="sd">        The return from this goto-callable determines which node we go to next</span>
+<span class="sd">        and what kwarg it will be called with.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">username</span> <span class="o">=</span> <span class="n">username</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">username</span> <span class="o">==</span> <span class="s2">&quot;guest&quot;</span> <span class="ow">and</span> <span class="n">_GUEST_ENABLED</span><span class="p">:</span>
+            <span class="c1"># do an immediate guest login</span>
+            <span class="n">session</span> <span class="o">=</span> <span class="n">caller</span>
+            <span class="n">address</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">address</span>
+            <span class="n">account</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">_GUEST</span><span class="o">.</span><span class="n">authenticate</span><span class="p">(</span><span class="n">ip</span><span class="o">=</span><span class="n">address</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">account</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;node_quit_or_login&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;login&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;account&quot;</span><span class="p">:</span> <span class="n">account</span><span class="p">}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|R</span><span class="si">{}</span><span class="s2">|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">errors</span><span class="p">)))</span>
+                <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># re-run the username node</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_ACCOUNT</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username__iexact</span><span class="o">=</span><span class="n">username</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">_ACCOUNT</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="n">new_user</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new_user</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># pass username/new_user into next node as kwargs</span>
+        <span class="k">return</span> <span class="s2">&quot;node_enter_password&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;new_user&quot;</span><span class="p">:</span> <span class="n">new_user</span><span class="p">,</span> <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="n">username</span><span class="p">}</span>
+
+    <span class="n">callables</span> <span class="o">=</span> <span class="n">callables_from_module</span><span class="p">(</span><span class="n">_CONNECTION_SCREEN_MODULE</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;connection_screen&quot;</span> <span class="ow">in</span> <span class="n">callables</span><span class="p">:</span>
+        <span class="n">connection_screen</span> <span class="o">=</span> <span class="n">callables</span><span class="p">[</span><span class="s2">&quot;connection_screen&quot;</span><span class="p">]()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">connection_screen</span> <span class="o">=</span> <span class="n">random_string_from_module</span><span class="p">(</span><span class="n">_CONNECTION_SCREEN_MODULE</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">_GUEST_ENABLED</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Enter a new or existing user name to login (write &#39;guest&#39; for a guest login):&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Enter a new or existing user name to login:&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="se">\n\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">connection_screen</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+
+    <span class="n">options</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;node_enter_username&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;quit&quot;</span><span class="p">,</span> <span class="s2">&quot;q&quot;</span><span class="p">),</span> <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;node_quit_or_login&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;help&quot;</span><span class="p">,</span> <span class="s2">&quot;h&quot;</span><span class="p">),</span> <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_show_help</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;help_entry&quot;</span><span class="p">:</span> <span class="n">_ACCOUNT_HELP</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">})},</span>
+        <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;_default&quot;</span><span class="p">,</span> <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="n">_check_input</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
+
+
+<div class="viewcode-block" id="node_enter_password"><a class="viewcode-back" href="../../../api/evennia.contrib.menu_login.html#evennia.contrib.menu_login.node_enter_password">[docs]</a><span class="k">def</span> <span class="nf">node_enter_password</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handle password input.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_check_input</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &#39;Goto-callable&#39;, set up to be called from the _default option below.</span>
+
+<span class="sd">        Called when user enters a password string. Check username + password</span>
+<span class="sd">        viability. If it passes, the account will have been created and login</span>
+<span class="sd">        will be initiated.</span>
+
+<span class="sd">        The return from this goto-callable determines which node we go to next</span>
+<span class="sd">        and what kwarg it will be called with.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># these flags were set by the goto-callable</span>
+        <span class="n">username</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]</span>
+        <span class="n">new_user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;new_user&quot;</span><span class="p">]</span>
+        <span class="n">password</span> <span class="o">=</span> <span class="n">password</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">session</span> <span class="o">=</span> <span class="n">caller</span>
+        <span class="n">address</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">address</span>
+        <span class="k">if</span> <span class="n">new_user</span><span class="p">:</span>
+            <span class="c1"># create a new account</span>
+            <span class="n">account</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">_ACCOUNT</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                <span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="n">address</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># check password against existing account</span>
+            <span class="n">account</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">_ACCOUNT</span><span class="o">.</span><span class="n">authenticate</span><span class="p">(</span>
+                <span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="n">address</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">account</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">new_user</span><span class="p">:</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|gA new account |c</span><span class="si">{}</span><span class="s2">|g was created. Welcome!|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">username</span><span class="p">))</span>
+            <span class="c1"># pass login info to login node</span>
+            <span class="k">return</span> <span class="s2">&quot;node_quit_or_login&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;login&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;account&quot;</span><span class="p">:</span> <span class="n">account</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># restart due to errors</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|R</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">errors</span><span class="p">)))</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;retry_password&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">return</span> <span class="s2">&quot;node_enter_password&quot;</span><span class="p">,</span> <span class="n">kwargs</span>
+
+    <span class="k">def</span> <span class="nf">_restart_login</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|yCancelled login.|n&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;node_enter_username&quot;</span>
+
+    <span class="n">username</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;new_user&quot;</span><span class="p">]:</span>
+
+        <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;retry_password&quot;</span><span class="p">):</span>
+            <span class="c1"># Attempting to fix password</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Enter a new password:&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Creating a new account |c</span><span class="si">{}</span><span class="s2">|n. &quot;</span> <span class="s2">&quot;Enter a password (empty to abort):&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">username</span>
+            <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Enter the password for account |c</span><span class="si">{}</span><span class="s2">|n (empty to abort):&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="n">_restart_login</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;quit&quot;</span><span class="p">,</span> <span class="s2">&quot;q&quot;</span><span class="p">),</span> <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;node_quit_or_login&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;help&quot;</span><span class="p">,</span> <span class="s2">&quot;h&quot;</span><span class="p">),</span> <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_show_help</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;help_entry&quot;</span><span class="p">:</span> <span class="n">_PASSWORD_HELP</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">})},</span>
+        <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;_default&quot;</span><span class="p">,</span> <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_check_input</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)},</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span></div>
+
+
+<div class="viewcode-block" id="node_quit_or_login"><a class="viewcode-back" href="../../../api/evennia.contrib.menu_login.html#evennia.contrib.menu_login.node_quit_or_login">[docs]</a><span class="k">def</span> <span class="nf">node_quit_or_login</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_text</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Exit menu, either by disconnecting or logging in.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">session</span> <span class="o">=</span> <span class="n">caller</span>
+    <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;login&quot;</span><span class="p">):</span>
+        <span class="n">account</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;account&quot;</span><span class="p">)</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|gLogging in ...|n&quot;</span><span class="p">)</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">account</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="s2">&quot;Goodbye! Logging off.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="p">{}</span></div>
+
+
+<span class="c1"># EvMenu helper function</span>
+
+
+<span class="k">def</span> <span class="nf">_node_formatter</span><span class="p">(</span><span class="n">nodetext</span><span class="p">,</span> <span class="n">optionstext</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Do not display the options, only the text.</span>
+
+<span class="sd">    This function is used by EvMenu to format the text of nodes. The menu login</span>
+<span class="sd">    is just a series of prompts so we disable all automatic display decoration</span>
+<span class="sd">    and let the nodes handle everything on their own.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">nodetext</span>
+
+
+<span class="c1"># Commands and CmdSets</span>
+
+
+<div class="viewcode-block" id="UnloggedinCmdSet"><a class="viewcode-back" href="../../../api/evennia.contrib.menu_login.html#evennia.contrib.menu_login.UnloggedinCmdSet">[docs]</a><span class="k">class</span> <span class="nc">UnloggedinCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+    <span class="s2">&quot;Cmdset for the unloggedin state&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultUnloggedin&quot;</span>
+    <span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="UnloggedinCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.menu_login.html#evennia.contrib.menu_login.UnloggedinCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Called when cmdset is first created.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdUnloggedinLook</span><span class="p">())</span></div></div>
+
+
+<div class="viewcode-block" id="CmdUnloggedinLook"><a class="viewcode-back" href="../../../api/evennia.contrib.menu_login.html#evennia.contrib.menu_login.CmdUnloggedinLook">[docs]</a><span class="k">class</span> <span class="nc">CmdUnloggedinLook</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An unloggedin version of the look command. This is called by the server</span>
+<span class="sd">    when the account first connects. It sets up the menu before handing off</span>
+<span class="sd">    to the menu&#39;s own look command.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="n">syscmdkeys</span><span class="o">.</span><span class="n">CMD_LOGINSTART</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;^$&quot;</span>
+
+<div class="viewcode-block" id="CmdUnloggedinLook.func"><a class="viewcode-back" href="../../../api/evennia.contrib.menu_login.html#evennia.contrib.menu_login.CmdUnloggedinLook.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run the menu using the nodes in this module.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">EvMenu</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span>
+            <span class="s2">&quot;evennia.contrib.menu_login&quot;</span><span class="p">,</span>
+            <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;node_enter_username&quot;</span><span class="p">,</span>
+            <span class="n">auto_look</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">auto_quit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">cmd_on_exit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">node_formatter</span><span class="o">=</span><span class="n">_node_formatter</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="menu_login.html">0.9.5 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

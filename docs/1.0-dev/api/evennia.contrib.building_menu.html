@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.building_menu &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +25,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.building_menu</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -149,9 +147,9 @@ then call <strong>open</strong>:</p>
 <p>This is a very short introduction.  For more details, see the online tutorial
 (<a class="reference external" href="https://github.com/evennia/evennia/wiki/Building-menus">https://github.com/evennia/evennia/wiki/Building-menus</a>) or read the
 heavily-documented code below.</p>
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.building_menu.menu_setattr">
-<code class="sig-prename descclassname">evennia.contrib.building_menu.</code><code class="sig-name descname">menu_setattr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">menu</span></em>, <em class="sig-param"><span class="n">choice</span></em>, <em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">string</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#menu_setattr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.menu_setattr" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.building_menu.</code><code class="sig-name descname">menu_setattr</code><span class="sig-paren">(</span><em class="sig-param">menu</em>, <em class="sig-param">choice</em>, <em class="sig-param">obj</em>, <em class="sig-param">string</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#menu_setattr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.menu_setattr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the value at the specified attribute.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -171,9 +169,9 @@ heavily-documented code below.</p>
 </div>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.building_menu.menu_quit">
-<code class="sig-prename descclassname">evennia.contrib.building_menu.</code><code class="sig-name descname">menu_quit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">menu</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#menu_quit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.menu_quit" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.building_menu.</code><code class="sig-name descname">menu_quit</code><span class="sig-paren">(</span><em class="sig-param">caller</em>, <em class="sig-param">menu</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#menu_quit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.menu_quit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Quit the menu, closing the CmdSet.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -191,9 +189,9 @@ automatically if the menu has no parent.</p>
 </div>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.building_menu.menu_edit">
-<code class="sig-prename descclassname">evennia.contrib.building_menu.</code><code class="sig-name descname">menu_edit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">choice</span></em>, <em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#menu_edit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.menu_edit" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.building_menu.</code><code class="sig-name descname">menu_edit</code><span class="sig-paren">(</span><em class="sig-param">caller</em>, <em class="sig-param">choice</em>, <em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#menu_edit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.menu_edit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Open the EvEditor to edit a specified attribute.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -206,144 +204,144 @@ automatically if the menu has no parent.</p>
 </dl>
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.building_menu.CmdNoInput">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.building_menu.</code><code class="sig-name descname">CmdNoInput</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#CmdNoInput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.CmdNoInput" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.building_menu.</code><code class="sig-name descname">CmdNoInput</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#CmdNoInput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.CmdNoInput" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
 <p>No input has been found.</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.building_menu.CmdNoInput.key">
 <code class="sig-name descname">key</code><em class="property"> = '__noinput_command'</em><a class="headerlink" href="#evennia.contrib.building_menu.CmdNoInput.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.building_menu.CmdNoInput.locks">
 <code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.building_menu.CmdNoInput.locks" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.building_menu.CmdNoInput.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#CmdNoInput.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.CmdNoInput.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#CmdNoInput.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.CmdNoInput.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>The lockhandler works the same as for objects.
 optional kwargs will be set as properties on the Command at runtime,
 overloading evential same-named class properties.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.building_menu.CmdNoInput.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#CmdNoInput.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.CmdNoInput.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display the menu or choice text.</p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.building_menu.CmdNoInput.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.building_menu.CmdNoInput.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.building_menu.CmdNoInput.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.building_menu.CmdNoInput.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.building_menu.CmdNoInput.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.building_menu.CmdNoInput.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.building_menu.CmdNoInput.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': '__noinput_command', 'tags': '', 'text': 'No input has been found.'}</em><a class="headerlink" href="#evennia.contrib.building_menu.CmdNoInput.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.building_menu.CmdNoMatch">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.building_menu.</code><code class="sig-name descname">CmdNoMatch</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#CmdNoMatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.CmdNoMatch" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.building_menu.</code><code class="sig-name descname">CmdNoMatch</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#CmdNoMatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.CmdNoMatch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
 <p>No input has been found.</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.building_menu.CmdNoMatch.key">
 <code class="sig-name descname">key</code><em class="property"> = '__nomatch_command'</em><a class="headerlink" href="#evennia.contrib.building_menu.CmdNoMatch.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.building_menu.CmdNoMatch.locks">
 <code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.building_menu.CmdNoMatch.locks" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.building_menu.CmdNoMatch.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#CmdNoMatch.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.CmdNoMatch.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#CmdNoMatch.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.CmdNoMatch.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>The lockhandler works the same as for objects.
 optional kwargs will be set as properties on the Command at runtime,
 overloading evential same-named class properties.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.building_menu.CmdNoMatch.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#CmdNoMatch.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.CmdNoMatch.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call the proper menu or redirect to nomatch.</p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.building_menu.CmdNoMatch.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.building_menu.CmdNoMatch.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.building_menu.CmdNoMatch.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.building_menu.CmdNoMatch.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.building_menu.CmdNoMatch.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.building_menu.CmdNoMatch.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.building_menu.CmdNoMatch.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': '__nomatch_command', 'tags': '', 'text': 'No input has been found.'}</em><a class="headerlink" href="#evennia.contrib.building_menu.CmdNoMatch.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.building_menu.BuildingMenuCmdSet">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.building_menu.</code><code class="sig-name descname">BuildingMenuCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#BuildingMenuCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenuCmdSet" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.building_menu.</code><code class="sig-name descname">BuildingMenuCmdSet</code><span class="sig-paren">(</span><em class="sig-param">cmdsetobj=None</em>, <em class="sig-param">key=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#BuildingMenuCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenuCmdSet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
 <p>Building menu CmdSet.</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.building_menu.BuildingMenuCmdSet.key">
 <code class="sig-name descname">key</code><em class="property"> = 'building_menu'</em><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenuCmdSet.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.building_menu.BuildingMenuCmdSet.priority">
 <code class="sig-name descname">priority</code><em class="property"> = 5</em><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenuCmdSet.priority" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.building_menu.BuildingMenuCmdSet.at_cmdset_creation">
 <code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#BuildingMenuCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenuCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Populates the cmdset with commands.</p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.building_menu.BuildingMenuCmdSet.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.building_menu.BuildingMenuCmdSet'</em><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenuCmdSet.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.building_menu.Choice">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.building_menu.</code><code class="sig-name descname">Choice</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">title</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">aliases</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">attr</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">text</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">glance</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">on_enter</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">on_nomatch</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">on_leave</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">menu</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">caller</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#Choice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.Choice" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.building_menu.</code><code class="sig-name descname">Choice</code><span class="sig-paren">(</span><em class="sig-param">title</em>, <em class="sig-param">key=None</em>, <em class="sig-param">aliases=None</em>, <em class="sig-param">attr=None</em>, <em class="sig-param">text=None</em>, <em class="sig-param">glance=None</em>, <em class="sig-param">on_enter=None</em>, <em class="sig-param">on_nomatch=None</em>, <em class="sig-param">on_leave=None</em>, <em class="sig-param">menu=None</em>, <em class="sig-param">caller=None</em>, <em class="sig-param">obj=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#Choice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.Choice" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A choice object, created by <strong>add_choice</strong>.</p>
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.building_menu.Choice.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">title</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">aliases</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">attr</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">text</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">glance</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">on_enter</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">on_nomatch</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">on_leave</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">menu</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">caller</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#Choice.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.Choice.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">title</em>, <em class="sig-param">key=None</em>, <em class="sig-param">aliases=None</em>, <em class="sig-param">attr=None</em>, <em class="sig-param">text=None</em>, <em class="sig-param">glance=None</em>, <em class="sig-param">on_enter=None</em>, <em class="sig-param">on_nomatch=None</em>, <em class="sig-param">on_leave=None</em>, <em class="sig-param">menu=None</em>, <em class="sig-param">caller=None</em>, <em class="sig-param">obj=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#Choice.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.Choice.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -373,21 +371,21 @@ leaves the choice.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.building_menu.Choice.keys">
 <em class="property">property </em><code class="sig-name descname">keys</code><a class="headerlink" href="#evennia.contrib.building_menu.Choice.keys" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a tuple of keys separated by <strong>sep_keys</strong>.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.building_menu.Choice.format_text">
 <code class="sig-name descname">format_text</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#Choice.format_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.Choice.format_text" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format the choice text and return it, or an empty string.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.building_menu.Choice.enter">
-<code class="sig-name descname">enter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#Choice.enter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.Choice.enter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">enter</code><span class="sig-paren">(</span><em class="sig-param">string</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#Choice.enter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.Choice.enter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when the user opens the choice.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -396,9 +394,9 @@ leaves the choice.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.building_menu.Choice.nomatch">
-<code class="sig-name descname">nomatch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#Choice.nomatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.Choice.nomatch" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">nomatch</code><span class="sig-paren">(</span><em class="sig-param">string</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#Choice.nomatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.Choice.nomatch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when the user entered something in the choice.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -412,9 +410,9 @@ then the choice or menu is displayed.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.building_menu.Choice.leave">
-<code class="sig-name descname">leave</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#Choice.leave"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.Choice.leave" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">leave</code><span class="sig-paren">(</span><em class="sig-param">string</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#Choice.leave"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.Choice.leave" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when the user closes the choice.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -425,9 +423,9 @@ then the choice or menu is displayed.</p>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.building_menu.BuildingMenu">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.building_menu.</code><code class="sig-name descname">BuildingMenu</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">'Building menu: {obj}'</span></em>, <em class="sig-param"><span class="n">keys</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">parents</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">persistent</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#BuildingMenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.building_menu.</code><code class="sig-name descname">BuildingMenu</code><span class="sig-paren">(</span><em class="sig-param">caller=None</em>, <em class="sig-param">obj=None</em>, <em class="sig-param">title='Building menu: {obj}'</em>, <em class="sig-param">keys=None</em>, <em class="sig-param">parents=None</em>, <em class="sig-param">persistent=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#BuildingMenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class allowing to create and set building menus to edit specific objects.</p>
 <p>A building menu is somewhat similar to <strong>EvMenu</strong>, but designed to edit
@@ -443,29 +441,29 @@ called when the operation is to be performed.</p>
 methods).  Some helper functions are defined at the top of this
 module in order to be used as arguments to <strong>add_choice</strong>
 in frequent cases.</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.building_menu.BuildingMenu.keys_go_back">
 <code class="sig-name descname">keys_go_back</code><em class="property"> = ['&#64;']</em><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu.keys_go_back" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.building_menu.BuildingMenu.sep_keys">
 <code class="sig-name descname">sep_keys</code><em class="property"> = '.'</em><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu.sep_keys" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.building_menu.BuildingMenu.joker_key">
 <code class="sig-name descname">joker_key</code><em class="property"> = '*'</em><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu.joker_key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.building_menu.BuildingMenu.min_shortcut">
 <code class="sig-name descname">min_shortcut</code><em class="property"> = 1</em><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu.min_shortcut" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.building_menu.BuildingMenu.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">'Building menu: {obj}'</span></em>, <em class="sig-param"><span class="n">keys</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">parents</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">persistent</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#BuildingMenu.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">caller=None</em>, <em class="sig-param">obj=None</em>, <em class="sig-param">title='Building menu: {obj}'</em>, <em class="sig-param">keys=None</em>, <em class="sig-param">parents=None</em>, <em class="sig-param">persistent=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#BuildingMenu.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructor, you shouldn’t override.  See <strong>init</strong> instead.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -500,7 +498,7 @@ override <strong>__init__</strong>.  For instance:</p>
 </div>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.building_menu.BuildingMenu.current_choice">
 <em class="property">property </em><code class="sig-name descname">current_choice</code><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu.current_choice" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the current choice or None.</p>
@@ -517,7 +515,7 @@ keys that should match a choice to be usable.</p>
 </div>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.building_menu.BuildingMenu.relevant_choices">
 <em class="property">property </em><code class="sig-name descname">relevant_choices</code><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu.relevant_choices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Only return the relevant choices according to the current meny key.</p>
@@ -534,9 +532,9 @@ keys that should match a choice to be usable.</p>
 </div>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.building_menu.BuildingMenu.init">
-<code class="sig-name descname">init</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#BuildingMenu.init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu.init" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">init</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#BuildingMenu.init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu.init" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create the sub-menu to edit the specified object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -550,9 +548,9 @@ Use <strong>add_choice</strong> and its variants to create menu choices.</p>
 </div>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.building_menu.BuildingMenu.add_choice">
-<code class="sig-name descname">add_choice</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">title</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">aliases</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">attr</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">text</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">glance</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">on_enter</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">on_nomatch</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">on_leave</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#BuildingMenu.add_choice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu.add_choice" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_choice</code><span class="sig-paren">(</span><em class="sig-param">title</em>, <em class="sig-param">key=None</em>, <em class="sig-param">aliases=None</em>, <em class="sig-param">attr=None</em>, <em class="sig-param">text=None</em>, <em class="sig-param">glance=None</em>, <em class="sig-param">on_enter=None</em>, <em class="sig-param">on_nomatch=None</em>, <em class="sig-param">on_leave=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#BuildingMenu.add_choice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu.add_choice" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a choice, a valid sub-menu, in the current builder menu.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -616,9 +614,9 @@ arguments have to be present).  For more information, see
 </div>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.building_menu.BuildingMenu.add_choice_edit">
-<code class="sig-name descname">add_choice_edit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">'description'</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">'d'</span></em>, <em class="sig-param"><span class="n">aliases</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">attr</span><span class="o">=</span><span class="default_value">'db.desc'</span></em>, <em class="sig-param"><span class="n">glance</span><span class="o">=</span><span class="default_value">'\n   {obj.db.desc}'</span></em>, <em class="sig-param"><span class="n">on_enter</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#BuildingMenu.add_choice_edit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu.add_choice_edit" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_choice_edit</code><span class="sig-paren">(</span><em class="sig-param">title='description'</em>, <em class="sig-param">key='d'</em>, <em class="sig-param">aliases=None</em>, <em class="sig-param">attr='db.desc'</em>, <em class="sig-param">glance='\n   {obj.db.desc}'</em>, <em class="sig-param">on_enter=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#BuildingMenu.add_choice_edit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu.add_choice_edit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a simple choice to edit a given attribute in the EvEditor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -645,9 +643,9 @@ will be re-opened.</p>
 </div>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.building_menu.BuildingMenu.add_choice_quit">
-<code class="sig-name descname">add_choice_quit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">'quit the menu'</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">'q'</span></em>, <em class="sig-param"><span class="n">aliases</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">on_enter</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#BuildingMenu.add_choice_quit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu.add_choice_quit" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_choice_quit</code><span class="sig-paren">(</span><em class="sig-param">title='quit the menu'</em>, <em class="sig-param">key='q'</em>, <em class="sig-param">aliases=None</em>, <em class="sig-param">on_enter=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#BuildingMenu.add_choice_quit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu.add_choice_quit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a simple choice just to quit the building menu.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -670,7 +668,7 @@ another callable instead, make sure to do the same.</p>
 </div>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.building_menu.BuildingMenu.open">
 <code class="sig-name descname">open</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#BuildingMenu.open"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu.open" title="Permalink to this definition">¶</a></dt>
 <dd><p>Open the building menu for the caller.</p>
@@ -683,7 +681,7 @@ reloads/restarts, assuming <strong>persistent</strong> is set to <strong>True</s
 </div>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.building_menu.BuildingMenu.open_parent_menu">
 <code class="sig-name descname">open_parent_menu</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#BuildingMenu.open_parent_menu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu.open_parent_menu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Open the parent menu, using <strong>self.parents</strong>.</p>
@@ -695,9 +693,9 @@ since the caller can go back to the parent menu using the
 </div>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.building_menu.BuildingMenu.open_submenu">
-<code class="sig-name descname">open_submenu</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">submenu_class</span></em>, <em class="sig-param"><span class="n">submenu_obj</span></em>, <em class="sig-param"><span class="n">parent_keys</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#BuildingMenu.open_submenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu.open_submenu" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">open_submenu</code><span class="sig-paren">(</span><em class="sig-param">submenu_class</em>, <em class="sig-param">submenu_obj</em>, <em class="sig-param">parent_keys=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#BuildingMenu.open_submenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu.open_submenu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Open a sub-menu, closing the current menu and opening the new one.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -723,9 +721,9 @@ should be opened when the user leaves the submenu.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.building_menu.BuildingMenu.move">
-<code class="sig-name descname">move</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">back</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">quiet</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">string</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#BuildingMenu.move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu.move" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">move</code><span class="sig-paren">(</span><em class="sig-param">key=None</em>, <em class="sig-param">back=False</em>, <em class="sig-param">quiet=False</em>, <em class="sig-param">string=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#BuildingMenu.move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu.move" title="Permalink to this definition">¶</a></dt>
 <dd><p>Move inside the menu.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -753,21 +751,21 @@ If that’s the case, you will need to use this method.</p>
 </div>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.building_menu.BuildingMenu.close">
 <code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#BuildingMenu.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu.close" title="Permalink to this definition">¶</a></dt>
 <dd><p>Close the building menu, removing the CmdSet.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.building_menu.BuildingMenu.display_title">
 <code class="sig-name descname">display_title</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#BuildingMenu.display_title"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu.display_title" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the menu title to be displayed.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.building_menu.BuildingMenu.display_choice">
-<code class="sig-name descname">display_choice</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">choice</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#BuildingMenu.display_choice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu.display_choice" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">display_choice</code><span class="sig-paren">(</span><em class="sig-param">choice</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#BuildingMenu.display_choice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu.display_choice" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display the specified choice.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -776,15 +774,15 @@ If that’s the case, you will need to use this method.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.building_menu.BuildingMenu.display">
 <code class="sig-name descname">display</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#BuildingMenu.display"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu.display" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display the entire menu or a single choice, depending on the keys.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.building_menu.BuildingMenu.restore">
-<em class="property">static </em><code class="sig-name descname">restore</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#BuildingMenu.restore"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu.restore" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">restore</code><span class="sig-paren">(</span><em class="sig-param">caller</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#BuildingMenu.restore"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.BuildingMenu.restore" title="Permalink to this definition">¶</a></dt>
 <dd><p>Restore the building menu for the caller.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -800,17 +798,17 @@ saved in the caller, but the object itself cannot be found.</p>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.building_menu.GenericBuildingMenu">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.building_menu.</code><code class="sig-name descname">GenericBuildingMenu</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">'Building menu: {obj}'</span></em>, <em class="sig-param"><span class="n">keys</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">parents</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">persistent</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#GenericBuildingMenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.GenericBuildingMenu" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.building_menu.</code><code class="sig-name descname">GenericBuildingMenu</code><span class="sig-paren">(</span><em class="sig-param">caller=None</em>, <em class="sig-param">obj=None</em>, <em class="sig-param">title='Building menu: {obj}'</em>, <em class="sig-param">keys=None</em>, <em class="sig-param">parents=None</em>, <em class="sig-param">persistent=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#GenericBuildingMenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.GenericBuildingMenu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.contrib.building_menu.BuildingMenu" title="evennia.contrib.building_menu.BuildingMenu"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.building_menu.BuildingMenu</span></code></a></p>
 <p>A generic building menu, allowing to edit any object.</p>
 <p>This is more a demonstration menu.  By default, it allows to edit the
 object key and description.  Nevertheless, it will be useful to demonstrate
 how building menus are meant to be used.</p>
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.building_menu.GenericBuildingMenu.init">
-<code class="sig-name descname">init</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#GenericBuildingMenu.init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.GenericBuildingMenu.init" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">init</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#GenericBuildingMenu.init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.GenericBuildingMenu.init" title="Permalink to this definition">¶</a></dt>
 <dd><p>Build the meny, adding the ‘key’ and ‘description’ choices.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -826,9 +824,9 @@ call <strong>add_choice_quit</strong> to add this choice with different options.
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.building_menu.GenericBuildingCmd">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.building_menu.</code><code class="sig-name descname">GenericBuildingCmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#GenericBuildingCmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.GenericBuildingCmd" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.building_menu.</code><code class="sig-name descname">GenericBuildingCmd</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#GenericBuildingCmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.GenericBuildingCmd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
 <p>Generic building command.</p>
 <dl class="simple">
@@ -841,12 +839,12 @@ change the object’s key and description.</p>
 <p>&#64;edit here
 &#64;edit self
 &#64;edit #142</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.building_menu.GenericBuildingCmd.key">
 <code class="sig-name descname">key</code><em class="property"> = '&#64;edit'</em><a class="headerlink" href="#evennia.contrib.building_menu.GenericBuildingCmd.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.building_menu.GenericBuildingCmd.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/building_menu.html#GenericBuildingCmd.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.building_menu.GenericBuildingCmd.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is the actual executing part of the command.  It is
@@ -855,22 +853,22 @@ module for which object properties are available (beyond those
 set in self.parse())</p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.building_menu.GenericBuildingCmd.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.building_menu.GenericBuildingCmd.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.building_menu.GenericBuildingCmd.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.building_menu.GenericBuildingCmd.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.building_menu.GenericBuildingCmd.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.building_menu.GenericBuildingCmd.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.building_menu.GenericBuildingCmd.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': '&#64;edit', 'tags': '', 'text': &quot;\n    Generic building command.\n\n    Syntax:\n      &#64;edit [object]\n\n    Open a building menu to edit the specified object.  This menu allows to\n    change the object's key and description.\n\n    Examples:\n      &#64;edit here\n      &#64;edit self\n      &#64;edit #142\n\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.building_menu.GenericBuildingCmd.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -880,7 +878,6 @@ set in self.parse())</p>
 </div>
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -909,7 +906,7 @@ set in self.parse())</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.contrib.building_menu.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.1/api/evennia.contrib.building_menu.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../0.9.5/api/evennia.contrib.building_menu.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -925,13 +922,12 @@ set in self.parse())</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.building_menu</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.server.connection_wizard &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -28,8 +27,7 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.server.connection_wizard</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -85,7 +83,7 @@
                     <span class="n">resp</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">default</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot; Selected &#39;</span><span class="si">{resp}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+                <span class="c1"># self.display(f&quot; Selected &#39;{resp}&#39;.&quot;)</span>
                 <span class="n">desc</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="n">resp</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
                 <span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">resp</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;quit&quot;</span><span class="p">,</span> <span class="s2">&quot;q&quot;</span><span class="p">):</span>
@@ -202,8 +200,10 @@
 
 <div class="viewcode-block" id="node_start"><a class="viewcode-back" href="../../../api/evennia.server.connection_wizard.html#evennia.server.connection_wizard.node_start">[docs]</a><span class="k">def</span> <span class="nf">node_start</span><span class="p">(</span><span class="n">wizard</span><span class="p">):</span>
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    This wizard helps activate external networks with Evennia. It will create</span>
-<span class="s2">    a config that will be attached to the bottom of the game settings file.</span>
+<span class="s2">    This wizard helps to attach your Evennia server to external networks. It</span>
+<span class="s2">    will save to a file `server/conf/connection_settings.py` that will be</span>
+<span class="s2">    imported from the bottom of your game settings file. Once generated you can</span>
+<span class="s2">    also modify that file directly.</span>
 
 <span class="s2">    Make sure you have at least started the game once before continuing!</span>
 
@@ -215,11 +215,15 @@
             <span class="n">node_game_index_start</span><span class="p">,</span>
             <span class="p">{},</span>
         <span class="p">),</span>
-        <span class="c1"># &quot;2&quot;: (&quot;Add MSSP information (for mud-list crawlers)&quot;,</span>
-        <span class="c1">#       node_mssp_start, {}),</span>
+        <span class="s2">&quot;2&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;MSSP setup (for mud-list crawlers)&quot;</span><span class="p">,</span> <span class="n">node_mssp_start</span><span class="p">,</span> <span class="p">{}),</span>
         <span class="c1"># &quot;3&quot;: (&quot;Add Grapevine listing&quot;,</span>
         <span class="c1">#       node_grapevine_start, {}),</span>
-        <span class="s2">&quot;2&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;View and Save created settings&quot;</span><span class="p">,</span> <span class="n">node_view_and_apply_settings</span><span class="p">,</span> <span class="p">{}),</span>
+        <span class="c1"># &quot;4&quot;: (&quot;Add IRC link&quot;,</span>
+        <span class="c1">#      &quot;node_irc_start&quot;, {}),</span>
+        <span class="c1"># &quot;5&quot; (&quot;Add RSS feed&quot;,</span>
+        <span class="c1">#       &quot;node_rss_start&quot;, {}),</span>
+        <span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;View and (optionally) Save created settings&quot;</span><span class="p">,</span> <span class="n">node_view_and_apply_settings</span><span class="p">,</span> <span class="p">{}),</span>
+        <span class="s2">&quot;q&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Quit&quot;</span><span class="p">,</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(),</span> <span class="p">{}),</span>
     <span class="p">}</span>
 
     <span class="n">wizard</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
@@ -230,13 +234,13 @@
 
 
 <div class="viewcode-block" id="node_game_index_start"><a class="viewcode-back" href="../../../api/evennia.server.connection_wizard.html#evennia.server.connection_wizard.node_game_index_start">[docs]</a><span class="k">def</span> <span class="nf">node_game_index_start</span><span class="p">(</span><span class="n">wizard</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    The Evennia game index (http://games.evennia.com) lists both active Evennia</span>
 <span class="s2">    games as well as games in various stages of development.</span>
 
 <span class="s2">    You can put up your game in the index also if you are not (yet) open for</span>
-<span class="s2">    players.  If so, put &#39;None&#39; for the connection details. Just tell us you</span>
-<span class="s2">    are out there and make us excited about your upcoming game!</span>
+<span class="s2">    players.  If so, put &#39;None&#39; for the connection details - you are just telling</span>
+<span class="s2">    us that you are out there, making us excited about your upcoming game!</span>
 
 <span class="s2">    Please check the listing online first to see that your exact game name is</span>
 <span class="s2">    not colliding with an existing game-name in the list (be nice!).</span>
@@ -263,9 +267,9 @@
 <span class="s2">        - pre-alpha: a game in its very early stages, mostly unfinished or unstarted</span>
 <span class="s2">        - alpha: a working concept, probably lots of bugs and incomplete features</span>
 <span class="s2">        - beta: a working game, but expect bugs and changing features</span>
-<span class="s2">        - launched: a full, working game that may still be expanded upon and improved later</span>
+<span class="s2">        - launched: a full, working game (that may still be expanded upon and improved later)</span>
 
-<span class="s2">    Current value:</span>
+<span class="s2">    Current value (return to keep):</span>
 <span class="s2">    </span><span class="si">{status_default}</span><span class="s2"></span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
@@ -273,6 +277,31 @@
 
     <span class="n">wizard</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
     <span class="n">wizard</span><span class="o">.</span><span class="n">game_index_listing</span><span class="p">[</span><span class="s2">&quot;game_status&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wizard</span><span class="o">.</span><span class="n">ask_choice</span><span class="p">(</span><span class="s2">&quot;Select one: &quot;</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+
+    <span class="c1"># game name</span>
+
+    <span class="n">name_default</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SERVERNAME</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    Your game&#39;s name should usually be the same as `settings.SERVERNAME`, but</span>
+<span class="s2">    you can set it to something else here if you want.</span>
+
+<span class="s2">    Current value:</span>
+<span class="s2">    </span><span class="si">{name_default}</span><span class="s2"></span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">name_validator</span><span class="p">(</span><span class="n">inp</span><span class="p">):</span>
+        <span class="n">tmax</span> <span class="o">=</span> <span class="mi">80</span>
+        <span class="n">tlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tlen</span> <span class="o">&gt;</span> <span class="n">tmax</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;The name must be shorter than </span><span class="si">{tmax}</span><span class="s2"> characters (was </span><span class="si">{tlen}</span><span class="s2">).&quot;</span><span class="p">)</span>
+            <span class="n">wizard</span><span class="o">.</span><span class="n">ask_continue</span><span class="p">()</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="n">wizard</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="n">wizard</span><span class="o">.</span><span class="n">game_index_listing</span><span class="p">[</span><span class="s2">&quot;game_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wizard</span><span class="o">.</span><span class="n">ask_input</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">name_default</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">name_validator</span>
+    <span class="p">)</span>
 
     <span class="c1"># short desc</span>
 
@@ -290,7 +319,7 @@
     <span class="k">def</span> <span class="nf">sdesc_validator</span><span class="p">(</span><span class="n">inp</span><span class="p">):</span>
         <span class="n">tmax</span> <span class="o">=</span> <span class="mi">255</span>
         <span class="n">tlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">tlen</span> <span class="o">&gt;</span> <span class="mi">255</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">tlen</span> <span class="o">&gt;</span> <span class="n">tmax</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;The short desc must be shorter than </span><span class="si">{tmax}</span><span class="s2"> characters (was </span><span class="si">{tlen}</span><span class="s2">).&quot;</span><span class="p">)</span>
             <span class="n">wizard</span><span class="o">.</span><span class="n">ask_continue</span><span class="p">()</span>
             <span class="k">return</span> <span class="kc">False</span>
@@ -382,7 +411,7 @@
 <span class="s2">    Evennia is its own web server and runs your game&#39;s website. Enter the</span>
 <span class="s2">    URL of the website here, like http://yourwebsite.com, here.</span>
 
-<span class="s2">    Wtite &#39;None&#39; if you are not offering a publicly visible website at this time.</span>
+<span class="s2">    Write &#39;None&#39; if you are not offering a publicly visible website at this time.</span>
 
 <span class="s2">    Current value:</span>
 <span class="s2">    </span><span class="si">{website_default}</span><span class="s2"></span>
@@ -400,7 +429,7 @@
 <span class="s2">    your specific URL here (when clicking this link you should launch into the</span>
 <span class="s2">    web client)</span>
 
-<span class="s2">    Wtite &#39;None&#39; if you don&#39;t want to list a publicly accessible webclient.</span>
+<span class="s2">    Write &#39;None&#39; if you don&#39;t want to list a publicly accessible webclient.</span>
 
 <span class="s2">    Current value:</span>
 <span class="s2">    </span><span class="si">{webclient_default}</span><span class="s2"></span>
@@ -429,24 +458,26 @@
 
 <div class="viewcode-block" id="node_mssp_start"><a class="viewcode-back" href="../../../api/evennia.server.connection_wizard.html#evennia.server.connection_wizard.node_mssp_start">[docs]</a><span class="k">def</span> <span class="nf">node_mssp_start</span><span class="p">(</span><span class="n">wizard</span><span class="p">):</span>
 
-    <span class="n">mssp_module</span> <span class="o">=</span> <span class="n">mod_import</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">MSSP_META_MODULE</span><span class="p">)</span>
-    <span class="n">filename</span> <span class="o">=</span> <span class="n">mssp_module</span><span class="o">.</span><span class="vm">__file__</span>
+    <span class="n">mssp_module</span> <span class="o">=</span> <span class="n">mod_import</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">MSSP_META_MODULE</span> <span class="ow">or</span> <span class="s2">&quot;server.conf.mssp&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">mssp_module</span><span class="o">.</span><span class="vm">__file__</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;server/conf/mssp.py&quot;</span>
 
     <span class="n">text</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    MSSP (Mud Server Status Protocol) allows online MUD-listing sites/crawlers</span>
-<span class="s2">    to continuously monitor your game and list information about it. Some of</span>
-<span class="s2">    this, like active player-count, Evennia will automatically add for you,</span>
-<span class="s2">    whereas many fields are manually added info about your game.</span>
+<span class="s2">    MSSP (Mud Server Status Protocol) has a vast amount of options so it must</span>
+<span class="s2">    be modified outside this wizard by directly editing its config file here:</span>
+
+<span class="s2">        &#39;</span><span class="si">{filename}</span><span class="s2">&#39;</span>
+
+<span class="s2">    MSSP allows traditional online MUD-listing sites/crawlers to continuously</span>
+<span class="s2">    monitor your game and list information about it. Some of this, like active</span>
+<span class="s2">    player-count, Evennia will automatically add for you, whereas most fields</span>
+<span class="s2">    you need to set manually.</span>
 
 <span class="s2">    To use MSSP you should generally have a publicly open game that external</span>
 <span class="s2">    players can connect to. You also need to register at a MUD listing site to</span>
-<span class="s2">    tell them to list your game.</span>
-
-<span class="s2">    MSSP has a large number of configuration options and we found it was simply</span>
-<span class="s2">    a lot easier to set them in a file rather than using this wizard. So to</span>
-<span class="s2">    configure MSSP, edit the empty template listing found here:</span>
-
-<span class="s2">        &#39;</span><span class="si">{filename}</span><span class="s2">&#39;</span>
+<span class="s2">    tell them to crawl your game.</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
     <span class="n">wizard</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
@@ -497,32 +528,38 @@
     <span class="n">pp</span> <span class="o">=</span> <span class="n">pprint</span><span class="o">.</span><span class="n">PrettyPrinter</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
     <span class="n">saves</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="n">game_index_txt</span> <span class="o">=</span> <span class="s2">&quot;No changes to save for Game Index.&quot;</span>
-    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">wizard</span><span class="p">,</span> <span class="s2">&quot;game_index_listing&quot;</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">wizard</span><span class="o">.</span><span class="n">game_index_listing</span> <span class="o">!=</span> <span class="n">settings</span><span class="o">.</span><span class="n">GAME_INDEX_LISTING</span><span class="p">:</span>
-            <span class="n">game_index_txt</span> <span class="o">=</span> <span class="s2">&quot;No changes to save for Game Index.&quot;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">game_index_txt</span> <span class="o">=</span> <span class="s2">&quot;GAME_INDEX_ENABLED = True</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="s2">&quot;GAME_INDEX_LISTING = </span><span class="se">\\\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">pp</span><span class="o">.</span><span class="n">pformat</span><span class="p">(</span>
-                <span class="n">wizard</span><span class="o">.</span><span class="n">game_index_listing</span>
-            <span class="p">)</span>
-            <span class="n">saves</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="c1"># game index</span>
+    <span class="n">game_index_save_text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">game_index_listing</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">wizard</span><span class="o">.</span><span class="n">game_index_listing</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">wizard</span><span class="p">,</span> <span class="s2">&quot;game_index_listing&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">game_index_listing</span> <span class="ow">and</span> <span class="n">settings</span><span class="o">.</span><span class="n">GAME_INDEX_ENABLED</span><span class="p">:</span>
+        <span class="n">game_index_listing</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">GAME_INDEX_LISTING</span>
+    <span class="k">if</span> <span class="n">game_index_listing</span><span class="p">:</span>
+        <span class="n">game_index_save_text</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;GAME_INDEX_ENABLED = True</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;GAME_INDEX_LISTING = </span><span class="se">\\\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">pp</span><span class="o">.</span><span class="n">pformat</span><span class="p">(</span><span class="n">game_index_listing</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">saves</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">game_index_save_text</span> <span class="o">=</span> <span class="s2">&quot;# No Game Index settings found.&quot;</span>
 
-    <span class="n">text</span> <span class="o">=</span> <span class="n">game_index_txt</span>
+    <span class="c1"># potentially add other wizards in the future</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">game_index_save_text</span>
 
     <span class="n">wizard</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Settings to save:</span><span class="se">\n\n</span><span class="si">{text}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">saves</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">wizard</span><span class="o">.</span><span class="n">ask_yesno</span><span class="p">(</span><span class="s2">&quot;Do you want to save these settings?&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;yes&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">wizard</span><span class="o">.</span><span class="n">ask_yesno</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Do you want to save these settings?&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;yes&quot;</span><span class="p">:</span>
             <span class="n">wizard</span><span class="o">.</span><span class="n">save_output</span> <span class="o">=</span> <span class="n">text</span>
             <span class="n">_save_changes</span><span class="p">(</span><span class="n">wizard</span><span class="p">)</span>
-            <span class="n">wizard</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="s2">&quot;... saved!&quot;</span><span class="p">)</span>
+            <span class="n">wizard</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="s2">&quot;... saved!</span><span class="se">\n</span><span class="s2">The changes will apply after you reload your server.&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">wizard</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="s2">&quot;... cancelled.&quot;</span><span class="p">)</span>
     <span class="n">wizard</span><span class="o">.</span><span class="n">ask_continue</span><span class="p">()</span>
     <span class="n">node_start</span><span class="p">(</span><span class="n">wizard</span><span class="p">)</span></div>
 </pre></div>
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -544,7 +581,7 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="connection_wizard.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../0.9.1/index.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../../../0.9.5/index.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -562,13 +599,12 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.server.connection_wizard</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

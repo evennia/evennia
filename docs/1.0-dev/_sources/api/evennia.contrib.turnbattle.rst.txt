@@ -10,7 +10,7 @@ Modules
 -------
 
 .. toctree::
-   :maxdepth: 6
+   :maxdepth: 
 
    evennia.contrib.turnbattle.tb_basic
    evennia.contrib.turnbattle.tb_equip

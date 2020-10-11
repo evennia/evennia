@@ -1,0 +1,785 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.locks.lockfuncs &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.locks.lockfuncs</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module provides a set of permission lock functions for use</span>
+<span class="sd">with Evennia&#39;s permissions system.</span>
+
+<span class="sd">To call these locks, make sure this module is included in the</span>
+<span class="sd">settings tuple `PERMISSION_FUNC_MODULES` then define a lock on the form</span>
+<span class="sd">&#39;&lt;access_type&gt;:func(args)&#39; and add it to the object&#39;s lockhandler.</span>
+<span class="sd">Run the `access()` method of the handler to execute the lock check.</span>
+
+<span class="sd">Note that `accessing_obj` and `accessed_obj` can be any object type</span>
+<span class="sd">with a lock variable/field, so be careful to not expect</span>
+<span class="sd">a certain object type.</span>
+
+
+<span class="sd">**Appendix: MUX locks**</span>
+
+<span class="sd">Below is a list nicked from the MUX help file on the locks available</span>
+<span class="sd">in standard MUX. Most of these are not relevant to core Evennia since</span>
+<span class="sd">locks in Evennia are considerably more flexible and can be implemented</span>
+<span class="sd">on an individual command/typeclass basis rather than as globally</span>
+<span class="sd">available like the MUX ones. So many of these are not available in</span>
+<span class="sd">basic Evennia, but could all be implemented easily if needed for the</span>
+<span class="sd">individual game.</span>
+
+<span class="sd">```</span>
+<span class="sd">MUX Name:      Affects:        Effect:</span>
+<span class="sd">----------------------------------------------------------------------</span>
+<span class="sd">DefaultLock:   Exits:          controls who may traverse the exit to</span>
+<span class="sd">                               its destination.</span>
+<span class="sd">                                 Evennia: &quot;traverse:&lt;lockfunc()&gt;&quot;</span>
+<span class="sd">               Rooms:          controls whether the account sees the</span>
+<span class="sd">                               SUCC or FAIL message for the room</span>
+<span class="sd">                               following the room description when</span>
+<span class="sd">                               looking at the room.</span>
+<span class="sd">                                 Evennia: Custom typeclass</span>
+<span class="sd">               Accounts/Things: controls who may GET the object.</span>
+<span class="sd">                                 Evennia: &quot;get:&lt;lockfunc()&quot;</span>
+<span class="sd"> EnterLock:    Accounts/Things: controls who may ENTER the object</span>
+<span class="sd">                                 Evennia:</span>
+<span class="sd"> GetFromLock:  All but Exits:  controls who may gets things from a</span>
+<span class="sd">                               given location.</span>
+<span class="sd">                                 Evennia:</span>
+<span class="sd"> GiveLock:     Accounts/Things: controls who may give the object.</span>
+<span class="sd">                                 Evennia:</span>
+<span class="sd"> LeaveLock:    Accounts/Things: controls who may LEAVE the object.</span>
+<span class="sd">                                 Evennia:</span>
+<span class="sd"> LinkLock:     All but Exits:  controls who may link to the location</span>
+<span class="sd">                               if the location is LINK_OK (for linking</span>
+<span class="sd">                               exits or setting drop-tos) or ABODE (for</span>
+<span class="sd">                               setting homes)</span>
+<span class="sd">                                 Evennia:</span>
+<span class="sd"> MailLock:     Accounts:        controls who may @mail the account.</span>
+<span class="sd">                               Evennia:</span>
+<span class="sd"> OpenLock:     All but Exits:  controls who may open an exit.</span>
+<span class="sd">                                 Evennia:</span>
+<span class="sd"> PageLock:     Accounts:        controls who may page the account.</span>
+<span class="sd">                                 Evennia: &quot;send:&lt;lockfunc()&gt;&quot;</span>
+<span class="sd"> ParentLock:   All:            controls who may make @parent links to</span>
+<span class="sd">                               the object.</span>
+<span class="sd">                                 Evennia: Typeclasses and</span>
+<span class="sd">                               &quot;puppet:&lt;lockstring()&gt;&quot;</span>
+<span class="sd"> ReceiveLock:  Accounts/Things: controls who may give things to the</span>
+<span class="sd">                               object.</span>
+<span class="sd">                                 Evennia:</span>
+<span class="sd"> SpeechLock:   All but Exits:  controls who may speak in that location</span>
+<span class="sd">                                 Evennia:</span>
+<span class="sd"> TeloutLock:   All but Exits:  controls who may teleport out of the</span>
+<span class="sd">                               location.</span>
+<span class="sd">                                 Evennia:</span>
+<span class="sd"> TportLock:    Rooms/Things:   controls who may teleport there</span>
+<span class="sd">                                 Evennia:</span>
+<span class="sd"> UseLock:      All but Exits:  controls who may USE the object, GIVE</span>
+<span class="sd">                               the object money and have the PAY</span>
+<span class="sd">                               attributes run, have their messages</span>
+<span class="sd">                               heard and possibly acted on by LISTEN</span>
+<span class="sd">                               and AxHEAR, and invoke $-commands</span>
+<span class="sd">                               stored on the object.</span>
+<span class="sd">                                 Evennia: Commands and Cmdsets.</span>
+<span class="sd"> DropLock:     All but rooms:  controls who may drop that object.</span>
+<span class="sd">                                 Evennia:</span>
+<span class="sd"> VisibleLock:  All:            Controls object visibility when the</span>
+<span class="sd">                               object is not dark and the looker</span>
+<span class="sd">                               passes the lock. In DARK locations, the</span>
+<span class="sd">                               object must also be set LIGHT and the</span>
+<span class="sd">                               viewer must pass the VisibleLock.</span>
+<span class="sd">                                 Evennia: Room typeclass with</span>
+<span class="sd">                                          Dark/light script</span>
+<span class="sd">```</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span> <span class="nn">ast</span> <span class="k">import</span> <span class="n">literal_eval</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">utils</span>
+
+<span class="n">_PERMISSION_HIERARCHY</span> <span class="o">=</span> <span class="p">[</span><span class="n">pe</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">pe</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">PERMISSION_HIERARCHY</span><span class="p">]</span>
+<span class="c1"># also accept different plural forms</span>
+<span class="n">_PERMISSION_HIERARCHY_PLURAL</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">pe</span> <span class="o">+</span> <span class="s2">&quot;s&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">pe</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">pe</span> <span class="k">for</span> <span class="n">pe</span> <span class="ow">in</span> <span class="n">_PERMISSION_HIERARCHY</span>
+<span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_to_account</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">):</span>
+    <span class="s2">&quot;Helper function. Makes sure an accessing object is an account object&quot;</span>
+    <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">inherits_from</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="s2">&quot;evennia.objects.objects.DefaultObject&quot;</span><span class="p">):</span>
+        <span class="c1"># an object. Convert to account.</span>
+        <span class="n">accessing_obj</span> <span class="o">=</span> <span class="n">accessing_obj</span><span class="o">.</span><span class="n">account</span>
+    <span class="k">return</span> <span class="n">accessing_obj</span>
+
+
+<span class="c1"># lock functions</span>
+
+
+<div class="viewcode-block" id="true"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.true">[docs]</a><span class="k">def</span> <span class="nf">true</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="s2">&quot;Always returns True.&quot;</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="all"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.all">[docs]</a><span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="false"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.false">[docs]</a><span class="k">def</span> <span class="nf">false</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="s2">&quot;Always returns False&quot;</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="none"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.none">[docs]</a><span class="k">def</span> <span class="nf">none</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="self"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.self">[docs]</a><span class="k">def</span> <span class="nf">self</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if accessing_obj is the same as accessed_obj</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">       self()</span>
+
+<span class="sd">    This can be used to lock specifically only to</span>
+<span class="sd">    the same object that the lock is defined on.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">accessing_obj</span> <span class="o">==</span> <span class="n">accessed_obj</span></div>
+
+
+<div class="viewcode-block" id="perm"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.perm">[docs]</a><span class="k">def</span> <span class="nf">perm</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The basic permission-checker. Ignores case.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">       perm(&lt;permission&gt;)</span>
+
+<span class="sd">    where &lt;permission&gt; is the permission accessing_obj must</span>
+<span class="sd">    have in order to pass the lock.</span>
+
+<span class="sd">    If the given permission is part of settings.PERMISSION_HIERARCHY,</span>
+<span class="sd">    permission is also granted to all ranks higher up in the hierarchy.</span>
+
+<span class="sd">    If accessing_object is an Object controlled by an Account, the</span>
+<span class="sd">    permissions of the Account is used unless the Attribute _quell</span>
+<span class="sd">    is set to True on the Object. In this case however, the</span>
+<span class="sd">    LOWEST hieararcy-permission of the Account/Object-pair will be used</span>
+<span class="sd">    (this is order to avoid Accounts potentially escalating their own permissions</span>
+<span class="sd">    by use of a higher-level Object)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># this allows the perm_above lockfunc to make use of this function too</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">permission</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">perms_object</span> <span class="o">=</span> <span class="n">accessing_obj</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="n">gtmode</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_greater_than&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">is_quell</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">account</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">inherits_from</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="s2">&quot;evennia.objects.objects.DefaultObject&quot;</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="n">accessing_obj</span><span class="o">.</span><span class="n">account</span>
+    <span class="p">)</span>
+    <span class="c1"># check object perms (note that accessing_obj could be an Account too)</span>
+    <span class="n">perms_account</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">account</span><span class="p">:</span>
+        <span class="n">perms_account</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="n">is_quell</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_quell&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Check hirarchy matches; handle both singular/plural forms in hierarchy</span>
+    <span class="n">hpos_target</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">permission</span> <span class="ow">in</span> <span class="n">_PERMISSION_HIERARCHY</span><span class="p">:</span>
+        <span class="n">hpos_target</span> <span class="o">=</span> <span class="n">_PERMISSION_HIERARCHY</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">permission</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">permission</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">permission</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">_PERMISSION_HIERARCHY</span><span class="p">:</span>
+        <span class="n">hpos_target</span> <span class="o">=</span> <span class="n">_PERMISSION_HIERARCHY</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">permission</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">hpos_target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># hieratchy match</span>
+        <span class="n">hpos_account</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">hpos_object</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">account</span><span class="p">:</span>
+            <span class="c1"># we have an account puppeting this object. We must check what perms it has</span>
+            <span class="n">perms_account_single</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">perms_account</span><span class="p">]</span>
+            <span class="n">hpos_account</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">hpos</span>
+                <span class="k">for</span> <span class="n">hpos</span><span class="p">,</span> <span class="n">hperm</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">_PERMISSION_HIERARCHY</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">hperm</span> <span class="ow">in</span> <span class="n">perms_account_single</span>
+            <span class="p">]</span>
+            <span class="n">hpos_account</span> <span class="o">=</span> <span class="n">hpos_account</span> <span class="ow">and</span> <span class="n">hpos_account</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">account</span> <span class="ow">or</span> <span class="n">is_quell</span><span class="p">:</span>
+            <span class="c1"># only get the object-level perms if there is no account or quelling</span>
+            <span class="n">perms_object_single</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">perms_object</span><span class="p">]</span>
+            <span class="n">hpos_object</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">hpos</span>
+                <span class="k">for</span> <span class="n">hpos</span><span class="p">,</span> <span class="n">hperm</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">_PERMISSION_HIERARCHY</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">hperm</span> <span class="ow">in</span> <span class="n">perms_object_single</span>
+            <span class="p">]</span>
+            <span class="n">hpos_object</span> <span class="o">=</span> <span class="n">hpos_object</span> <span class="ow">and</span> <span class="n">hpos_object</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">account</span> <span class="ow">and</span> <span class="n">is_quell</span><span class="p">:</span>
+            <span class="c1"># quell mode: use smallest perm from account and object</span>
+            <span class="k">if</span> <span class="n">gtmode</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">hpos_target</span> <span class="o">&lt;</span> <span class="nb">min</span><span class="p">(</span><span class="n">hpos_account</span><span class="p">,</span> <span class="n">hpos_object</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">hpos_target</span> <span class="o">&lt;=</span> <span class="nb">min</span><span class="p">(</span><span class="n">hpos_account</span><span class="p">,</span> <span class="n">hpos_object</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">account</span><span class="p">:</span>
+            <span class="c1"># use account perm</span>
+            <span class="k">if</span> <span class="n">gtmode</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">hpos_target</span> <span class="o">&lt;</span> <span class="n">hpos_account</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">hpos_target</span> <span class="o">&lt;=</span> <span class="n">hpos_account</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># use object perm</span>
+            <span class="k">if</span> <span class="n">gtmode</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">hpos_target</span> <span class="o">&lt;</span> <span class="n">hpos_object</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">hpos_target</span> <span class="o">&lt;=</span> <span class="n">hpos_object</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># no hierarchy match - check direct matches</span>
+        <span class="k">if</span> <span class="n">account</span><span class="p">:</span>
+            <span class="c1"># account exists, check it first unless quelled</span>
+            <span class="k">if</span> <span class="n">is_quell</span> <span class="ow">and</span> <span class="n">permission</span> <span class="ow">in</span> <span class="n">perms_object</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">elif</span> <span class="n">permission</span> <span class="ow">in</span> <span class="n">perms_account</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="n">permission</span> <span class="ow">in</span> <span class="n">perms_object</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="perm_above"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.perm_above">[docs]</a><span class="k">def</span> <span class="nf">perm_above</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Only allow objects with a permission *higher* in the permission</span>
+<span class="sd">    hierarchy than the one given. If there is no such higher rank,</span>
+<span class="sd">    it&#39;s assumed we refer to superuser. If no hierarchy is defined,</span>
+<span class="sd">    this function has no meaning and returns False.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;_greater_than&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="n">perm</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="pperm"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.pperm">[docs]</a><span class="k">def</span> <span class="nf">pperm</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The basic permission-checker only for Account objects. Ignores case.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">       pperm(&lt;permission&gt;)</span>
+
+<span class="sd">    where &lt;permission&gt; is the permission accessing_obj must</span>
+<span class="sd">    have in order to pass the lock. If the given permission</span>
+<span class="sd">    is part of _PERMISSION_HIERARCHY, permission is also granted</span>
+<span class="sd">    to all ranks higher up in the hierarchy.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">perm</span><span class="p">(</span><span class="n">_to_account</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">),</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="pperm_above"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.pperm_above">[docs]</a><span class="k">def</span> <span class="nf">pperm_above</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Only allow Account objects with a permission *higher* in the permission</span>
+<span class="sd">    hierarchy than the one given. If there is no such higher rank,</span>
+<span class="sd">    it&#39;s assumed we refer to superuser. If no hierarchy is defined,</span>
+<span class="sd">    this function has no meaning and returns False.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">perm_above</span><span class="p">(</span><span class="n">_to_account</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">),</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="dbref"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.dbref">[docs]</a><span class="k">def</span> <span class="nf">dbref</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage:</span>
+<span class="sd">      dbref(3)</span>
+
+<span class="sd">    This lock type checks if the checking object</span>
+<span class="sd">    has a particular dbref. Note that this only</span>
+<span class="sd">    works for checking objects that are stored</span>
+<span class="sd">    in the database (e.g. not for commands)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">dbr</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="s2">&quot;dbid&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dbr</span> <span class="o">==</span> <span class="n">accessing_obj</span><span class="o">.</span><span class="n">dbid</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="pdbref"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.pdbref">[docs]</a><span class="k">def</span> <span class="nf">pdbref</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Same as dbref, but making sure accessing_obj is an account.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">dbref</span><span class="p">(</span><span class="n">_to_account</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">),</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="id"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.id">[docs]</a><span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="s2">&quot;Alias to dbref&quot;</span>
+    <span class="k">return</span> <span class="n">dbref</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="pid"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.pid">[docs]</a><span class="k">def</span> <span class="nf">pid</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="s2">&quot;Alias to dbref, for Accounts&quot;</span>
+    <span class="k">return</span> <span class="n">dbref</span><span class="p">(</span><span class="n">_to_account</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">),</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<span class="c1"># this is more efficient than multiple if ... elif statments</span>
+<span class="n">CF_MAPPING</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;eq&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">val1</span><span class="p">,</span> <span class="n">val2</span><span class="p">:</span> <span class="n">val1</span> <span class="o">==</span> <span class="n">val2</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">val1</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">val2</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">float</span><span class="p">(</span><span class="n">val1</span><span class="p">)</span> <span class="o">==</span> <span class="nb">float</span><span class="p">(</span><span class="n">val2</span><span class="p">),</span>
+    <span class="s2">&quot;gt&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">val1</span><span class="p">,</span> <span class="n">val2</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">val1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">float</span><span class="p">(</span><span class="n">val2</span><span class="p">),</span>
+    <span class="s2">&quot;lt&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">val1</span><span class="p">,</span> <span class="n">val2</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">val1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">float</span><span class="p">(</span><span class="n">val2</span><span class="p">),</span>
+    <span class="s2">&quot;ge&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">val1</span><span class="p">,</span> <span class="n">val2</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">val1</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="nb">float</span><span class="p">(</span><span class="n">val2</span><span class="p">),</span>
+    <span class="s2">&quot;le&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">val1</span><span class="p">,</span> <span class="n">val2</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">val1</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="nb">float</span><span class="p">(</span><span class="n">val2</span><span class="p">),</span>
+    <span class="s2">&quot;ne&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">val1</span><span class="p">,</span> <span class="n">val2</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">val1</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">float</span><span class="p">(</span><span class="n">val2</span><span class="p">),</span>
+    <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">val1</span><span class="p">,</span> <span class="n">val2</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="attr"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.attr">[docs]</a><span class="k">def</span> <span class="nf">attr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage:</span>
+<span class="sd">      attr(attrname)</span>
+<span class="sd">      attr(attrname, value)</span>
+<span class="sd">      attr(attrname, value, compare=type)</span>
+
+<span class="sd">    where compare&#39;s type is one of (eq,gt,lt,ge,le,ne) and signifies</span>
+<span class="sd">    how the value should be compared with one on accessing_obj (so</span>
+<span class="sd">    compare=gt means the accessing_obj must have a value greater than</span>
+<span class="sd">    the one given).</span>
+
+<span class="sd">    Searches attributes *and* properties stored on the accessing_obj.</span>
+<span class="sd">    if accessing_obj has a property &quot;obj&quot;, then this is used as</span>
+<span class="sd">    accessing_obj (this makes this usable for Commands too)</span>
+
+<span class="sd">    The first form works like a flag - if the attribute/property</span>
+<span class="sd">    exists on the object, the value is checked for True/False. The</span>
+<span class="sd">    second form also requires that the value of the attribute/property</span>
+<span class="sd">    matches. Note that all retrieved values will be converted to</span>
+<span class="sd">    strings before doing the comparison.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># deal with arguments</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">attrname</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">compare</span> <span class="o">=</span> <span class="s2">&quot;eq&quot;</span>
+    <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">compare</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;compare&quot;</span><span class="p">,</span> <span class="s2">&quot;eq&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">valcompare</span><span class="p">(</span><span class="n">val1</span><span class="p">,</span> <span class="n">val2</span><span class="p">,</span> <span class="n">typ</span><span class="o">=</span><span class="s2">&quot;eq&quot;</span><span class="p">):</span>
+        <span class="s2">&quot;compare based on type&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">CF_MAPPING</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="n">CF_MAPPING</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">])(</span><span class="n">val1</span><span class="p">,</span> <span class="n">val2</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="c1"># this might happen if we try to compare two things that</span>
+            <span class="c1"># cannot be compared</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">):</span>
+        <span class="c1"># NOTE: this is relevant for Commands. It may clash with scripts</span>
+        <span class="c1"># (they have Attributes and .obj) , but are scripts really</span>
+        <span class="c1"># used so that one ever wants to check the property on the</span>
+        <span class="c1"># Script rather than on its owner?</span>
+        <span class="n">accessing_obj</span> <span class="o">=</span> <span class="n">accessing_obj</span><span class="o">.</span><span class="n">obj</span>
+
+    <span class="c1"># first, look for normal properties on the object trying to gain access</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">attrname</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">valcompare</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">attrname</span><span class="p">)),</span> <span class="n">value</span><span class="p">,</span> <span class="n">compare</span><span class="p">)</span>
+        <span class="c1"># will return Fail on False value etc</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">attrname</span><span class="p">))</span>
+    <span class="c1"># check attributes, if they exist</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="s2">&quot;attributes&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">accessing_obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">attrname</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="s2">&quot;attributes&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">valcompare</span><span class="p">(</span>
+                <span class="n">accessing_obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attrname</span><span class="p">),</span> <span class="n">value</span><span class="p">,</span> <span class="n">compare</span>
+            <span class="p">)</span>
+        <span class="c1"># fails on False/None values</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">accessing_obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attrname</span><span class="p">))</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="objattr"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.objattr">[docs]</a><span class="k">def</span> <span class="nf">objattr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage:</span>
+<span class="sd">      objattr(attrname)</span>
+<span class="sd">      objattr(attrname, value)</span>
+<span class="sd">      objattr(attrname, value, compare=type)</span>
+
+<span class="sd">    Works like attr, except it looks for an attribute on</span>
+<span class="sd">    accessed_obj instead.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">attr</span><span class="p">(</span><span class="n">accessed_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="locattr"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.locattr">[docs]</a><span class="k">def</span> <span class="nf">locattr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage:</span>
+<span class="sd">      locattr(attrname)</span>
+<span class="sd">      locattr(attrname, value)</span>
+<span class="sd">      locattr(attrname, value, compare=type)</span>
+
+<span class="sd">    Works like attr, except it looks for an attribute on</span>
+<span class="sd">    accessing_obj.location, if such an entity exists.</span>
+
+<span class="sd">    if accessing_obj has a property &quot;.obj&quot; (such as is the case for a</span>
+<span class="sd">    Command), then accessing_obj.obj.location is used instead.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">):</span>
+        <span class="n">accessing_obj</span> <span class="o">=</span> <span class="n">accessing_obj</span><span class="o">.</span><span class="n">obj</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="s2">&quot;location&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">attr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="objlocattr"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.objlocattr">[docs]</a><span class="k">def</span> <span class="nf">objlocattr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage:</span>
+<span class="sd">      locattr(attrname)</span>
+<span class="sd">      locattr(attrname, value)</span>
+<span class="sd">      locattr(attrname, value, compare=type)</span>
+
+<span class="sd">    Works like attr, except it looks for an attribute on</span>
+<span class="sd">    accessed_obj.location, if such an entity exists.</span>
+
+<span class="sd">    if accessed_obj has a property &quot;.obj&quot; (such as is the case for a</span>
+<span class="sd">    Command), then accessing_obj.obj.location is used instead.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">accessed_obj</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">):</span>
+        <span class="n">accessed_obj</span> <span class="o">=</span> <span class="n">accessed_obj</span><span class="o">.</span><span class="n">obj</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">accessed_obj</span><span class="p">,</span> <span class="s2">&quot;location&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">attr</span><span class="p">(</span><span class="n">accessed_obj</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="attr_eq"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.attr_eq">[docs]</a><span class="k">def</span> <span class="nf">attr_eq</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage:</span>
+<span class="sd">       attr_gt(attrname, 54)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">attr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="attr_gt"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.attr_gt">[docs]</a><span class="k">def</span> <span class="nf">attr_gt</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage:</span>
+<span class="sd">       attr_gt(attrname, 54)</span>
+
+<span class="sd">    Only true if access_obj&#39;s attribute &gt; the value given.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">attr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;compare&quot;</span><span class="p">:</span> <span class="s2">&quot;gt&quot;</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="attr_ge"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.attr_ge">[docs]</a><span class="k">def</span> <span class="nf">attr_ge</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage:</span>
+<span class="sd">       attr_gt(attrname, 54)</span>
+
+<span class="sd">    Only true if access_obj&#39;s attribute &gt;= the value given.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">attr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;compare&quot;</span><span class="p">:</span> <span class="s2">&quot;ge&quot;</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="attr_lt"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.attr_lt">[docs]</a><span class="k">def</span> <span class="nf">attr_lt</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage:</span>
+<span class="sd">       attr_gt(attrname, 54)</span>
+
+<span class="sd">    Only true if access_obj&#39;s attribute &lt; the value given.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">attr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;compare&quot;</span><span class="p">:</span> <span class="s2">&quot;lt&quot;</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="attr_le"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.attr_le">[docs]</a><span class="k">def</span> <span class="nf">attr_le</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage:</span>
+<span class="sd">       attr_gt(attrname, 54)</span>
+
+<span class="sd">    Only true if access_obj&#39;s attribute &lt;= the value given.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">attr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;compare&quot;</span><span class="p">:</span> <span class="s2">&quot;le&quot;</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="attr_ne"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.attr_ne">[docs]</a><span class="k">def</span> <span class="nf">attr_ne</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage:</span>
+<span class="sd">       attr_gt(attrname, 54)</span>
+
+<span class="sd">    Only true if access_obj&#39;s attribute != the value given.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">attr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;compare&quot;</span><span class="p">:</span> <span class="s2">&quot;ne&quot;</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="tag"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.tag">[docs]</a><span class="k">def</span> <span class="nf">tag</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage:</span>
+<span class="sd">        tag(tagkey)</span>
+<span class="sd">        tag(tagkey, category)</span>
+
+<span class="sd">    Only true if accessing_obj has the specified tag and optional</span>
+<span class="sd">    category.</span>
+<span class="sd">    If accessing_obj has the &quot;.obj&quot; property (such as is the case for</span>
+<span class="sd">    a command), then accessing_obj.obj is used instead.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">):</span>
+        <span class="n">accessing_obj</span> <span class="o">=</span> <span class="n">accessing_obj</span><span class="o">.</span><span class="n">obj</span>
+    <span class="n">tagkey</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">args</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">category</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">accessing_obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tagkey</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="objtag"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.objtag">[docs]</a><span class="k">def</span> <span class="nf">objtag</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage:</span>
+<span class="sd">        objtag(tagkey)</span>
+<span class="sd">        objtag(tagkey, category)</span>
+
+<span class="sd">    Only true if accessed_obj has the specified tag and optional</span>
+<span class="sd">    category.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tagkey</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">args</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">category</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">accessed_obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tagkey</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="inside"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.inside">[docs]</a><span class="k">def</span> <span class="nf">inside</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage:</span>
+<span class="sd">       inside()</span>
+
+<span class="sd">    True if accessing_obj is &#39;inside&#39; accessing_obj. Note that this only checks</span>
+<span class="sd">    one level down. So if if the lock is on a room, you will pass but not your</span>
+<span class="sd">    inventory (since their location is you, not the locked object).  If you</span>
+<span class="sd">    want also nested objects to pass the lock, use the `insiderecursive`</span>
+<span class="sd">    lockfunc.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">accessing_obj</span><span class="o">.</span><span class="n">location</span> <span class="o">==</span> <span class="n">accessed_obj</span></div>
+
+
+<div class="viewcode-block" id="inside_rec"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.inside_rec">[docs]</a><span class="k">def</span> <span class="nf">inside_rec</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage:</span>
+<span class="sd">        inside_rec()</span>
+
+<span class="sd">    True if accessing_obj is inside the accessed obj, at up to 10 levels</span>
+<span class="sd">    of recursion (so if this lock is on a room, then an object inside a box</span>
+<span class="sd">    in your inventory will also pass the lock).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_recursive_inside</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="n">lvl</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">location</span> <span class="o">==</span> <span class="n">accessed_obj</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">elif</span> <span class="n">lvl</span> <span class="o">&gt;=</span> <span class="mi">10</span><span class="p">:</span>
+                <span class="c1"># avoid infinite recursions</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">_recursive_inside</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="n">lvl</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="n">_recursive_inside</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="holds"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.holds">[docs]</a><span class="k">def</span> <span class="nf">holds</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage:</span>
+<span class="sd">      holds()            checks if accessed_obj or accessed_obj.obj</span>
+<span class="sd">                         is held by accessing_obj</span>
+<span class="sd">      holds(key/dbref)   checks if accessing_obj holds an object</span>
+<span class="sd">                          with given key/dbref</span>
+<span class="sd">      holds(attrname, value)   checks if accessing_obj holds an</span>
+<span class="sd">                               object with the given attrname and value</span>
+
+<span class="sd">    This is passed if accessed_obj is carried by accessing_obj (that is,</span>
+<span class="sd">    accessed_obj.location == accessing_obj), or if accessing_obj itself holds</span>
+<span class="sd">    an object matching the given key.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># commands and scripts don&#39;t have contents, so we are usually looking</span>
+        <span class="c1"># for the contents of their .obj property instead (i.e. the object the</span>
+        <span class="c1"># command/script is attached to).</span>
+        <span class="n">contents</span> <span class="o">=</span> <span class="n">accessing_obj</span><span class="o">.</span><span class="n">contents</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">contents</span> <span class="o">=</span> <span class="n">accessing_obj</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">contents</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">check_holds</span><span class="p">(</span><span class="n">objid</span><span class="p">):</span>
+        <span class="c1"># helper function. Compares both dbrefs and keys/aliases.</span>
+        <span class="n">objid</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">objid</span><span class="p">)</span>
+        <span class="n">dbref</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">dbref</span><span class="p">(</span><span class="n">objid</span><span class="p">,</span> <span class="n">reqhash</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dbref</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">((</span><span class="kc">True</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">contents</span> <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">dbid</span> <span class="o">==</span> <span class="n">dbref</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="n">objid</span> <span class="o">=</span> <span class="n">objid</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="kc">True</span>
+                <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">contents</span>
+                <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">objid</span> <span class="ow">or</span> <span class="n">objid</span> <span class="ow">in</span> <span class="p">[</span><span class="n">al</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">al</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()]</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
+        <span class="c1"># holds() - check if accessed_obj or accessed_obj.obj is held by accessing_obj</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">check_holds</span><span class="p">(</span><span class="n">accessed_obj</span><span class="o">.</span><span class="n">dbid</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="c1"># we need to catch any trouble here</span>
+            <span class="k">pass</span>
+        <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">accessed_obj</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">check_holds</span><span class="p">(</span><span class="n">accessed_obj</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">dbid</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># command is holds(dbref/key) - check if given objname/dbref is held by accessing_ob</span>
+        <span class="k">return</span> <span class="n">check_holds</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># command is holds(attrname, value) check if any held object has the given attribute and value</span>
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">contents</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="superuser"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.superuser">[docs]</a><span class="k">def</span> <span class="nf">superuser</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Only accepts an accesing_obj that is superuser (e.g. user #1)</span>
+
+<span class="sd">    Since a superuser would not ever reach this check (superusers</span>
+<span class="sd">    bypass the lock entirely), any user who gets this far cannot be a</span>
+<span class="sd">    superuser, hence we just return False. :)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="has_account"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.has_account">[docs]</a><span class="k">def</span> <span class="nf">has_account</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Only returns true if accessing_obj has_account is true, that is,</span>
+<span class="sd">    this is an account-controlled object. It fails on actual accounts!</span>
+
+<span class="sd">    This is a useful lock for traverse-locking Exits to restrain NPC</span>
+<span class="sd">    mobiles from moving outside their areas.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="s2">&quot;has_account&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">accessing_obj</span><span class="o">.</span><span class="n">has_account</span></div>
+
+
+<div class="viewcode-block" id="serversetting"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.serversetting">[docs]</a><span class="k">def</span> <span class="nf">serversetting</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Only returns true if the Evennia settings exists, alternatively has</span>
+<span class="sd">    a certain value.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      serversetting(IRC_ENABLED)</span>
+<span class="sd">      serversetting(BASE_SCRIPT_PATH, [&#39;types&#39;])</span>
+
+<span class="sd">    A given True/False or integers will be converted properly. Note that</span>
+<span class="sd">    everything will enter this function as strings, so they have to be</span>
+<span class="sd">    unpacked to their real value. We only support basic properties.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">setting</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="s2">&quot;True&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">setting</span><span class="p">,</span> <span class="n">val</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="c1"># convert</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">literal_eval</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="c1"># we swallow errors here, lockfuncs has noone to report to</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="n">setting</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">_wrapped</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">settings</span><span class="o">.</span><span class="n">_wrapped</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">setting</span><span class="p">]</span> <span class="o">==</span> <span class="n">val</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="lockfuncs.html">0.9.5 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

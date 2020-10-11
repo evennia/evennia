@@ -1,0 +1,291 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.commands.default.muxcommand &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-evennia.commands.default.muxcommand">
+<span id="evennia-commands-default-muxcommand"></span><h1>evennia.commands.default.muxcommand<a class="headerlink" href="#module-evennia.commands.default.muxcommand" title="Permalink to this headline">¶</a></h1>
+<p>The command template for the default MUX-style command set. There
+is also an Account/OOC version that makes sure caller is an Account object.</p>
+<dl class="class">
+<dt id="evennia.commands.default.muxcommand.MuxCommand">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.muxcommand.</code><code class="sig-name descname">MuxCommand</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/muxcommand.html#MuxCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.muxcommand.MuxCommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
+<p>This sets up the basis for a MUX command. The idea
+is that most other Mux-related commands should just
+inherit from this and don’t have to implement much
+parsing of their own unless they do something particularly
+advanced.</p>
+<p>Note that the class’s __doc__ string (this text) is
+used by Evennia to create the automatic help entry for
+the command, so make sure to document consistently here.</p>
+<dl class="method">
+<dt id="evennia.commands.default.muxcommand.MuxCommand.has_perm">
+<code class="sig-name descname">has_perm</code><span class="sig-paren">(</span><em class="sig-param">srcobj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/muxcommand.html#MuxCommand.has_perm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.muxcommand.MuxCommand.has_perm" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is called by the cmdhandler to determine
+if srcobj is allowed to execute this command.
+We just show it here for completeness - we
+are satisfied using the default check in Command.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="evennia.commands.default.muxcommand.MuxCommand.at_pre_cmd">
+<code class="sig-name descname">at_pre_cmd</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/muxcommand.html#MuxCommand.at_pre_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.muxcommand.MuxCommand.at_pre_cmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>This hook is called before self.parse() on all commands</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="evennia.commands.default.muxcommand.MuxCommand.at_post_cmd">
+<code class="sig-name descname">at_post_cmd</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/muxcommand.html#MuxCommand.at_post_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.muxcommand.MuxCommand.at_post_cmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>This hook is called after the command has finished executing
+(after self.func()).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="evennia.commands.default.muxcommand.MuxCommand.parse">
+<code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/muxcommand.html#MuxCommand.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.muxcommand.MuxCommand.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method is called by the cmdhandler once the command name
+has been identified. It creates a new set of member variables
+that can be later accessed from self.func() (see below)</p>
+<p>The following variables are available for our use when entering this
+method (from the command definition, and assigned on the fly by the
+cmdhandler):</p>
+<blockquote>
+<div><p>self.key - the name of this command (‘look’)
+self.aliases - the aliases of this cmd (‘l’)
+self.permissions - permission string for this command
+self.help_category - overall category of command</p>
+<p>self.caller - the object calling this command
+self.cmdstring - the actual command name used to call this</p>
+<blockquote>
+<div><dl class="simple">
+<dt>(this allows you to know which alias was used,</dt><dd><p>for example)</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>self.args - the raw input; everything following self.cmdstring.
+self.cmdset - the cmdset from which this command was picked. Not</p>
+<blockquote>
+<div><p>often used (useful for commands like ‘help’ or to
+list all available commands etc)</p>
+</div></blockquote>
+<dl class="simple">
+<dt>self.obj - the object on which this command was defined. It is often</dt><dd><p>the same as self.caller.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>A MUX command has the following possible syntax:</p>
+<blockquote>
+<div><p>name[ with several words][/switch[/switch..]] arg1[,arg2,…] [[=|,] arg[,..]]</p>
+</div></blockquote>
+<p>The ‘name[ with several words]’ part is already dealt with by the
+cmdhandler at this point, and stored in self.cmdname (we don’t use
+it here). The rest of the command is stored in self.args, which can
+start with the switch indicator /.</p>
+<dl class="simple">
+<dt>Optional variables to aid in parsing, if set:</dt><dd><dl class="simple">
+<dt>self.switch_options  - (tuple of valid /switches expected by this</dt><dd><p>command (without the /))</p>
+</dd>
+<dt>self.rhs_split       - Alternate string delimiter or tuple of strings</dt><dd><p>to separate left/right hand sides. tuple form
+gives priority split to first string delimiter.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>This parser breaks self.args into its constituents and stores them in the
+following variables:</p>
+<blockquote>
+<div><p>self.switches = [list of /switches (without the /)]
+self.raw = This is the raw argument input, including switches
+self.args = This is re-defined to be everything <em>except</em> the switches
+self.lhs = Everything to the left of = (lhs:’left-hand side’). If</p>
+<blockquote>
+<div><p>no = is found, this is identical to self.args.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>self.rhs: Everything to the right of = (rhs:’right-hand side’).</dt><dd><p>If no ‘=’ is found, this is None.</p>
+</dd>
+</dl>
+<p>self.lhslist - [self.lhs split into a list by comma]
+self.rhslist - [list of self.rhs split into a list by comma]
+self.arglist = [list of space-separated args (stripped, including ‘=’ if it exists)]</p>
+<p>All args and list members are stripped of excess whitespace around the
+strings, but case is preserved.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="evennia.commands.default.muxcommand.MuxCommand.get_command_info">
+<code class="sig-name descname">get_command_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/muxcommand.html#MuxCommand.get_command_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.muxcommand.MuxCommand.get_command_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update of parent class’s get_command_info() for MuxCommand.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="evennia.commands.default.muxcommand.MuxCommand.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/muxcommand.html#MuxCommand.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.muxcommand.MuxCommand.func" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>This is the hook function that actually does all the work. It is called</dt><dd><p>by the cmdhandler right after self.parser() finishes, and so has access
+to all the variables defined therein.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="evennia.commands.default.muxcommand.MuxCommand.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.muxcommand.MuxCommand.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evennia.commands.default.muxcommand.MuxCommand.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.commands.default.muxcommand.MuxCommand.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evennia.commands.default.muxcommand.MuxCommand.key">
+<code class="sig-name descname">key</code><em class="property"> = 'command'</em><a class="headerlink" href="#evennia.commands.default.muxcommand.MuxCommand.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evennia.commands.default.muxcommand.MuxCommand.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.commands.default.muxcommand.MuxCommand.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evennia.commands.default.muxcommand.MuxCommand.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'command', 'tags': '', 'text': &quot;\n    This sets up the basis for a MUX command. The idea\n    is that most other Mux-related commands should just\n    inherit from this and don't have to implement much\n    parsing of their own unless they do something particularly\n    advanced.\n\n    Note that the class's __doc__ string (this text) is\n    used by Evennia to create the automatic help entry for\n    the command, so make sure to document consistently here.\n    &quot;}</em><a class="headerlink" href="#evennia.commands.default.muxcommand.MuxCommand.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="evennia.commands.default.muxcommand.MuxAccountCommand">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.muxcommand.</code><code class="sig-name descname">MuxAccountCommand</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/muxcommand.html#MuxAccountCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.muxcommand.MuxAccountCommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>This is an on-Account version of the MuxCommand. Since these commands sit
+on Accounts rather than on Characters/Objects, we need to check
+this in the parser.</p>
+<p>Account commands are available also when puppeting a Character, it’s
+just that they are applied with a lower priority and are always
+available, also when disconnected from a character (i.e. “ooc”).</p>
+<p>This class makes sure that caller is always an Account object, while
+creating a new property “character” that is set only if a
+character is actually attached to this Account and Session.</p>
+<dl class="attribute">
+<dt id="evennia.commands.default.muxcommand.MuxAccountCommand.account_caller">
+<code class="sig-name descname">account_caller</code><em class="property"> = True</em><a class="headerlink" href="#evennia.commands.default.muxcommand.MuxAccountCommand.account_caller" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evennia.commands.default.muxcommand.MuxAccountCommand.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.muxcommand.MuxAccountCommand.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evennia.commands.default.muxcommand.MuxAccountCommand.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.commands.default.muxcommand.MuxAccountCommand.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evennia.commands.default.muxcommand.MuxAccountCommand.key">
+<code class="sig-name descname">key</code><em class="property"> = 'command'</em><a class="headerlink" href="#evennia.commands.default.muxcommand.MuxAccountCommand.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evennia.commands.default.muxcommand.MuxAccountCommand.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.commands.default.muxcommand.MuxAccountCommand.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evennia.commands.default.muxcommand.MuxAccountCommand.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'command', 'tags': '', 'text': '\n    This is an on-Account version of the MuxCommand. Since these commands sit\n    on Accounts rather than on Characters/Objects, we need to check\n    this in the parser.\n\n    Account commands are available also when puppeting a Character, it\'s\n    just that they are applied with a lower priority and are always\n    available, also when disconnected from a character (i.e. &quot;ooc&quot;).\n\n    This class makes sure that caller is always an Account object, while\n    creating a new property &quot;character&quot; that is set only if a\n    character is actually attached to this Account and Session.\n    '}</em><a class="headerlink" href="#evennia.commands.default.muxcommand.MuxAccountCommand.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.commands.default.muxcommand.rst.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../1.0-dev/api/evennia.commands.default.muxcommand.html">1.0-dev (develop branch)</a></li>
+  <li><a href="evennia.commands.default.muxcommand.html">0.9.5 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

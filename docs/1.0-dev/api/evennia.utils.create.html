@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.utils.create &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +25,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.utils.create</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -47,9 +45,9 @@ such as create_object() and object(). This is for consistency with the
 utils.search module and allows you to do the shorter <strong>create.object()</strong>.</p>
 <p>The respective object managers hold more methods for manipulating and searching
 objects already existing in the database.</p>
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.utils.create.create_object">
-<code class="sig-prename descclassname">evennia.utils.create.</code><code class="sig-name descname">create_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">location</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">home</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">permissions</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">aliases</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">destination</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">report_to</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nohome</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">attributes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nattributes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/create.html#create_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.create.create_object" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.create.</code><code class="sig-name descname">create_object</code><span class="sig-paren">(</span><em class="sig-param">typeclass=None</em>, <em class="sig-param">key=None</em>, <em class="sig-param">location=None</em>, <em class="sig-param">home=None</em>, <em class="sig-param">permissions=None</em>, <em class="sig-param">locks=None</em>, <em class="sig-param">aliases=None</em>, <em class="sig-param">tags=None</em>, <em class="sig-param">destination=None</em>, <em class="sig-param">report_to=None</em>, <em class="sig-param">nohome=False</em>, <em class="sig-param">attributes=None</em>, <em class="sig-param">nattributes=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/create.html#create_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.create.create_object" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new in-game object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
@@ -85,9 +83,9 @@ adding this rarely makes sense since this data will not survive a reload.</p></l
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.utils.create.create_script">
-<code class="sig-prename descclassname">evennia.utils.create.</code><code class="sig-name descname">create_script</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">account</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">interval</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">start_delay</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">repeats</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">persistent</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">autostart</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">report_to</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">desc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">attributes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/create.html#create_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.create.create_script" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.create.</code><code class="sig-name descname">create_script</code><span class="sig-paren">(</span><em class="sig-param">typeclass=None</em>, <em class="sig-param">key=None</em>, <em class="sig-param">obj=None</em>, <em class="sig-param">account=None</em>, <em class="sig-param">locks=None</em>, <em class="sig-param">interval=None</em>, <em class="sig-param">start_delay=None</em>, <em class="sig-param">repeats=None</em>, <em class="sig-param">persistent=None</em>, <em class="sig-param">autostart=True</em>, <em class="sig-param">report_to=None</em>, <em class="sig-param">desc=None</em>, <em class="sig-param">tags=None</em>, <em class="sig-param">attributes=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/create.html#create_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.create.create_script" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new script. All scripts are a combination of a database
 object that communicates with the database, and an typeclass that
 ‘decorates’ the database object into being different types of
@@ -130,9 +128,9 @@ created or if the <strong>start</strong> method must be called explicitly.</p></
 scripts in the database.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.utils.create.create_help_entry">
-<code class="sig-prename descclassname">evennia.utils.create.</code><code class="sig-name descname">create_help_entry</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">entrytext</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">'General'</span></em>, <em class="sig-param"><span class="n">locks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">aliases</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/create.html#create_help_entry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.create.create_help_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.create.</code><code class="sig-name descname">create_help_entry</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">entrytext</em>, <em class="sig-param">category='General'</em>, <em class="sig-param">locks=None</em>, <em class="sig-param">aliases=None</em>, <em class="sig-param">tags=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/create.html#create_help_entry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.create.create_help_entry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a static help entry in the help database. Note that Command
 help entries are dynamic and directly taken from the __doc__
 entries of the command. The database-stored help entries are
@@ -155,9 +153,9 @@ in-game setting information and so on.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.utils.create.create_message">
-<code class="sig-prename descclassname">evennia.utils.create.</code><code class="sig-name descname">create_message</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">senderobj</span></em>, <em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="n">channels</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">receivers</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">header</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/create.html#create_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.create.create_message" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.create.</code><code class="sig-name descname">create_message</code><span class="sig-paren">(</span><em class="sig-param">senderobj</em>, <em class="sig-param">message</em>, <em class="sig-param">channels=None</em>, <em class="sig-param">receivers=None</em>, <em class="sig-param">locks=None</em>, <em class="sig-param">tags=None</em>, <em class="sig-param">header=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/create.html#create_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.create.create_message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new communication Msg. Msgs represent a unit of
 database-persistent communication between entites.</p>
 <dl class="field-list simple">
@@ -185,9 +183,9 @@ receivers at the same time, it’s up to the command definitions to
 limit this as desired.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.utils.create.create_channel">
-<code class="sig-prename descclassname">evennia.utils.create.</code><code class="sig-name descname">create_channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">aliases</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">desc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">locks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keep_log</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/create.html#create_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.create.create_channel" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.create.</code><code class="sig-name descname">create_channel</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">aliases=None</em>, <em class="sig-param">desc=None</em>, <em class="sig-param">locks=None</em>, <em class="sig-param">keep_log=True</em>, <em class="sig-param">typeclass=None</em>, <em class="sig-param">tags=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/create.html#create_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.create.create_channel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create A communication Channel. A Channel serves as a central hub
 for distributing Msgs to groups of people without specifying the
 receivers explicitly. Instead accounts may ‘connect’ to the channel
@@ -215,9 +213,9 @@ often used).</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.utils.create.create_account">
-<code class="sig-prename descclassname">evennia.utils.create.</code><code class="sig-name descname">create_account</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">email</span></em>, <em class="sig-param"><span class="n">password</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">is_superuser</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">locks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">permissions</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">attributes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">report_to</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/create.html#create_account"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.create.create_account" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.create.</code><code class="sig-name descname">create_account</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">email</em>, <em class="sig-param">password</em>, <em class="sig-param">typeclass=None</em>, <em class="sig-param">is_superuser=False</em>, <em class="sig-param">locks=None</em>, <em class="sig-param">permissions=None</em>, <em class="sig-param">tags=None</em>, <em class="sig-param">attributes=None</em>, <em class="sig-param">report_to=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/create.html#create_account"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.create.create_account" title="Permalink to this definition">¶</a></dt>
 <dd><p>This creates a new account.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -258,7 +256,6 @@ operations and is thus not suitable for play-testing the game.</p>
 </div>
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -287,7 +284,7 @@ operations and is thus not suitable for play-testing the game.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.utils.create.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.1/api/evennia.utils.create.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../0.9.5/api/evennia.utils.create.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -303,13 +300,12 @@ operations and is thus not suitable for play-testing the game.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.utils.create</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

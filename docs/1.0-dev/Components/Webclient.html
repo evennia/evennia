@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Webclient &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +25,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Webclient</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -154,20 +152,16 @@ from the server and display them as inline HTML.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">notifications.js</span></code> Defines onText. Generates browser notification events for each new message
 while the tab is hidden.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">oob.js</span></code> Defines onSend. Allows the user to test/send Out Of Band json messages to the server.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">options.js</span></code> Defines most callbacks. Provides a popup-based UI to coordinate options settings with
-the server.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">options2.js</span></code> Defines most callbacks. Provides a goldenlayout-based version of the
-options/settings tab.  Integrates with other plugins via the custom onOptionsUI callback.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">options.js</span></code> Defines most callbacks. Provides a popup-based UI to coordinate options settings with the server.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">options2.js</span></code> Defines most callbacks. Provides a goldenlayout-based version of the options/settings tab.  Integrates with other plugins via the custom onOptionsUI callback.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">popups.js</span></code> Provides default popups/Dialog UI for other plugins to use.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">splithandler.js</span></code> Defines onText. Provides an older, less-flexible alternative to goldenlayout for
-multi-window UI to automatically separate out screen real-estate by type of message.</p></li>
 </ul>
 </div>
 <div class="section" id="writing-your-own-plugins">
 <h1>Writing your own Plugins<a class="headerlink" href="#writing-your-own-plugins" title="Permalink to this headline">¶</a></h1>
-<p>So, you love the functionality of the webclient, but your game has specific types of text that need
-to be separated out into their own space, visually.  There are two plugins to help with this.  The
-Goldenlayout plugin framework, and the older Splithandler framework.</p>
+<p>So, you love the functionality of the webclient, but your game has specific
+types of text that need to be separated out into their own space, visually.
+The Goldenlayout plugin framework can help with this.</p>
 <div class="section" id="goldenlayout">
 <h2>GoldenLayout<a class="headerlink" href="#goldenlayout" title="Permalink to this headline">¶</a></h2>
 <p>GoldenLayout is a web framework that allows web developers and their users to create their own
@@ -293,83 +287,11 @@ window.plugin_handler.add(&quot;myplugin&quot;, myplugin);
 </pre></div>
 </div>
 <p>You can then add “mycomponent” to an item’s componentName in your goldenlayout_default_config.js.</p>
-<p>Make sure to stop your server, evennia collectstatic, and restart your server.  Then make sure to
-clear your browser cache before loading the webclient page.</p>
-</div>
-<div class="section" id="older-splithandler">
-<h2>Older Splithandler<a class="headerlink" href="#older-splithandler" title="Permalink to this headline">¶</a></h2>
-<p>The splithandler.js plugin provides a means to do this, but you don’t want to have to force every
-player to set up their own layout every time they use the client.</p>
-<p>Let’s create a <code class="docutils literal notranslate"><span class="pre">mygame/web/static_overrides/webclient/js/plugins/layout.js</span></code> plugin!</p>
-<p>First up, follow the directions in Customizing the Web Client section above to override the
-base.html.</p>
-<p>Next, add the new plugin to your copy of base.html:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">script</span> <span class="n">src</span><span class="o">=</span><span class="p">{</span><span class="o">%</span> <span class="n">static</span> <span class="s2">&quot;webclient/js/plugins/layout.js&quot;</span> <span class="o">%</span><span class="p">}</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;javascript&quot;</span>
-<span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/javascript&quot;</span><span class="o">&gt;&lt;/</span><span class="n">script</span><span class="o">&gt;</span>
-</pre></div>
-</div>
-<p>Remember, plugins are load-order dependent, so make sure the new <code class="docutils literal notranslate"><span class="pre">&lt;script&gt;</span></code> tag comes after the
-splithandler.js</p>
-<p>And finally create the layout.js file and add the minimum skeleton of a plugin to it:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">my</span> <span class="n">new</span> <span class="n">plugin</span>
-<span class="n">var</span> <span class="n">my_plugin</span> <span class="o">=</span> <span class="p">(</span><span class="n">function</span> <span class="p">()</span> <span class="p">{</span>
-    <span class="n">let</span> <span class="n">init</span> <span class="o">=</span> <span class="n">function</span> <span class="p">()</span> <span class="p">{</span>
-        <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;myplugin! Hello World!&quot;</span><span class="p">);</span>
-    <span class="p">}</span>
-
-    <span class="k">return</span> <span class="p">{</span>
-        <span class="n">init</span><span class="p">:</span> <span class="n">init</span><span class="p">,</span>
-    <span class="p">}</span>
-<span class="p">})();</span>
-<span class="n">plugin_handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;myplugin&quot;</span><span class="p">,</span> <span class="n">my_plugin</span><span class="p">);</span>
-</pre></div>
-</div>
-<p>Now, <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">stop</span></code>, <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">collectstatic</span></code>, and <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">start</span></code> and then load the webclient up in
-your browser.
-Enable developer options and look in the console, and you should see the message ‘myplugin! Hello
-World!’</p>
-<p>Since our layout.js plugin is going to use the splithandler, let’s enhance this by adding a check to
-make sure the splithandler.js plugin has been loaded:</p>
-<p>change the above init function to:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">let</span> <span class="n">init</span> <span class="o">=</span> <span class="n">function</span> <span class="p">()</span> <span class="p">{</span>
-    <span class="n">let</span> <span class="n">splithandler</span> <span class="o">=</span> <span class="n">plugins</span><span class="p">[</span><span class="s1">&#39;splithandler&#39;</span><span class="p">];</span>
-    <span class="k">if</span><span class="p">(</span> <span class="n">splithandler</span> <span class="p">)</span> <span class="p">{</span>
-        <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;MyPlugin initialized&quot;</span><span class="p">);</span>
-    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-        <span class="n">alert</span><span class="p">(</span><span class="s1">&#39;MyPlugin requires the splithandler.js plugin. Please contact the game maintainer to</span>
-<span class="n">correct</span> <span class="n">this</span><span class="s1">&#39;);</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p>And finally, the splithandler.js provides provides two functions to cut up the screen real-estate:
-<code class="docutils literal notranslate"><span class="pre">dynamic_split(</span> <span class="pre">pane_name_to_cut_apart,</span> <span class="pre">direction_of_split,</span> <span class="pre">new_pane_name1,</span> <span class="pre">new_pane_name2,</span> <span class="pre">text_flow_pane1,</span> <span class="pre">text_flow_pane2,</span> <span class="pre">array_of_split_percentages</span> <span class="pre">)</span></code>
-and
-<code class="docutils literal notranslate"><span class="pre">set_pane_types(</span> <span class="pre">pane_to_set,</span> <span class="pre">array_of_known_message_types_to_assign)</span></code></p>
-<p>In this case, we’ll cut it into 3 panes, 1 bigger, two smaller, and assign ‘help’ messages to the
-top-right pane:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">let</span> <span class="n">init</span> <span class="o">=</span> <span class="n">function</span> <span class="p">()</span> <span class="p">{</span>
-    <span class="n">let</span> <span class="n">splithandler</span> <span class="o">=</span> <span class="n">plugins</span><span class="p">[</span><span class="s1">&#39;splithandler&#39;</span><span class="p">];</span>
-    <span class="k">if</span><span class="p">(</span> <span class="n">splithandler</span> <span class="p">)</span> <span class="p">{</span>
-<span class="n">splithandler</span><span class="o">.</span><span class="n">dynamic_split</span><span class="p">(</span><span class="s2">&quot;main&quot;</span><span class="p">,</span><span class="s2">&quot;horizontal&quot;</span><span class="p">,</span><span class="s2">&quot;left&quot;</span><span class="p">,</span><span class="s2">&quot;right&quot;</span><span class="p">,</span><span class="s2">&quot;linefeed&quot;</span><span class="p">,</span><span class="s2">&quot;linefeed&quot;</span><span class="p">,[</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">]);</span>
-        <span class="n">splithandler</span><span class="o">.</span><span class="n">dynamic_split</span><span class="p">(</span><span class="s2">&quot;right&quot;</span><span class="p">,</span><span class="s2">&quot;vertical&quot;</span><span class="p">,</span><span class="s2">&quot;help&quot;</span><span class="p">,</span><span class="s2">&quot;misc&quot;</span><span class="p">,</span><span class="s2">&quot;replace&quot;</span><span class="p">,</span><span class="s2">&quot;replace&quot;</span><span class="p">,[</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">]);</span>
-        <span class="n">splithandler</span><span class="o">.</span><span class="n">set_pane_types</span><span class="p">(</span><span class="s1">&#39;help&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;help&#39;</span><span class="p">]);</span>
-
-        <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;MyPlugin initialized&quot;</span><span class="p">);</span>
-    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-        <span class="n">alert</span><span class="p">(</span><span class="s1">&#39;MyPlugin requires the splithandler.js plugin. Please contact the game maintainer to</span>
-<span class="n">correct</span> <span class="n">this</span><span class="s1">&#39;);</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">stop</span></code>, <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">collectstatic</span></code>, and <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">start</span></code> once more, and force-reload your
-browser page to clear any cached version.  You should now have a nicely split layout.</p>
+<p>Make sure to stop your server, evennia collectstatic, and restart your server.  Then make sure to clear your browser cache before loading the webclient page.</p>
 </div>
 </div>
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -401,7 +323,6 @@ browser page to clear any cached version.  You should now have a nicely split la
 <li><a class="reference internal" href="#example-default-plugins-plugins-js">Example/Default Plugins (plugins/*.js)</a></li>
 <li><a class="reference internal" href="#writing-your-own-plugins">Writing your own Plugins</a><ul>
 <li><a class="reference internal" href="#goldenlayout">GoldenLayout</a></li>
-<li><a class="reference internal" href="#older-splithandler">Older Splithandler</a></li>
 </ul>
 </li>
 </ul>
@@ -416,7 +337,7 @@ browser page to clear any cached version.  You should now have a nicely split la
 <h3>Versions</h3>
 <ul>
   <li><a href="Webclient.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.1/index.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -432,13 +353,12 @@ browser page to clear any cached version.  You should now have a nicely split la
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Webclient</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

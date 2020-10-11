@@ -1,0 +1,1591 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.typeclasses.attributes &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.typeclasses.attributes</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Attributes are arbitrary data stored on objects. Attributes supports</span>
+<span class="sd">both pure-string values and pickled arbitrary data.</span>
+
+<span class="sd">Attributes are also used to implement Nicks. This module also contains</span>
+<span class="sd">the Attribute- and NickHandlers as well as the `NAttributeHandler`,</span>
+<span class="sd">which is a non-db version of Attributes.</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">fnmatch</span>
+<span class="kn">import</span> <span class="nn">weakref</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
+
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.utils.encoding</span> <span class="k">import</span> <span class="n">smart_str</span>
+
+<span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="k">import</span> <span class="n">LockHandler</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.idmapper.models</span> <span class="k">import</span> <span class="n">SharedMemoryModel</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.dbserialize</span> <span class="k">import</span> <span class="n">to_pickle</span><span class="p">,</span> <span class="n">from_pickle</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.picklefield</span> <span class="k">import</span> <span class="n">PickledObjectField</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">lazy_property</span><span class="p">,</span> <span class="n">to_str</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">is_iter</span>
+
+<span class="n">_TYPECLASS_AGGRESSIVE_CACHE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">TYPECLASS_AGGRESSIVE_CACHE</span>
+
+<span class="c1"># -------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1">#   Attributes</span>
+<span class="c1">#</span>
+<span class="c1"># -------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="IAttribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttribute">[docs]</a><span class="k">class</span> <span class="nc">IAttribute</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Attributes are things that are specific to different types of objects. For</span>
+<span class="sd">    example, a drink container needs to store its fill level, whereas an exit</span>
+<span class="sd">    needs to store its open/closed/locked/unlocked state. These are done via</span>
+<span class="sd">    attributes, rather than making different classes for each object type and</span>
+<span class="sd">    storing them directly. The added benefit is that we can add/remove</span>
+<span class="sd">    attributes on the fly as we like.</span>
+
+<span class="sd">    The Attribute class defines the following properties:</span>
+<span class="sd">     - key (str): Primary identifier.</span>
+<span class="sd">     - lock_storage (str): Perm strings.</span>
+<span class="sd">     - model (str): A string defining the model this is connected to. This</span>
+<span class="sd">        is a natural_key, like &quot;objects.objectdb&quot;</span>
+<span class="sd">     - date_created (datetime): When the attribute was created.</span>
+<span class="sd">     - value (any): The data stored in the attribute, in pickled form</span>
+<span class="sd">        using wrappers to be able to store/retrieve models.</span>
+<span class="sd">     - strvalue (str): String-only data. This data is not pickled and</span>
+<span class="sd">        is thus faster to search for in the database.</span>
+<span class="sd">     - category (str): Optional character string for grouping the</span>
+<span class="sd">        Attribute.</span>
+
+<span class="sd">    This class is an API/Interface/Abstract base class; do not instantiate it directly.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="IAttribute.locks"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttribute.locks">[docs]</a>    <span class="nd">@lazy_property</span>
+    <span class="k">def</span> <span class="nf">locks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">LockHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_key</span><span class="p">)</span>
+    <span class="n">strvalue</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_strvalue</span><span class="p">)</span>
+    <span class="n">category</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_category</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_model</span><span class="p">)</span>
+    <span class="n">attrtype</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_attrtype</span><span class="p">)</span>
+    <span class="n">date_created</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_date_created</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__lock_storage_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_lock_storage</span>
+
+    <span class="k">def</span> <span class="nf">__lock_storage_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_lock_storage</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">__lock_storage_del</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_lock_storage</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="n">lock_storage</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__lock_storage_get</span><span class="p">,</span> <span class="n">__lock_storage_set</span><span class="p">,</span> <span class="n">__lock_storage_del</span><span class="p">)</span>
+
+<div class="viewcode-block" id="IAttribute.access"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttribute.access">[docs]</a>    <span class="k">def</span> <span class="nf">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;read&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines if another object has permission to access.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            accessing_obj (object): Entity trying to access this one.</span>
+<span class="sd">            access_type (str, optional): Type of access sought, see</span>
+<span class="sd">                the lock documentation.</span>
+<span class="sd">            default (bool, optional): What result to return if no lock</span>
+<span class="sd">                of access_type was found. The default, `False`, means a lockdown</span>
+<span class="sd">                policy, only allowing explicit access.</span>
+<span class="sd">            kwargs (any, optional): Not used; here to make the API consistent with</span>
+<span class="sd">                other access calls.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            result (bool): If the lock was passed or not.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="n">access_type</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+    <span class="c1">#</span>
+    <span class="c1">#</span>
+    <span class="c1"># Attribute methods</span>
+    <span class="c1">#</span>
+    <span class="c1">#</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">smart_str</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="InMemoryAttribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.InMemoryAttribute">[docs]</a><span class="k">class</span> <span class="nc">InMemoryAttribute</span><span class="p">(</span><span class="n">IAttribute</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This Attribute is used purely for NAttributes/NAttributeHandler. It has no database backend.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Primary Key has no meaning for an InMemoryAttribute. This merely serves to satisfy other code.</span>
+
+<div class="viewcode-block" id="InMemoryAttribute.__init__"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.InMemoryAttribute.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pk</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create an Attribute that exists only in Memory.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pk (int): This is a fake &#39;primary key&#39; / id-field. It doesn&#39;t actually have to be unique, but is fed an</span>
+<span class="sd">                incrementing number from the InMemoryBackend by default. This is needed only so Attributes can be</span>
+<span class="sd">                sorted. Some parts of the API also see the lack of a .pk field as a sign that the Attribute was</span>
+<span class="sd">                deleted.</span>
+<span class="sd">            **kwargs: Other keyword arguments are used to construct the actual Attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">pk</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pk</span> <span class="o">=</span> <span class="n">pk</span>
+
+        <span class="c1"># Copy all kwargs to local properties. We use db_ for compatability here.</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># Value and locks are special. We must call the wrappers.</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;lock_storage&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">lock_storage</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="s2">&quot;db_</span><span class="si">{key}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+    <span class="c1"># value property (wraps db_value)</span>
+    <span class="k">def</span> <span class="nf">__value_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_value</span>
+
+    <span class="k">def</span> <span class="nf">__value_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_value</span> <span class="o">=</span> <span class="n">new_value</span>
+
+    <span class="k">def</span> <span class="nf">__value_del</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="n">value</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__value_get</span><span class="p">,</span> <span class="n">__value_set</span><span class="p">,</span> <span class="n">__value_del</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.Attribute">[docs]</a><span class="k">class</span> <span class="nc">Attribute</span><span class="p">(</span><span class="n">IAttribute</span><span class="p">,</span> <span class="n">SharedMemoryModel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This attribute is stored via Django. Most Attributes will be using this class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># Attribute Database Model setup</span>
+    <span class="c1">#</span>
+    <span class="c1"># These database fields are all set using their corresponding properties,</span>
+    <span class="c1"># named same as the field, but without the db_* prefix.</span>
+    <span class="n">db_key</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">db_value</span> <span class="o">=</span> <span class="n">PickledObjectField</span><span class="p">(</span>
+        <span class="s2">&quot;value&quot;</span><span class="p">,</span>
+        <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;The data returned when the attribute is accessed. Must be &quot;</span>
+        <span class="s2">&quot;written as a Python literal if editing through the admin &quot;</span>
+        <span class="s2">&quot;interface. Attribute values which are not Python literals &quot;</span>
+        <span class="s2">&quot;cannot be edited through the admin interface.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">db_strvalue</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span>
+        <span class="s2">&quot;strvalue&quot;</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;String-specific storage for quick look-up&quot;</span>
+    <span class="p">)</span>
+    <span class="n">db_category</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="s2">&quot;category&quot;</span><span class="p">,</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>
+        <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Optional categorization of attribute.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># Lock storage</span>
+    <span class="n">db_lock_storage</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span>
+        <span class="s2">&quot;locks&quot;</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Lockstrings for this object are stored here.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">db_model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="s2">&quot;model&quot;</span><span class="p">,</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+        <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Which model of object this attribute is attached to (A &quot;</span>
+        <span class="s2">&quot;natural key like &#39;objects.objectdb&#39;). You should not change &quot;</span>
+        <span class="s2">&quot;this value unless you know what you are doing.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># subclass of Attribute (None or nick)</span>
+    <span class="n">db_attrtype</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="s2">&quot;attrtype&quot;</span><span class="p">,</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+        <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Subclass of Attribute (None or nick)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># time stamp</span>
+    <span class="n">db_date_created</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="s2">&quot;date_created&quot;</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Database manager</span>
+    <span class="c1"># objects = managers.AttributeManager()</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="s2">&quot;Define Django meta options&quot;</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Evennia Attribute&quot;</span>
+
+    <span class="c1"># Wrapper properties to easily set database fields. These are</span>
+    <span class="c1"># @property decorators that allows to access these fields using</span>
+    <span class="c1"># normal python operations (without having to remember to save()</span>
+    <span class="c1"># etc). So e.g. a property &#39;attr&#39; has a get/set/del decorator</span>
+    <span class="c1"># defined that allows the user to do self.attr = value,</span>
+    <span class="c1"># value = self.attr and del self.attr respectively (where self</span>
+    <span class="c1"># is the object in question).</span>
+
+    <span class="c1"># lock_storage wrapper. Overloaded for saving to database.</span>
+    <span class="k">def</span> <span class="nf">__lock_storage_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_lock_storage</span>
+
+    <span class="k">def</span> <span class="nf">__lock_storage_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__lock_storage_set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;db_lock_storage&quot;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">__lock_storage_del</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__lock_storage_del</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;db_lock_storage&quot;</span><span class="p">])</span>
+
+    <span class="n">lock_storage</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__lock_storage_get</span><span class="p">,</span> <span class="n">__lock_storage_set</span><span class="p">,</span> <span class="n">__lock_storage_del</span><span class="p">)</span>
+
+    <span class="c1"># value property (wraps db_value)</span>
+    <span class="c1"># @property</span>
+    <span class="k">def</span> <span class="nf">__value_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Getter. Allows for `value = self.value`.</span>
+<span class="sd">        We cannot cache here since it makes certain cases (such</span>
+<span class="sd">        as storing a dbobj which is then deleted elsewhere) out-of-sync.</span>
+<span class="sd">        The overhead of unpickling seems hard to avoid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">from_pickle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_value</span><span class="p">,</span> <span class="n">db_obj</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="c1"># @value.setter</span>
+    <span class="k">def</span> <span class="nf">__value_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Setter. Allows for self.value = value. We cannot cache here,</span>
+<span class="sd">        see self.__value_get.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_value</span> <span class="o">=</span> <span class="n">to_pickle</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;db_value&quot;</span><span class="p">])</span>
+
+    <span class="c1"># @value.deleter</span>
+    <span class="k">def</span> <span class="nf">__value_del</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Deleter. Allows for del attr.value. This removes the entire attribute.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+
+    <span class="n">value</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__value_get</span><span class="p">,</span> <span class="n">__value_set</span><span class="p">,</span> <span class="n">__value_del</span><span class="p">)</span></div>
+
+
+<span class="c1">#</span>
+<span class="c1"># Handlers making use of the Attribute model</span>
+<span class="c1">#</span>
+
+
+<div class="viewcode-block" id="IAttributeBackend"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend">[docs]</a><span class="k">class</span> <span class="nc">IAttributeBackend</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Abstract interface for the backends used by the Attribute Handler.</span>
+
+<span class="sd">    All Backends must implement this base class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attrcreate</span> <span class="o">=</span> <span class="s2">&quot;attrcreate&quot;</span>
+    <span class="n">_attredit</span> <span class="o">=</span> <span class="s2">&quot;attredit&quot;</span>
+    <span class="n">_attrread</span> <span class="o">=</span> <span class="s2">&quot;attrread&quot;</span>
+    <span class="n">_attrclass</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="IAttributeBackend.__init__"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">attrtype</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span> <span class="o">=</span> <span class="n">handler</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">obj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attrtype</span> <span class="o">=</span> <span class="n">attrtype</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_objid</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># store category names fully cached</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_catcache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># full cache was run on all attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache_complete</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="IAttributeBackend.query_all"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.query_all">[docs]</a>    <span class="k">def</span> <span class="nf">query_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fetch all Attributes from this object.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            attrlist (list): A list of Attribute objects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="IAttributeBackend.query_key"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.query_key">[docs]</a>    <span class="k">def</span> <span class="nf">query_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str): The key of the Attribute being searched for.</span>
+<span class="sd">            category (str or None): The category of the desired Attribute.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            attribute (IAttribute): A single Attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="IAttributeBackend.query_category"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.query_category">[docs]</a>    <span class="k">def</span> <span class="nf">query_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns every matching Attribute as a list, given a category.</span>
+
+<span class="sd">        This method calls up whatever storage the backend uses.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            category (str or None): The category to query.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            attrs (list): The discovered Attributes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_full_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Cache all attributes of this object&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_TYPECLASS_AGGRESSIVE_CACHE</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">attrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_all</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">f</span><span class="s2">&quot;{to_str(attr.key).lower()}-{attr.category.lower() if attr.category else None}&quot;</span><span class="p">:</span> <span class="n">attr</span>
+            <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attrs</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache_complete</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">_get_cache_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str): The key of the Attribute being searched for.</span>
+<span class="sd">            category (str or None): The category of the desired Attribute.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            attribute (IAttribute): A single Attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cachekey</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+        <span class="n">cachefound</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="n">_TYPECLASS_AGGRESSIVE_CACHE</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">cachekey</span><span class="p">]</span>
+            <span class="n">cachefound</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">attr</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="s2">&quot;pk&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">attr</span><span class="o">.</span><span class="n">pk</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="c1"># clear out Attributes deleted from elsewhere. We must search this anew.</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">cachefound</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">cachekey</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">cachefound</span> <span class="ow">and</span> <span class="n">_TYPECLASS_AGGRESSIVE_CACHE</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">attr</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">attr</span><span class="p">]</span>  <span class="c1"># return cached entity</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[]</span>  <span class="c1"># no such attribute: return an empty list</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">conn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_key</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">conn</span><span class="p">:</span>
+                <span class="n">attr</span> <span class="o">=</span> <span class="n">conn</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">attribute</span>
+                <span class="k">if</span> <span class="n">_TYPECLASS_AGGRESSIVE_CACHE</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">cachekey</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">pk</span> <span class="k">else</span> <span class="p">[]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># There is no such attribute. We will explicitly save that</span>
+                <span class="c1"># in our cache to avoid firing another query if we try to</span>
+                <span class="c1"># retrieve that (non-existent) attribute again.</span>
+                <span class="k">if</span> <span class="n">_TYPECLASS_AGGRESSIVE_CACHE</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">cachekey</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">_get_cache_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves Attribute list (by category) from cache.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            category (str or None): The category to query.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            attrs (list): The discovered Attributes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">catkey</span> <span class="o">=</span> <span class="s2">&quot;-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">category</span>
+        <span class="k">if</span> <span class="n">_TYPECLASS_AGGRESSIVE_CACHE</span> <span class="ow">and</span> <span class="n">catkey</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_catcache</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">attr</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">catkey</span><span class="p">)</span> <span class="ow">and</span> <span class="n">attr</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># we have to query to make this category up-date in the cache</span>
+            <span class="n">attrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_category</span><span class="p">(</span><span class="n">category</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">_TYPECLASS_AGGRESSIVE_CACHE</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">pk</span><span class="p">:</span>
+                        <span class="n">cachekey</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">attr</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">cachekey</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr</span>
+                <span class="c1"># mark category cache as up-to-date</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_catcache</span><span class="p">[</span><span class="n">catkey</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">return</span> <span class="n">attrs</span>
+
+    <span class="k">def</span> <span class="nf">_get_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve from cache or database (always caches)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str, optional): Attribute key to query for</span>
+<span class="sd">            category (str, optional): Attribiute category</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            args (list): Returns a list of zero or more matches</span>
+<span class="sd">                found from cache or database.</span>
+<span class="sd">        Notes:</span>
+<span class="sd">            When given a category only, a search for all objects</span>
+<span class="sd">            of that cateogory is done and the category *name* is</span>
+<span class="sd">            stored. This tells the system on subsequent calls that the</span>
+<span class="sd">            list of cached attributes of this category is up-to-date</span>
+<span class="sd">            and that the cache can be queried for category matches</span>
+<span class="sd">            without missing any.</span>
+<span class="sd">            The TYPECLASS_AGGRESSIVE_CACHE=False setting will turn off</span>
+<span class="sd">            caching, causing each attribute access to trigger a</span>
+<span class="sd">            database lookup.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">key</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">category</span> <span class="o">=</span> <span class="n">category</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">category</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">key</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cache_key</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cache_category</span><span class="p">(</span><span class="n">category</span><span class="p">)</span>
+
+<div class="viewcode-block" id="IAttributeBackend.get"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Frontend for .get_cache. Retrieves Attribute(s).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str, optional): Attribute key to query for</span>
+<span class="sd">            category (str, optional): Attribiute category</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            args (list): Returns a list of zero or more matches</span>
+<span class="sd">                found from cache or database.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cache</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_set_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">attr_obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update cache.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str): A cleaned key string</span>
+<span class="sd">            category (str or None): A cleaned category name</span>
+<span class="sd">            attr_obj (IAttribute): The newly saved attribute</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_TYPECLASS_AGGRESSIVE_CACHE</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="p">:</span>  <span class="c1"># don&#39;t allow an empty key in cache</span>
+            <span class="k">return</span>
+        <span class="n">cachekey</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+        <span class="n">catkey</span> <span class="o">=</span> <span class="s2">&quot;-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">category</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">cachekey</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr_obj</span>
+        <span class="c1"># mark that the category cache is no longer up-to-date</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_catcache</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">catkey</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache_complete</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_delete_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove attribute from cache</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str): A cleaned key string</span>
+<span class="sd">            category (str or None): A cleaned category name</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">catkey</span> <span class="o">=</span> <span class="s2">&quot;-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">category</span>
+        <span class="k">if</span> <span class="n">key</span><span class="p">:</span>
+            <span class="n">cachekey</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">cachekey</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">key</span><span class="p">:</span> <span class="n">attrobj</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">attrobj</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">catkey</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="c1"># mark that the category cache is no longer up-to-date</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_catcache</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">catkey</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache_complete</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="IAttributeBackend.reset_cache"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.reset_cache">[docs]</a>    <span class="k">def</span> <span class="nf">reset_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reset cache from the outside.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache_complete</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_catcache</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+<div class="viewcode-block" id="IAttributeBackend.do_create_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.do_create_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">do_create_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">strvalue</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Does the hard work of actually creating Attributes, whatever is needed.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str): The Attribute&#39;s key.</span>
+<span class="sd">            category (str or None): The Attribute&#39;s category, or None</span>
+<span class="sd">            lockstring (str): Any locks for the Attribute.</span>
+<span class="sd">            value (obj): The Value of the Attribute.</span>
+<span class="sd">            strvalue (bool): Signifies if this is a strvalue Attribute. Value MUST be a string or</span>
+<span class="sd">                this will lead to Trouble. Ignored for InMemory attributes.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            attr (IAttribute): The new Attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="IAttributeBackend.create_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.create_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">create_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">strvalue</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates Attribute (using the class specified for the backend), (optionally) caches it, and returns it.</span>
+
+<span class="sd">        This MUST actively save the Attribute to whatever database backend is used, AND</span>
+<span class="sd">        call self.set_cache(key, category, new_attrobj)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str): The Attribute&#39;s key.</span>
+<span class="sd">            category (str or None): The Attribute&#39;s category, or None</span>
+<span class="sd">            lockstring (str): Any locks for the Attribute.</span>
+<span class="sd">            value (obj): The Value of the Attribute.</span>
+<span class="sd">            strvalue (bool): Signifies if this is a strvalue Attribute. Value MUST be a string or</span>
+<span class="sd">                this will lead to Trouble. Ignored for InMemory attributes.</span>
+<span class="sd">            cache (bool): Whether to cache the new Attribute</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            attr (IAttribute): The new Attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_create_attribute</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">strvalue</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cache</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set_cache</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">attr</span></div>
+
+<div class="viewcode-block" id="IAttributeBackend.do_update_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.do_update_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">do_update_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Simply sets a new Value to an Attribute.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            attr (IAttribute): The Attribute being changed.</span>
+<span class="sd">            value (obj): The Value for the Attribute.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="IAttributeBackend.do_batch_update_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.do_batch_update_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">do_batch_update_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_obj</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">lock_storage</span><span class="p">,</span> <span class="n">new_value</span><span class="p">,</span> <span class="n">strvalue</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called opnly by batch add. For the database backend, this is a method</span>
+<span class="sd">        of updating that can alter category and lock-storage.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            attr_obj (IAttribute): The Attribute being altered.</span>
+<span class="sd">            category (str or None): The attribute&#39;s (new) category.</span>
+<span class="sd">            lock_storage (str): The attribute&#39;s new locks.</span>
+<span class="sd">            new_value (obj): The Attribute&#39;s new value.</span>
+<span class="sd">            strvalue (bool): Signifies if this is a strvalue Attribute. Value MUST be a string or</span>
+<span class="sd">                this will lead to Trouble. Ignored for InMemory attributes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="IAttributeBackend.do_batch_finish"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.do_batch_finish">[docs]</a>    <span class="k">def</span> <span class="nf">do_batch_finish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_objs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called only by batch_add. Used for handling database operations and/or</span>
+<span class="sd">        caching complications.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            attr_objs (list of IAttribute): The Attributes created/updated thus far.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="IAttributeBackend.batch_add"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.batch_add">[docs]</a>    <span class="k">def</span> <span class="nf">batch_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Batch-version of `.add()`. This is more efficient than repeat-calling</span>
+<span class="sd">        `.add` when having many Attributes to add.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">             *args (tuple): Tuples of varying length representing the</span>
+<span class="sd">                Attribute to add to this object. Supported tuples are</span>
+
+<span class="sd">                - (key, value)</span>
+<span class="sd">                - (key, value, category)</span>
+<span class="sd">                - (key, value, category, lockstring)</span>
+<span class="sd">                - (key, value, category, lockstring, default_access)</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            RuntimeError: If trying to pass a non-iterable as argument.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            The indata tuple order matters, so if you want a lockstring but no</span>
+<span class="sd">            category, set the category to `None`. This method does not have the</span>
+<span class="sd">            ability to check editing permissions and is mainly used internally.</span>
+<span class="sd">            It does not use the normal `self.add` but applies the Attributes</span>
+<span class="sd">            directly to the database.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_attrobjs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">strattr</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;strattr&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;batch_add requires iterables as arguments (got </span><span class="si">%r</span><span class="s2">).&quot;</span> <span class="o">%</span> <span class="n">tup</span><span class="p">)</span>
+            <span class="n">ntup</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span>
+            <span class="n">keystr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="n">new_value</span> <span class="o">=</span> <span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">category</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">tup</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">ntup</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">tup</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">lockstring</span> <span class="o">=</span> <span class="n">tup</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="k">if</span> <span class="n">ntup</span> <span class="o">&gt;</span> <span class="mi">3</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+
+            <span class="n">attr_objs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cache</span><span class="p">(</span><span class="n">keystr</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">attr_objs</span><span class="p">:</span>
+                <span class="n">attr_obj</span> <span class="o">=</span> <span class="n">attr_objs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="c1"># update an existing attribute object</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">do_batch_update_attribute</span><span class="p">(</span><span class="n">attr_obj</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">,</span> <span class="n">new_value</span><span class="p">,</span> <span class="n">strattr</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_create_attribute</span><span class="p">(</span>
+                    <span class="n">keystr</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">,</span> <span class="n">new_value</span><span class="p">,</span> <span class="n">strvalue</span><span class="o">=</span><span class="n">strattr</span>
+                <span class="p">)</span>
+                <span class="n">new_attrobjs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_attr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">new_attrobjs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">do_batch_finish</span><span class="p">(</span><span class="n">new_attrobjs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IAttributeBackend.do_delete_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.do_delete_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">do_delete_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Does the hard work of actually deleting things.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            attr (IAttribute): The attribute to delete.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="IAttributeBackend.delete_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.delete_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">delete_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given an Attribute, deletes it. Also remove it from cache.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            attr (IAttribute): The attribute to delete.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">attr</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_delete_cache</span><span class="p">(</span><span class="n">attr</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">attr</span><span class="o">.</span><span class="n">category</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_delete_attribute</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IAttributeBackend.update_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.update_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">update_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Simply updates an Attribute.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            attr (IAttribute): The attribute to delete.</span>
+<span class="sd">            value (obj): The new value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_update_attribute</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IAttributeBackend.do_batch_delete"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.do_batch_delete">[docs]</a>    <span class="k">def</span> <span class="nf">do_batch_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a list of attributes, deletes them all.</span>
+<span class="sd">        The default implementation is fine, but this is overridable since some databases may allow</span>
+<span class="sd">        for a better method.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            attribute_list (list of IAttribute):</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="n">attribute_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delete_attribute</span><span class="p">(</span><span class="n">attribute</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IAttributeBackend.clear_attributes"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.clear_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">clear_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="p">,</span> <span class="n">default_access</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove all Attributes on this object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            category (str, optional): If given, clear only Attributes</span>
+<span class="sd">                of this category.</span>
+<span class="sd">            accessing_obj (object, optional): If given, check the</span>
+<span class="sd">                `attredit` lock on each Attribute before continuing.</span>
+<span class="sd">            default_access (bool, optional): Use this permission as</span>
+<span class="sd">                fallback if `access_obj` is given but there is no lock of</span>
+<span class="sd">                type `attredit` on the Attribute in question.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">category</span> <span class="o">=</span> <span class="n">category</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">category</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache_complete</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_full_cache</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">category</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">attrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">attr</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">category</span> <span class="o">==</span> <span class="n">category</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">attrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">accessing_obj</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">do_batch_delete</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">attr</span>
+                    <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attrs</span>
+                    <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attredit</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">default_access</span><span class="p">)</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># have to cast the results to a list or we&#39;ll get a RuntimeError for removing from the dict we&#39;re iterating</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">do_batch_delete</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">attrs</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_cache</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="IAttributeBackend.get_all_attributes"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.IAttributeBackend.get_all_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Simply returns all Attributes of this object, sorted by their IDs.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            attributes (list of IAttribute)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">_TYPECLASS_AGGRESSIVE_CACHE</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache_complete</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_full_cache</span><span class="p">()</span>
+            <span class="k">return</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">attr</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">attr</span><span class="p">],</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">o</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">attr</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_all</span><span class="p">()</span> <span class="k">if</span> <span class="n">attr</span><span class="p">],</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">o</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="InMemoryAttributeBackend"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.InMemoryAttributeBackend">[docs]</a><span class="k">class</span> <span class="nc">InMemoryAttributeBackend</span><span class="p">(</span><span class="n">IAttributeBackend</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This Backend for Attributes stores NOTHING in the database. Everything is kept in memory, and normally lost</span>
+<span class="sd">    on a crash, reload, shared memory flush, etc. It generates IDs for the Attributes it manages, but these are</span>
+<span class="sd">    of little importance beyond sorting and satisfying the caching logic to know an Attribute hasn&#39;t been</span>
+<span class="sd">    deleted out from under the cache&#39;s nose.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attrclass</span> <span class="o">=</span> <span class="n">InMemoryAttribute</span>
+
+<div class="viewcode-block" id="InMemoryAttributeBackend.__init__"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.InMemoryAttributeBackend.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">attrtype</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">attrtype</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_category_storage</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_id_counter</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+    <span class="k">def</span> <span class="nf">_next_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Increments the internal ID counter and returns the new value.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            next_id (int): A simple integer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_id_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id_counter</span>
+
+<div class="viewcode-block" id="InMemoryAttributeBackend.query_all"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.InMemoryAttributeBackend.query_all">[docs]</a>    <span class="k">def</span> <span class="nf">query_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="o">.</span><span class="n">values</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="InMemoryAttributeBackend.query_key"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.InMemoryAttributeBackend.query_key">[docs]</a>    <span class="k">def</span> <span class="nf">query_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+        <span class="n">found</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">found</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">found</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="InMemoryAttributeBackend.query_category"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.InMemoryAttributeBackend.query_category">[docs]</a>    <span class="k">def</span> <span class="nf">query_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">category</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_category_storage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="p">[])</span></div>
+
+<div class="viewcode-block" id="InMemoryAttributeBackend.do_create_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.InMemoryAttributeBackend.do_create_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">do_create_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">strvalue</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        See parent class.</span>
+
+<span class="sd">        strvalue has no meaning for InMemory attributes.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrclass</span><span class="p">(</span>
+            <span class="n">pk</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_next_id</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">lock_storage</span><span class="o">=</span><span class="n">lockstring</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[(</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">)]</span> <span class="o">=</span> <span class="n">new_attr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_category_storage</span><span class="p">[</span><span class="n">category</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_attr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_attr</span></div>
+
+<div class="viewcode-block" id="InMemoryAttributeBackend.do_update_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.InMemoryAttributeBackend.do_update_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">do_update_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">attr</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="InMemoryAttributeBackend.do_batch_update_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.InMemoryAttributeBackend.do_batch_update_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">do_batch_update_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_obj</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">lock_storage</span><span class="p">,</span> <span class="n">new_value</span><span class="p">,</span> <span class="n">strvalue</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        No need to bother saving anything. Just set some values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">attr_obj</span><span class="o">.</span><span class="n">db_category</span> <span class="o">=</span> <span class="n">category</span>
+        <span class="n">attr_obj</span><span class="o">.</span><span class="n">db_lock_storage</span> <span class="o">=</span> <span class="n">lock_storage</span> <span class="k">if</span> <span class="n">lock_storage</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">attr_obj</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">new_value</span></div>
+
+<div class="viewcode-block" id="InMemoryAttributeBackend.do_batch_finish"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.InMemoryAttributeBackend.do_batch_finish">[docs]</a>    <span class="k">def</span> <span class="nf">do_batch_finish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_objs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Nothing to do here for In-Memory.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            attr_objs (list of IAttribute): The Attributes created/updated thus far.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="InMemoryAttributeBackend.do_delete_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.InMemoryAttributeBackend.do_delete_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">do_delete_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes the Attribute from local storage. Once it&#39;s out of the cache, garbage collection will handle the rest.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            attr (IAttribute): The attribute to delete.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[(</span><span class="n">attr</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">attr</span><span class="o">.</span><span class="n">category</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_category_storage</span><span class="p">[</span><span class="n">attr</span><span class="o">.</span><span class="n">category</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ModelAttributeBackend"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.ModelAttributeBackend">[docs]</a><span class="k">class</span> <span class="nc">ModelAttributeBackend</span><span class="p">(</span><span class="n">IAttributeBackend</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Uses Django models for storing Attributes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attrclass</span> <span class="o">=</span> <span class="n">Attribute</span>
+    <span class="n">_m2m_fieldname</span> <span class="o">=</span> <span class="s2">&quot;db_attributes&quot;</span>
+
+<div class="viewcode-block" id="ModelAttributeBackend.__init__"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.ModelAttributeBackend.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">attrtype</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">attrtype</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">to_str</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">__dbclass__</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="ModelAttributeBackend.query_all"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.ModelAttributeBackend.query_all">[docs]</a>    <span class="k">def</span> <span class="nf">query_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">__id&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objid</span><span class="p">,</span>
+            <span class="s2">&quot;attribute__db_model__iexact&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span>
+            <span class="s2">&quot;attribute__db_attrtype&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrtype</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">attribute</span>
+            <span class="k">for</span> <span class="n">conn</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m2m_fieldname</span><span class="p">)</span><span class="o">.</span><span class="n">through</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="n">query</span><span class="p">)</span>
+        <span class="p">]</span></div>
+
+<div class="viewcode-block" id="ModelAttributeBackend.query_key"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.ModelAttributeBackend.query_key">[docs]</a>    <span class="k">def</span> <span class="nf">query_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">__id&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objid</span><span class="p">,</span>
+            <span class="s2">&quot;attribute__db_model__iexact&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span>
+            <span class="s2">&quot;attribute__db_attrtype&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrtype</span><span class="p">,</span>
+            <span class="s2">&quot;attribute__db_key__iexact&quot;</span><span class="p">:</span> <span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
+            <span class="s2">&quot;attribute__db_category__iexact&quot;</span><span class="p">:</span> <span class="n">category</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">category</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m2m_fieldname</span><span class="p">)</span><span class="o">.</span><span class="n">through</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="n">query</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ModelAttributeBackend.query_category"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.ModelAttributeBackend.query_category">[docs]</a>    <span class="k">def</span> <span class="nf">query_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">__id&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objid</span><span class="p">,</span>
+            <span class="s2">&quot;attribute__db_model__iexact&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span>
+            <span class="s2">&quot;attribute__db_attrtype&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrtype</span><span class="p">,</span>
+            <span class="s2">&quot;attribute__db_category__iexact&quot;</span><span class="p">:</span> <span class="n">category</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">category</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">attribute</span>
+            <span class="k">for</span> <span class="n">conn</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m2m_fieldname</span><span class="p">)</span><span class="o">.</span><span class="n">through</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="n">query</span><span class="p">)</span>
+        <span class="p">]</span></div>
+
+<div class="viewcode-block" id="ModelAttributeBackend.do_create_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.ModelAttributeBackend.do_create_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">do_create_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">strvalue</span><span class="p">):</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;db_key&quot;</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span>
+            <span class="s2">&quot;db_category&quot;</span><span class="p">:</span> <span class="n">category</span><span class="p">,</span>
+            <span class="s2">&quot;db_model&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span>
+            <span class="s2">&quot;db_lock_storage&quot;</span><span class="p">:</span> <span class="n">lockstring</span> <span class="k">if</span> <span class="n">lockstring</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;db_attrtype&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrtype</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">strvalue</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;db_value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;db_strvalue&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;db_value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">to_pickle</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;db_strvalue&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">new_attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrclass</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">new_attr</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m2m_fieldname</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">new_attr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_cache</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">new_attr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_attr</span></div>
+
+<div class="viewcode-block" id="ModelAttributeBackend.do_update_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.ModelAttributeBackend.do_update_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">do_update_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">attr</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="ModelAttributeBackend.do_batch_update_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.ModelAttributeBackend.do_batch_update_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">do_batch_update_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_obj</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">lock_storage</span><span class="p">,</span> <span class="n">new_value</span><span class="p">,</span> <span class="n">strvalue</span><span class="p">):</span>
+        <span class="n">attr_obj</span><span class="o">.</span><span class="n">db_category</span> <span class="o">=</span> <span class="n">category</span>
+        <span class="n">attr_obj</span><span class="o">.</span><span class="n">db_lock_storage</span> <span class="o">=</span> <span class="n">lock_storage</span> <span class="k">if</span> <span class="n">lock_storage</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">strvalue</span><span class="p">:</span>
+            <span class="c1"># store as a simple string (will not notify OOB handlers)</span>
+            <span class="n">attr_obj</span><span class="o">.</span><span class="n">db_strvalue</span> <span class="o">=</span> <span class="n">new_value</span>
+            <span class="n">attr_obj</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># store normally (this will also notify OOB handlers)</span>
+            <span class="n">attr_obj</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">new_value</span>
+            <span class="n">attr_obj</span><span class="o">.</span><span class="n">db_strvalue</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">attr_obj</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;db_strvalue&quot;</span><span class="p">,</span> <span class="s2">&quot;db_value&quot;</span><span class="p">,</span> <span class="s2">&quot;db_category&quot;</span><span class="p">,</span> <span class="s2">&quot;db_lock_storage&quot;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="ModelAttributeBackend.do_batch_finish"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.ModelAttributeBackend.do_batch_finish">[docs]</a>    <span class="k">def</span> <span class="nf">do_batch_finish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_objs</span><span class="p">):</span>
+        <span class="c1"># Add new objects to m2m field all at once</span>
+        <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m2m_fieldname</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="o">*</span><span class="n">attr_objs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ModelAttributeBackend.do_delete_attribute"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.ModelAttributeBackend.do_delete_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">do_delete_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">attr</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
+            <span class="c1"># This could happen if the Attribute has already been deleted.</span>
+            <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="AttributeHandler"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeHandler">[docs]</a><span class="k">class</span> <span class="nc">AttributeHandler</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handler for adding Attributes to the object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attrcreate</span> <span class="o">=</span> <span class="s2">&quot;attrcreate&quot;</span>
+    <span class="n">_attredit</span> <span class="o">=</span> <span class="s2">&quot;attredit&quot;</span>
+    <span class="n">_attrread</span> <span class="o">=</span> <span class="s2">&quot;attrread&quot;</span>
+    <span class="n">_attrtype</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="AttributeHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">backend_class</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Setup the AttributeHandler.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (TypedObject): An Account, Object, Channel, ServerSession (not technically a typed object), etc.</span>
+<span class="sd">            backend_class (IAttributeBackend class): The class of the backend to use.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">=</span> <span class="n">backend_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrtype</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AttributeHandler.has"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeHandler.has">[docs]</a>    <span class="k">def</span> <span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if the given Attribute (or list of Attributes) exists on</span>
+<span class="sd">        the object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str or iterable): The Attribute key or keys to check for.</span>
+<span class="sd">                If `None`, search by category.</span>
+<span class="sd">            category (str or None): Limit the check to Attributes with this</span>
+<span class="sd">                category (note, that `None` is the default category).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            has_attribute (bool or list): If the Attribute exists on</span>
+<span class="sd">                this object or not. If `key` was given as an iterable then</span>
+<span class="sd">                the return is a list of booleans.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">category</span> <span class="o">=</span> <span class="n">category</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">category</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">keystr</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+            <span class="n">keystr</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">keystr</span><span class="p">,</span> <span class="n">category</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">ret</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">ret</span></div>
+
+<div class="viewcode-block" id="AttributeHandler.get"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">return_obj</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">strattr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">raise_exception</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">accessing_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">default_access</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">return_list</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the Attribute.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str or list, optional): the attribute identifier or</span>
+<span class="sd">                multiple attributes to get. if a list of keys, the</span>
+<span class="sd">                method will return a list.</span>
+<span class="sd">            category (str, optional): the category within which to</span>
+<span class="sd">                retrieve attribute(s).</span>
+<span class="sd">            default (any, optional): The value to return if an</span>
+<span class="sd">                Attribute was not defined. If set, it will be returned in</span>
+<span class="sd">                a one-item list.</span>
+<span class="sd">            return_obj (bool, optional): If set, the return is not the value of the</span>
+<span class="sd">                Attribute but the Attribute object itself.</span>
+<span class="sd">            strattr (bool, optional): Return the `strvalue` field of</span>
+<span class="sd">                the Attribute rather than the usual `value`, this is a</span>
+<span class="sd">                string-only value for quick database searches.</span>
+<span class="sd">            raise_exception (bool, optional): When an Attribute is not</span>
+<span class="sd">                found, the return from this is usually `default`. If this</span>
+<span class="sd">                is set, an exception is raised instead.</span>
+<span class="sd">            accessing_obj (object, optional): If set, an `attrread`</span>
+<span class="sd">                permission lock will be checked before returning each</span>
+<span class="sd">                looked-after Attribute.</span>
+<span class="sd">            default_access (bool, optional): If no `attrread` lock is set on</span>
+<span class="sd">                object, this determines if the lock should then be passed or not.</span>
+<span class="sd">            return_list (bool, optional):</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            result (any or list): One or more matches for keys and/or</span>
+<span class="sd">                categories. Each match will be the value of the found Attribute(s)</span>
+<span class="sd">                unless `return_obj` is True, at which point it will be the</span>
+<span class="sd">                attribute object itself or None. If `return_list` is True, this</span>
+<span class="sd">                will always be a list, regardless of the number of elements.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            AttributeError: If `raise_exception` is set and no matching Attribute</span>
+<span class="sd">                was found matching `key`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">keystr</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+            <span class="c1"># it&#39;s okay to send a None key</span>
+            <span class="n">attr_objs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">keystr</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">attr_objs</span><span class="p">:</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">attr_objs</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">raise_exception</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">AttributeError</span>
+            <span class="k">elif</span> <span class="n">return_obj</span><span class="p">:</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">accessing_obj</span><span class="p">:</span>
+            <span class="c1"># check &#39;attrread&#39; locks</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">attr</span>
+                <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">ret</span>
+                <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrread</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">default_access</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="k">if</span> <span class="n">strattr</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">ret</span> <span class="k">if</span> <span class="n">return_obj</span> <span class="k">else</span> <span class="p">[</span><span class="n">attr</span><span class="o">.</span><span class="n">strvalue</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">ret</span> <span class="k">if</span> <span class="n">attr</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">ret</span> <span class="k">if</span> <span class="n">return_obj</span> <span class="k">else</span> <span class="p">[</span><span class="n">attr</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">ret</span> <span class="k">if</span> <span class="n">attr</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">return_list</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ret</span> <span class="k">if</span> <span class="n">ret</span> <span class="k">else</span> <span class="p">[</span><span class="n">default</span><span class="p">]</span> <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">ret</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">ret</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">ret</span> <span class="ow">or</span> <span class="n">default</span></div>
+
+<div class="viewcode-block" id="AttributeHandler.add"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">key</span><span class="p">,</span>
+        <span class="n">value</span><span class="p">,</span>
+        <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">lockstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">strattr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">accessing_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">default_access</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add attribute to object, with optional `lockstring`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str): An Attribute name to add.</span>
+<span class="sd">            value (any or str): The value of the Attribute. If</span>
+<span class="sd">                `strattr` keyword is set, this *must* be a string.</span>
+<span class="sd">            category (str, optional): The category for the Attribute.</span>
+<span class="sd">                The default `None` is the normal category used.</span>
+<span class="sd">            lockstring (str, optional): A lock string limiting access</span>
+<span class="sd">                to the attribute.</span>
+<span class="sd">            strattr (bool, optional): Make this a string-only Attribute.</span>
+<span class="sd">                This is only ever useful for optimization purposes.</span>
+<span class="sd">            accessing_obj (object, optional): An entity to check for</span>
+<span class="sd">                the `attrcreate` access-type. If not passing, this method</span>
+<span class="sd">                will be exited.</span>
+<span class="sd">            default_access (bool, optional): What access to grant if</span>
+<span class="sd">                `accessing_obj` is given but no lock of the type</span>
+<span class="sd">                `attrcreate` is defined on the Attribute in question.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">accessing_obj</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span>
+            <span class="n">accessing_obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrcreate</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">default_access</span>
+        <span class="p">):</span>
+            <span class="c1"># check create access</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">category</span> <span class="o">=</span> <span class="n">category</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">category</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">keystr</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">attr_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">attr_obj</span><span class="p">:</span>
+            <span class="c1"># update an existing attribute object</span>
+            <span class="n">attr_obj</span> <span class="o">=</span> <span class="n">attr_obj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">update_attribute</span><span class="p">(</span><span class="n">attr_obj</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># create a new Attribute (no OOB handlers can be notified)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">create_attribute</span><span class="p">(</span><span class="n">keystr</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">strattr</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AttributeHandler.batch_add"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeHandler.batch_add">[docs]</a>    <span class="k">def</span> <span class="nf">batch_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Batch-version of `add()`. This is more efficient than</span>
+<span class="sd">        repeat-calling add when having many Attributes to add.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            *args (tuple): Each argument should be a tuples (can be of varying</span>
+<span class="sd">                length) representing the Attribute to add to this object.</span>
+<span class="sd">                Supported tuples are</span>
+<span class="sd">                    - `(key, value)`</span>
+<span class="sd">                    - `(key, value, category)`</span>
+<span class="sd">                    - `(key, value, category, lockstring)`</span>
+<span class="sd">                    - `(key, value, category, lockstring, default_access)`</span>
+
+<span class="sd">        Keyword args:</span>
+<span class="sd">            strattr (bool): If `True`, value must be a string. This</span>
+<span class="sd">                will save the value without pickling which is less</span>
+<span class="sd">                flexible but faster to search (not often used except</span>
+<span class="sd">                internally).</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            RuntimeError: If trying to pass a non-iterable as argument.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            The indata tuple order matters, so if you want a lockstring</span>
+<span class="sd">            but no category, set the category to `None`. This method</span>
+<span class="sd">            does not have the ability to check editing permissions like</span>
+<span class="sd">            normal .add does, and is mainly used internally. It does not</span>
+<span class="sd">            use the normal self.add but apply the Attributes directly</span>
+<span class="sd">            to the database.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AttributeHandler.remove"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">raise_exception</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">accessing_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">default_access</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove attribute or a list of attributes from object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str or list, optional): An Attribute key to remove or a list of keys. If</span>
+<span class="sd">                multiple keys, they must all be of the same `category`. If None and</span>
+<span class="sd">                category is not given, remove all Attributes.</span>
+<span class="sd">            raise_exception (bool, optional): If set, not finding the</span>
+<span class="sd">                Attribute to delete will raise an exception instead of</span>
+<span class="sd">                just quietly failing.</span>
+<span class="sd">            category (str, optional): The category within which to</span>
+<span class="sd">                remove the Attribute.</span>
+<span class="sd">            accessing_obj (object, optional): An object to check</span>
+<span class="sd">                against the `attredit` lock. If not given, the check will</span>
+<span class="sd">                be skipped.</span>
+<span class="sd">            default_access (bool, optional): The fallback access to</span>
+<span class="sd">                grant if `accessing_obj` is given but there is no</span>
+<span class="sd">                `attredit` lock set on the Attribute in question.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            AttributeError: If `raise_exception` is set and no matching Attribute</span>
+<span class="sd">                was found matching `key`.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            If neither key nor category is given, this acts as clear().</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span>
+                <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="o">=</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">default_access</span><span class="o">=</span><span class="n">default_access</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">category</span> <span class="o">=</span> <span class="n">category</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">category</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="k">for</span> <span class="n">keystr</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+            <span class="n">keystr</span> <span class="o">=</span> <span class="n">keystr</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+            <span class="n">attr_objs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">keystr</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">attr_obj</span> <span class="ow">in</span> <span class="n">attr_objs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+                    <span class="n">accessing_obj</span>
+                    <span class="ow">and</span> <span class="ow">not</span> <span class="n">attr_obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attredit</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">default_access</span><span class="p">)</span>
+                <span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">delete_attribute</span><span class="p">(</span><span class="n">attr_obj</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">attr_objs</span> <span class="ow">and</span> <span class="n">raise_exception</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">AttributeError</span></div>
+
+<div class="viewcode-block" id="AttributeHandler.clear"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_access</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove all Attributes on this object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            category (str, optional): If given, clear only Attributes</span>
+<span class="sd">                of this category.</span>
+<span class="sd">            accessing_obj (object, optional): If given, check the</span>
+<span class="sd">                `attredit` lock on each Attribute before continuing.</span>
+<span class="sd">            default_access (bool, optional): Use this permission as</span>
+<span class="sd">                fallback if `access_obj` is given but there is no lock of</span>
+<span class="sd">                type `attredit` on the Attribute in question.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">clear_attributes</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="p">,</span> <span class="n">default_access</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AttributeHandler.all"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeHandler.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accessing_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_access</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return all Attribute objects on this object, regardless of category.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            accessing_obj (object, optional): Check the `attrread`</span>
+<span class="sd">                lock on each attribute before returning them. If not</span>
+<span class="sd">                given, this check is skipped.</span>
+<span class="sd">            default_access (bool, optional): Use this permission as a</span>
+<span class="sd">                fallback if `accessing_obj` is given but one or more</span>
+<span class="sd">                Attributes has no lock of type `attrread` defined on them.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Attributes (list): All the Attribute objects (note: Not</span>
+<span class="sd">                their values!) in the handler.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">attrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">get_all_attributes</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">accessing_obj</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="n">attr</span>
+                <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attrs</span>
+                <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attredit</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">default_access</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">attrs</span></div>
+
+<div class="viewcode-block" id="AttributeHandler.reset_cache"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeHandler.reset_cache">[docs]</a>    <span class="k">def</span> <span class="nf">reset_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">reset_cache</span><span class="p">()</span></div></div>
+
+
+<span class="c1"># DbHolders for .db and .ndb properties on Typeclasses.</span>
+
+<span class="n">_GA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__getattribute__</span>
+<span class="n">_SA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span>
+
+
+<div class="viewcode-block" id="DbHolder"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.DbHolder">[docs]</a><span class="k">class</span> <span class="nc">DbHolder</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="s2">&quot;Holder for allowing property access of attributes&quot;</span>
+
+<div class="viewcode-block" id="DbHolder.__init__"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.DbHolder.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">manager_name</span><span class="o">=</span><span class="s2">&quot;attributes&quot;</span><span class="p">):</span>
+        <span class="n">_SA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">_GA</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">manager_name</span><span class="p">))</span>
+        <span class="n">_SA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__getattribute__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attrname</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">attrname</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
+            <span class="c1"># we allow to overload our default .all</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">attr</span> <span class="k">if</span> <span class="n">attr</span> <span class="k">else</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attrname</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attrname</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">attrname</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__delattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attrname</span><span class="p">):</span>
+        <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">attrname</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DbHolder.get_all"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.DbHolder.get_all">[docs]</a>    <span class="k">def</span> <span class="nf">get_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_GA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">get_all_attributes</span><span class="p">()</span></div>
+
+    <span class="nb">all</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">get_all</span><span class="p">)</span></div>
+
+
+<span class="c1"># Nick templating</span>
+<span class="c1">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This supports the use of replacement templates in nicks:</span>
+
+<span class="sd">This happens in two steps:</span>
+
+<span class="sd">1) The user supplies a template that is converted to a regex according</span>
+<span class="sd">   to the unix-like templating language.</span>
+<span class="sd">2) This regex is tested against nicks depending on which nick replacement</span>
+<span class="sd">   strategy is considered (most commonly inputline).</span>
+<span class="sd">3) If there is a template match and there are templating markers,</span>
+<span class="sd">   these are replaced with the arguments actually given.</span>
+
+<span class="sd">@desc $1 $2 $3</span>
+
+<span class="sd">This will be converted to the following regex:</span>
+
+<span class="sd">\@desc (?P&lt;1&gt;\w+) (?P&lt;2&gt;\w+) $(?P&lt;3&gt;\w+)</span>
+
+<span class="sd">Supported template markers (through fnmatch)</span>
+<span class="sd">   *       matches anything (non-greedy)     -&gt; .*?</span>
+<span class="sd">   ?       matches any single character      -&gt;</span>
+<span class="sd">   [seq]   matches any entry in sequence</span>
+<span class="sd">   [!seq]  matches entries not in sequence</span>
+<span class="sd">Custom arg markers</span>
+<span class="sd">   $N      argument position (1-99)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="n">_RE_NICK_ARG</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">(\$)([1-9][0-9]?)&quot;</span><span class="p">)</span>
+<span class="n">_RE_NICK_TEMPLATE_ARG</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\$)([1-9][0-9]?)&quot;</span><span class="p">)</span>
+<span class="n">_RE_NICK_SPACE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2"> &quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="NickTemplateInvalid"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.NickTemplateInvalid">[docs]</a><span class="k">class</span> <span class="nc">NickTemplateInvalid</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="initialize_nick_templates"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.initialize_nick_templates">[docs]</a><span class="k">def</span> <span class="nf">initialize_nick_templates</span><span class="p">(</span><span class="n">in_template</span><span class="p">,</span> <span class="n">out_template</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initialize the nick templates for matching and remapping a string.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        in_template (str): The template to be used for nick recognition.</span>
+<span class="sd">        out_template (str): The template to be used to replace the string</span>
+<span class="sd">            matched by the in_template.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        regex  (regex): Regex to match against strings</span>
+<span class="sd">        template (str): Template with markers ``{arg1}, {arg2}``, etc for</span>
+<span class="sd">        replacement using the standard .format method.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        evennia.typecalasses.attributes.NickTemplateInvalid: If the in/out</span>
+<span class="sd">        template does not have a matching number of `$args`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># create the regex for in_template</span>
+    <span class="n">regex_string</span> <span class="o">=</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">in_template</span><span class="p">)</span>
+    <span class="c1"># we must account for a possible line break coming over the wire</span>
+
+    <span class="c1"># NOTE-PYTHON3: fnmatch.translate format changed since Python2</span>
+    <span class="n">regex_string</span> <span class="o">=</span> <span class="n">regex_string</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="sa">r</span><span class="s2">&quot;(?:[\n\r]*?)\Z&quot;</span>
+
+    <span class="c1"># validate the templates</span>
+    <span class="n">regex_args</span> <span class="o">=</span> <span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">_RE_NICK_ARG</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">regex_string</span><span class="p">)]</span>
+    <span class="n">temp_args</span> <span class="o">=</span> <span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">_RE_NICK_TEMPLATE_ARG</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">out_template</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">regex_args</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">set</span><span class="p">(</span><span class="n">temp_args</span><span class="p">):</span>
+        <span class="c1"># We don&#39;t have the same $-tags in input/output.</span>
+        <span class="k">raise</span> <span class="n">NickTemplateInvalid</span>
+
+    <span class="n">regex_string</span> <span class="o">=</span> <span class="n">_RE_NICK_SPACE</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">s+&quot;</span><span class="p">,</span> <span class="n">regex_string</span><span class="p">)</span>
+    <span class="n">regex_string</span> <span class="o">=</span> <span class="n">_RE_NICK_ARG</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="s2">&quot;(?P&lt;arg</span><span class="si">%s</span><span class="s2">&gt;.+?)&quot;</span> <span class="o">%</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">regex_string</span><span class="p">)</span>
+    <span class="n">template_string</span> <span class="o">=</span> <span class="n">_RE_NICK_TEMPLATE_ARG</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="s2">&quot;{arg</span><span class="si">%s</span><span class="s2">}&quot;</span> <span class="o">%</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">out_template</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">regex_string</span><span class="p">,</span> <span class="n">template_string</span></div>
+
+
+<div class="viewcode-block" id="parse_nick_template"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.parse_nick_template">[docs]</a><span class="k">def</span> <span class="nf">parse_nick_template</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">template_regex</span><span class="p">,</span> <span class="n">outtemplate</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse a text using a template and map it to another template</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        string (str): The input string to processj</span>
+<span class="sd">        template_regex (regex): A template regex created with</span>
+<span class="sd">            initialize_nick_template.</span>
+<span class="sd">        outtemplate (str): The template to which to map the matches</span>
+<span class="sd">            produced by the template_regex. This should have $1, $2,</span>
+<span class="sd">            etc to match the regex.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">template_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">outtemplate</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">match</span><span class="o">.</span><span class="n">groupdict</span><span class="p">())</span>
+    <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">string</span></div>
+
+
+<div class="viewcode-block" id="NickHandler"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.NickHandler">[docs]</a><span class="k">class</span> <span class="nc">NickHandler</span><span class="p">(</span><span class="n">AttributeHandler</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handles the addition and removal of Nicks. Nicks are special</span>
+<span class="sd">    versions of Attributes with an `_attrtype` hardcoded to `nick`.</span>
+<span class="sd">    They also always use the `strvalue` fields for their data.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attrtype</span> <span class="o">=</span> <span class="s2">&quot;nick&quot;</span>
+
+<div class="viewcode-block" id="NickHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.NickHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_regex_cache</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+<div class="viewcode-block" id="NickHandler.has"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.NickHandler.has">[docs]</a>    <span class="k">def</span> <span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;inputline&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            key (str or iterable): The Nick key or keys to check for.</span>
+<span class="sd">            category (str): Limit the check to Nicks with this</span>
+<span class="sd">                category (note, that `None` is the default category).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            has_nick (bool or list): If the Nick exists on this object</span>
+<span class="sd">                or not. If `key` was given as an iterable then the return</span>
+<span class="sd">                is a list of booleans.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NickHandler.get"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.NickHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;inputline&quot;</span><span class="p">,</span> <span class="n">return_tuple</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the replacement value matching the given key and category</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str or list, optional): the attribute identifier or</span>
+<span class="sd">                multiple attributes to get. if a list of keys, the</span>
+<span class="sd">                method will return a list.</span>
+<span class="sd">            category (str, optional): the category within which to</span>
+<span class="sd">                retrieve the nick. The &quot;inputline&quot; means replacing data</span>
+<span class="sd">                sent by the user.</span>
+<span class="sd">            return_tuple (bool, optional): return the full nick tuple rather</span>
+<span class="sd">                than just the replacement. For non-template nicks this is just</span>
+<span class="sd">                a string.</span>
+<span class="sd">            kwargs (any, optional): These are passed on to `AttributeHandler.get`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">return_tuple</span> <span class="ow">or</span> <span class="s2">&quot;return_obj&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">retval</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">retval</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">(</span>
+                    <span class="n">retval</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">retval</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="p">[</span><span class="n">tup</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">retval</span><span class="p">)]</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="NickHandler.add"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.NickHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">replacement</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;inputline&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a new nick.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str): A key (or template) for the nick to match for.</span>
+<span class="sd">            replacement (str): The string (or template) to replace `key` with (the &quot;nickname&quot;).</span>
+<span class="sd">            category (str, optional): the category within which to</span>
+<span class="sd">                retrieve the nick. The &quot;inputline&quot; means replacing data</span>
+<span class="sd">                sent by the user.</span>
+<span class="sd">            kwargs (any, optional): These are passed on to `AttributeHandler.get`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">category</span> <span class="o">==</span> <span class="s2">&quot;channel&quot;</span><span class="p">:</span>
+            <span class="n">nick_regex</span><span class="p">,</span> <span class="n">nick_template</span> <span class="o">=</span> <span class="n">initialize_nick_templates</span><span class="p">(</span><span class="n">key</span> <span class="o">+</span> <span class="s2">&quot; $1&quot;</span><span class="p">,</span> <span class="n">replacement</span> <span class="o">+</span> <span class="s2">&quot; $1&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">nick_regex</span><span class="p">,</span> <span class="n">nick_template</span> <span class="o">=</span> <span class="n">initialize_nick_templates</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">replacement</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="n">nick_regex</span><span class="p">,</span> <span class="n">nick_template</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">replacement</span><span class="p">),</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NickHandler.remove"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.NickHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;inputline&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove Nick with matching category.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str): A key for the nick to match for.</span>
+<span class="sd">            category (str, optional): the category within which to</span>
+<span class="sd">                removethe nick. The &quot;inputline&quot; means replacing data</span>
+<span class="sd">                sent by the user.</span>
+<span class="sd">            kwargs (any, optional): These are passed on to `AttributeHandler.get`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NickHandler.nickreplace"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.NickHandler.nickreplace">[docs]</a>    <span class="k">def</span> <span class="nf">nickreplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">categories</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;inputline&quot;</span><span class="p">,</span> <span class="s2">&quot;channel&quot;</span><span class="p">),</span> <span class="n">include_account</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply nick replacement of entries in raw_string with nick replacement.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            raw_string (str): The string in which to perform nick</span>
+<span class="sd">                replacement.</span>
+<span class="sd">            categories (tuple, optional): Replacement categories in</span>
+<span class="sd">                which to perform the replacement, such as &quot;inputline&quot;,</span>
+<span class="sd">                &quot;channel&quot; etc.</span>
+<span class="sd">            include_account (bool, optional): Also include replacement</span>
+<span class="sd">                with nicks stored on the Account level.</span>
+<span class="sd">            kwargs (any, optional): Not used.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            string (str): A string with matching keys replaced with</span>
+<span class="sd">                their nick equivalents.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nicks</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">categories</span><span class="p">):</span>
+            <span class="n">nicks</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="n">nick</span><span class="o">.</span><span class="n">key</span><span class="p">:</span> <span class="n">nick</span>
+                    <span class="k">for</span> <span class="n">nick</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">return_obj</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="n">nick</span> <span class="ow">and</span> <span class="n">nick</span><span class="o">.</span><span class="n">key</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">include_account</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">has_account</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">categories</span><span class="p">):</span>
+                <span class="n">nicks</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                    <span class="p">{</span>
+                        <span class="n">nick</span><span class="o">.</span><span class="n">key</span><span class="p">:</span> <span class="n">nick</span>
+                        <span class="k">for</span> <span class="n">nick</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">return_obj</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="n">nick</span> <span class="ow">and</span> <span class="n">nick</span><span class="o">.</span><span class="n">key</span>
+                    <span class="p">}</span>
+                <span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">nick</span> <span class="ow">in</span> <span class="n">nicks</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">nick_regex</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">nick</span><span class="o">.</span><span class="n">value</span>
+            <span class="n">regex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_regex_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">nick_regex</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">regex</span><span class="p">:</span>
+                <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">nick_regex</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">U</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_regex_cache</span><span class="p">[</span><span class="n">nick_regex</span><span class="p">]</span> <span class="o">=</span> <span class="n">regex</span>
+
+            <span class="n">is_match</span><span class="p">,</span> <span class="n">raw_string</span> <span class="o">=</span> <span class="n">parse_nick_template</span><span class="p">(</span><span class="n">raw_string</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">regex</span><span class="p">,</span> <span class="n">template</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">is_match</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="k">return</span> <span class="n">raw_string</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="attributes.html">0.9.5 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

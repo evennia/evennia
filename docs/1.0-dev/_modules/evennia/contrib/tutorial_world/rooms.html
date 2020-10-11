@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.tutorial_world.rooms &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -28,8 +27,7 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorial_world.rooms</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -110,12 +108,14 @@
             <span class="n">target</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
                 <span class="k">return</span>
-        <span class="n">helptext</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tutorial_info</span>
-        <span class="k">if</span> <span class="n">helptext</span><span class="p">:</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|G</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="n">helptext</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|RSorry, there is no tutorial help available here.|n&quot;</span><span class="p">)</span></div></div>
+        <span class="n">helptext</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tutorial_info</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
 
+        <span class="k">if</span> <span class="n">helptext</span><span class="p">:</span>
+            <span class="n">helptext</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot; |G</span><span class="si">{helptext}</span><span class="s2">|n&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">helptext</span> <span class="o">=</span> <span class="s2">&quot; |RSorry, there is no tutorial help available here.|n&quot;</span>
+        <span class="n">helptext</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2"> (Write &#39;give up&#39; if you want to abandon your quest.)&quot;</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">helptext</span><span class="p">)</span></div></div>
 
 <span class="c1"># for the @detail command we inherit from MuxCommand, since</span>
 <span class="c1"># we want to make use of MuxCommand&#39;s pre-parsing of &#39;=&#39; in the</span>
@@ -241,6 +241,26 @@
         <span class="n">looking_at_obj</span><span class="o">.</span><span class="n">at_desc</span><span class="p">(</span><span class="n">looker</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span>
         <span class="k">return</span></div></div>
 
+<div class="viewcode-block" id="CmdTutorialGiveUp"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.rooms.html#evennia.contrib.tutorial_world.rooms.CmdTutorialGiveUp">[docs]</a><span class="k">class</span> <span class="nc">CmdTutorialGiveUp</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Give up the tutorial-world quest and return to Limbo, the start room of the</span>
+<span class="sd">    server.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;give up&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;abort&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="CmdTutorialGiveUp.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.rooms.html#evennia.contrib.tutorial_world.rooms.CmdTutorialGiveUp.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">outro_room</span> <span class="o">=</span> <span class="n">OutroRoom</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">outro_room</span><span class="p">:</span>
+            <span class="n">outro_room</span> <span class="o">=</span> <span class="n">outro_room</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;That didn&#39;t work (seems like a bug). &quot;</span>
+                            <span class="s2">&quot;Try to use the |wteleport|n command instead.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">outro_room</span><span class="p">)</span></div></div>
+
 
 <div class="viewcode-block" id="TutorialRoomCmdSet"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.rooms.html#evennia.contrib.tutorial_world.rooms.TutorialRoomCmdSet">[docs]</a><span class="k">class</span> <span class="nc">TutorialRoomCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -256,7 +276,8 @@
         <span class="sd">&quot;&quot;&quot;add the tutorial-room commands&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdTutorial</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdTutorialSetDetail</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdTutorialLook</span><span class="p">())</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdTutorialLook</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdTutorialGiveUp</span><span class="p">())</span></div></div>
 
 
 <div class="viewcode-block" id="TutorialRoom"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.rooms.html#evennia.contrib.tutorial_world.rooms.TutorialRoom">[docs]</a><span class="k">class</span> <span class="nc">TutorialRoom</span><span class="p">(</span><span class="n">DefaultRoom</span><span class="p">):</span>
@@ -403,6 +424,31 @@
 <span class="c1">#</span>
 <span class="c1"># -------------------------------------------------------------</span>
 
+<div class="viewcode-block" id="CmdEvenniaIntro"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.rooms.html#evennia.contrib.tutorial_world.rooms.CmdEvenniaIntro">[docs]</a><span class="k">class</span> <span class="nc">CmdEvenniaIntro</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Start the Evennia intro wizard.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">        intro</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;intro&quot;</span>
+
+<div class="viewcode-block" id="CmdEvenniaIntro.func"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.rooms.html#evennia.contrib.tutorial_world.rooms.CmdEvenniaIntro.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">.intro_menu</span> <span class="k">import</span> <span class="n">init_menu</span>
+        <span class="c1"># quell also superusers</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">account</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;quell&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;(Auto-quelling)&quot;</span><span class="p">)</span>
+        <span class="n">init_menu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdSetEvenniaIntro"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.rooms.html#evennia.contrib.tutorial_world.rooms.CmdSetEvenniaIntro">[docs]</a><span class="k">class</span> <span class="nc">CmdSetEvenniaIntro</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;Evennia Intro StartSet&quot;</span>
+
+<div class="viewcode-block" id="CmdSetEvenniaIntro.at_cmdset_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.rooms.html#evennia.contrib.tutorial_world.rooms.CmdSetEvenniaIntro.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdEvenniaIntro</span><span class="p">())</span></div></div>
+
 
 <div class="viewcode-block" id="IntroRoom"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.rooms.html#evennia.contrib.tutorial_world.rooms.IntroRoom">[docs]</a><span class="k">class</span> <span class="nc">IntroRoom</span><span class="p">(</span><span class="n">TutorialRoom</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -421,7 +467,8 @@
             <span class="s2">&quot;The first room of the tutorial. &quot;</span>
             <span class="s2">&quot;This assigns the health Attribute to &quot;</span>
             <span class="s2">&quot;the account.&quot;</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdSetEvenniaIntro</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="IntroRoom.at_object_receive"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.rooms.html#evennia.contrib.tutorial_world.rooms.IntroRoom.at_object_receive">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">source_location</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -437,8 +484,12 @@
 
         <span class="k">if</span> <span class="n">character</span><span class="o">.</span><span class="n">is_superuser</span><span class="p">:</span>
             <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">78</span> <span class="o">+</span> <span class="n">SUPERUSER_WARNING</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">78</span>
-            <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|r</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="n">string</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">character</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">quell</span><span class="o">=</span><span class="s2">&quot;|w@quell|r&quot;</span><span class="p">))</span></div></div>
-
+            <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|r</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="n">string</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">character</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">quell</span><span class="o">=</span><span class="s2">&quot;|wquell|r&quot;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># quell user</span>
+            <span class="k">if</span> <span class="n">character</span><span class="o">.</span><span class="n">account</span><span class="p">:</span>
+                <span class="n">character</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;quell&quot;</span><span class="p">)</span>
+                <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;(Auto-quelling while in tutorial-world)&quot;</span><span class="p">)</span></div></div>
 
 <span class="c1"># -------------------------------------------------------------</span>
 <span class="c1">#</span>
@@ -658,7 +709,7 @@
     <span class="sd">&quot;&quot;&quot;This groups the bridge commands. We will store it on the room.&quot;&quot;&quot;</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;Bridge commands&quot;</span>
-    <span class="n">priority</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># this gives it precedence over the normal look/help commands.</span>
+    <span class="n">priority</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># this gives it precedence over the normal look/help commands.</span>
 
 <div class="viewcode-block" id="BridgeCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.rooms.html#evennia.contrib.tutorial_world.rooms.BridgeCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Called at first cmdset creation&quot;&quot;&quot;</span>
@@ -720,7 +771,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">east_exit</span> <span class="o">=</span> <span class="s2">&quot;gate&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">fall_exit</span> <span class="o">=</span> <span class="s2">&quot;cliffledge&quot;</span>
         <span class="c1"># add the cmdset on the room.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">BridgeCmdSet</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">BridgeCmdSet</span><span class="p">,</span> <span class="n">permanent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="c1"># since the default Character&#39;s at_look() will access the room&#39;s</span>
         <span class="c1"># return_description (this skips the cmdset) when</span>
         <span class="c1"># first entering it, we need to explicitly turn off the room</span>
@@ -1148,10 +1199,14 @@
             <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">character</span><span class="o">.</span><span class="n">contents</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">typeclass_path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorial_world&quot;</span><span class="p">):</span>
                     <span class="n">obj</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
-            <span class="n">character</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;tutorial_world&quot;</span><span class="p">)</span></div></div>
+            <span class="n">character</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;tutorial_world&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="OutroRoom.at_object_leave"><a class="viewcode-back" href="../../../../api/evennia.contrib.tutorial_world.rooms.html#evennia.contrib.tutorial_world.rooms.OutroRoom.at_object_leave">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">character</span><span class="o">.</span><span class="n">account</span><span class="p">:</span>
+            <span class="n">character</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;unquell&quot;</span><span class="p">)</span></div></div>
+
 </pre></div>
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -1173,7 +1228,7 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="rooms.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../../0.9.1/index.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../../../../0.9.5/index.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -1191,13 +1246,12 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorial_world.rooms</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

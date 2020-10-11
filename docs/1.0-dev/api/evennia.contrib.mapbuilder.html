@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.mapbuilder &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +25,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.mapbuilder</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -111,46 +109,46 @@ two - execute build instructions twice without automatic exit creation.</p>
 <p>Below are two examples showcasing the use of automatic exit generation and
 custom exit generation. Whilst located, and can be used, from this module for
 convenience The below example code should be in mymap.py in mygame/world.</p>
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.mapbuilder.example1_build_forest">
-<code class="sig-prename descclassname">evennia.contrib.mapbuilder.</code><code class="sig-name descname">example1_build_forest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/mapbuilder.html#example1_build_forest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.mapbuilder.example1_build_forest" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.mapbuilder.</code><code class="sig-name descname">example1_build_forest</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/mapbuilder.html#example1_build_forest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.mapbuilder.example1_build_forest" title="Permalink to this definition">¶</a></dt>
 <dd><p>A basic example of build instructions. Make sure to include <a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs
 in the arguments and return an instance of the room for exit generation.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.mapbuilder.example1_build_mountains">
-<code class="sig-prename descclassname">evennia.contrib.mapbuilder.</code><code class="sig-name descname">example1_build_mountains</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/mapbuilder.html#example1_build_mountains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.mapbuilder.example1_build_mountains" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.mapbuilder.</code><code class="sig-name descname">example1_build_mountains</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/mapbuilder.html#example1_build_mountains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.mapbuilder.example1_build_mountains" title="Permalink to this definition">¶</a></dt>
 <dd><p>A room that is a little more advanced</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.mapbuilder.example1_build_temple">
-<code class="sig-prename descclassname">evennia.contrib.mapbuilder.</code><code class="sig-name descname">example1_build_temple</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/mapbuilder.html#example1_build_temple"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.mapbuilder.example1_build_temple" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.mapbuilder.</code><code class="sig-name descname">example1_build_temple</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/mapbuilder.html#example1_build_temple"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.mapbuilder.example1_build_temple" title="Permalink to this definition">¶</a></dt>
 <dd><p>A unique room that does not need to be as general</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.mapbuilder.example2_build_forest">
-<code class="sig-prename descclassname">evennia.contrib.mapbuilder.</code><code class="sig-name descname">example2_build_forest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/mapbuilder.html#example2_build_forest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.mapbuilder.example2_build_forest" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.mapbuilder.</code><code class="sig-name descname">example2_build_forest</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/mapbuilder.html#example2_build_forest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.mapbuilder.example2_build_forest" title="Permalink to this definition">¶</a></dt>
 <dd><p>A basic room</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.mapbuilder.example2_build_verticle_exit">
-<code class="sig-prename descclassname">evennia.contrib.mapbuilder.</code><code class="sig-name descname">example2_build_verticle_exit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/mapbuilder.html#example2_build_verticle_exit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.mapbuilder.example2_build_verticle_exit" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.mapbuilder.</code><code class="sig-name descname">example2_build_verticle_exit</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/mapbuilder.html#example2_build_verticle_exit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.mapbuilder.example2_build_verticle_exit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates two exits to and from the two rooms north and south.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.mapbuilder.example2_build_horizontal_exit">
-<code class="sig-prename descclassname">evennia.contrib.mapbuilder.</code><code class="sig-name descname">example2_build_horizontal_exit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/mapbuilder.html#example2_build_horizontal_exit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.mapbuilder.example2_build_horizontal_exit" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.mapbuilder.</code><code class="sig-name descname">example2_build_horizontal_exit</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/mapbuilder.html#example2_build_horizontal_exit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.mapbuilder.example2_build_horizontal_exit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates two exits to and from the two rooms east and west.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.mapbuilder.build_map">
-<code class="sig-prename descclassname">evennia.contrib.mapbuilder.</code><code class="sig-name descname">build_map</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">game_map</span></em>, <em class="sig-param"><span class="n">legend</span></em>, <em class="sig-param"><span class="n">iterations</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">build_exits</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/mapbuilder.html#build_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.mapbuilder.build_map" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.mapbuilder.</code><code class="sig-name descname">build_map</code><span class="sig-paren">(</span><em class="sig-param">caller</em>, <em class="sig-param">game_map</em>, <em class="sig-param">legend</em>, <em class="sig-param">iterations=1</em>, <em class="sig-param">build_exits=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/mapbuilder.html#build_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.mapbuilder.build_map" title="Permalink to this definition">¶</a></dt>
 <dd><p>Receives the fetched map and legend vars provided by the player.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -172,9 +170,9 @@ value and exits are optionally generated between adjacent rooms according
 to the <strong>build_exits</strong> value.</p>
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.mapbuilder.CmdMapBuilder">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.mapbuilder.</code><code class="sig-name descname">CmdMapBuilder</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/mapbuilder.html#CmdMapBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.mapbuilder.CmdMapBuilder" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.mapbuilder.</code><code class="sig-name descname">CmdMapBuilder</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/mapbuilder.html#CmdMapBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.mapbuilder.CmdMapBuilder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
 <p>Build a map from a 2D ASCII map.</p>
 <dl class="simple">
@@ -201,38 +199,38 @@ character is not a match to a provided trigger character (including spaces)
 it is simply skipped and the process continues. By default exits are
 automatically generated but is turned off by switches which also determines
 how many times the map is iterated over.</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.mapbuilder.CmdMapBuilder.key">
 <code class="sig-name descname">key</code><em class="property"> = '&#64;mapbuilder'</em><a class="headerlink" href="#evennia.contrib.mapbuilder.CmdMapBuilder.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.mapbuilder.CmdMapBuilder.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = ['&#64;buildmap']</em><a class="headerlink" href="#evennia.contrib.mapbuilder.CmdMapBuilder.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.mapbuilder.CmdMapBuilder.locks">
 <code class="sig-name descname">locks</code><em class="property"> = 'cmd:superuser()'</em><a class="headerlink" href="#evennia.contrib.mapbuilder.CmdMapBuilder.locks" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.mapbuilder.CmdMapBuilder.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.contrib.mapbuilder.CmdMapBuilder.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.mapbuilder.CmdMapBuilder.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/mapbuilder.html#CmdMapBuilder.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.mapbuilder.CmdMapBuilder.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Starts the processor.</p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.mapbuilder.CmdMapBuilder.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:superuser()'</em><a class="headerlink" href="#evennia.contrib.mapbuilder.CmdMapBuilder.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.mapbuilder.CmdMapBuilder.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;buildmap', 'category': 'building', 'key': '&#64;mapbuilder', 'tags': '', 'text': '\n    Build a map from a 2D ASCII map.\n\n    Usage:\n        &#64;mapbuilder[/switch] &lt;path.to.file.MAPNAME&gt; &lt;path.to.file.MAP_LEGEND&gt;\n\n    Switches:\n      one - execute build instructions once without automatic exit creation\n      two - execute build instructions twice without automatic exit creation\n\n    Example:\n        &#64;mapbuilder world.gamemap.MAP world.maplegend.MAP_LEGEND\n        &#64;mapbuilder evennia.contrib.mapbuilder.EXAMPLE1_MAP EXAMPLE1_LEGEND\n        &#64;mapbuilder/two evennia.contrib.mapbuilder.EXAMPLE2_MAP EXAMPLE2_LEGEND\n                (Legend path defaults to map path)\n\n    This is a command which takes two inputs:\n    A string of ASCII characters representing a map and a dictionary of\n    functions containing build instructions. The characters of the map are\n    iterated over and compared to a list of trigger characters. When a match\n    is found the corresponding function is executed generating the rooms,\n    exits and objects as defined by the users build instructions. If a\n    character is not a match to a provided trigger character (including spaces)\n    it is simply skipped and the process continues. By default exits are\n    automatically generated but is turned off by switches which also determines\n    how many times the map is iterated over.\n    '}</em><a class="headerlink" href="#evennia.contrib.mapbuilder.CmdMapBuilder.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -242,7 +240,6 @@ how many times the map is iterated over.</p>
 </div>
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -271,7 +268,7 @@ how many times the map is iterated over.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.contrib.mapbuilder.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.1/api/evennia.contrib.mapbuilder.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../0.9.5/api/evennia.contrib.mapbuilder.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -287,13 +284,12 @@ how many times the map is iterated over.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.mapbuilder</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

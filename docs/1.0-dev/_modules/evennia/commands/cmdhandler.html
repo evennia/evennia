@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.commands.cmdhandler &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -28,8 +27,7 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdhandler</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -215,6 +213,27 @@
         <span class="p">)</span>
 
 
+<span class="k">def</span> <span class="nf">_process_input</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">generator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Specifically handle the get_input value to send to _progressive_cmd_run as</span>
+<span class="sd">    part of yielding from a Command&#39;s `func`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        caller (Character, Account or Session): the caller.</span>
+<span class="sd">        prompt (str): The sent prompt.</span>
+<span class="sd">        result (str): The unprocessed answer.</span>
+<span class="sd">        cmd (Command): The command itself.</span>
+<span class="sd">        generator (GeneratorType): The generator.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        result (bool): Always `False` (stop processing).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># We call it using a Twisted deferLater to make sure the input is properly closed.</span>
+    <span class="n">deferLater</span><span class="p">(</span><span class="n">reactor</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">_progressive_cmd_run</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">generator</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">result</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">False</span>
+
+
 <span class="k">def</span> <span class="nf">_progressive_cmd_run</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">generator</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Progressively call the command that was given in argument. Used</span>
@@ -247,7 +266,15 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">generator</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
-        <span class="k">pass</span>
+        <span class="c1"># duplicated from cmdhandler._run_command, to have these</span>
+        <span class="c1"># run in the right order while staying inside the deferred</span>
+        <span class="n">cmd</span><span class="o">.</span><span class="n">at_post_cmd</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">cmd</span><span class="o">.</span><span class="n">save_for_next</span><span class="p">:</span>
+            <span class="c1"># store a reference to this command, possibly</span>
+            <span class="c1"># accessible by the next command.</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">last_cmd</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cmd</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">last_cmd</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
             <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">_progressive_cmd_run</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">generator</span><span class="p">)</span>
@@ -255,27 +282,6 @@
             <span class="n">_GET_INPUT</span><span class="p">(</span><span class="n">cmd</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">_process_input</span><span class="p">,</span> <span class="n">cmd</span><span class="o">=</span><span class="n">cmd</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="n">generator</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;unknown type for a yielded value in command: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
-
-
-<span class="k">def</span> <span class="nf">_process_input</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">generator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Specifically handle the get_input value to send to _progressive_cmd_run as</span>
-<span class="sd">    part of yielding from a Command&#39;s `func`.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        caller (Character, Account or Session): the caller.</span>
-<span class="sd">        prompt (str): The sent prompt.</span>
-<span class="sd">        result (str): The unprocessed answer.</span>
-<span class="sd">        cmd (Command): The command itself.</span>
-<span class="sd">        generator (GeneratorType): The generator.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        result (bool): Always `False` (stop processing).</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># We call it using a Twisted deferLater to make sure the input is properly closed.</span>
-    <span class="n">deferLater</span><span class="p">(</span><span class="n">reactor</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">_progressive_cmd_run</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">generator</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">result</span><span class="p">)</span>
-    <span class="k">return</span> <span class="kc">False</span>
 
 
 <span class="c1"># custom Exceptions</span>
@@ -527,6 +533,11 @@
             <span class="n">cmdset</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">for</span> <span class="n">cset</span> <span class="ow">in</span> <span class="p">(</span><span class="n">cset</span> <span class="k">for</span> <span class="n">cset</span> <span class="ow">in</span> <span class="n">local_obj_cmdsets</span> <span class="k">if</span> <span class="n">cset</span><span class="p">):</span>
             <span class="n">cset</span><span class="o">.</span><span class="n">duplicates</span> <span class="o">=</span> <span class="n">cset</span><span class="o">.</span><span class="n">old_duplicates</span>
+        <span class="c1"># important - this syncs the CmdSetHandler&#39;s .current field with the</span>
+        <span class="c1"># true current cmdset!</span>
+        <span class="k">if</span> <span class="n">cmdset</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="n">cmdset</span>
+
         <span class="n">returnValue</span><span class="p">(</span><span class="n">cmdset</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">ErrorReported</span><span class="p">:</span>
         <span class="k">raise</span>
@@ -673,19 +684,23 @@
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">GeneratorType</span><span class="p">):</span>
                 <span class="c1"># cmd.func() is a generator, execute progressively</span>
                 <span class="n">_progressive_cmd_run</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">ret</span><span class="p">)</span>
-                <span class="k">yield</span> <span class="kc">None</span>
+                <span class="n">ret</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">ret</span>
+                <span class="c1"># note that the _progressive_cmd_run will itself run</span>
+                <span class="c1"># the at_post_cmd etc as it finishes; this is a bit of</span>
+                <span class="c1"># code duplication but there seems to be no way to</span>
+                <span class="c1"># catch the StopIteration here (it&#39;s not in the same</span>
+                <span class="c1"># frame since this is in a deferred chain)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">ret</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">ret</span>
+                <span class="c1"># post-command hook</span>
+                <span class="k">yield</span> <span class="n">cmd</span><span class="o">.</span><span class="n">at_post_cmd</span><span class="p">()</span>
 
-            <span class="c1"># post-command hook</span>
-            <span class="k">yield</span> <span class="n">cmd</span><span class="o">.</span><span class="n">at_post_cmd</span><span class="p">()</span>
-
-            <span class="k">if</span> <span class="n">cmd</span><span class="o">.</span><span class="n">save_for_next</span><span class="p">:</span>
-                <span class="c1"># store a reference to this command, possibly</span>
-                <span class="c1"># accessible by the next command.</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">last_cmd</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">copy</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">last_cmd</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">if</span> <span class="n">cmd</span><span class="o">.</span><span class="n">save_for_next</span><span class="p">:</span>
+                    <span class="c1"># store a reference to this command, possibly</span>
+                    <span class="c1"># accessible by the next command.</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">last_cmd</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">copy</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">last_cmd</span> <span class="o">=</span> <span class="kc">None</span>
 
             <span class="c1"># return result to the deferred</span>
             <span class="n">returnValue</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
@@ -851,7 +866,6 @@
         <span class="n">_msg_err</span><span class="p">(</span><span class="n">error_to</span><span class="p">,</span> <span class="n">_ERROR_CMDHANDLER</span><span class="p">)</span></div>
 </pre></div>
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -873,7 +887,7 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="cmdhandler.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../0.9.1/index.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../../../0.9.5/index.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -891,13 +905,12 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdhandler</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

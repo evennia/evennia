@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.commands.cmdsethandler &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -28,8 +27,7 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdsethandler</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -334,7 +332,10 @@
 
         <span class="c1"># the id of the &quot;merged&quot; current cmdset for easy access.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="c1"># this holds the &quot;merged&quot; current command set</span>
+        <span class="c1"># this holds the &quot;merged&quot; current command set. Note that while the .update</span>
+        <span class="c1"># method updates this field in order to have it synced when operating on</span>
+        <span class="c1"># cmdsets in-code, when the game runs, this field is kept up-to-date by</span>
+        <span class="c1"># the cmdsethandler&#39;s get_and_merge_cmdsets!</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1"># this holds a history of CommandSets</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span> <span class="o">=</span> <span class="p">[</span><span class="n">_EmptyCmdSet</span><span class="p">(</span><span class="n">cmdsetobj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)]</span>
@@ -352,27 +353,13 @@
 <span class="sd">        Display current commands</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">strings</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&lt;CmdSetHandler&gt; stack:&quot;</span><span class="p">]</span>
         <span class="n">mergelist</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="c1"># We have more than one cmdset in stack; list them all</span>
             <span class="k">for</span> <span class="n">snum</span><span class="p">,</span> <span class="n">cmdset</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="p">):</span>
-                <span class="n">mergetype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mergetype_stack</span><span class="p">[</span><span class="n">snum</span><span class="p">]</span>
-                <span class="n">permstring</span> <span class="o">=</span> <span class="s2">&quot;non-perm&quot;</span>
-                <span class="k">if</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">permanent</span><span class="p">:</span>
-                    <span class="n">permstring</span> <span class="o">=</span> <span class="s2">&quot;perm&quot;</span>
-                <span class="k">if</span> <span class="n">mergetype</span> <span class="o">!=</span> <span class="n">cmdset</span><span class="o">.</span><span class="n">mergetype</span><span class="p">:</span>
-                    <span class="n">mergetype</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">^&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">mergetype</span><span class="p">)</span>
-                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> </span><span class="si">%i</span><span class="s2">: &lt;</span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">, prio </span><span class="si">%i</span><span class="s2">, </span><span class="si">%s</span><span class="s2">)&gt;: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
-                    <span class="n">snum</span><span class="p">,</span>
-                    <span class="n">cmdset</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
-                    <span class="n">mergetype</span><span class="p">,</span>
-                    <span class="n">cmdset</span><span class="o">.</span><span class="n">priority</span><span class="p">,</span>
-                    <span class="n">permstring</span><span class="p">,</span>
-                    <span class="n">cmdset</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="n">mergelist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">snum</span><span class="p">))</span>
-            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="n">mergelist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">snum</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+                <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot; {snum + 1}: </span><span class="si">{cmdset}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="c1"># Display the currently active cmdset, limited by self.obj&#39;s permissions</span>
         <span class="n">mergetype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mergetype_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
@@ -380,27 +367,15 @@
             <span class="n">merged_on</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdset_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">key</span>
             <span class="n">mergetype</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;custom </span><span class="si">{mergetype}</span><span class="s2"> on cmdset &#39;</span><span class="si">{cmdset}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
             <span class="n">mergetype</span> <span class="o">=</span> <span class="n">mergetype</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mergetype</span><span class="o">=</span><span class="n">mergetype</span><span class="p">,</span> <span class="n">cmdset</span><span class="o">=</span><span class="n">merged_on</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">mergelist</span><span class="p">:</span>
-            <span class="n">tmpstring</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot; &lt;Merged </span><span class="si">{mergelist}</span><span class="s2"> </span><span class="si">{mergetype}</span><span class="s2">, prio </span><span class="si">{prio}</span><span class="s2">&gt;: </span><span class="si">{current}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">string</span> <span class="o">+=</span> <span class="n">tmpstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">mergelist</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mergelist</span><span class="p">),</span>
-                <span class="n">mergetype</span><span class="o">=</span><span class="n">mergetype</span><span class="p">,</span>
-                <span class="n">prio</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">priority</span><span class="p">,</span>
-                <span class="n">current</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="c1"># current is a result of mergers</span>
+            <span class="n">mergelist</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mergelist</span><span class="p">)</span>
+            <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot; &lt;Merged </span><span class="si">{mergelist}</span><span class="s2">&gt;: </span><span class="si">{self.current}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">permstring</span> <span class="o">=</span> <span class="s2">&quot;non-perm&quot;</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">permanent</span><span class="p">:</span>
-                <span class="n">permstring</span> <span class="o">=</span> <span class="s2">&quot;perm&quot;</span>
-            <span class="n">tmpstring</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot; &lt;</span><span class="si">{key}</span><span class="s2"> (</span><span class="si">{mergetype}</span><span class="s2">, prio </span><span class="si">{prio}</span><span class="s2">, </span><span class="si">{permstring}</span><span class="s2">)&gt;:</span><span class="se">\n</span><span class="s2"> </span><span class="si">{keylist}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">string</span> <span class="o">+=</span> <span class="n">tmpstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
-                <span class="n">mergetype</span><span class="o">=</span><span class="n">mergetype</span><span class="p">,</span>
-                <span class="n">prio</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">priority</span><span class="p">,</span>
-                <span class="n">permstring</span><span class="o">=</span><span class="n">permstring</span><span class="p">,</span>
-                <span class="n">keylist</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cmd</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">o</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">key</span><span class="p">)),</span>
-            <span class="p">)</span>
-        <span class="k">return</span> <span class="n">string</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="c1"># current is a single cmdset</span>
+            <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">))</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_import_cmdset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset_path</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -422,12 +397,22 @@
 <div class="viewcode-block" id="CmdSetHandler.update"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Re-adds all sets in the handler to have an updated current</span>
-<span class="sd">        set.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            init_mode (bool, optional): Used automatically right after</span>
 <span class="sd">                this handler was created; it imports all permanent cmdsets</span>
 <span class="sd">                from the database.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            This method is necessary in order to always have a `.current`</span>
+<span class="sd">            cmdset when working with the cmdsethandler in code. But the</span>
+<span class="sd">            CmdSetHandler doesn&#39;t (cannot) consider external cmdsets and game</span>
+<span class="sd">            state. This means that the .current calculated from this method</span>
+<span class="sd">            will likely not match the true current cmdset as determined at</span>
+<span class="sd">            run-time by `cmdhandler.get_and_merge_cmdsets()`. So in a running</span>
+<span class="sd">            game the responsibility of keeping `.current` upt-to-date belongs</span>
+<span class="sd">            to the central `cmdhandler.get_and_merge_cmdsets()`!</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">init_mode</span><span class="p">:</span>
             <span class="c1"># reimport all permanent cmdsets</span>
@@ -708,7 +693,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div></div>
 </pre></div>
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -730,7 +714,7 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="cmdsethandler.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../0.9.1/index.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../../../0.9.5/index.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -748,13 +732,12 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdsethandler</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

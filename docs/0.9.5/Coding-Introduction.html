@@ -1,0 +1,202 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Coding Introduction &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="coding-introduction">
+<h1>Coding Introduction<a class="headerlink" href="#coding-introduction" title="Permalink to this headline">¶</a></h1>
+<p>Evennia allows for a lot of freedom when designing your game - but to code efficiently you still
+need to adopt some best practices as well as find a good place to start to learn.</p>
+<p>Here are some pointers to get you going.</p>
+<div class="section" id="python">
+<h2>Python<a class="headerlink" href="#python" title="Permalink to this headline">¶</a></h2>
+<p>Evennia is developed using Python. Even if you are more of a designer than a coder, it is wise to
+learn how to read and understand basic Python code. If you are new to Python, or need a refresher,
+take a look at our two-part <a class="reference internal" href="Python-basic-introduction.html"><span class="doc">Python introduction</span></a>.</p>
+</div>
+<div class="section" id="explore-evennia-interactively">
+<h2>Explore Evennia interactively<a class="headerlink" href="#explore-evennia-interactively" title="Permalink to this headline">¶</a></h2>
+<p>When new to Evennia it can be hard to find things or figure out what is available. Evennia offers a
+special interactive python shell that allows you to experiment and try out things. It’s recommended
+to use <a class="reference external" href="http://ipython.org/">ipython</a> for this since the vanilla python prompt is very limited. Here
+are some simple commands to get started:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># [open a new console/terminal]</span>
+<span class="c1"># [activate your evennia virtualenv in this console/terminal]</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">ipython</span>    <span class="c1"># [only needed the first time]</span>
+<span class="n">cd</span> <span class="n">mygame</span>
+<span class="n">evennia</span> <span class="n">shell</span>
+</pre></div>
+</div>
+<p>This will open an Evennia-aware python shell (using ipython). From within this shell, try</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">evennia</span>
+<span class="n">evennia</span><span class="o">.&lt;</span><span class="n">TAB</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>That is, enter <code class="docutils literal notranslate"><span class="pre">evennia.</span></code> and press the <code class="docutils literal notranslate"><span class="pre">&lt;TAB&gt;</span></code> key. This will show you all the resources made
+available at the top level of Evennia’s  “flat API”. See the <a class="reference internal" href="Evennia-API.html"><span class="doc">flat API</span></a> page for more
+info on how to explore it efficiently.</p>
+<p>You can complement your exploration by peeking at the sections of the much more detailed
+<a class="reference internal" href="Developer-Central.html"><span class="doc">Developer Central</span></a>. The <a class="reference internal" href="Tutorials.html"><span class="doc">Tutorials</span></a> section also contains a growing collection
+of system- or implementation-specific help.</p>
+</div>
+<div class="section" id="use-a-python-syntax-checker">
+<h2>Use a python syntax checker<a class="headerlink" href="#use-a-python-syntax-checker" title="Permalink to this headline">¶</a></h2>
+<p>Evennia works by importing your own modules and running them as part of the server. Whereas Evennia
+should just gracefully tell you what errors it finds, it can nevertheless be a good idea for you to
+check your code for simple syntax errors <em>before</em> you load it into the running server.  There are
+many python syntax checkers out there. A fast and easy one is
+<a class="reference external" href="https://pypi.python.org/pypi/pyflakes">pyflakes</a>, a more verbose one is
+<a class="reference external" href="http://www.pylint.org/">pylint</a>. You can also check so that your code looks up to snuff using
+<a class="reference external" href="https://pypi.python.org/pypi/pep8">pep8</a>. Even with a syntax checker you will not be able to catch
+every possible problem - some bugs or problems will only appear when you actually run the code. But
+using such a checker can be a good start to weed out the simple problems.</p>
+</div>
+<div class="section" id="plan-before-you-code">
+<h2>Plan before you code<a class="headerlink" href="#plan-before-you-code" title="Permalink to this headline">¶</a></h2>
+<p>Before you start coding away at your dream game, take a look at our <a class="reference internal" href="Game-Planning.html"><span class="doc">Game Planning</span></a>
+page. It might hopefully help you avoid some common pitfalls and time sinks.</p>
+</div>
+<div class="section" id="code-in-your-game-folder-not-in-the-evennia-repository">
+<h2>Code in your game folder, not in the evennia/ repository<a class="headerlink" href="#code-in-your-game-folder-not-in-the-evennia-repository" title="Permalink to this headline">¶</a></h2>
+<p>As part of the Evennia setup you will create a game folder to host your game code. This is your
+home. You should <em>never</em> need to modify anything in the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> library (anything you download
+from us, really). You import useful functionality from here and if you see code you like, copy&amp;paste
+it out into your game folder and edit it there.</p>
+<p>If you find that Evennia doesn’t support some functionality you need, make a
+<a class="reference external" href="https://github.com/evennia/evennia/issues/new/choose">Feature Request</a> about it. Same goes for <a class="reference external" href="https://github.com/evennia/evennia/issues/new/choose">bugs</a>. If you add features or fix bugs
+yourself, please consider <a class="reference internal" href="Contributing.html"><span class="doc">Contributing</span></a> your changes upstream!</p>
+</div>
+<div class="section" id="learn-to-read-tracebacks">
+<h2>Learn to read tracebacks<a class="headerlink" href="#learn-to-read-tracebacks" title="Permalink to this headline">¶</a></h2>
+<p>Python is very good at reporting when and where things go wrong. A <em>traceback</em> shows everything you
+need to know about crashing code. The text can be pretty long, but you usually are only interested
+in the last bit, where it says what the error is and at which module and line number it happened -
+armed with this info you can resolve most problems.</p>
+<p>Evennia will usually not show the full traceback in-game though. Instead the server outputs errors
+to the terminal/console from which you started Evennia in the first place. If you want more to show
+in-game you can add <code class="docutils literal notranslate"><span class="pre">IN_GAME_ERRORS</span> <span class="pre">=</span> <span class="pre">True</span></code> to your settings file. This will echo most (but not all)
+tracebacks both in-game as well as to the terminal/console. This is a potential security problem
+though, so don’t keep this active when your game goes into production.</p>
+<blockquote>
+<div><p>A common confusing error is finding that objects in-game are suddenly of the type <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>
+rather than your custom typeclass. This happens when you introduce a critical Syntax error to the
+module holding your custom class. Since such a module is not valid Python, Evennia can’t load it at
+all. Instead of crashing, Evennia will then print the full traceback to the terminal/console and
+temporarily fall back to the safe <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> until you fix the problem and reload.</p>
+</div></blockquote>
+</div>
+<div class="section" id="docs-are-here-to-help-you">
+<h2>Docs are here to help you<a class="headerlink" href="#docs-are-here-to-help-you" title="Permalink to this headline">¶</a></h2>
+<p>Some people find reading documentation extremely dull and shun it out of principle. That’s your
+call, but reading docs really <em>does</em> help you, promise! Evennia’s documentation is pretty thorough
+and knowing what is possible can often give you a lot of new cool game ideas. That said, if you
+can’t find the answer in the docs, don’t be shy to ask questions! The
+<a class="reference external" href="https://sites.google.com/site/evenniaserver/discussions">discussion group</a> and the
+<a class="reference external" href="http://webchat.freenode.net/?channels=evennia">irc chat</a> are also there for you.</p>
+</div>
+<div class="section" id="the-most-important-point">
+<h2>The most important point<a class="headerlink" href="#the-most-important-point" title="Permalink to this headline">¶</a></h2>
+<p>And finally, of course, have fun!</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Coding Introduction</a><ul>
+<li><a class="reference internal" href="#python">Python</a></li>
+<li><a class="reference internal" href="#explore-evennia-interactively">Explore Evennia interactively</a></li>
+<li><a class="reference internal" href="#use-a-python-syntax-checker">Use a python syntax checker</a></li>
+<li><a class="reference internal" href="#plan-before-you-code">Plan before you code</a></li>
+<li><a class="reference internal" href="#code-in-your-game-folder-not-in-the-evennia-repository">Code in your game folder, not in the evennia/ repository</a></li>
+<li><a class="reference internal" href="#learn-to-read-tracebacks">Learn to read tracebacks</a></li>
+<li><a class="reference internal" href="#docs-are-here-to-help-you">Docs are here to help you</a></li>
+<li><a class="reference internal" href="#the-most-important-point">The most important point</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Coding-Introduction.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Coding-Introduction.html">0.9.5 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

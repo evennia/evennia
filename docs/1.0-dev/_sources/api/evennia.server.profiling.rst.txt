@@ -10,7 +10,7 @@ Modules
 -------
 
 .. toctree::
-   :maxdepth: 6
+   :maxdepth: 
 
    evennia.server.profiling.dummyrunner
    evennia.server.profiling.dummyrunner_settings

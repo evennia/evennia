@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.tutorial_world.objects &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -28,8 +27,7 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorial_world.objects</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -63,7 +61,7 @@
 <span class="kn">import</span> <span class="nn">random</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">DefaultExit</span><span class="p">,</span> <span class="n">Command</span><span class="p">,</span> <span class="n">CmdSet</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">search</span><span class="p">,</span> <span class="n">delay</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">search</span><span class="p">,</span> <span class="n">delay</span><span class="p">,</span> <span class="n">dedent</span>
 <span class="kn">from</span> <span class="nn">evennia.prototypes.spawner</span> <span class="k">import</span> <span class="n">spawn</span>
 
 <span class="c1"># -------------------------------------------------------------</span>
@@ -688,7 +686,7 @@
         <span class="sd">&quot;&quot;&quot;called when the object is first created.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_object_creation</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add</span><span class="p">([</span><span class="s2">&quot;secret passage&quot;</span><span class="p">,</span> <span class="s2">&quot;passage&quot;</span><span class="p">,</span> <span class="s2">&quot;crack&quot;</span><span class="p">,</span> <span class="s2">&quot;opening&quot;</span><span class="p">,</span> <span class="s2">&quot;secret door&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add</span><span class="p">([</span><span class="s2">&quot;secret passage&quot;</span><span class="p">,</span> <span class="s2">&quot;passage&quot;</span><span class="p">,</span> <span class="s2">&quot;crack&quot;</span><span class="p">,</span> <span class="s2">&quot;opening&quot;</span><span class="p">,</span> <span class="s2">&quot;secret&quot;</span><span class="p">])</span>
 
         <span class="c1"># starting root positions. H1/H2 are the horizontally hanging roots,</span>
         <span class="c1"># V1/V2 the vertically hanging ones. Each can have three positions:</span>
@@ -728,7 +726,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">exit_open</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="c1"># start a 45 second timer before closing again. We store the deferred so it can be</span>
         <span class="c1"># killed in unittesting.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">deferred</span> <span class="o">=</span> <span class="n">delay</span><span class="p">(</span><span class="mi">45</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deferred</span> <span class="o">=</span> <span class="n">delay</span><span class="p">(</span><span class="mi">45</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
 
     <span class="k">def</span> <span class="nf">_translate_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">ipos</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Translates the position into words&quot;&quot;&quot;</span>
@@ -781,7 +780,7 @@
                 <span class="s2">&quot;The wall is old and covered with roots that here and there have permeated the stone. &quot;</span>
                 <span class="s2">&quot;The roots (or whatever they are - some of them are covered in small nondescript flowers) &quot;</span>
                 <span class="s2">&quot;crisscross the wall, making it hard to clearly see its stony surface. Maybe you could &quot;</span>
-                <span class="s2">&quot;try to |wshift|n or |wmove|n them.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;try to |wshift|n or |wmove|n them (like &#39;|wshift red up|n&#39;).</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="p">]</span>
             <span class="c1"># display the root positions to help with the puzzle</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">root_pos</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -874,6 +873,7 @@
         <span class="s2">&quot;stab&quot;</span><span class="p">,</span>
         <span class="s2">&quot;slash&quot;</span><span class="p">,</span>
         <span class="s2">&quot;chop&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;bash&quot;</span><span class="p">,</span>
         <span class="s2">&quot;parry&quot;</span><span class="p">,</span>
         <span class="s2">&quot;defend&quot;</span><span class="p">,</span>
     <span class="p">]</span>
@@ -916,7 +916,7 @@
             <span class="n">tstring</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> stabs at you with </span><span class="si">%s</span><span class="s2">. &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
             <span class="n">ostring</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> stabs at </span><span class="si">%s</span><span class="s2"> with </span><span class="si">%s</span><span class="s2">. &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">combat_parry_mode</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">elif</span> <span class="n">cmdstring</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;slash&quot;</span><span class="p">,</span> <span class="s2">&quot;chop&quot;</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="n">cmdstring</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;slash&quot;</span><span class="p">,</span> <span class="s2">&quot;chop&quot;</span><span class="p">,</span> <span class="s2">&quot;bash&quot;</span><span class="p">):</span>
             <span class="n">hit</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">hit</span><span class="p">)</span>  <span class="c1"># un modified due to slash</span>
             <span class="n">damage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">damage</span>  <span class="c1"># un modified due to slash</span>
             <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You slash with </span><span class="si">%s</span><span class="s2">. &quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span>
@@ -1191,7 +1191,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">rack_id</span> <span class="o">=</span> <span class="s2">&quot;weaponrack_1&quot;</span>
         <span class="c1"># these are prototype names from the prototype</span>
         <span class="c1"># dictionary above.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get_weapon_msg</span> <span class="o">=</span> <span class="s2">&quot;You find |c</span><span class="si">%s</span><span class="s2">|n.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get_weapon_msg</span> <span class="o">=</span> <span class="n">dedent</span><span class="p">(</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            You find |c%s|n. While carrying this weapon, these actions are available:</span>
+<span class="sd">              |wstab/thrust/pierce &lt;target&gt;|n - poke at the enemy. More damage but harder to hit.</span>
+<span class="sd">              |wslash/chop/bash &lt;target&gt;|n - swipe at the enemy. Less damage but easier to hit.</span>
+<span class="sd">              |wdefend/parry|n - protect yourself and make yourself harder to hit.)</span>
+<span class="sd">            &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">no_more_weapons_msg</span> <span class="o">=</span> <span class="s2">&quot;you find nothing else of use.&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">available_weapons</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;knife&quot;</span><span class="p">,</span> <span class="s2">&quot;dagger&quot;</span><span class="p">,</span> <span class="s2">&quot;sword&quot;</span><span class="p">,</span> <span class="s2">&quot;club&quot;</span><span class="p">]</span></div>
 
@@ -1216,7 +1223,6 @@
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get_weapon_msg</span> <span class="o">%</span> <span class="n">wpn</span><span class="o">.</span><span class="n">key</span><span class="p">)</span></div></div>
 </pre></div>
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -1238,7 +1244,7 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="objects.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../../0.9.1/index.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../../../../0.9.5/index.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -1256,13 +1262,12 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorial_world.objects</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

@@ -1,0 +1,212 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.comms.admin &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.comms.admin</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This defines how Comm models are displayed in the web admin interface.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="k">import</span> <span class="n">admin</span>
+<span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="k">import</span> <span class="n">ChannelDB</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.admin</span> <span class="k">import</span> <span class="n">AttributeInline</span><span class="p">,</span> <span class="n">TagInline</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+
+
+<div class="viewcode-block" id="ChannelAttributeInline"><a class="viewcode-back" href="../../../api/evennia.comms.admin.html#evennia.comms.admin.ChannelAttributeInline">[docs]</a><span class="k">class</span> <span class="nc">ChannelAttributeInline</span><span class="p">(</span><span class="n">AttributeInline</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Inline display of Channel Attribute - experimental</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">ChannelDB</span><span class="o">.</span><span class="n">db_attributes</span><span class="o">.</span><span class="n">through</span>
+    <span class="n">related_field</span> <span class="o">=</span> <span class="s2">&quot;channeldb&quot;</span></div>
+
+
+<div class="viewcode-block" id="ChannelTagInline"><a class="viewcode-back" href="../../../api/evennia.comms.admin.html#evennia.comms.admin.ChannelTagInline">[docs]</a><span class="k">class</span> <span class="nc">ChannelTagInline</span><span class="p">(</span><span class="n">TagInline</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Inline display of Channel Tags - experimental</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">ChannelDB</span><span class="o">.</span><span class="n">db_tags</span><span class="o">.</span><span class="n">through</span>
+    <span class="n">related_field</span> <span class="o">=</span> <span class="s2">&quot;channeldb&quot;</span></div>
+
+
+<div class="viewcode-block" id="MsgAdmin"><a class="viewcode-back" href="../../../api/evennia.comms.admin.html#evennia.comms.admin.MsgAdmin">[docs]</a><span class="k">class</span> <span class="nc">MsgAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Defines display for Msg objects</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_date_created&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_sender&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_receivers&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_channels&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_message&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_lock_storage&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">list_display_links</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,)</span>
+    <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;db_date_created&quot;</span><span class="p">,</span> <span class="s2">&quot;db_sender&quot;</span><span class="p">,</span> <span class="s2">&quot;db_receivers&quot;</span><span class="p">,</span> <span class="s2">&quot;db_channels&quot;</span><span class="p">]</span>
+    <span class="c1"># readonly_fields = [&#39;db_message&#39;, &#39;db_sender&#39;, &#39;db_receivers&#39;, &#39;db_channels&#39;]</span>
+    <span class="n">search_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;^db_date_created&quot;</span><span class="p">,</span> <span class="s2">&quot;^db_message&quot;</span><span class="p">]</span>
+    <span class="n">save_as</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">save_on_top</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">list_select_related</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+<span class="c1"># admin.site.register(Msg, MsgAdmin)</span>
+
+
+<div class="viewcode-block" id="ChannelAdmin"><a class="viewcode-back" href="../../../api/evennia.comms.admin.html#evennia.comms.admin.ChannelAdmin">[docs]</a><span class="k">class</span> <span class="nc">ChannelAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Defines display for Channel objects</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">inlines</span> <span class="o">=</span> <span class="p">[</span><span class="n">ChannelTagInline</span><span class="p">,</span> <span class="n">ChannelAttributeInline</span><span class="p">]</span>
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;db_lock_storage&quot;</span><span class="p">,</span> <span class="s2">&quot;subscriptions&quot;</span><span class="p">)</span>
+    <span class="n">list_display_links</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;db_key&quot;</span><span class="p">)</span>
+    <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;db_key&quot;</span><span class="p">]</span>
+    <span class="n">search_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;db_tags__db_key&quot;</span><span class="p">]</span>
+    <span class="n">save_as</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">save_on_top</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">list_select_related</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">raw_id_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;db_object_subscriptions&quot;</span><span class="p">,</span> <span class="s2">&quot;db_account_subscriptions&quot;</span><span class="p">)</span>
+    <span class="n">fieldsets</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span>
+            <span class="kc">None</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="p">(</span><span class="s2">&quot;db_key&quot;</span><span class="p">,),</span>
+                    <span class="s2">&quot;db_lock_storage&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;db_account_subscriptions&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;db_object_subscriptions&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">},</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="ChannelAdmin.subscriptions"><a class="viewcode-back" href="../../../api/evennia.comms.admin.html#evennia.comms.admin.ChannelAdmin.subscriptions">[docs]</a>    <span class="k">def</span> <span class="nf">subscriptions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper method to get subs from a channel.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (Channel): The channel to get subs from.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">sub</span><span class="p">)</span> <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">subscriptions</span><span class="o">.</span><span class="n">all</span><span class="p">()])</span></div>
+
+<div class="viewcode-block" id="ChannelAdmin.save_model"><a class="viewcode-back" href="../../../api/evennia.comms.admin.html#evennia.comms.admin.ChannelAdmin.save_model">[docs]</a>    <span class="k">def</span> <span class="nf">save_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">form</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Model-save hook.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            request (Request): Incoming request.</span>
+<span class="sd">            obj (Object): Database object.</span>
+<span class="sd">            form (Form): Form instance.</span>
+<span class="sd">            change (bool): If this is a change or a new object.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">change</span><span class="p">:</span>
+            <span class="c1"># adding a new object</span>
+            <span class="c1"># have to call init with typeclass passed to it</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">set_class_from_typeclass</span><span class="p">(</span><span class="n">typeclass_path</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHANNEL_TYPECLASS</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">at_init</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ChannelAdmin.response_add"><a class="viewcode-back" href="../../../api/evennia.comms.admin.html#evennia.comms.admin.ChannelAdmin.response_add">[docs]</a>    <span class="k">def</span> <span class="nf">response_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">post_url_continue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">django.http</span> <span class="k">import</span> <span class="n">HttpResponseRedirect</span>
+        <span class="kn">from</span> <span class="nn">django.urls</span> <span class="k">import</span> <span class="n">reverse</span>
+
+        <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;admin:comms_channeldb_change&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">]))</span></div></div>
+
+
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">ChannelDB</span><span class="p">,</span> <span class="n">ChannelAdmin</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="admin.html">0.9.5 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

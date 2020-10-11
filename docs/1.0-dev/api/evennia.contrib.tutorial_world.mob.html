@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.tutorial_world.mob &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +25,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorial_world.mob</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -41,9 +39,9 @@
 <p>This module implements a simple mobile object with
 a very rudimentary AI as well as an aggressive enemy
 object based on that mobile class.</p>
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.tutorial_world.mob.CmdMobOnOff">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_world.mob.</code><code class="sig-name descname">CmdMobOnOff</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/mob.html#CmdMobOnOff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.CmdMobOnOff" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_world.mob.</code><code class="sig-name descname">CmdMobOnOff</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/mob.html#CmdMobOnOff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.CmdMobOnOff" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
 <p>Activates/deactivates Mob</p>
 <dl class="simple">
@@ -55,51 +53,51 @@ moboff &lt;mob&gt;</p>
 to inactive (dead) mode. It is used during
 building to  activate the mob once it’s
 prepared.</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.tutorial_world.mob.CmdMobOnOff.key">
 <code class="sig-name descname">key</code><em class="property"> = 'mobon'</em><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.CmdMobOnOff.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.tutorial_world.mob.CmdMobOnOff.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = ['moboff']</em><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.CmdMobOnOff.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.tutorial_world.mob.CmdMobOnOff.locks">
 <code class="sig-name descname">locks</code><em class="property"> = 'cmd:superuser()'</em><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.CmdMobOnOff.locks" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.tutorial_world.mob.CmdMobOnOff.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/mob.html#CmdMobOnOff.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.CmdMobOnOff.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Uses the mob’s set_alive/set_dead methods
 to turn on/off the mob.”</p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.tutorial_world.mob.CmdMobOnOff.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.CmdMobOnOff.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.tutorial_world.mob.CmdMobOnOff.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:superuser()'</em><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.CmdMobOnOff.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.tutorial_world.mob.CmdMobOnOff.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'moboff', 'category': 'general', 'key': 'mobon', 'tags': '', 'text': &quot;\n    Activates/deactivates Mob\n\n    Usage:\n        mobon &lt;mob&gt;\n        moboff &lt;mob&gt;\n\n    This turns the mob from active (alive) mode\n    to inactive (dead) mode. It is used during\n    building to  activate the mob once it's\n    prepared.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.CmdMobOnOff.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.tutorial_world.mob.MobCmdSet">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_world.mob.</code><code class="sig-name descname">MobCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/mob.html#MobCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.MobCmdSet" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_world.mob.</code><code class="sig-name descname">MobCmdSet</code><span class="sig-paren">(</span><em class="sig-param">cmdsetobj=None</em>, <em class="sig-param">key=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/mob.html#MobCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.MobCmdSet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
 <p>Holds the admin command controlling the mob</p>
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.tutorial_world.mob.MobCmdSet.at_cmdset_creation">
 <code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/mob.html#MobCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.MobCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hook method - this should be overloaded in the inheriting
@@ -107,16 +105,16 @@ class, and should take care of populating the cmdset by use of
 self.add().</p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.tutorial_world.mob.MobCmdSet.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorial_world.mob.MobCmdSet'</em><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.MobCmdSet.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.tutorial_world.mob.Mob">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_world.mob.</code><code class="sig-name descname">Mob</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/mob.html#Mob"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.Mob" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_world.mob.</code><code class="sig-name descname">Mob</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/mob.html#Mob"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.Mob" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.contrib.tutorial_world.objects.html#evennia.contrib.tutorial_world.objects.TutorialObject" title="evennia.contrib.tutorial_world.objects.TutorialObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorial_world.objects.TutorialObject</span></code></a></p>
 <p>This is a state-machine AI mobile. It has several states which are
 controlled from setting various Attributes. All default to True:</p>
@@ -155,28 +153,28 @@ happen to roam into a room with no exits.</p>
 </dd>
 </dl>
 </div></blockquote>
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.tutorial_world.mob.Mob.at_init">
 <code class="sig-name descname">at_init</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/mob.html#Mob.at_init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.Mob.at_init" title="Permalink to this definition">¶</a></dt>
 <dd><p>When initialized from cache (after a server reboot), set up
 the AI state.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.tutorial_world.mob.Mob.at_object_creation">
 <code class="sig-name descname">at_object_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/mob.html#Mob.at_object_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.Mob.at_object_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called the first time the object is created.
 We set up the base properties and flags here.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.tutorial_world.mob.Mob.set_alive">
-<code class="sig-name descname">set_alive</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/mob.html#Mob.set_alive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.Mob.set_alive" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_alive</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/mob.html#Mob.set_alive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.Mob.set_alive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the mob to “alive” mode. This effectively
 resurrects it from the dead state.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.tutorial_world.mob.Mob.set_dead">
 <code class="sig-name descname">set_dead</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/mob.html#Mob.set_dead"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.Mob.set_dead" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the mob to “dead” mode. This turns it off
@@ -184,14 +182,14 @@ and makes sure it can take no more damage.
 It also starts a ticker for when it will return.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.tutorial_world.mob.Mob.start_idle">
 <code class="sig-name descname">start_idle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/mob.html#Mob.start_idle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.Mob.start_idle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Starts just standing around. This will kill
 the ticker and do nothing more.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.tutorial_world.mob.Mob.start_patrolling">
 <code class="sig-name descname">start_patrolling</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/mob.html#Mob.start_patrolling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.Mob.start_patrolling" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start the patrolling state by
@@ -199,21 +197,21 @@ registering us with the ticker-handler
 at a leasurely pace.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.tutorial_world.mob.Mob.start_hunting">
 <code class="sig-name descname">start_hunting</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/mob.html#Mob.start_hunting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.Mob.start_hunting" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start the hunting state</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.tutorial_world.mob.Mob.start_attacking">
 <code class="sig-name descname">start_attacking</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/mob.html#Mob.start_attacking"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.Mob.start_attacking" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start the attacking state</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.tutorial_world.mob.Mob.do_patrol">
-<code class="sig-name descname">do_patrol</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/mob.html#Mob.do_patrol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.Mob.do_patrol" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">do_patrol</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/mob.html#Mob.do_patrol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.Mob.do_patrol" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called repeatedly during patrolling mode.  In this mode, the
 mob scans its surroundings and randomly chooses a viable exit.
 One should lock exits with the traverse:has_account() lock in
@@ -221,32 +219,32 @@ order to block the mob from moving outside its area while
 allowing account-controlled characters to move normally.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.tutorial_world.mob.Mob.do_hunting">
-<code class="sig-name descname">do_hunting</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/mob.html#Mob.do_hunting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.Mob.do_hunting" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">do_hunting</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/mob.html#Mob.do_hunting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.Mob.do_hunting" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called regularly when in hunting mode. In hunting mode the mob
 scans adjacent rooms for enemies and moves towards them to
 attack if possible.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.tutorial_world.mob.Mob.do_attack">
-<code class="sig-name descname">do_attack</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/mob.html#Mob.do_attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.Mob.do_attack" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">do_attack</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/mob.html#Mob.do_attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.Mob.do_attack" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called regularly when in attacking mode. In attacking mode
 the mob will bring its weapons to bear on any targets
 in the room.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.tutorial_world.mob.Mob.at_hit">
-<code class="sig-name descname">at_hit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">weapon</span></em>, <em class="sig-param"><span class="n">attacker</span></em>, <em class="sig-param"><span class="n">damage</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/mob.html#Mob.at_hit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.Mob.at_hit" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_hit</code><span class="sig-paren">(</span><em class="sig-param">weapon</em>, <em class="sig-param">attacker</em>, <em class="sig-param">damage</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/mob.html#Mob.at_hit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.Mob.at_hit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Someone landed a hit on us. Check our status
 and start attacking if not already doing so.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.tutorial_world.mob.Mob.at_new_arrival">
-<code class="sig-name descname">at_new_arrival</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_character</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/mob.html#Mob.at_new_arrival"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.Mob.at_new_arrival" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_new_arrival</code><span class="sig-paren">(</span><em class="sig-param">new_character</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/mob.html#Mob.at_new_arrival"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.Mob.at_new_arrival" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is triggered whenever a new character enters the room.
 This is called by the TutorialRoom the mob stands in and
 allows it to be aware of changes immediately without needing
@@ -254,24 +252,24 @@ to poll for them all the time. For example, the mob can react
 right away, also when patrolling on a very slow ticker.</p>
 </dd></dl>
 
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.tutorial_world.mob.Mob.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.Mob.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.contrib.tutorial_world.objects.html#evennia.contrib.tutorial_world.objects.TutorialObject.DoesNotExist" title="evennia.contrib.tutorial_world.objects.TutorialObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorial_world.objects.TutorialObject.DoesNotExist</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorial_world.objects.DoesNotExist</span></code></p>
 </dd></dl>
 
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.tutorial_world.mob.Mob.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.Mob.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.contrib.tutorial_world.objects.html#evennia.contrib.tutorial_world.objects.TutorialObject.MultipleObjectsReturned" title="evennia.contrib.tutorial_world.objects.TutorialObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorial_world.objects.TutorialObject.MultipleObjectsReturned</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorial_world.objects.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.tutorial_world.mob.Mob.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorial_world.mob.Mob'</em><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.Mob.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.tutorial_world.mob.Mob.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'Mob'</em><a class="headerlink" href="#evennia.contrib.tutorial_world.mob.Mob.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -281,7 +279,6 @@ right away, also when patrolling on a very slow ticker.</p>
 </div>
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -310,7 +307,7 @@ right away, also when patrolling on a very slow ticker.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.contrib.tutorial_world.mob.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.1/api/evennia.contrib.tutorial_world.mob.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../0.9.5/api/evennia.contrib.tutorial_world.mob.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -326,13 +323,12 @@ right away, also when patrolling on a very slow ticker.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorial_world.mob</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>
