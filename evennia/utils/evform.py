@@ -13,34 +13,32 @@ absolute size of the field and will be filled with an `evtable.EvCell`
 object when displaying the form.
 
 Example of input file `testform.py`:
+::
 
-```python
-FORMCHAR = "x"
-TABLECHAR = "c"
+    FORMCHAR = "x"
+    TABLECHAR = "c"
 
-FORM = '''
-.------------------------------------------------.
-|                                                |
-|  Name: xxxxx1xxxxx    Player: xxxxxxx2xxxxxxx  |
-|        xxxxxxxxxxx                             |
-|                                                |
- >----------------------------------------------<
-|                                                |
-| Desc:  xxxxxxxxxxx    STR: x4x    DEX: x5x     |
-|        xxxxx3xxxxx    INT: x6x    STA: x7x     |
-|        xxxxxxxxxxx    LUC: x8x    MAG: x9x     |
-|                                                |
- >----------------------------------------------<
-|          |                                     |
-| cccccccc | ccccccccccccccccccccccccccccccccccc |
-| cccccccc | ccccccccccccccccccccccccccccccccccc |
-| cccAcccc | ccccccccccccccccccccccccccccccccccc |
-| cccccccc | ccccccccccccccccccccccccccccccccccc |
-| cccccccc | cccccccccccccccccBccccccccccccccccc |
-|          |                                     |
--------------------------------------------------
-'''
-```
+    FORM = '''
+    .------------------------------------------------.
+    |                                                |
+    |  Name: xxxxx1xxxxx    Player: xxxxxxx2xxxxxxx  |
+    |        xxxxxxxxxxx                             |
+    |                                                |
+     >----------------------------------------------<
+    |                                                |
+    | Desc:  xxxxxxxxxxx    STR: x4x    DEX: x5x     |
+    |        xxxxx3xxxxx    INT: x6x    STA: x7x     |
+    |        xxxxxxxxxxx    LUC: x8x    MAG: x9x     |
+    |                                                |
+     >----------------------------------------------<
+    |          |                                     |
+    | cccccccc | ccccccccccccccccccccccccccccccccccc |
+    | cccccccc | ccccccccccccccccccccccccccccccccccc |
+    | cccAcccc | ccccccccccccccccccccccccccccccccccc |
+    | cccccccc | ccccccccccccccccccccccccccccccccccc |
+    | cccccccc | cccccccccccccccccBccccccccccccccccc |
+    |          |                                     |
+    -------------------------------------------------
 
 The first line of the `FORM` string is ignored. The forms and table
 markers must mark out complete, unbroken rectangles, each containing
@@ -54,8 +52,8 @@ character's width.
 
 
 Use as follows:
+::
 
-```python
     from evennia import EvForm, EvTable
 
     # create a new form from the template
@@ -87,32 +85,32 @@ Use as follows:
                      "B": tableB})
 
     print(form)
-```
+
 
 This produces the following result:
+::
 
-```
-.------------------------------------------------.
-|                                                |
-|  Name: Tom the        Player: Griatch          |
-|        Bouncer                                 |
-|                                                |
- >----------------------------------------------<
-|                                                |
-| Desc:  A sturdy       STR: 12     DEX: 10      |
-|        fellow         INT: 5      STA: 18      |
-|                       LUC: 10     MAG: 3       |
-|                                                |
- >----------------------------------------------<
-|          |                                     |
-| HP|MV|MP | Skill      |Value      |Exp         |
-| ~~+~~+~~ | ~~~~~~~~~~~+~~~~~~~~~~~+~~~~~~~~~~~ |
-| **|**|** | Shooting   |12         |550/1200    |
-|   |**|*  | Herbalism  |14         |990/1400    |
-|   |* |   | Smithing   |9          |205/900     |
-|          |                                     |
- ------------------------------------------------
-```
+    .------------------------------------------------.
+    |                                                |
+    |  Name: Tom the        Player: Griatch          |
+    |        Bouncer                                 |
+    |                                                |
+     >----------------------------------------------<
+    |                                                |
+    | Desc:  A sturdy       STR: 12     DEX: 10      |
+    |        fellow         INT: 5      STA: 18      |
+    |                       LUC: 10     MAG: 3       |
+    |                                                |
+     >----------------------------------------------<
+    |          |                                     |
+    | HP|MV|MP | Skill      |Value      |Exp         |
+    | ~~+~~+~~ | ~~~~~~~~~~~+~~~~~~~~~~~+~~~~~~~~~~~ |
+    | **|**|** | Shooting   |12         |550/1200    |
+    |   |**|*  | Herbalism  |14         |990/1400    |
+    |   |* |   | Smithing   |9          |205/900     |
+    |          |                                     |
+     ------------------------------------------------
+
 
 The marked forms have been replaced with EvCells of text and with
 EvTables. The form can be updated by simply re-applying `form.map()`
@@ -126,6 +124,8 @@ template, so it will resize to fit (or crop text if the area is too
 small for it). If you try to fit a table into an area it cannot fit
 into (when including its borders and at least one line of text), the
 form will raise an error.
+
+----
 
 """
 
@@ -186,16 +186,15 @@ class EvForm(object):
 
     def __init__(self, filename=None, cells=None, tables=None, form=None, **kwargs):
         """
-        Initiate the form
+        Initiate the form.
 
         Keyword Args:
             filename (str): Path to template file.
-            cells (dict): A dictionary mapping of {id:text}
-            tables (dict): A dictionary mapping of {id:EvTable}.
-            form (dict): A dictionary of {"FORMCHAR":char,
-                                          "TABLECHAR":char,
-                                          "FORM":templatestring}
-                    if this is given, filename is not read.
+            cells (dict): A dictionary mapping of `{id:text}`.
+            tables (dict): A dictionary mapping of `{id:EvTable}`.
+            form (dict): A dictionary of
+              `{"FORMCHAR":char, "TABLECHAR":char, "FORM":templatestring}`.
+              if this is given, filename is not read.
         Notes:
             Other kwargs are fed as options to the EvCells and EvTables
             (see `evtable.EvCell` and `evtable.EvTable` for more info).

@@ -1069,7 +1069,7 @@ def run_async(to_execute, *args, **kwargs):
 
     Args:
         to_execute (callable): If this is a callable, it will be
-            executed with *args and non-reserved *kwargs as arguments.
+            executed with `*args` and non-reserved `**kwargs` as arguments.
             The callable will be executed using ProcPool, or in a thread
             if ProcPool is not available.
 
@@ -1168,7 +1168,7 @@ def check_evennia_dependencies():
 
 def has_parent(basepath, obj):
     """
-    Checks if `basepath` is somewhere in `obj`s parent tree.
+    Checks if `basepath` is somewhere in `obj`'s parent tree.
 
     Args:
         basepath (str): Python dotpath to compare against obj path.
@@ -1495,8 +1495,8 @@ def init_new_account(account):
 def string_similarity(string1, string2):
     """
     This implements a "cosine-similarity" algorithm as described for example in
-       *Proceedings of the 22nd International Conference on Computation
-       Linguistics* (Coling 2008), pages 593-600, Manchester, August 2008.
+    *Proceedings of the 22nd International Conference on Computation
+    Linguistics* (Coling 2008), pages 593-600, Manchester, August 2008.
     The measure-vectors used is simply a "bag of words" type histogram
     (but for letters).
 
@@ -1605,9 +1605,9 @@ def string_partial_matching(alternatives, inp, ret_index=True):
 
 def format_table(table, extra_space=1):
     """
-    Note: `evennia.utils.evtable` is more powerful than this, but this
-    function can be useful when the number of columns and rows are
-    unknown and must be calculated on the fly.
+    Note: `evennia.utils.evtable` is more powerful than this, but this function
+    can be useful when the number of columns and rows are unknown and must be
+    calculated on the fly.
 
     Args.
         table (list): A list of lists to represent columns in the
@@ -1626,18 +1626,18 @@ def format_table(table, extra_space=1):
         The function formats the columns to be as wide as the widest member
         of each column.
 
-    Examples:
+    Example:
+        ::
 
-        ```python
-        ftable = format_table([[...], [...], ...])
-        for ir, row in enumarate(ftable):
-            if ir == 0:
-                # make first row white
-                string += "\n|w" + ""join(row) + "|n"
-            else:
-                string += "\n" + "".join(row)
-        print string
-    ```
+            ftable = format_table([[...], [...], ...])
+            for ir, row in enumarate(ftable):
+                if ir == 0:
+                    # make first row white
+                    string += "\\\\n|w" + ""join(row) + "|n"
+                else:
+                    string += "\\\\n" + "".join(row)
+            print(string)
+
     """
     if not table:
         return [[]]
@@ -2051,26 +2051,28 @@ def get_all_typeclasses(parent=None):
 
 def interactive(func):
     """
-    Decorator to make a method pausable with yield(seconds)
-    and able to ask for user-input with response=yield(question).
-    For the question-asking to work, 'caller' must the name
-    of an argument or kwarg to the decorated function.
+    Decorator to make a method pausable with yield(seconds) and able to ask for
+    user-input with `response=yield(question)`.  For the question-asking to
+    work, 'caller' must the name of an argument or kwarg to the decorated
+    function.
 
-    Note that this turns the method into a generator.
+    Example:
+    ::
 
-    Example usage:
-
-    @interactive
-    def myfunc(caller):
-        caller.msg("This is a test")
-        # wait five seconds
-        yield(5)
-        # ask user (caller) a question
-        response = yield("Do you want to continue waiting?")
-        if response == "yes":
+        @interactive
+        def myfunc(caller):
+            caller.msg("This is a test")
+            # wait five seconds
             yield(5)
-        else:
-            # ...
+            # ask user (caller) a question
+            response = yield("Do you want to continue waiting?")
+            if response == "yes":
+                yield(5)
+            else:
+                # ...
+
+    Notes:
+        This turns the method into a generator!
 
     """
     from evennia.utils.evmenu import get_input

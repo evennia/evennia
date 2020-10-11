@@ -1,66 +1,61 @@
 """
 This is an advanced ASCII table creator. It was inspired by
-[prettytable](https://code.google.com/p/prettytable/) but shares no
-code.
+[prettytable](https://code.google.com/p/prettytable/) but shares no code.
 
 Example usage:
+::
 
-```python
-  from evennia.utils import evtable
+    from evennia.utils import evtable
 
-  table = evtable.EvTable("Heading1", "Heading2",
+    table = evtable.EvTable("Heading1", "Heading2",
                   table=[[1,2,3],[4,5,6],[7,8,9]], border="cells")
-  table.add_column("This is long data", "This is even longer data")
-  table.add_row("This is a single row")
-  print table
-```
+    table.add_column("This is long data", "This is even longer data")
+    table.add_row("This is a single row")
+    print table
 
 Result:
+::
 
-```
-+----------------------+----------+---+--------------------------+
-|       Heading1       | Heading2 |   |                          |
-+~~~~~~~~~~~~~~~~~~~~~~+~~~~~~~~~~+~~~+~~~~~~~~~~~~~~~~~~~~~~~~~~+
-|           1          |     4    | 7 |     This is long data    |
-+----------------------+----------+---+--------------------------+
-|           2          |     5    | 8 | This is even longer data |
-+----------------------+----------+---+--------------------------+
-|           3          |     6    | 9 |                          |
-+----------------------+----------+---+--------------------------+
-| This is a single row |          |   |                          |
-+----------------------+----------+---+--------------------------+
-```
+    +----------------------+----------+---+--------------------------+
+    |       Heading1       | Heading2 |   |                          |
+    +~~~~~~~~~~~~~~~~~~~~~~+~~~~~~~~~~+~~~+~~~~~~~~~~~~~~~~~~~~~~~~~~+
+    |           1          |     4    | 7 |     This is long data    |
+    +----------------------+----------+---+--------------------------+
+    |           2          |     5    | 8 | This is even longer data |
+    +----------------------+----------+---+--------------------------+
+    |           3          |     6    | 9 |                          |
+    +----------------------+----------+---+--------------------------+
+    | This is a single row |          |   |                          |
+    +----------------------+----------+---+--------------------------+
 
 As seen, the table will automatically expand with empty cells to make
 the table symmetric. Tables can be restricted to a given width:
+::
 
-```python
-  table.reformat(width=50, align="l")
-```
+    table.reformat(width=50, align="l")
 
 (We could just have added these keywords to the table creation call)
 
 This yields the following result:
+::
 
-```
-+-----------+------------+-----------+-----------+
-| Heading1  | Heading2   |           |           |
-+~~~~~~~~~~~+~~~~~~~~~~~~+~~~~~~~~~~~+~~~~~~~~~~~+
-| 1         | 4          | 7         | This is   |
-|           |            |           | long data |
-+-----------+------------+-----------+-----------+
-|           |            |           | This is   |
-| 2         | 5          | 8         | even      |
-|           |            |           | longer    |
-|           |            |           | data      |
-+-----------+------------+-----------+-----------+
-| 3         | 6          | 9         |           |
-+-----------+------------+-----------+-----------+
-| This is a |            |           |           |
-|  single   |            |           |           |
-| row       |            |           |           |
-+-----------+------------+-----------+-----------+
-```
+    +-----------+------------+-----------+-----------+
+    | Heading1  | Heading2   |           |           |
+    +~~~~~~~~~~~+~~~~~~~~~~~~+~~~~~~~~~~~+~~~~~~~~~~~+
+    | 1         | 4          | 7         | This is   |
+    |           |            |           | long data |
+    +-----------+------------+-----------+-----------+
+    |           |            |           | This is   |
+    | 2         | 5          | 8         | even      |
+    |           |            |           | longer    |
+    |           |            |           | data      |
+    +-----------+------------+-----------+-----------+
+    | 3         | 6          | 9         |           |
+    +-----------+------------+-----------+-----------+
+    | This is a |            |           |           |
+    |  single   |            |           |           |
+    | row       |            |           |           |
+    +-----------+------------+-----------+-----------+
 
 Table-columns can be individually formatted. Note that if an
 individual column is set with a specific width, table auto-balancing
@@ -68,29 +63,25 @@ will not affect this column (this may lead to the full table being too
 wide, so be careful mixing fixed-width columns with auto- balancing).
 Here we change the width and alignment of the column at index 3
 (Python starts from 0):
+::
 
-```python
+    table.reformat_column(3, width=30, align="r")
+    print table
 
-table.reformat_column(3, width=30, align="r")
-print table
-```
-
-```
-+-----------+-------+-----+-----------------------------+---------+
-| Heading1  | Headi |     |                             |         |
-|           | ng2   |     |                             |         |
-+~~~~~~~~~~~+~~~~~~~+~~~~~+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+~~~~~~~~~+
-| 1         | 4     | 7   |           This is long data | Test1   |
-+-----------+-------+-----+-----------------------------+---------+
-| 2         | 5     | 8   |    This is even longer data | Test3   |
-+-----------+-------+-----+-----------------------------+---------+
-| 3         | 6     | 9   |                             | Test4   |
-+-----------+-------+-----+-----------------------------+---------+
-| This is a |       |     |                             |         |
-|  single   |       |     |                             |         |
-| row       |       |     |                             |         |
-+-----------+-------+-----+-----------------------------+---------+
-```
+    +-----------+-------+-----+-----------------------------+---------+
+    | Heading1  | Headi |     |                             |         |
+    |           | ng2   |     |                             |         |
+    +~~~~~~~~~~~+~~~~~~~+~~~~~+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+~~~~~~~~~+
+    | 1         | 4     | 7   |           This is long data | Test1   |
+    +-----------+-------+-----+-----------------------------+---------+
+    | 2         | 5     | 8   |    This is even longer data | Test3   |
+    +-----------+-------+-----+-----------------------------+---------+
+    | 3         | 6     | 9   |                             | Test4   |
+    +-----------+-------+-----+-----------------------------+---------+
+    | This is a |       |     |                             |         |
+    |  single   |       |     |                             |         |
+    | row       |       |     |                             |         |
+    +-----------+-------+-----+-----------------------------+---------+
 
 When adding new rows/columns their data can have its own alignments
 (left/center/right, top/center/bottom).
@@ -108,6 +99,8 @@ the colour of a wrapped cell will not "bleed", but it also means that
 eventual colour outside the table will not transfer "across" a table,
 you need to re-set the color to have it appear on both sides of the
 table string.
+
+----
 
 """
 

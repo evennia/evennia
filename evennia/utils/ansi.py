@@ -1,16 +1,20 @@
 """
 ANSI - Gives colour to text.
 
-Use the codes defined in ANSIPARSER in your text
-to apply colour to text according to the ANSI standard.
+Use the codes defined in ANSIPARSER in your text to apply colour to text
+according to the ANSI standard.
+::
 
-Examples:
  This is |rRed text|n and this is normal again.
 
-Mostly you should not need to call parse_ansi() explicitly;
-it is run by Evennia just before returning data to/from the
-user.  Depreciated example forms are available by extending
-the ansi mapping.
+Mostly you should not need to call `parse_ansi()` explicitly; it is run by
+Evennia just before returning data to/from the user. Depreciated/decativated
+example forms are available in contribs by extending the ansi mapping
+
+This module also contains the `ANSIString` custom string-type, which correctly
+wraps/manipulates and tracks lengths of strings containing ANSI-markup.
+
+----
 
 """
 import functools
@@ -78,16 +82,14 @@ _COLOR_NO_DEFAULT = settings.COLOR_NO_DEFAULT
 
 class ANSIParser(object):
     """
-    A class that parses ANSI markup
-    to ANSI command sequences
+    A class that parses ANSI markup to ANSI command sequences
 
-    We also allow to escape colour codes
-    by prepending with a \ for xterm256,
-    an extra | for Merc-style codes
+    We also allow to escape colour codes by prepending with
+    an extra `|`, so `||r` will literally print `|r`.
 
     """
 
-    # Mapping using {r {n etc
+    # Mapping using |r, |n etc
 
     ansi_map = [
         # alternative |-format
@@ -586,10 +588,9 @@ def _on_raw(func_name):
 
 def _transform(func_name):
     """
-    Some string functions, like those manipulating capital letters,
-    return a string the same length as the original. This function
-    allows us to do the same, replacing all the non-coded characters
-    with the resulting string.
+    Some string functions, like those manipulating capital letters, return a
+    string the same length as the original. This function allows us to do the
+    same, replacing all the non-coded characters with the resulting string.
 
     """
 
@@ -982,13 +983,14 @@ class ANSIString(str, metaclass=ANSIMeta):
             sep (str): The separator to split the string on.
             reverse (boolean): Whether to split the string on the last
                 occurrence of the separator rather than the first.
+
         Returns:
             result (tuple):
-               prefix (ANSIString): The part of the string before the
-                   separator
-               sep (ANSIString): The separator itself
-               postfix (ANSIString): The part of the string after the
-                   separator.
+                - prefix (ANSIString): The part of the string before the
+                  separator
+                - sep (ANSIString): The separator itself
+                - postfix (ANSIString): The part of the string after the
+                  separator.
 
         """
         if hasattr(sep, "_clean_string"):
@@ -1287,19 +1289,26 @@ class ANSIString(str, metaclass=ANSIMeta):
         Joins together strings in an iterable, using this string between each
         one.
 
-        NOTE: This should always be used for joining strings when ANSIStrings
-            are involved. Otherwise color information will be discarded by
-            python, due to details in the C implementation of strings.
-
         Args:
             iterable (list of strings): A list of strings to join together
+
         Returns:
             result (ANSIString): A single string with all of the iterable's
-                contents concatenated, with this string between each. For
-                example:
-                    ANSIString(', ').join(['up', 'right', 'left', 'down'])
-                ...Would return:
-                    ANSIString('up, right, left, down')
+                contents concatenated, with this string between each.
+
+        Examples:
+            ::
+                ANSIString(', ').join(['up', 'right', 'left', 'down'])
+
+            Would return
+            ::
+
+                ANSIString('up, right, left, down')
+
+        Notes:
+            This should always be used for joining strings when ANSIStrings are
+            involved. Otherwise color information will be discarded by python,
+            due to details in the C implementation of strings.
 
         """
         result = ANSIString("")
