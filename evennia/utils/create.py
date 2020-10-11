@@ -96,7 +96,7 @@ def create_object(
             location itself or during unittests.
         attributes (list): Tuples on the form (key, value) or (key, value, category),
            (key, value, lockstring) or (key, value, lockstring, default_access).
-            to set as Attributes on the new object.
+           to set as Attributes on the new object.
         nattributes (list): Non-persistent tuples on the form (key, value). Note that
             adding this rarely makes sense since this data will not survive a reload.
 

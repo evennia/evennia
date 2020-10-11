@@ -24,6 +24,8 @@ layer.
 This module also contains the Managers for the respective models; inherit from
 these to create custom managers.
 
+----
+
 """
 from django.db.models import signals
 
@@ -161,7 +163,10 @@ class TypeclassBase(SharedMemoryModelBase):
 
 
 class DbHolder(object):
-    "Holder for allowing property access of attributes"
+    """
+    Holder for allowing property access of attributes.
+
+    """
 
     def __init__(self, obj, name, manager_name="attributes"):
         _SA(self, name, _GA(obj, manager_name))
@@ -309,10 +314,8 @@ class TypedObject(SharedMemoryModel):
         than use the one in the model.
 
         Args:
-            Passed through to parent.
-
-        Keyword Args:
-            Passed through to parent.
+            *args: Passed through to parent.
+            **kwargs: Passed through to parent.
 
         Notes:
             The loading mechanism will attempt the following steps:
@@ -725,14 +728,19 @@ class TypedObject(SharedMemoryModel):
     def __db_get(self):
         """
         Attribute handler wrapper. Allows for the syntax
+        ::
+
            obj.db.attrname = value
              and
            value = obj.db.attrname
              and
            del obj.db.attrname
              and
-           all_attr = obj.db.all() (unless there is an attribute
-                      named 'all', in which case that will be returned instead).
+           all_attr = obj.db.all()
+
+        (unless there is an attribute named 'all', in which case that will be
+        returned instead).
+
         """
         try:
             return self._db_holder
@@ -742,14 +750,14 @@ class TypedObject(SharedMemoryModel):
 
     # @db.setter
     def __db_set(self, value):
-        "Stop accidentally replacing the db object"
+        """Stop accidentally replacing the db object"""
         string = "Cannot assign directly to db object! "
         string += "Use db.attr=value instead."
         raise Exception(string)
 
     # @db.deleter
     def __db_del(self):
-        "Stop accidental deletion."
+        """Stop accidental deletion."""
         raise Exception("Cannot delete the db object!")
 
     db = property(__db_get, __db_set, __db_del)
@@ -761,10 +769,23 @@ class TypedObject(SharedMemoryModel):
     # @property ndb
     def __ndb_get(self):
         """
-        A non-attr_obj store (ndb: NonDataBase). Everything stored
-        to this is guaranteed to be cleared when a server is shutdown.
-        Syntax is same as for the _get_db_holder() method and
-        property, e.g. obj.ndb.attr = value etc.
+        A non-attr_obj store (NonDataBase). Everything stored to this is
+        guaranteed to be cleared when a server is shutdown. Syntax is same as
+        for the `.db` property, e.g.
+        ::
+
+           obj.ndb.attrname = value
+             and
+           value = obj.ndb.attrname
+             and
+           del obj.ndb.attrname
+             and
+           all_attr = obj.ndb.all()
+
+        What makes this preferable over just assigning properties directly on
+        the object is that Evennia can track caching for these properties and
+        for example avoid wiping objects with set `.ndb` data on cache flushes.
+
         """
         try:
             return self._ndb_holder
@@ -869,27 +890,32 @@ class TypedObject(SharedMemoryModel):
     @classmethod
     def web_get_create_url(cls):
         """
+
         Returns the URI path for a View that allows users to create new
         instances of this object.
 
-        ex. Chargen = '/characters/create/'
-
-        For this to work, the developer must have defined a named view somewhere
-        in urls.py that follows the format 'modelname-action', so in this case
-        a named view of 'character-create' would be referenced by this method.
-
-        ex.
-        url(r'characters/create/', ChargenView.as_view(), name='character-create')
-
-        If no View has been created and defined in urls.py, returns an
-        HTML anchor.
-
-        This method is naive and simply returns a path. Securing access to
-        the actual view and limiting who can create new objects is the
-        developer's responsibility.
-
         Returns:
             path (str): URI path to object creation page, if defined.
+
+        Examples:
+            ::
+
+                Chargen = '/characters/create/'
+
+            For this to work, the developer must have defined a named view somewhere
+            in urls.py that follows the format 'modelname-action', so in this case
+            a named view of 'character-create' would be referenced by this method.
+            ::
+
+                url(r'characters/create/', ChargenView.as_view(), name='character-create')
+
+            If no View has been created and defined in urls.py, returns an
+            HTML anchor.
+
+        Notes:
+            This method is naive and simply returns a path. Securing access to
+            the actual view and limiting who can create new objects is the
+            developer's responsibility.
 
         """
         try:
@@ -902,25 +928,28 @@ class TypedObject(SharedMemoryModel):
         Returns the URI path for a View that allows users to view details for
         this object.
 
-        ex. Oscar (Character) = '/characters/oscar/1/'
-
-        For this to work, the developer must have defined a named view somewhere
-        in urls.py that follows the format 'modelname-action', so in this case
-        a named view of 'character-detail' would be referenced by this method.
-
-        ex.
-        url(r'characters/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/$',
-            CharDetailView.as_view(), name='character-detail')
-
-        If no View has been created and defined in urls.py, returns an
-        HTML anchor.
-
-        This method is naive and simply returns a path. Securing access to
-        the actual view and limiting who can view this object is the developer's
-        responsibility.
-
         Returns:
             path (str): URI path to object detail page, if defined.
+
+        Examples:
+            ::
+
+                Oscar (Character) = '/characters/oscar/1/'
+
+            For this to work, the developer must have defined a named view somewhere
+            in urls.py that follows the format 'modelname-action', so in this case
+            a named view of 'character-detail' would be referenced by this method.
+            ::
+
+                CharDetailView.as_view(), name='character-detail')
+
+            If no View has been created and defined in urls.py, returns an
+            HTML anchor.
+
+        Notes:
+            This method is naive and simply returns a path. Securing access to
+            the actual view and limiting who can view this object is the
+            developer's responsibility.
 
         """
         try:
@@ -936,25 +965,30 @@ class TypedObject(SharedMemoryModel):
         Returns the URI path for a View that allows users to puppet a specific
         object.
 
-        ex. Oscar (Character) = '/characters/oscar/1/puppet/'
-
-        For this to work, the developer must have defined a named view somewhere
-        in urls.py that follows the format 'modelname-action', so in this case
-        a named view of 'character-puppet' would be referenced by this method.
-
-        ex.
-        url(r'characters/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/puppet/$',
-            CharPuppetView.as_view(), name='character-puppet')
-
-        If no View has been created and defined in urls.py, returns an
-        HTML anchor.
-
-        This method is naive and simply returns a path. Securing access to
-        the actual view and limiting who can view this object is the developer's
-        responsibility.
-
         Returns:
             path (str): URI path to object puppet page, if defined.
+
+        Examples:
+            ::
+
+                Oscar (Character) = '/characters/oscar/1/puppet/'
+
+            For this to work, the developer must have defined a named view somewhere
+            in urls.py that follows the format 'modelname-action', so in this case
+            a named view of 'character-puppet' would be referenced by this method.
+            ::
+
+                url(r'characters/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/puppet/$',
+                    CharPuppetView.as_view(), name='character-puppet')
+
+            If no View has been created and defined in urls.py, returns an
+            HTML anchor.
+
+        Notes:
+            This method is naive and simply returns a path. Securing access to
+            the actual view and limiting who can view this object is the developer's
+            responsibility.
+
 
         """
         try:
@@ -970,25 +1004,29 @@ class TypedObject(SharedMemoryModel):
         Returns the URI path for a View that allows users to update this
         object.
 
-        ex. Oscar (Character) = '/characters/oscar/1/change/'
-
-        For this to work, the developer must have defined a named view somewhere
-        in urls.py that follows the format 'modelname-action', so in this case
-        a named view of 'character-update' would be referenced by this method.
-
-        ex.
-        url(r'characters/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/change/$',
-            CharUpdateView.as_view(), name='character-update')
-
-        If no View has been created and defined in urls.py, returns an
-        HTML anchor.
-
-        This method is naive and simply returns a path. Securing access to
-        the actual view and limiting who can modify objects is the developer's
-        responsibility.
-
         Returns:
             path (str): URI path to object update page, if defined.
+
+        Examples:
+            ::
+
+                Oscar (Character) = '/characters/oscar/1/change/'
+
+            For this to work, the developer must have defined a named view somewhere
+            in urls.py that follows the format 'modelname-action', so in this case
+            a named view of 'character-update' would be referenced by this method.
+            ::
+
+                url(r'characters/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/change/$',
+                    CharUpdateView.as_view(), name='character-update')
+
+            If no View has been created and defined in urls.py, returns an
+            HTML anchor.
+
+        Notes:
+            This method is naive and simply returns a path. Securing access to
+            the actual view and limiting who can modify objects is the developer's
+            responsibility.
 
         """
         try:
@@ -1003,25 +1041,30 @@ class TypedObject(SharedMemoryModel):
         """
         Returns the URI path for a View that allows users to delete this object.
 
-        ex. Oscar (Character) = '/characters/oscar/1/delete/'
-
-        For this to work, the developer must have defined a named view somewhere
-        in urls.py that follows the format 'modelname-action', so in this case
-        a named view of 'character-detail' would be referenced by this method.
-
-        ex.
-        url(r'characters/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/delete/$',
-            CharDeleteView.as_view(), name='character-delete')
-
-        If no View has been created and defined in urls.py, returns an
-        HTML anchor.
-
-        This method is naive and simply returns a path. Securing access to
-        the actual view and limiting who can delete this object is the developer's
-        responsibility.
-
         Returns:
             path (str): URI path to object deletion page, if defined.
+
+        Examples:
+            ::
+
+                Oscar (Character) = '/characters/oscar/1/delete/'
+
+            For this to work, the developer must have defined a named view somewhere
+            in urls.py that follows the format 'modelname-action', so in this case
+            a named view of 'character-detail' would be referenced by this method.
+            ::
+
+                url(r'characters/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/delete/$',
+                    CharDeleteView.as_view(), name='character-delete')
+
+            If no View has been created and defined in urls.py, returns an
+            HTML anchor.
+
+        Notes:
+            This method is naive and simply returns a path. Securing access to
+            the actual view and limiting who can delete this object is the developer's
+            responsibility.
+
 
         """
         try:
