@@ -383,40 +383,62 @@ region. You may find useful offers for "low cost" VPS hosting on [Low End Box][7
 There are all sorts of services available. Below are some international suggestions offered by
 Evennia users:
 
-Hosting name       |  Type          |  Lowest price  |  Comments
-:--------------:|:-------:---------------
-[silvren.com][1]   | Shell account | Free for MU*  | Private hobby provider so don't assume backups
-or expect immediate support. To ask for an account, connect with a MUD client to iweb.localecho.net,
-port 4201 and ask for "Jarin".
-[Digital Ocean][2] | VPS | $5/month | You get a credit if you use the referral link
-https://m.do.co/c/8f64fec2670c - if you do, once you've had it long enough to have paid $25 we will
-get that as a referral bonus to help Evennia development.
-[Amazon Web services][3] | Cloud | ~$5/month / on-demand | Free Tier first 12 months. Regions
-available around the globe.
-[Amazon Lightsail][9] | Cloud | $5/month | Free first month. AWS's new "fixed cost" offering.
-[Genesis MUD hosting][4] | Shell account | $8/month | Dedicated MUD host with very limited memory
-offerings. As for 2017, runs a 13 years old Python version (2.4) so you'd need to either convince
-them to update or compile yourself. Note that Evennia needs *at least* the "Deluxe" package (50MB
-RAM) and probably *a lot* higher for a production game. This host is *not* recommended for Evennia.
-[Host1Plus][5] | VPS & Cloud | $4/month | $4-$8/month depending on length of sign-up period.
-[Scaleway][6] | Cloud | &euro;3/month / on-demand | EU based (Paris, Amsterdam). Smallest option
-provides 2GB RAM.
-[Prgmr][10] | VPS | $5/month | 1 month free with a year prepay. You likely want some experience with
-servers with this option as they don't have a lot of support.
-[Linode][11] | Cloud | $5/month / on-demand | Multiple regions. Smallest option provides 1GB RAM
+```eval_rst
+
+    +------------------------+----------------+----------------+----------------------------------------------------------+
+    | Hosting name           |  Type          |  Lowest price  |  Comments                                                |
+    +========================+================+================+==========================================================+
+    | `silvren.com`_         | Shell account  | Free for MU*   | Private hobby provider so don't assume backups or expect |
+    |                        |                |                | immediate support. To ask for an account, connect with a |
+    |                        |                |                | MUD client to iweb.localecho.net, port 4201 and ask for  |
+    |                        |                |                | "Jarin".                                                 |
+    +------------------------+----------------+----------------+----------------------------------------------------------+
+    | `Digital Ocean`_       | VPS            | $5/month       | You get a credit if you use the referral link            |
+    |                        |                |                | https://m.do.co/c/8f64fec2670c - if you do, once you've  |
+    |                        |                |                | had it long enough to have paid $25 we will get that as  |
+    |                        |                |                | a referral bonus to help Evennia development!            |
+    +------------------------+----------------+----------------+----------------------------------------------------------+
+    +`Amazon Web services`_  | Cloud          | $5/month /     | Free Tier first 12 months. Regions available around the  |
+    |                        |                |  on-demand     | globe.                                                   |
+    +------------------------+----------------+----------------+----------------------------------------------------------+
+    | `Amazon Lightsail`_    | Cloud          | $5/month       | Free first month. AWS's new "fixed cost" offering.       |
+    +------------------------+----------------+----------------+----------------------------------------------------------+
+    | `Host1Plus`_           | VPS & Cloud    | $4/month       | $4-$8/month depending on length of sign-up period.       |
+    +------------------------+----------------+----------------+----------------------------------------------------------+
+    | `Scaleway`_            | Cloud          | &euro;3/month /| EU based (Paris, Amsterdam). Smallest option             |
+    |                        |                | on-demand      | provides 2GB RAM.                                        |
+    +------------------------+----------------+----------------+----------------------------------------------------------+
+    | `Prgmr`_               | VPS            | $5/month       | 1 month free with a year prepay. You likely want some    |
+    |                        |                |                | experience with servers with this option as they don't   |
+    |                        |                |                | have a lot of support.                                   |
+    +------------------------+----------------+----------------+----------------------------------------------------------+
+    | `Linode`_              | Cloud          | $5/month /     | Multiple regions. Smallest option provides 1GB RAM       |
+    |                        |                | on-demand      |                                                          |
+    +------------------------+----------------+----------------+----------------------------------------------------------+
+    | `Genesis MUD hosting`_ | Shell account  | $8/month       | Dedicated MUD host with very limited memory offerings.   | 
+    |                        |                |                | When last investigated (2017) ran a 13 years old Python  |
+    |                        |                |                | version (2.4) (convince them to update or compile).      |
+    |                        |                |                | Note that Evennia needs *at least* the "Deluxe" package  |
+    |                        |                |                | (50MB RAM) and probably *a lot* higher for a production  |
+    |                        |                |                | game. This host is *not* recommended for Evennia.        |
+    +------------------------+----------------+----------------+----------------------------------------------------------+
+
+
+    .. _silvren.com: http:silvren.com
+    .. _Digital Ocean: https://www.digitalocean.com/pricing
+    .. _Amazon Web services: https://aws.amazon.com/pricing/
+    .. _Host1Plus: https://www.host1plus.com/
+    .. _Scaleway: https://www.scaleway.com/
+    .. _Amazon Lightsail: https://amazonlightsail.com
+    .. _Prgmr: https://prgmr.com/
+    .. _Linode: https://www.linode.com/
+    .. _Genesis MUD hosting: http://www.genesismuds.com/
+
+
+```
+
 *Please help us expand this list.*
 
-[1]: http:silvren.com
-[2]: https://www.digitalocean.com/pricing
-[3]: https://aws.amazon.com/pricing/
-[4]: http://www.genesismuds.com/
-[5]: https://www.host1plus.com/
-[6]: https://www.scaleway.com/
-[7]: https://lowendbox.com/
-[8]: https://www.lowendtalk.com
-[9]: https://amazonlightsail.com
-[10]: https://prgmr.com/
-[11]: https://www.linode.com/
 
 ## Cloud9
 
