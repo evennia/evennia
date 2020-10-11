@@ -557,6 +557,8 @@ def inside(accessing_obj, accessed_obj, *args, **kwargs):
     want also nested objects to pass the lock, use the `insiderecursive`
     lockfunc.
     """
+    if hasattr(accessed_obj, "obj"):
+        accessed_obj = accessed_obj.obj
     return accessing_obj.location == accessed_obj
 
 
