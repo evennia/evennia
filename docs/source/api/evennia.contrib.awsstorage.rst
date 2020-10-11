@@ -10,7 +10,7 @@ Modules
 -------
 
 .. toctree::
-   :maxdepth: 6
+   :maxdepth: 
 
    evennia.contrib.awsstorage.aws_s3_cdn
    evennia.contrib.awsstorage.tests

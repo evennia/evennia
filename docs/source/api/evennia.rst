@@ -10,7 +10,7 @@ Modules
 -------
 
 .. toctree::
-   :maxdepth: 6
+   :maxdepth: 
 
    evennia.settings_default
 
@@ -18,7 +18,7 @@ Packages/folders
 ----------------
 
 .. toctree::
-   :maxdepth: 6
+   :maxdepth: 
 
    evennia.accounts
    evennia.commands
