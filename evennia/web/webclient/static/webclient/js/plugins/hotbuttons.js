@@ -17,16 +17,16 @@
  *     Copy evennia/web/webclient/templates/webclient/base.html to
  *          mygame/web/template_overrides/webclient/base.html
  *
- *     Edit  mygame/web/template_overrides/webclient/base.html to add:
+ *     Edit  mygame/web/template_overrides/webclient/base.html and before the goldenlayout.js plugin, add:
  *          <script src={% static "webclient/js/plugins/hotbuttons.js" %} type="text/javascript"></script>
- *     before the goldenlayout.js plugin tags or after the splithandler.js <script></script> plugin tags
  *
- *     If you are using goldenlayout.js, uncomment the hotbuttons component in goldenlayout_default_config.js
+ *     Then uncomment the hotbuttons component in goldenlayout_default_config.js
  *
  *     Run:  evennia collectstatic (say "yes" to the overwrite prompt)
+ *
  *     Start Evennia
  *
- * REQUIRES: goldenlayout.js OR splithandler.js
+ * REQUIRES: goldenlayout.js
  */
 let hotbuttons = (function () {
     var dependenciesMet = false;
@@ -95,47 +95,22 @@ let hotbuttons = (function () {
     }
 
 
+    // Public
+
     //
-    // Add Buttons UI for SplitHandler
-    var addButtonsUI = function () {
-        var buttons = $( [
-                "<div id='buttons' class='split split-vertical'>",
-                " <div id='buttonsform'>",
-                "  <div id='buttonscontrol' class='input-group'>",
-                "   <button class='btn' id='assign_button0' type='button' value='button0'>unassigned</button>",
-                "   <button class='btn' id='assign_button1' type='button' value='button1'>unassigned</button>",
-                "   <button class='btn' id='assign_button2' type='button' value='button2'>unassigned</button>",
-                "   <button class='btn' id='assign_button3' type='button' value='button3'>unassigned</button>",
-                "   <button class='btn' id='assign_button4' type='button' value='button4'>unassigned</button>",
-                "   <button class='btn' id='assign_button5' type='button' value='button5'>unassigned</button>",
-                "   <button class='btn' id='assign_button6' type='button' value='button6'>unassigned</button>",
-                "   <button class='btn' id='assign_button7' type='button' value='button7'>unassigned</button>",
-                "   <button class='btn' id='assign_button8' type='button' value='button8'>unassigned</button>",
-                "  </div>",
-                " </div>",
-                "</div>",
-            ].join("\n") );
-
-        // Add buttons in front of the existing #inputform
-        $("#input").prev().replaceWith(buttons);
-
-        Split(["#main","#buttons","#input"], {
-            sizes: [85,5,10],
-            direction: "vertical",
-            gutterSize: 4,
-            minSize: [150,20,50],
-        });
-
-        for( var n=0; n<numButtons; n++ ) { 
-            commandCache.push("unassigned");
-            $("#assign_button"+n).click( n, hotButtonClicked );
+    // Handle the HotButtons part of a Webclient_Options event
+    var onGotOptions = function(args, kwargs) {
+        if( dependenciesMet && kwargs["HotButtons"] ) {
+            var buttonOptions = kwargs["HotButtons"];
+            $.each( buttonOptions, function( key, value ) {
+                assignButton(key, value);
+            });
         }
     }
 
-
     //
     // Create and register the hotbuttons golden-layout component
-    var buildComponent = function () {
+    var onLayoutChanged = function () {
         var myLayout = window.plugins["goldenlayout"].getGL();
 
         myLayout.registerComponent( "hotbuttons", function (container, componentState) {
@@ -158,46 +133,21 @@ let hotbuttons = (function () {
         });
     }
 
-
-    // Public
-
-    //
-    // Handle the HotButtons part of a Webclient_Options event
-    var onGotOptions = function(args, kwargs) {
-        if( dependenciesMet && kwargs["HotButtons"] ) {
-            var buttonOptions = kwargs["HotButtons"];
-            $.each( buttonOptions, function( key, value ) {
-                assignButton(key, value);
-            });
-        }
-    }
-
-
-    //
-    // Initialize me
-    var init = function() {
-        // Are we using splithandler?
-        if( window.plugins["splithandler"] ) { 
-            addButtonsUI();
-            dependenciesMet = true;
-        }
-    }
-
-
     //
     //
     var postInit = function() {
         // Are we using GoldenLayout?
         if( window.plugins["goldenlayout"] ) {
-            buildComponent();
+            onLayoutChanged();
             dependenciesMet = true;
         }
     }
 
     return {
-        init: init,
+    	init: function() {},
         postInit: postInit,
         onGotOptions: onGotOptions,
+        onLayoutChanged: onLayoutChanged,
     }
 })();
 window.plugin_handler.add("hotbuttons", hotbuttons);
