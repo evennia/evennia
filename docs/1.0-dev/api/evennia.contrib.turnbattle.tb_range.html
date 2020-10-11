@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.turnbattle.tb_range &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +25,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.turnbattle.tb_range</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -126,14 +124,14 @@ self.add(tb_range.BattleCmdSet())</p>
 <p>This module is meant to be heavily expanded on, so you may want to copy it
 to your game’s ‘world’ folder and modify it there rather than importing it
 in your game and using it as-is.</p>
-<dl class="py data">
+<dl class="data">
 <dt id="evennia.contrib.turnbattle.tb_range.ACTIONS_PER_TURN">
 <code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">ACTIONS_PER_TURN</code><em class="property"> = 2</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.ACTIONS_PER_TURN" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.turnbattle.tb_range.roll_init">
-<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">roll_init</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#roll_init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.roll_init" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">roll_init</code><span class="sig-paren">(</span><em class="sig-param">character</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#roll_init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.roll_init" title="Permalink to this definition">¶</a></dt>
 <dd><p>Rolls a number between 1-1000 to determine initiative.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -155,9 +153,9 @@ an advantage in turn order, like so:</p>
 <p>This way, characters with a higher dexterity will go first more often.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.turnbattle.tb_range.get_attack">
-<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">get_attack</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attacker</span></em>, <em class="sig-param"><span class="n">defender</span></em>, <em class="sig-param"><span class="n">attack_type</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#get_attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.get_attack" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">get_attack</code><span class="sig-paren">(</span><em class="sig-param">attacker</em>, <em class="sig-param">defender</em>, <em class="sig-param">attack_type</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#get_attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.get_attack" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a value for an attack roll.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -185,9 +183,9 @@ equipment, and abilities. This is why the attacker and defender are passed
 to this function, even though nothing from either one are used in this example.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.turnbattle.tb_range.get_defense">
-<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">get_defense</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attacker</span></em>, <em class="sig-param"><span class="n">defender</span></em>, <em class="sig-param"><span class="n">attack_type</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#get_defense"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.get_defense" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">get_defense</code><span class="sig-paren">(</span><em class="sig-param">attacker</em>, <em class="sig-param">defender</em>, <em class="sig-param">attack_type</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#get_defense"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.get_defense" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a value for defense, which an attack roll must equal or exceed in order
 for an attack to hit.</p>
 <dl class="field-list simple">
@@ -213,9 +211,9 @@ attacker into account.</p>
 <p>As above, this can be expanded upon based on character stats and equipment.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.turnbattle.tb_range.get_damage">
-<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">get_damage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attacker</span></em>, <em class="sig-param"><span class="n">defender</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#get_damage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.get_damage" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">get_damage</code><span class="sig-paren">(</span><em class="sig-param">attacker</em>, <em class="sig-param">defender</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#get_damage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.get_damage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a value for damage to be deducted from the defender’s HP after abilities
 successful hit.</p>
 <dl class="field-list simple">
@@ -240,9 +238,9 @@ properties from either the attacker or defender.</p>
 <p>Again, this can be expanded upon.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.turnbattle.tb_range.apply_damage">
-<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">apply_damage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">defender</span></em>, <em class="sig-param"><span class="n">damage</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#apply_damage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.apply_damage" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">apply_damage</code><span class="sig-paren">(</span><em class="sig-param">defender</em>, <em class="sig-param">damage</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#apply_damage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.apply_damage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Applies damage to a target, reducing their HP by the damage amount to a
 minimum of 0.</p>
 <dl class="field-list simple">
@@ -255,9 +253,9 @@ minimum of 0.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.turnbattle.tb_range.at_defeat">
-<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">at_defeat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">defeated</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#at_defeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.at_defeat" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">at_defeat</code><span class="sig-paren">(</span><em class="sig-param">defeated</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#at_defeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.at_defeat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Announces the defeat of a fighter in combat.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -271,9 +269,9 @@ into a dying state or something similar) then this is the place to
 do it.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.turnbattle.tb_range.resolve_attack">
-<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">resolve_attack</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attacker</span></em>, <em class="sig-param"><span class="n">defender</span></em>, <em class="sig-param"><span class="n">attack_type</span></em>, <em class="sig-param"><span class="n">attack_value</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">defense_value</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#resolve_attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.resolve_attack" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">resolve_attack</code><span class="sig-paren">(</span><em class="sig-param">attacker</em>, <em class="sig-param">defender</em>, <em class="sig-param">attack_type</em>, <em class="sig-param">attack_value=None</em>, <em class="sig-param">defense_value=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#resolve_attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.resolve_attack" title="Permalink to this definition">¶</a></dt>
 <dd><p>Resolves an attack and outputs the result.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -290,9 +288,9 @@ extremely simply, they are separated out into their own functions
 so that they are easier to expand upon.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.turnbattle.tb_range.get_range">
-<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">get_range</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj1</span></em>, <em class="sig-param"><span class="n">obj2</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#get_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.get_range" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">get_range</code><span class="sig-paren">(</span><em class="sig-param">obj1</em>, <em class="sig-param">obj2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#get_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.get_range" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the combat range between two objects.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -307,9 +305,9 @@ so that they are easier to expand upon.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.turnbattle.tb_range.distance_inc">
-<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">distance_inc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mover</span></em>, <em class="sig-param"><span class="n">target</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#distance_inc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.distance_inc" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">distance_inc</code><span class="sig-paren">(</span><em class="sig-param">mover</em>, <em class="sig-param">target</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#distance_inc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.distance_inc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function that increases distance in range field between mover and target.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -321,9 +319,9 @@ so that they are easier to expand upon.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.turnbattle.tb_range.approach">
-<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">approach</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mover</span></em>, <em class="sig-param"><span class="n">target</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#approach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.approach" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">approach</code><span class="sig-paren">(</span><em class="sig-param">mover</em>, <em class="sig-param">target</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#approach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.approach" title="Permalink to this definition">¶</a></dt>
 <dd><p>Manages a character’s whole approach, including changes in ranges to other characters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -339,9 +337,9 @@ target than the mover is. The mover will also move away from anything they start
 out close to.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.turnbattle.tb_range.withdraw">
-<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">withdraw</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mover</span></em>, <em class="sig-param"><span class="n">target</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#withdraw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.withdraw" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">withdraw</code><span class="sig-paren">(</span><em class="sig-param">mover</em>, <em class="sig-param">target</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#withdraw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.withdraw" title="Permalink to this definition">¶</a></dt>
 <dd><p>Manages a character’s whole withdrawal, including changes in ranges to other characters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -357,9 +355,9 @@ of their withdrawl. The mover will never inadvertently move toward anything else
 withdrawing - they can be considered to be moving to open space.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.turnbattle.tb_range.combat_cleanup">
-<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">combat_cleanup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#combat_cleanup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.combat_cleanup" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">combat_cleanup</code><span class="sig-paren">(</span><em class="sig-param">character</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#combat_cleanup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.combat_cleanup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cleans up all the temporary combat-related attributes on a character.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -371,9 +369,9 @@ withdrawing - they can be considered to be moving to open space.</p>
 longer needed once a fight ends.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.turnbattle.tb_range.is_in_combat">
-<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">is_in_combat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#is_in_combat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.is_in_combat" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">is_in_combat</code><span class="sig-paren">(</span><em class="sig-param">character</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#is_in_combat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.is_in_combat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns true if the given character is in combat.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -385,9 +383,9 @@ longer needed once a fight ends.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.turnbattle.tb_range.is_turn">
-<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">is_turn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#is_turn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.is_turn" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">is_turn</code><span class="sig-paren">(</span><em class="sig-param">character</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#is_turn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.is_turn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns true if it’s currently the given character’s turn in combat.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -399,9 +397,9 @@ longer needed once a fight ends.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.turnbattle.tb_range.spend_action">
-<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">spend_action</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span></em>, <em class="sig-param"><span class="n">actions</span></em>, <em class="sig-param"><span class="n">action_name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#spend_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.spend_action" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">spend_action</code><span class="sig-paren">(</span><em class="sig-param">character</em>, <em class="sig-param">actions</em>, <em class="sig-param">action_name=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#spend_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.spend_action" title="Permalink to this definition">¶</a></dt>
 <dd><p>Spends a character’s available combat actions and checks for end of turn.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -419,17 +417,17 @@ longer needed once a fight ends.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.turnbattle.tb_range.combat_status_message">
-<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">combat_status_message</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fighter</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#combat_status_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.combat_status_message" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">combat_status_message</code><span class="sig-paren">(</span><em class="sig-param">fighter</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#combat_status_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.combat_status_message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sends a message to a player with their current HP and
 distances to other fighters and objects. Called at turn
 start and by the ‘status’ command.</p>
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">TBRangeTurnHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeTurnHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">TBRangeTurnHandler</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeTurnHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript" title="evennia.scripts.scripts.DefaultScript"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript</span></code></a></p>
 <p>This is the script that handles the progression of combat through turns.
 On creation (when a fight is started) it adds all combat-ready characters
@@ -439,27 +437,27 @@ room as its object.</p>
 <p>Fights persist until only one participant is left with any HP or all
 remaining participants choose to end the combat with the ‘disengage’
 command.</p>
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.at_script_creation">
 <code class="sig-name descname">at_script_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeTurnHandler.at_script_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.at_script_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called once, when the script is created.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.at_stop">
 <code class="sig-name descname">at_stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeTurnHandler.at_stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.at_stop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called at script termination.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.at_repeat">
 <code class="sig-name descname">at_repeat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeTurnHandler.at_repeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.at_repeat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called once every self.interval seconds.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.init_range">
-<code class="sig-name descname">init_range</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">to_init</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeTurnHandler.init_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.init_range" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">init_range</code><span class="sig-paren">(</span><em class="sig-param">to_init</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeTurnHandler.init_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.init_range" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes range values for an object at the start of a fight.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -468,9 +466,9 @@ command.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.join_rangefield">
-<code class="sig-name descname">join_rangefield</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">to_init</span></em>, <em class="sig-param"><span class="n">anchor_obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">add_distance</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeTurnHandler.join_rangefield"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.join_rangefield" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">join_rangefield</code><span class="sig-paren">(</span><em class="sig-param">to_init</em>, <em class="sig-param">anchor_obj=None</em>, <em class="sig-param">add_distance=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeTurnHandler.join_rangefield"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.join_rangefield" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds a new object to the range field of a fight in progress.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -485,9 +483,9 @@ command.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.initialize_for_combat">
-<code class="sig-name descname">initialize_for_combat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeTurnHandler.initialize_for_combat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.initialize_for_combat" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">initialize_for_combat</code><span class="sig-paren">(</span><em class="sig-param">character</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeTurnHandler.initialize_for_combat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.initialize_for_combat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prepares a character for combat when starting or entering a fight.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -496,9 +494,9 @@ command.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.start_turn">
-<code class="sig-name descname">start_turn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeTurnHandler.start_turn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.start_turn" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">start_turn</code><span class="sig-paren">(</span><em class="sig-param">character</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeTurnHandler.start_turn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.start_turn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Readies a character for the start of their turn by replenishing their
 available actions and notifying them that their turn has come up.</p>
 <dl class="field-list simple">
@@ -512,15 +510,15 @@ characters to both move and attack in the same turn (or, alternately,
 move twice or attack twice).</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.next_turn">
 <code class="sig-name descname">next_turn</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeTurnHandler.next_turn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.next_turn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Advances to the next character in the turn order.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.turn_end_check">
-<code class="sig-name descname">turn_end_check</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeTurnHandler.turn_end_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.turn_end_check" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">turn_end_check</code><span class="sig-paren">(</span><em class="sig-param">character</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeTurnHandler.turn_end_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.turn_end_check" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tests to see if a character’s turn is over, and cycles to the next turn if it is.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -529,9 +527,9 @@ move twice or attack twice).</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.join_fight">
-<code class="sig-name descname">join_fight</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeTurnHandler.join_fight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.join_fight" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">join_fight</code><span class="sig-paren">(</span><em class="sig-param">character</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeTurnHandler.join_fight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.join_fight" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds a new character to a fight already in progress.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -540,46 +538,46 @@ move twice or attack twice).</p>
 </dl>
 </dd></dl>
 
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.DoesNotExist" title="evennia.scripts.scripts.DefaultScript.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.DoesNotExist</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DoesNotExist</span></code></p>
 </dd></dl>
 
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned" title="evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'TBRangeTurnHandler'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeTurnHandler.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeCharacter">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">TBRangeCharacter</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeCharacter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeCharacter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">TBRangeCharacter</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeCharacter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeCharacter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter" title="evennia.objects.objects.DefaultCharacter"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultCharacter</span></code></a></p>
 <p>A character able to participate in turn-based combat. Has attributes for current
 and maximum HP, and access to combat commands.</p>
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeCharacter.at_object_creation">
 <code class="sig-name descname">at_object_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeCharacter.at_object_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeCharacter.at_object_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called once, when this object is first created. This is the
 normal hook to overload for most object types.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeCharacter.at_before_move">
-<code class="sig-name descname">at_before_move</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">destination</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeCharacter.at_before_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeCharacter.at_before_move" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_before_move</code><span class="sig-paren">(</span><em class="sig-param">destination</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeCharacter.at_before_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeCharacter.at_before_move" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called just before starting to move this object to
 destination.</p>
 <dl class="field-list simple">
@@ -595,41 +593,41 @@ destination.</p>
 before it is even started.</p>
 </dd></dl>
 
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeCharacter.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeCharacter.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.DoesNotExist" title="evennia.objects.objects.DefaultCharacter.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultCharacter.DoesNotExist</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DoesNotExist</span></code></p>
 </dd></dl>
 
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeCharacter.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeCharacter.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.MultipleObjectsReturned" title="evennia.objects.objects.DefaultCharacter.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultCharacter.MultipleObjectsReturned</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeCharacter.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.turnbattle.tb_range.TBRangeCharacter'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeCharacter.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeCharacter.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'TBRangeCharacter'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeCharacter.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeObject">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">TBRangeObject</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeObject" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">TBRangeObject</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeObject" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject</span></code></a></p>
 <p>An object that is assigned range values in combat. Getting, giving, and dropping
 the object has restrictions in combat - you must be next to an object to get it,
 must be next to your target to give them something, and can only interact with
 objects on your own turn.</p>
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeObject.at_before_drop">
-<code class="sig-name descname">at_before_drop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dropper</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeObject.at_before_drop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_before_drop" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_before_drop</code><span class="sig-paren">(</span><em class="sig-param">dropper</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeObject.at_before_drop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_before_drop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called by the default <strong>drop</strong> command before this object has been
 dropped.</p>
 <dl class="field-list simple">
@@ -649,9 +647,9 @@ overriding the call (unused by default).</p></li>
 before it is even started.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeObject.at_drop">
-<code class="sig-name descname">at_drop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dropper</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeObject.at_drop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_drop" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_drop</code><span class="sig-paren">(</span><em class="sig-param">dropper</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeObject.at_drop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_drop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called by the default <strong>drop</strong> command when this object has been
 dropped.</p>
 <dl class="field-list simple">
@@ -668,9 +666,9 @@ overriding the call (unused by default).</p></li>
 permissions or the at_before_drop() hook for that.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeObject.at_before_get">
-<code class="sig-name descname">at_before_get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">getter</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeObject.at_before_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_before_get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_before_get</code><span class="sig-paren">(</span><em class="sig-param">getter</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeObject.at_before_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_before_get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called by the default <strong>get</strong> command before this object has been
 picked up.</p>
 <dl class="field-list simple">
@@ -690,9 +688,9 @@ overriding the call (unused by default).</p></li>
 before it is even started.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeObject.at_get">
-<code class="sig-name descname">at_get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">getter</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeObject.at_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_get</code><span class="sig-paren">(</span><em class="sig-param">getter</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeObject.at_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called by the default <strong>get</strong> command when this object has been
 picked up.</p>
 <dl class="field-list simple">
@@ -709,9 +707,9 @@ overriding the call (unused by default).</p></li>
 permissions or the at_before_get() hook for that.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeObject.at_before_give">
-<code class="sig-name descname">at_before_give</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">giver</span></em>, <em class="sig-param"><span class="n">getter</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeObject.at_before_give"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_before_give" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_before_give</code><span class="sig-paren">(</span><em class="sig-param">giver</em>, <em class="sig-param">getter</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeObject.at_before_give"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_before_give" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called by the default <strong>give</strong> command before this object has been
 given.</p>
 <dl class="field-list simple">
@@ -732,9 +730,9 @@ overriding the call (unused by default).</p></li>
 before it is even started.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeObject.at_give">
-<code class="sig-name descname">at_give</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">giver</span></em>, <em class="sig-param"><span class="n">getter</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeObject.at_give"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_give" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_give</code><span class="sig-paren">(</span><em class="sig-param">giver</em>, <em class="sig-param">getter</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#TBRangeObject.at_give"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeObject.at_give" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called by the default <strong>give</strong> command when this object has been
 given.</p>
 <dl class="field-list simple">
@@ -752,33 +750,33 @@ overriding the call (unused by default).</p></li>
 permissions or the at_before_give() hook for that.</p>
 </dd></dl>
 
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeObject.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeObject.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.DoesNotExist" title="evennia.objects.objects.DefaultObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject.DoesNotExist</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DoesNotExist</span></code></p>
 </dd></dl>
 
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeObject.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeObject.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.MultipleObjectsReturned" title="evennia.objects.objects.DefaultObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject.MultipleObjectsReturned</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeObject.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.turnbattle.tb_range.TBRangeObject'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeObject.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.TBRangeObject.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'TBRangeObject'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.TBRangeObject.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdFight">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">CmdFight</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdFight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdFight" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">CmdFight</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdFight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdFight" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
 <p>Starts a fight with everyone in the same room as you.</p>
 <dl class="simple">
@@ -788,42 +786,42 @@ permissions or the at_before_give() hook for that.</p>
 <p>When you start a fight, everyone in the room who is able to
 fight is added to combat, and a turn order is randomly rolled.
 When it’s your turn, you can attack other characters.</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdFight.key">
 <code class="sig-name descname">key</code><em class="property"> = 'fight'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdFight.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdFight.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'combat'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdFight.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdFight.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdFight.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdFight.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>This performs the actual command.</p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdFight.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdFight.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdFight.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdFight.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdFight.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'combat', 'key': 'fight', 'tags': '', 'text': &quot;\n    Starts a fight with everyone in the same room as you.\n\n    Usage:\n      fight\n\n    When you start a fight, everyone in the room who is able to\n    fight is added to combat, and a turn order is randomly rolled.\n    When it's your turn, you can attack other characters.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdFight.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdAttack">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">CmdAttack</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdAttack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdAttack" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">CmdAttack</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdAttack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdAttack" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
 <p>Attacks another character in melee.</p>
 <dl class="simple">
@@ -834,42 +832,42 @@ When it’s your turn, you can attack other characters.</p>
 a chance to hit, and if successful, will deal damage. You can only
 attack engaged targets - that is, targets that are right next to
 you. Use the ‘approach’ command to get closer to a target.</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdAttack.key">
 <code class="sig-name descname">key</code><em class="property"> = 'attack'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdAttack.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdAttack.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'combat'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdAttack.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdAttack.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdAttack.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdAttack.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>This performs the actual command.</p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdAttack.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdAttack.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdAttack.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdAttack.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdAttack.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'combat', 'key': 'attack', 'tags': '', 'text': &quot;\n    Attacks another character in melee.\n\n    Usage:\n      attack &lt;target&gt;\n\n    When in a fight, you may attack another character. The attack has\n    a chance to hit, and if successful, will deal damage. You can only\n    attack engaged targets - that is, targets that are right next to\n    you. Use the 'approach' command to get closer to a target.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdAttack.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdShoot">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">CmdShoot</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdShoot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdShoot" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">CmdShoot</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdShoot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdShoot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
 <p>Attacks another character from range.</p>
 <dl class="simple">
@@ -881,42 +879,42 @@ a chance to hit, and if successful, will deal damage. You can attack
 any target in combat by shooting, but can’t shoot if there are any
 targets engaged with you. Use the ‘withdraw’ command to retreat from
 nearby enemies.</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdShoot.key">
 <code class="sig-name descname">key</code><em class="property"> = 'shoot'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdShoot.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdShoot.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'combat'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdShoot.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdShoot.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdShoot.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdShoot.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>This performs the actual command.</p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdShoot.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdShoot.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdShoot.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdShoot.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdShoot.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'combat', 'key': 'shoot', 'tags': '', 'text': &quot;\n    Attacks another character from range.\n\n    Usage:\n      shoot &lt;target&gt;\n\n    When in a fight, you may shoot another character. The attack has\n    a chance to hit, and if successful, will deal damage. You can attack\n    any target in combat by shooting, but can't shoot if there are any\n    targets engaged with you. Use the 'withdraw' command to retreat from\n    nearby enemies.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdShoot.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdApproach">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">CmdApproach</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdApproach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdApproach" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">CmdApproach</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdApproach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdApproach" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
 <p>Approaches an object.</p>
 <dl class="simple">
@@ -925,42 +923,42 @@ nearby enemies.</p>
 </dl>
 <p>Move one space toward a character or object. You can only attack
 characters you are 0 spaces away from.</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdApproach.key">
 <code class="sig-name descname">key</code><em class="property"> = 'approach'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdApproach.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdApproach.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'combat'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdApproach.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdApproach.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdApproach.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdApproach.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>This performs the actual command.</p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdApproach.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdApproach.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdApproach.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdApproach.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdApproach.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'combat', 'key': 'approach', 'tags': '', 'text': '\n    Approaches an object.\n\n    Usage:\n      approach &lt;target&gt;\n\n    Move one space toward a character or object. You can only attack\n    characters you are 0 spaces away from.\n    '}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdApproach.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdWithdraw">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">CmdWithdraw</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdWithdraw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdWithdraw" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">CmdWithdraw</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdWithdraw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdWithdraw" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
 <p>Moves away from an object.</p>
 <dl class="simple">
@@ -968,42 +966,42 @@ characters you are 0 spaces away from.</p>
 </dd>
 </dl>
 <p>Move one space away from a character or object.</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdWithdraw.key">
 <code class="sig-name descname">key</code><em class="property"> = 'withdraw'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdWithdraw.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdWithdraw.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'combat'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdWithdraw.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdWithdraw.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdWithdraw.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdWithdraw.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>This performs the actual command.</p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdWithdraw.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdWithdraw.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdWithdraw.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdWithdraw.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdWithdraw.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'combat', 'key': 'withdraw', 'tags': '', 'text': '\n    Moves away from an object.\n\n    Usage:\n      withdraw &lt;target&gt;\n\n    Move one space away from a character or object.\n    '}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdWithdraw.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdPass">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">CmdPass</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdPass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdPass" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">CmdPass</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdPass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdPass" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
 <p>Passes on your turn.</p>
 <dl class="simple">
@@ -1012,42 +1010,42 @@ characters you are 0 spaces away from.</p>
 </dl>
 <p>When in a fight, you can use this command to end your turn early, even
 if there are still any actions you can take.</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdPass.key">
 <code class="sig-name descname">key</code><em class="property"> = 'pass'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdPass.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdPass.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = ['wait', 'hold']</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdPass.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdPass.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'combat'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdPass.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdPass.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdPass.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdPass.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>This performs the actual command.</p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdPass.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdPass.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdPass.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'wait hold', 'category': 'combat', 'key': 'pass', 'tags': '', 'text': '\n    Passes on your turn.\n\n    Usage:\n      pass\n\n    When in a fight, you can use this command to end your turn early, even\n    if there are still any actions you can take.\n    '}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdPass.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdDisengage">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">CmdDisengage</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdDisengage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdDisengage" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">CmdDisengage</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdDisengage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdDisengage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
 <p>Passes your turn and attempts to end combat.</p>
 <dl class="simple">
@@ -1057,42 +1055,42 @@ if there are still any actions you can take.</p>
 <p>Ends your turn early and signals that you’re trying to end
 the fight. If all participants in a fight disengage, the
 fight ends.</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdDisengage.key">
 <code class="sig-name descname">key</code><em class="property"> = 'disengage'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdDisengage.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdDisengage.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = ['spare']</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdDisengage.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdDisengage.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'combat'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdDisengage.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdDisengage.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdDisengage.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdDisengage.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>This performs the actual command.</p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdDisengage.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdDisengage.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdDisengage.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'spare', 'category': 'combat', 'key': 'disengage', 'tags': '', 'text': &quot;\n    Passes your turn and attempts to end combat.\n\n    Usage:\n      disengage\n\n    Ends your turn early and signals that you're trying to end\n    the fight. If all participants in a fight disengage, the\n    fight ends.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdDisengage.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdRest">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">CmdRest</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdRest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdRest" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">CmdRest</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdRest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdRest" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
 <p>Recovers damage.</p>
 <dl class="simple">
@@ -1101,42 +1099,42 @@ fight ends.</p>
 </dl>
 <p>Resting recovers your HP to its maximum, but you can only
 rest if you’re not in a fight.</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdRest.key">
 <code class="sig-name descname">key</code><em class="property"> = 'rest'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdRest.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdRest.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'combat'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdRest.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdRest.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdRest.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdRest.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>This performs the actual command.</p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdRest.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdRest.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdRest.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdRest.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdRest.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'combat', 'key': 'rest', 'tags': '', 'text': &quot;\n    Recovers damage.\n\n    Usage:\n      rest\n\n    Resting recovers your HP to its maximum, but you can only\n    rest if you're not in a fight.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdRest.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdStatus">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">CmdStatus</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdStatus" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">CmdStatus</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdStatus" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
 <p>Gives combat information.</p>
 <dl class="simple">
@@ -1145,42 +1143,42 @@ rest if you’re not in a fight.</p>
 </dl>
 <p>Shows your current and maximum HP and your distance from
 other targets in combat.</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdStatus.key">
 <code class="sig-name descname">key</code><em class="property"> = 'status'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdStatus.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdStatus.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'combat'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdStatus.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdStatus.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdStatus.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdStatus.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>This performs the actual command.</p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdStatus.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdStatus.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdStatus.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdStatus.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdStatus.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'combat', 'key': 'status', 'tags': '', 'text': '\n    Gives combat information.\n\n    Usage:\n      status\n\n    Shows your current and maximum HP and your distance from\n    other targets in combat.\n    '}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdStatus.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdCombatHelp">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">CmdCombatHelp</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdCombatHelp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdCombatHelp" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">CmdCombatHelp</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdCombatHelp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdCombatHelp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp" title="evennia.commands.default.help.CmdHelp"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.help.CmdHelp</span></code></a></p>
 <p>View help or a list of topics</p>
 <dl class="simple">
@@ -1191,56 +1189,56 @@ help all</p>
 </dl>
 <p>This will search for help on commands and other
 topics related to the game.</p>
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdCombatHelp.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#CmdCombatHelp.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdCombatHelp.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run the dynamic help entry creator.</p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdCombatHelp.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = ['?']</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdCombatHelp.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdCombatHelp.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdCombatHelp.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdCombatHelp.key">
 <code class="sig-name descname">key</code><em class="property"> = 'help'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdCombatHelp.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdCombatHelp.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdCombatHelp.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.CmdCombatHelp.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '?', 'category': 'general', 'key': 'help', 'tags': '', 'text': '\n    View help or a list of topics\n\n    Usage:\n      help &lt;topic or command&gt;\n      help list\n      help all\n\n    This will search for help on commands and other\n    topics related to the game.\n    '}</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.CmdCombatHelp.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.turnbattle.tb_range.BattleCmdSet">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">BattleCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#BattleCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.BattleCmdSet" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.turnbattle.tb_range.</code><code class="sig-name descname">BattleCmdSet</code><span class="sig-paren">(</span><em class="sig-param">cmdsetobj=None</em>, <em class="sig-param">key=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#BattleCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.BattleCmdSet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.default.cmdset_character.html#evennia.commands.default.cmdset_character.CharacterCmdSet" title="evennia.commands.default.cmdset_character.CharacterCmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.cmdset_character.CharacterCmdSet</span></code></a></p>
 <p>This command set includes all the commmands used in the battle system.</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.BattleCmdSet.key">
 <code class="sig-name descname">key</code><em class="property"> = 'DefaultCharacter'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.BattleCmdSet.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.turnbattle.tb_range.BattleCmdSet.at_cmdset_creation">
 <code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/turnbattle/tb_range.html#BattleCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.BattleCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Populates the cmdset</p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.turnbattle.tb_range.BattleCmdSet.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.turnbattle.tb_range.BattleCmdSet'</em><a class="headerlink" href="#evennia.contrib.turnbattle.tb_range.BattleCmdSet.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -1250,7 +1248,6 @@ topics related to the game.</p>
 </div>
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -1279,7 +1276,7 @@ topics related to the game.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.contrib.turnbattle.tb_range.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.1/api/evennia.contrib.turnbattle.tb_range.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../0.9.5/api/evennia.contrib.turnbattle.tb_range.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -1295,13 +1292,12 @@ topics related to the game.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.turnbattle.tb_range</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

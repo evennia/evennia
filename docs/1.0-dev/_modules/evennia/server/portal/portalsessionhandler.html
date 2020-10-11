@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.server.portal.portalsessionhandler &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -28,8 +27,7 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.portalsessionhandler</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -280,16 +278,16 @@
 <div class="viewcode-block" id="PortalSessionHandler.server_connect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.server_connect">[docs]</a>    <span class="k">def</span> <span class="nf">server_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol_path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="nb">dict</span><span class="p">()):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by server to force the initialization of a new protocol</span>
-<span class="sd">        instance. Server wants this instance to get a unique sessid</span>
-<span class="sd">        and to be connected back as normal. This is used to initiate</span>
-<span class="sd">        irc/rss etc connections.</span>
+<span class="sd">        instance. Server wants this instance to get a unique sessid and to be</span>
+<span class="sd">        connected back as normal. This is used to initiate irc/rss etc</span>
+<span class="sd">        connections.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            protocol_path (st): Full python path to the class factory</span>
+<span class="sd">            protocol_path (str): Full python path to the class factory</span>
 <span class="sd">                for the protocol used, eg</span>
 <span class="sd">                &#39;evennia.server.portal.irc.IRCClientFactory&#39;</span>
 <span class="sd">            config (dict): Dictionary of configuration options, fed as</span>
-<span class="sd">                `**kwargs` to protocol class&#39; __init__ method.</span>
+<span class="sd">                `**kwarg` to protocol class `__init__` method.</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            RuntimeError: If The correct factory class is not found.</span>
@@ -523,7 +521,6 @@
 <span class="n">PORTAL_SESSIONS</span> <span class="o">=</span> <span class="n">_PORTAL_SESSION_HANDLER_CLASS</span><span class="p">()</span>
 </pre></div>
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -545,7 +542,7 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="portalsessionhandler.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../../0.9.1/index.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../../../../0.9.5/index.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -563,13 +560,12 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.portalsessionhandler</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

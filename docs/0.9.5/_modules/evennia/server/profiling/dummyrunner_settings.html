@@ -1,0 +1,381 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.server.profiling.dummyrunner_settings &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.server.profiling.dummyrunner_settings</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Settings and actions for the dummyrunner</span>
+
+<span class="sd">This module defines dummyrunner settings and sets up</span>
+<span class="sd">the actions available to dummy accounts.</span>
+
+<span class="sd">The settings are global variables:</span>
+
+<span class="sd">- TIMESTEP - time in seconds between each &#39;tick&#39;</span>
+<span class="sd">- CHANCE_OF_ACTION - chance 0-1 of action happening</span>
+<span class="sd">- CHANCE_OF_LOGIN - chance 0-1 of login happening</span>
+<span class="sd">- TELNET_PORT - port to use, defaults to settings.TELNET_PORT</span>
+<span class="sd">- ACTIONS - see below</span>
+
+<span class="sd">ACTIONS is a tuple</span>
+
+<span class="sd">```python</span>
+<span class="sd">(login_func, logout_func, (0.3, func1), (0.1, func2) ... )</span>
+<span class="sd">```</span>
+
+<span class="sd">where the first entry is the function to call on first connect, with a</span>
+<span class="sd">chance of occurring given by CHANCE_OF_LOGIN. This function is usually</span>
+<span class="sd">responsible for logging in the account. The second entry is always</span>
+<span class="sd">called when the dummyrunner disconnects from the server and should</span>
+<span class="sd">thus issue a logout command.  The other entries are tuples (chance,</span>
+<span class="sd">func). They are picked randomly, their commonality based on the</span>
+<span class="sd">cumulative chance given (the chance is normalized between all options</span>
+<span class="sd">so if will still work also if the given chances don&#39;t add up to 1).</span>
+<span class="sd">Since each function can return a list of game-command strings, each</span>
+<span class="sd">function may result in multiple operations.</span>
+
+<span class="sd">An action-function is called with a &quot;client&quot; argument which is a</span>
+<span class="sd">reference to the dummy client currently performing the action. It</span>
+<span class="sd">returns a string or a list of command strings to execute.  Use the</span>
+<span class="sd">client object for optionally saving data between actions.</span>
+
+<span class="sd">The client object has the following relevant properties and methods:</span>
+
+<span class="sd">- key - an optional client key. This is only used for dummyrunner output.</span>
+<span class="sd">  Default is &quot;Dummy-&lt;cid&gt;&quot;</span>
+<span class="sd">- cid - client id</span>
+<span class="sd">- gid - globally unique id, hashed with time stamp</span>
+<span class="sd">- istep - the current step</span>
+<span class="sd">- exits - an empty list. Can be used to store exit names</span>
+<span class="sd">- objs - an empty list. Can be used to store object names</span>
+<span class="sd">- counter() - returns a unique increasing id, hashed with time stamp</span>
+<span class="sd">  to make it unique also between dummyrunner instances.</span>
+
+<span class="sd">The return should either be a single command string or a tuple of</span>
+<span class="sd">command strings. This list of commands will always be executed every</span>
+<span class="sd">TIMESTEP with a chance given by CHANCE_OF_ACTION by in the order given</span>
+<span class="sd">(no randomness) and allows for setting up a more complex chain of</span>
+<span class="sd">commands (such as creating an account and logging in).</span>
+
+<span class="sd">----</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># Dummy runner settings</span>
+
+<span class="c1"># Time between each dummyrunner &quot;tick&quot;, in seconds. Each dummy</span>
+<span class="c1"># will be called with this frequency.</span>
+<span class="n">TIMESTEP</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="c1"># Chance of a dummy actually performing an action on a given tick.</span>
+<span class="c1"># This spreads out usage randomly, like it would be in reality.</span>
+<span class="n">CHANCE_OF_ACTION</span> <span class="o">=</span> <span class="mf">0.5</span>
+
+<span class="c1"># Chance of a currently unlogged-in dummy performing its login</span>
+<span class="c1"># action every tick. This emulates not all accounts logging in</span>
+<span class="c1"># at exactly the same time.</span>
+<span class="n">CHANCE_OF_LOGIN</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+<span class="c1"># Which telnet port to connect to. If set to None, uses the first</span>
+<span class="c1"># default telnet port of the running server.</span>
+<span class="n">TELNET_PORT</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="c1"># Setup actions tuple</span>
+
+<span class="c1"># some convenient templates</span>
+
+<span class="n">DUMMY_NAME</span> <span class="o">=</span> <span class="s2">&quot;Dummy-</span><span class="si">%s</span><span class="s2">&quot;</span>
+<span class="n">DUMMY_PWD</span> <span class="o">=</span> <span class="s2">&quot;password-</span><span class="si">%s</span><span class="s2">&quot;</span>
+<span class="n">START_ROOM</span> <span class="o">=</span> <span class="s2">&quot;testing_room_start_</span><span class="si">%s</span><span class="s2">&quot;</span>
+<span class="n">ROOM_TEMPLATE</span> <span class="o">=</span> <span class="s2">&quot;testing_room_</span><span class="si">%s</span><span class="s2">&quot;</span>
+<span class="n">EXIT_TEMPLATE</span> <span class="o">=</span> <span class="s2">&quot;exit_</span><span class="si">%s</span><span class="s2">&quot;</span>
+<span class="n">OBJ_TEMPLATE</span> <span class="o">=</span> <span class="s2">&quot;testing_obj_</span><span class="si">%s</span><span class="s2">&quot;</span>
+<span class="n">TOBJ_TEMPLATE</span> <span class="o">=</span> <span class="s2">&quot;testing_button_</span><span class="si">%s</span><span class="s2">&quot;</span>
+<span class="n">TOBJ_TYPECLASS</span> <span class="o">=</span> <span class="s2">&quot;contrib.tutorial_examples.red_button.RedButton&quot;</span>
+
+
+<span class="c1"># action function definitions (pick and choose from</span>
+<span class="c1"># these to build a client &quot;usage profile&quot;</span>
+
+<span class="c1"># login/logout</span>
+
+
+<div class="viewcode-block" id="c_login"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner_settings.html#evennia.server.profiling.dummyrunner_settings.c_login">[docs]</a><span class="k">def</span> <span class="nf">c_login</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+    <span class="s2">&quot;logins to the game&quot;</span>
+    <span class="c1"># we always use a new client name</span>
+    <span class="n">cname</span> <span class="o">=</span> <span class="n">DUMMY_NAME</span> <span class="o">%</span> <span class="n">client</span><span class="o">.</span><span class="n">gid</span>
+    <span class="n">cpwd</span> <span class="o">=</span> <span class="n">DUMMY_PWD</span> <span class="o">%</span> <span class="n">client</span><span class="o">.</span><span class="n">gid</span>
+
+    <span class="c1"># set up for digging a first room (to move to and keep the</span>
+    <span class="c1"># login room clean)</span>
+    <span class="n">roomname</span> <span class="o">=</span> <span class="n">ROOM_TEMPLATE</span> <span class="o">%</span> <span class="n">client</span><span class="o">.</span><span class="n">counter</span><span class="p">()</span>
+    <span class="n">exitname1</span> <span class="o">=</span> <span class="n">EXIT_TEMPLATE</span> <span class="o">%</span> <span class="n">client</span><span class="o">.</span><span class="n">counter</span><span class="p">()</span>
+    <span class="n">exitname2</span> <span class="o">=</span> <span class="n">EXIT_TEMPLATE</span> <span class="o">%</span> <span class="n">client</span><span class="o">.</span><span class="n">counter</span><span class="p">()</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">exits</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">exitname1</span><span class="p">,</span> <span class="n">exitname2</span><span class="p">])</span>
+
+    <span class="n">cmds</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;create </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cname</span><span class="p">,</span> <span class="n">cpwd</span><span class="p">),</span>
+        <span class="s2">&quot;connect </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cname</span><span class="p">,</span> <span class="n">cpwd</span><span class="p">),</span>
+        <span class="s2">&quot;@dig </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">START_ROOM</span> <span class="o">%</span> <span class="n">client</span><span class="o">.</span><span class="n">gid</span><span class="p">,</span>
+        <span class="s2">&quot;@teleport </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">START_ROOM</span> <span class="o">%</span> <span class="n">client</span><span class="o">.</span><span class="n">gid</span><span class="p">,</span>
+        <span class="s2">&quot;@dig </span><span class="si">%s</span><span class="s2"> = </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">roomname</span><span class="p">,</span> <span class="n">exitname1</span><span class="p">,</span> <span class="n">exitname2</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">cmds</span></div>
+
+
+<div class="viewcode-block" id="c_login_nodig"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner_settings.html#evennia.server.profiling.dummyrunner_settings.c_login_nodig">[docs]</a><span class="k">def</span> <span class="nf">c_login_nodig</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+    <span class="s2">&quot;logins, don&#39;t dig its own room&quot;</span>
+    <span class="n">cname</span> <span class="o">=</span> <span class="n">DUMMY_NAME</span> <span class="o">%</span> <span class="n">client</span><span class="o">.</span><span class="n">gid</span>
+    <span class="n">cpwd</span> <span class="o">=</span> <span class="n">DUMMY_PWD</span> <span class="o">%</span> <span class="n">client</span><span class="o">.</span><span class="n">gid</span>
+
+    <span class="n">cmds</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;create </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cname</span><span class="p">,</span> <span class="n">cpwd</span><span class="p">),</span> <span class="s2">&quot;connect </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cname</span><span class="p">,</span> <span class="n">cpwd</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">cmds</span></div>
+
+
+<div class="viewcode-block" id="c_logout"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner_settings.html#evennia.server.profiling.dummyrunner_settings.c_logout">[docs]</a><span class="k">def</span> <span class="nf">c_logout</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+    <span class="s2">&quot;logouts of the game&quot;</span>
+    <span class="k">return</span> <span class="s2">&quot;@quit&quot;</span></div>
+
+
+<span class="c1"># random commands</span>
+
+
+<div class="viewcode-block" id="c_looks"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner_settings.html#evennia.server.profiling.dummyrunner_settings.c_looks">[docs]</a><span class="k">def</span> <span class="nf">c_looks</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+    <span class="s2">&quot;looks at various objects&quot;</span>
+    <span class="n">cmds</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;look </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">objs</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">cmds</span><span class="p">:</span>
+        <span class="n">cmds</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;look </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">exi</span> <span class="k">for</span> <span class="n">exi</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">exits</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">cmds</span><span class="p">:</span>
+            <span class="n">cmds</span> <span class="o">=</span> <span class="s2">&quot;look&quot;</span>
+    <span class="k">return</span> <span class="n">cmds</span></div>
+
+
+<div class="viewcode-block" id="c_examines"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner_settings.html#evennia.server.profiling.dummyrunner_settings.c_examines">[docs]</a><span class="k">def</span> <span class="nf">c_examines</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+    <span class="s2">&quot;examines various objects&quot;</span>
+    <span class="n">cmds</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;examine </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">objs</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">cmds</span><span class="p">:</span>
+        <span class="n">cmds</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;examine </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">exi</span> <span class="k">for</span> <span class="n">exi</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">exits</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">cmds</span><span class="p">:</span>
+        <span class="n">cmds</span> <span class="o">=</span> <span class="s2">&quot;examine me&quot;</span>
+    <span class="k">return</span> <span class="n">cmds</span></div>
+
+
+<div class="viewcode-block" id="c_idles"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner_settings.html#evennia.server.profiling.dummyrunner_settings.c_idles">[docs]</a><span class="k">def</span> <span class="nf">c_idles</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+    <span class="s2">&quot;idles&quot;</span>
+    <span class="n">cmds</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;idle&quot;</span><span class="p">,</span> <span class="s2">&quot;idle&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cmds</span></div>
+
+
+<div class="viewcode-block" id="c_help"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner_settings.html#evennia.server.profiling.dummyrunner_settings.c_help">[docs]</a><span class="k">def</span> <span class="nf">c_help</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+    <span class="s2">&quot;reads help files&quot;</span>
+    <span class="n">cmds</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;help&quot;</span><span class="p">,</span> <span class="s2">&quot;help @teleport&quot;</span><span class="p">,</span> <span class="s2">&quot;help look&quot;</span><span class="p">,</span> <span class="s2">&quot;help @tunnel&quot;</span><span class="p">,</span> <span class="s2">&quot;help @dig&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cmds</span></div>
+
+
+<div class="viewcode-block" id="c_digs"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner_settings.html#evennia.server.profiling.dummyrunner_settings.c_digs">[docs]</a><span class="k">def</span> <span class="nf">c_digs</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+    <span class="s2">&quot;digs a new room, storing exit names on client&quot;</span>
+    <span class="n">roomname</span> <span class="o">=</span> <span class="n">ROOM_TEMPLATE</span> <span class="o">%</span> <span class="n">client</span><span class="o">.</span><span class="n">counter</span><span class="p">()</span>
+    <span class="n">exitname1</span> <span class="o">=</span> <span class="n">EXIT_TEMPLATE</span> <span class="o">%</span> <span class="n">client</span><span class="o">.</span><span class="n">counter</span><span class="p">()</span>
+    <span class="n">exitname2</span> <span class="o">=</span> <span class="n">EXIT_TEMPLATE</span> <span class="o">%</span> <span class="n">client</span><span class="o">.</span><span class="n">counter</span><span class="p">()</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">exits</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">exitname1</span><span class="p">,</span> <span class="n">exitname2</span><span class="p">])</span>
+    <span class="k">return</span> <span class="s2">&quot;@dig/tel </span><span class="si">%s</span><span class="s2"> = </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">roomname</span><span class="p">,</span> <span class="n">exitname1</span><span class="p">,</span> <span class="n">exitname2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="c_creates_obj"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner_settings.html#evennia.server.profiling.dummyrunner_settings.c_creates_obj">[docs]</a><span class="k">def</span> <span class="nf">c_creates_obj</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+    <span class="s2">&quot;creates normal objects, storing their name on client&quot;</span>
+    <span class="n">objname</span> <span class="o">=</span> <span class="n">OBJ_TEMPLATE</span> <span class="o">%</span> <span class="n">client</span><span class="o">.</span><span class="n">counter</span><span class="p">()</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">objs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">objname</span><span class="p">)</span>
+    <span class="n">cmds</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;@create </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">objname</span><span class="p">,</span>
+        <span class="s1">&#39;@desc </span><span class="si">%s</span><span class="s1"> = &quot;this is a test object&#39;</span> <span class="o">%</span> <span class="n">objname</span><span class="p">,</span>
+        <span class="s2">&quot;@set </span><span class="si">%s</span><span class="s2">/testattr = this is a test attribute value.&quot;</span> <span class="o">%</span> <span class="n">objname</span><span class="p">,</span>
+        <span class="s2">&quot;@set </span><span class="si">%s</span><span class="s2">/testattr2 = this is a second test attribute.&quot;</span> <span class="o">%</span> <span class="n">objname</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">cmds</span></div>
+
+
+<div class="viewcode-block" id="c_creates_button"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner_settings.html#evennia.server.profiling.dummyrunner_settings.c_creates_button">[docs]</a><span class="k">def</span> <span class="nf">c_creates_button</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+    <span class="s2">&quot;creates example button, storing name on client&quot;</span>
+    <span class="n">objname</span> <span class="o">=</span> <span class="n">TOBJ_TEMPLATE</span> <span class="o">%</span> <span class="n">client</span><span class="o">.</span><span class="n">counter</span><span class="p">()</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">objs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">objname</span><span class="p">)</span>
+    <span class="n">cmds</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;@create </span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">objname</span><span class="p">,</span> <span class="n">TOBJ_TYPECLASS</span><span class="p">),</span> <span class="s2">&quot;@desc </span><span class="si">%s</span><span class="s2"> = test red button!&quot;</span> <span class="o">%</span> <span class="n">objname</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cmds</span></div>
+
+
+<div class="viewcode-block" id="c_socialize"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner_settings.html#evennia.server.profiling.dummyrunner_settings.c_socialize">[docs]</a><span class="k">def</span> <span class="nf">c_socialize</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+    <span class="s2">&quot;socializechats on channel&quot;</span>
+    <span class="n">cmds</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;ooc Hello!&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ooc Testing ...&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ooc Testing ... times 2&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;say Yo!&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;emote stands looking around.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">cmds</span></div>
+
+
+<div class="viewcode-block" id="c_moves"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner_settings.html#evennia.server.profiling.dummyrunner_settings.c_moves">[docs]</a><span class="k">def</span> <span class="nf">c_moves</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+    <span class="s2">&quot;moves to a previously created room, using the stored exits&quot;</span>
+    <span class="n">cmds</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">exits</span>  <span class="c1"># try all exits - finally one will work</span>
+    <span class="k">return</span> <span class="s2">&quot;look&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">cmds</span> <span class="k">else</span> <span class="n">cmds</span></div>
+
+
+<div class="viewcode-block" id="c_moves_n"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner_settings.html#evennia.server.profiling.dummyrunner_settings.c_moves_n">[docs]</a><span class="k">def</span> <span class="nf">c_moves_n</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+    <span class="s2">&quot;move through north exit if available&quot;</span>
+    <span class="k">return</span> <span class="s2">&quot;north&quot;</span></div>
+
+
+<div class="viewcode-block" id="c_moves_s"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner_settings.html#evennia.server.profiling.dummyrunner_settings.c_moves_s">[docs]</a><span class="k">def</span> <span class="nf">c_moves_s</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+    <span class="s2">&quot;move through south exit if available&quot;</span>
+    <span class="k">return</span> <span class="s2">&quot;south&quot;</span></div>
+
+
+<span class="c1"># Action tuple (required)</span>
+<span class="c1">#</span>
+<span class="c1"># This is a tuple of client action functions. The first element is the</span>
+<span class="c1"># function the client should use to log into the game and move to</span>
+<span class="c1"># STARTROOM . The second element is the logout command, for cleanly</span>
+<span class="c1"># exiting the mud. The following elements are 2-tuples of (probability,</span>
+<span class="c1"># action_function). The probablities should normally sum up to 1,</span>
+<span class="c1"># otherwise the system will normalize them.</span>
+<span class="c1">#</span>
+
+
+<span class="c1"># &quot;normal builder&quot; definitionj</span>
+<span class="c1"># ACTIONS = ( c_login,</span>
+<span class="c1">#            c_logout,</span>
+<span class="c1">#            (0.5, c_looks),</span>
+<span class="c1">#            (0.08, c_examines),</span>
+<span class="c1">#            (0.1, c_help),</span>
+<span class="c1">#            (0.01, c_digs),</span>
+<span class="c1">#            (0.01, c_creates_obj),</span>
+<span class="c1">#            (0.3, c_moves))</span>
+<span class="c1"># &quot;heavy&quot; builder definition</span>
+<span class="c1"># ACTIONS = ( c_login,</span>
+<span class="c1">#            c_logout,</span>
+<span class="c1">#            (0.2, c_looks),</span>
+<span class="c1">#            (0.1, c_examines),</span>
+<span class="c1">#            (0.2, c_help),</span>
+<span class="c1">#            (0.1, c_digs),</span>
+<span class="c1">#            (0.1, c_creates_obj),</span>
+<span class="c1">#            #(0.01, c_creates_button),</span>
+<span class="c1">#            (0.2, c_moves))</span>
+<span class="c1"># &quot;passive account&quot; definition</span>
+<span class="c1"># ACTIONS = ( c_login,</span>
+<span class="c1">#            c_logout,</span>
+<span class="c1">#            (0.7, c_looks),</span>
+<span class="c1">#            #(0.1, c_examines),</span>
+<span class="c1">#            (0.3, c_help))</span>
+<span class="c1">#            #(0.1, c_digs),</span>
+<span class="c1">#            #(0.1, c_creates_obj),</span>
+<span class="c1">#            #(0.1, c_creates_button),</span>
+<span class="c1">#            #(0.4, c_moves))</span>
+<span class="c1"># &quot;inactive account&quot; definition</span>
+<span class="c1"># ACTIONS = (c_login_nodig,</span>
+<span class="c1">#           c_logout,</span>
+<span class="c1">#           (1.0, c_idles))</span>
+<span class="c1"># &quot;normal account&quot; definition</span>
+<span class="n">ACTIONS</span> <span class="o">=</span> <span class="p">(</span><span class="n">c_login</span><span class="p">,</span> <span class="n">c_logout</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">c_digs</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.39</span><span class="p">,</span> <span class="n">c_looks</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">c_help</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">c_moves</span><span class="p">))</span>
+<span class="c1"># walking tester. This requires a pre-made</span>
+<span class="c1"># &quot;loop&quot; of multiple rooms that ties back</span>
+<span class="c1"># to limbo (using @tunnel and @open)</span>
+<span class="c1"># ACTIONS = (c_login_nodig,</span>
+<span class="c1">#           c_logout,</span>
+<span class="c1">#           (1.0, c_moves_n))</span>
+<span class="c1"># &quot;socializing heavy builder&quot; definition</span>
+<span class="c1"># ACTIONS = (c_login,</span>
+<span class="c1">#           c_logout,</span>
+<span class="c1">#           (0.1, c_socialize),</span>
+<span class="c1">#           (0.1, c_looks),</span>
+<span class="c1">#           (0.2, c_help),</span>
+<span class="c1">#           (0.1, c_creates_obj),</span>
+<span class="c1">#           (0.2, c_digs),</span>
+<span class="c1">#           (0.3, c_moves))</span>
+<span class="c1"># &quot;heavy digger memory tester&quot; definition</span>
+<span class="c1"># ACTIONS = (c_login,</span>
+<span class="c1">#           c_logout,</span>
+<span class="c1">#           (1.0, c_digs))</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="dummyrunner_settings.html">0.9.5 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

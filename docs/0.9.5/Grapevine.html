@@ -1,0 +1,163 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Grapevine &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="grapevine">
+<h1>Grapevine<a class="headerlink" href="#grapevine" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="http://grapevine.haus">Grapevine</a> is a new chat network for <code class="docutils literal notranslate"><span class="pre">MU*</span></code>*** games. By
+connecting an in-game channel to the grapevine network, players on your game
+can chat with players in other games, also non-Evennia ones.</p>
+<div class="section" id="configuring-grapevine">
+<h2>Configuring Grapevine<a class="headerlink" href="#configuring-grapevine" title="Permalink to this headline">¶</a></h2>
+<p>To use Grapevine, you first need the <code class="docutils literal notranslate"><span class="pre">pyopenssl</span></code> module. Install it into your
+Evennia python environment with</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">pyopenssl</span>
+</pre></div>
+</div>
+<p>To configure Grapevine, you’ll need to activate it in your settings file.</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="n">GRAPEVINE_ENABLED</span> <span class="o">=</span> <span class="bp">True</span>
+</pre></div>
+</td></tr></table></div>
+<p>Next, register an account at https://grapevine.haus. When you have logged in,
+go to your Settings/Profile and to the <code class="docutils literal notranslate"><span class="pre">Games</span></code> sub menu. Here you register your
+new game by filling in its information. At the end of registration you are going
+to get a <code class="docutils literal notranslate"><span class="pre">Client</span> <span class="pre">ID</span></code> and a <code class="docutils literal notranslate"><span class="pre">Client</span> <span class="pre">Secret</span></code>. These should not be shared.</p>
+<p>Open/create the file <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/secret_settings.py</span></code> and add the following:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  <span class="n">GRAPEVINE_CLIENT_ID</span> <span class="o">=</span> <span class="s2">&quot;&lt;client ID&gt;&quot;</span>
+  <span class="n">GRAPEVINE_CLIENT_SECRET</span> <span class="o">=</span> <span class="s2">&quot;&lt;client_secret&gt;&quot;</span>
+</pre></div>
+</td></tr></table></div>
+<p>You can also customize the Grapevine channels you are allowed to connect to. This
+is added to the <code class="docutils literal notranslate"><span class="pre">GRAPEVINE_CHANNELS</span></code> setting. You can see which channels are available
+by going to the Grapevine online chat here: https://grapevine.haus/chat.</p>
+<p>Start/reload Evennia and log in as a privileged user. You should now have a new
+command available: <code class="docutils literal notranslate"><span class="pre">&#64;grapevine2chan</span></code>. This command is called like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@grapevine2chan</span><span class="p">[</span><span class="o">/</span><span class="n">switches</span><span class="p">]</span> <span class="o">&lt;</span><span class="n">evennia_channel</span><span class="o">&gt;</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">grapevine_channel</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Here, the <code class="docutils literal notranslate"><span class="pre">evennia_channel</span></code> must be the name of an existing Evennia channel and
+<code class="docutils literal notranslate"><span class="pre">grapevine_channel</span></code> one of the supported channels in <code class="docutils literal notranslate"><span class="pre">GRAPEVINE_CHANNELS</span></code>.</p>
+<blockquote>
+<div><p>At the time of writing, the Grapevine network only has two channels:
+<code class="docutils literal notranslate"><span class="pre">testing</span></code> and <code class="docutils literal notranslate"><span class="pre">gossip</span></code>. Evennia defaults to allowing connecting to both. Use
+<code class="docutils literal notranslate"><span class="pre">testing</span></code> for trying your connection.</p>
+</div></blockquote>
+</div>
+<div class="section" id="setting-up-grapevine-step-by-step">
+<h2>Setting up Grapevine, step by step<a class="headerlink" href="#setting-up-grapevine-step-by-step" title="Permalink to this headline">¶</a></h2>
+<p>You can connect Grapevine to any Evennia channel (so you could connect it to
+the default <em>public</em> channel if you like), but for testing, let’s set up a
+new channel <code class="docutils literal notranslate"><span class="pre">gw</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> @ccreate gw = This is connected to an gw channel!
+</pre></div>
+</div>
+<p>You will automatically join the new channel.</p>
+<p>Next we will create a connection to the Grapevine network.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nd">@grapevine2chan</span> <span class="n">gw</span> <span class="o">=</span> <span class="n">gossip</span>
+</pre></div>
+</div>
+<p>Evennia will now create a new connection and connect it to Grapevine. Connect
+to https://grapevine.haus/chat to check.</p>
+<p>Write something in the Evennia channel <em>gw</em> and check so a message appears in
+the Grapevine chat. Write a reply in the chat and the grapevine bot should echo
+it to your channel in-game.</p>
+<p>Your Evennia gamers can now chat with users on external Grapevine channels!</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Grapevine</a><ul>
+<li><a class="reference internal" href="#configuring-grapevine">Configuring Grapevine</a></li>
+<li><a class="reference internal" href="#setting-up-grapevine-step-by-step">Setting up Grapevine, step by step</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Grapevine.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Grapevine.html">0.9.5 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

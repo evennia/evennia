@@ -7,7 +7,7 @@
   2020-06-12 22:36:53. There are known conversion issues and missing links.
   This will slowly be ironed out as this is developed.
 
-  For now you are best off using the original wiki, or the less changing v0.9.1
+  For now you are best off using the original wiki, or the less changing v0.9.5
   of these docs. You have been warned.
 ```
 

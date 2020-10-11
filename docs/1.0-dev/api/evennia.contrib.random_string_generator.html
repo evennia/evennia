@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.random_string_generator &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +25,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.random_string_generator</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -81,7 +79,7 @@ read the regular expression you give to it to see what information is
 required (letters, digits, a more restricted class, simple characters…)…
 More complex regular expressions (with branches for instance) might not be
 available.</p>
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.random_string_generator.RejectedRegex">
 <em class="property">exception </em><code class="sig-prename descclassname">evennia.contrib.random_string_generator.</code><code class="sig-name descname">RejectedRegex</code><a class="reference internal" href="../_modules/evennia/contrib/random_string_generator.html#RejectedRegex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.random_string_generator.RejectedRegex" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></p>
@@ -91,53 +89,53 @@ the message.  The usual reason is the provided regular expression is
 not specific enough and could lead to inconsistent generating.</p>
 </dd></dl>
 
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.random_string_generator.ExhaustedGenerator">
 <em class="property">exception </em><code class="sig-prename descclassname">evennia.contrib.random_string_generator.</code><code class="sig-name descname">ExhaustedGenerator</code><a class="reference internal" href="../_modules/evennia/contrib/random_string_generator.html#ExhaustedGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.random_string_generator.ExhaustedGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></p>
 <p>The generator hasn’t any available strings to generate anymore.</p>
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.random_string_generator.RandomStringGeneratorScript">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.random_string_generator.</code><code class="sig-name descname">RandomStringGeneratorScript</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/random_string_generator.html#RandomStringGeneratorScript"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.random_string_generator.RandomStringGeneratorScript" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.random_string_generator.</code><code class="sig-name descname">RandomStringGeneratorScript</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/random_string_generator.html#RandomStringGeneratorScript"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.random_string_generator.RandomStringGeneratorScript" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript" title="evennia.scripts.scripts.DefaultScript"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript</span></code></a></p>
 <p>The global script to hold all generators.</p>
 <p>It will be automatically created the first time <strong>generate</strong> is called
 on a RandomStringGenerator object.</p>
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.random_string_generator.RandomStringGeneratorScript.at_script_creation">
 <code class="sig-name descname">at_script_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/random_string_generator.html#RandomStringGeneratorScript.at_script_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.random_string_generator.RandomStringGeneratorScript.at_script_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hook called when the script is created.</p>
 </dd></dl>
 
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.random_string_generator.RandomStringGeneratorScript.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.random_string_generator.RandomStringGeneratorScript.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.DoesNotExist" title="evennia.scripts.scripts.DefaultScript.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.DoesNotExist</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DoesNotExist</span></code></p>
 </dd></dl>
 
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.random_string_generator.RandomStringGeneratorScript.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.random_string_generator.RandomStringGeneratorScript.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned" title="evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.random_string_generator.RandomStringGeneratorScript.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.random_string_generator.RandomStringGeneratorScript'</em><a class="headerlink" href="#evennia.contrib.random_string_generator.RandomStringGeneratorScript.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.random_string_generator.RandomStringGeneratorScript.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'RandomStringGeneratorScript'</em><a class="headerlink" href="#evennia.contrib.random_string_generator.RandomStringGeneratorScript.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.random_string_generator.RandomStringGenerator">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.random_string_generator.</code><code class="sig-name descname">RandomStringGenerator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">regex</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/random_string_generator.html#RandomStringGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.random_string_generator.RandomStringGenerator" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.random_string_generator.</code><code class="sig-name descname">RandomStringGenerator</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">regex</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/random_string_generator.html#RandomStringGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.random_string_generator.RandomStringGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A generator class to generate pseudo-random strings with a rule.</p>
 <p>The “rule” defining what the generator should provide in terms of
@@ -151,14 +149,14 @@ stored to avoid repetition, the generator will not concern itself
 with how the string is stored on the object you use.  You probably
 want to create a tag to mark this object.  This is outside of the scope
 of this class.</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.random_string_generator.RandomStringGenerator.script">
 <code class="sig-name descname">script</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.random_string_generator.RandomStringGenerator.script" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.random_string_generator.RandomStringGenerator.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">regex</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/random_string_generator.html#RandomStringGenerator.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.random_string_generator.RandomStringGenerator.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">regex</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/random_string_generator.html#RandomStringGenerator.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.random_string_generator.RandomStringGenerator.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new generator.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -188,7 +186,7 @@ expressions will be rejected if not specific enough.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.random_string_generator.RandomStringGenerator.all">
 <code class="sig-name descname">all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/random_string_generator.html#RandomStringGenerator.all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.random_string_generator.RandomStringGenerator.all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return all generated strings for this generator.</p>
@@ -200,9 +198,9 @@ used.  The strings that were generated first come first in the list.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.random_string_generator.RandomStringGenerator.get">
-<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">store</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">unique</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/random_string_generator.html#RandomStringGenerator.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.random_string_generator.RandomStringGenerator.get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param">store=True</em>, <em class="sig-param">unique=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/random_string_generator.html#RandomStringGenerator.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.random_string_generator.RandomStringGenerator.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a pseudo-random string according to the regular expression.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -224,9 +222,9 @@ used.  The strings that were generated first come first in the list.</p>
 </div>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.random_string_generator.RandomStringGenerator.remove">
-<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">element</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/random_string_generator.html#RandomStringGenerator.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.random_string_generator.RandomStringGenerator.remove" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param">element</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/random_string_generator.html#RandomStringGenerator.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.random_string_generator.RandomStringGenerator.remove" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove a generated string from the list of stored strings.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -245,7 +243,7 @@ calling the <strong>get</strong> method.</p>
 </div>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.random_string_generator.RandomStringGenerator.clear">
 <code class="sig-name descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/random_string_generator.html#RandomStringGenerator.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.random_string_generator.RandomStringGenerator.clear" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clear the generator of all generated strings.</p>
@@ -256,7 +254,6 @@ calling the <strong>get</strong> method.</p>
 </div>
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -285,7 +282,7 @@ calling the <strong>get</strong> method.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.contrib.random_string_generator.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.1/api/evennia.contrib.random_string_generator.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../0.9.5/api/evennia.contrib.random_string_generator.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -301,13 +298,12 @@ calling the <strong>get</strong> method.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.random_string_generator</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

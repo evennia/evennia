@@ -1,0 +1,205 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Server Conf &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="server-conf">
+<h1>Server Conf<a class="headerlink" href="#server-conf" title="Permalink to this headline">¶</a></h1>
+<p>Evennia runs out of the box without any changes to its settings. But there are several important
+ways to customize the server and expand it with your own plugins.</p>
+<div class="section" id="settings-file">
+<h2>Settings file<a class="headerlink" href="#settings-file" title="Permalink to this headline">¶</a></h2>
+<p>The “Settings” file referenced throughout the documentation is the file
+<code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code>. This is automatically created on the first run of <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">--init</span></code>
+(see the <a class="reference internal" href="Getting-Started.html"><span class="doc">Getting Started</span></a> page).</p>
+<p>Your new <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> is relatively bare out of the box. Evennia’s core settings file is actually [
+evennia/settings_default.py](https://github.com/evennia/evennia/blob/master/evennia/settings_default
+.py) and is considerably more extensive (it is also heavily documented so you should refer to this
+file directly for the available settings).</p>
+<p>Since <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code> is a normal Python module, it simply imports
+<code class="docutils literal notranslate"><span class="pre">evennia/settings_default.py</span></code> into itself at the top.</p>
+<p>This means that if any setting you want to change were to depend on some <em>other</em> default setting,
+you might need to copy &amp; paste both in order to change them and get the effect you want (for most
+commonly changed settings, this is not something you need to worry about).</p>
+<p>You should never edit <code class="docutils literal notranslate"><span class="pre">evennia/settings_default.py</span></code>. Rather you should copy&amp;paste the select
+variables you want to change into your <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> and edit them there. This will overload the
+previously imported defaults.</p>
+<blockquote>
+<div><p>Warning: It may be tempting to copy everything from <code class="docutils literal notranslate"><span class="pre">settings_default.py</span></code> into your own settings
+file. There is a reason we don’t do this out of the box though: it makes it directly clear what
+changes you did. Also, if you limit your copying to the things you really need you will directly be
+able to take advantage of upstream changes and additions to Evennia for anything you didn’t
+customize.</p>
+</div></blockquote>
+<p>In code, the settings is accessed through</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+     <span class="c1"># or (shorter):</span>
+    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">settings</span>
+     <span class="c1"># example:</span>
+    <span class="n">servername</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SERVER_NAME</span>
+</pre></div>
+</td></tr></table></div>
+<p>Each setting appears as a property on the imported <code class="docutils literal notranslate"><span class="pre">settings</span></code> object.  You can also explore all
+possible options with <code class="docutils literal notranslate"><span class="pre">evennia.settings_full</span></code> (this also includes advanced Django defaults that are
+not touched in default Evennia).</p>
+<blockquote>
+<div><p>It should be pointed out that when importing <code class="docutils literal notranslate"><span class="pre">settings</span></code> into your code like this, it will be <em>read
+only</em>. You <em>cannot</em> edit your settings from your code! The only way to change an Evennia setting is
+to edit <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code> directly. You also generally need to restart the server
+(possibly also the Portal) before a changed setting becomes available.</p>
+</div></blockquote>
+</div>
+<div class="section" id="other-files-in-the-server-conf-directory">
+<h2>Other files in the <code class="docutils literal notranslate"><span class="pre">server/conf</span></code> directory<a class="headerlink" href="#other-files-in-the-server-conf-directory" title="Permalink to this headline">¶</a></h2>
+<p>Apart from the main <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> file,</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">at_initial_setup.py</span></code> - this allows you to add a custom startup method to be called (only) the
+very first time Evennia starts (at the same time as user #1 and Limbo is created). It can be made to
+start your own global scripts or set up other system/world-related things your game needs to have
+running from the start.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_server_startstop.py</span></code> - this module contains two functions that Evennia will call every time
+the Server starts and stops respectively - this includes stopping due to reloading and resetting as
+well as shutting down completely. It’s a useful place to put custom startup code for handlers and
+other things that must run in your game but which has no database persistence.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">connection_screens.py</span></code> - all global string variables in this module are interpreted by Evennia as
+a greeting screen to show when an Account first connects. If more than one string variable is
+present in the module a random one will be picked.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inlinefuncs.py</span></code> - this is where you can define custom <a class="reference external" href="TextTags.html#inlinefuncs">Inline functions</a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inputfuncs.py</span></code> - this is where you define custom <a class="reference internal" href="Inputfuncs.html"><span class="doc">Input functions</span></a> to handle data
+from the client.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lockfuncs.py</span></code> - this is one of many possible modules to hold your own “safe” <em>lock functions</em> to
+make available to Evennia’s <a class="reference internal" href="Locks.html"><span class="doc">Locks</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mssp.py</span></code> - this holds meta information about your game. It is used by MUD search engines (which
+you often have to register with) in order to display what kind of game you are running along with
+statistics such as number of online accounts and online status.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">oobfuncs.py</span></code> - in here you can define custom <a class="reference internal" href="OOB.html"><span class="doc">OOB functions</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">portal_services_plugin.py</span></code> - this allows for adding your own custom services/protocols to the
+Portal. It must define one particular function that will be called by Evennia at startup. There can
+be any number of service plugin modules, all will be imported and used if defined. More info can be
+found <a class="reference external" href="http://code.google.com/p/evennia/wiki/SessionProtocols#Adding_custom_Protocols">here</a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">server_services_plugin.py</span></code> - this is equivalent to the previous one, but used for adding new
+services to the Server instead. More info can be found
+<a class="reference external" href="http://code.google.com/p/evennia/wiki/SessionProtocols#Adding_custom_Protocols">here</a>.</p></li>
+</ul>
+<p>Some other Evennia systems can be customized by plugin modules but has no explicit template in
+<code class="docutils literal notranslate"><span class="pre">conf/</span></code>:</p>
+<ul class="simple">
+<li><p><em>cmdparser.py</em> - a custom module can be used to totally replace Evennia’s default command parser.
+All this does is to split the incoming string into “command name” and “the rest”. It also handles
+things like error messages for no-matches and multiple-matches among other things that makes this
+more complex than it sounds. The default parser is <em>very</em> generic, so you are most often best served
+by modifying things further down the line (on the command parse level) than here.</p></li>
+<li><p><em>at_search.py</em> - this allows for replacing the way Evennia handles search results. It allows to
+change how errors are echoed and how multi-matches are resolved and reported (like how the default
+understands that “2-ball” should match the second “ball” object if there are two of them in the
+room).</p></li>
+</ul>
+</div>
+<div class="section" id="serverconf">
+<h2>ServerConf<a class="headerlink" href="#serverconf" title="Permalink to this headline">¶</a></h2>
+<p>There is a special database model called <code class="docutils literal notranslate"><span class="pre">ServerConf</span></code> that stores server internal data and settings
+such as current account count (for interfacing with the webserver), startup status and many other
+things.  It’s rarely of use outside the server core itself but may be good to
+know about if you are an Evennia developer.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Server Conf</a><ul>
+<li><a class="reference internal" href="#settings-file">Settings file</a></li>
+<li><a class="reference internal" href="#other-files-in-the-server-conf-directory">Other files in the <code class="docutils literal notranslate"><span class="pre">server/conf</span></code> directory</a></li>
+<li><a class="reference internal" href="#serverconf">ServerConf</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Server-Conf.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Server-Conf.html">0.9.5 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

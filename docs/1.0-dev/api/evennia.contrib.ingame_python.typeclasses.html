@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.ingame_python.typeclasses &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +25,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.ingame_python.typeclasses</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -42,20 +40,20 @@
 <p>To use them, change your base typeclasses to inherit from the classes in this
 module (EventObject, EventRoom, EventCharacter and EventExit) instead of the
 default ones in evennia core.</p>
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventCharacter">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.ingame_python.typeclasses.</code><code class="sig-name descname">EventCharacter</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventCharacter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventCharacter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.ingame_python.typeclasses.</code><code class="sig-name descname">EventCharacter</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventCharacter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventCharacter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter" title="evennia.objects.objects.DefaultCharacter"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultCharacter</span></code></a></p>
 <p>Typeclass to represent a character and call event types.</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventCharacter.callbacks">
 <code class="sig-name descname">callbacks</code><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventCharacter.callbacks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventCharacter.callbacks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the CallbackHandler.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventCharacter.announce_move_from">
-<code class="sig-name descname">announce_move_from</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">destination</span></em>, <em class="sig-param"><span class="n">msg</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mapping</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventCharacter.announce_move_from"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventCharacter.announce_move_from" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">announce_move_from</code><span class="sig-paren">(</span><em class="sig-param">destination</em>, <em class="sig-param">msg=None</em>, <em class="sig-param">mapping=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventCharacter.announce_move_from"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventCharacter.announce_move_from" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called if the move is to be announced. This is
 called while we are still standing in the old
 location.</p>
@@ -79,9 +77,9 @@ destination: the location of the object after moving.</p>
 </div></blockquote>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventCharacter.announce_move_to">
-<code class="sig-name descname">announce_move_to</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source_location</span></em>, <em class="sig-param"><span class="n">msg</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mapping</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventCharacter.announce_move_to"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventCharacter.announce_move_to" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">announce_move_to</code><span class="sig-paren">(</span><em class="sig-param">source_location</em>, <em class="sig-param">msg=None</em>, <em class="sig-param">mapping=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventCharacter.announce_move_to"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventCharacter.announce_move_to" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called after the move if the move was not quiet. At this point
 we are standing in the new location.</p>
 <dl class="field-list simple">
@@ -104,9 +102,9 @@ destination: the location of the object after moving.</p>
 </div></blockquote>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventCharacter.at_before_move">
-<code class="sig-name descname">at_before_move</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">destination</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventCharacter.at_before_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventCharacter.at_before_move" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_before_move</code><span class="sig-paren">(</span><em class="sig-param">destination</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventCharacter.at_before_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventCharacter.at_before_move" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called just before starting to move this object to
 destination.</p>
 <dl class="field-list simple">
@@ -122,9 +120,9 @@ destination.</p>
 before it is even started.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventCharacter.at_after_move">
-<code class="sig-name descname">at_after_move</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source_location</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventCharacter.at_after_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventCharacter.at_after_move" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_after_move</code><span class="sig-paren">(</span><em class="sig-param">source_location</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventCharacter.at_after_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventCharacter.at_after_move" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called after move has completed, regardless of quiet mode or
 not.  Allows changes to the object due to the location it is
 now in.</p>
@@ -135,7 +133,7 @@ now in.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventCharacter.at_object_delete">
 <code class="sig-name descname">at_object_delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventCharacter.at_object_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventCharacter.at_object_delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called just before the database object is permanently
@@ -143,7 +141,7 @@ delete()d from the database. If this method returns False,
 deletion is aborted.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventCharacter.at_post_puppet">
 <code class="sig-name descname">at_post_puppet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventCharacter.at_post_puppet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventCharacter.at_post_puppet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called just after puppeting has been completed and all
@@ -157,7 +155,7 @@ puppeting this Object.</p>
 </div>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventCharacter.at_pre_unpuppet">
 <code class="sig-name descname">at_pre_unpuppet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventCharacter.at_pre_unpuppet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventCharacter.at_pre_unpuppet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called just before beginning to un-connect a puppeting from
@@ -171,9 +169,9 @@ puppeting this Object.</p>
 </div>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventCharacter.at_before_say">
-<code class="sig-name descname">at_before_say</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventCharacter.at_before_say"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventCharacter.at_before_say" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_before_say</code><span class="sig-paren">(</span><em class="sig-param">message</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventCharacter.at_before_say"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventCharacter.at_before_say" title="Permalink to this definition">¶</a></dt>
 <dd><p>Before the object says something.</p>
 <p>This hook is by default used by the ‘say’ and ‘whisper’
 commands as used by this command it is called before the text
@@ -198,9 +196,9 @@ ways.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventCharacter.at_say">
-<code class="sig-name descname">at_say</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventCharacter.at_say"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventCharacter.at_say" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_say</code><span class="sig-paren">(</span><em class="sig-param">message</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventCharacter.at_say"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventCharacter.at_say" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display the actual say (or whisper) of self.</p>
 <p>This hook should display the actual say/whisper of the object in its
 location.  It should both alert the object (self) and its
@@ -244,44 +242,44 @@ speech: the text spoken by self.</p>
 information in your messages.</p>
 </dd></dl>
 
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventCharacter.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventCharacter.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.DoesNotExist" title="evennia.objects.objects.DefaultCharacter.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultCharacter.DoesNotExist</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DoesNotExist</span></code></p>
 </dd></dl>
 
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventCharacter.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventCharacter.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.MultipleObjectsReturned" title="evennia.objects.objects.DefaultCharacter.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultCharacter.MultipleObjectsReturned</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventCharacter.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.ingame_python.typeclasses.EventCharacter'</em><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventCharacter.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventCharacter.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'EventCharacter'</em><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventCharacter.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventExit">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.ingame_python.typeclasses.</code><code class="sig-name descname">EventExit</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventExit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventExit" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.ingame_python.typeclasses.</code><code class="sig-name descname">EventExit</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventExit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventExit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit" title="evennia.objects.objects.DefaultExit"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultExit</span></code></a></p>
 <p>Modified exit including management of events.</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventExit.callbacks">
 <code class="sig-name descname">callbacks</code><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventExit.callbacks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventExit.callbacks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the CallbackHandler.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventExit.at_traverse">
-<code class="sig-name descname">at_traverse</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">traversing_object</span></em>, <em class="sig-param"><span class="n">target_location</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventExit.at_traverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventExit.at_traverse" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_traverse</code><span class="sig-paren">(</span><em class="sig-param">traversing_object</em>, <em class="sig-param">target_location</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventExit.at_traverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventExit.at_traverse" title="Permalink to this definition">¶</a></dt>
 <dd><p>This hook is responsible for handling the actual traversal,
 normally by calling
 <strong>traversing_object.move_to(target_location)</strong>. It is normally
@@ -299,44 +297,44 @@ called.</p>
 </dl>
 </dd></dl>
 
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventExit.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventExit.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.DoesNotExist" title="evennia.objects.objects.DefaultExit.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultExit.DoesNotExist</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DoesNotExist</span></code></p>
 </dd></dl>
 
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventExit.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventExit.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.MultipleObjectsReturned" title="evennia.objects.objects.DefaultExit.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultExit.MultipleObjectsReturned</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventExit.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.ingame_python.typeclasses.EventExit'</em><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventExit.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventExit.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'EventExit'</em><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventExit.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventObject">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.ingame_python.typeclasses.</code><code class="sig-name descname">EventObject</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventObject" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.ingame_python.typeclasses.</code><code class="sig-name descname">EventObject</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventObject" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject</span></code></a></p>
 <p>Default object with management of events.</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventObject.callbacks">
 <code class="sig-name descname">callbacks</code><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventObject.callbacks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventObject.callbacks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the CallbackHandler.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventObject.at_get">
-<code class="sig-name descname">at_get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">getter</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventObject.at_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventObject.at_get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_get</code><span class="sig-paren">(</span><em class="sig-param">getter</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventObject.at_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventObject.at_get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called by the default <strong>get</strong> command when this object has been
 picked up.</p>
 <dl class="field-list simple">
@@ -349,9 +347,9 @@ picked up.</p>
 permissions for that.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventObject.at_drop">
-<code class="sig-name descname">at_drop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dropper</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventObject.at_drop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventObject.at_drop" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_drop</code><span class="sig-paren">(</span><em class="sig-param">dropper</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventObject.at_drop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventObject.at_drop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called by the default <strong>drop</strong> command when this object has been
 dropped.</p>
 <dl class="field-list simple">
@@ -364,42 +362,42 @@ dropped.</p>
 permissions from that.</p>
 </dd></dl>
 
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventObject.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventObject.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.DoesNotExist" title="evennia.objects.objects.DefaultObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject.DoesNotExist</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DoesNotExist</span></code></p>
 </dd></dl>
 
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventObject.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventObject.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.MultipleObjectsReturned" title="evennia.objects.objects.DefaultObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject.MultipleObjectsReturned</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventObject.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.ingame_python.typeclasses.EventObject'</em><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventObject.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventObject.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'EventObject'</em><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventObject.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventRoom">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.ingame_python.typeclasses.</code><code class="sig-name descname">EventRoom</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventRoom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventRoom" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.ingame_python.typeclasses.</code><code class="sig-name descname">EventRoom</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventRoom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventRoom" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultRoom" title="evennia.objects.objects.DefaultRoom"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultRoom</span></code></a></p>
 <p>Default room with management of events.</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventRoom.callbacks">
 <code class="sig-name descname">callbacks</code><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventRoom.callbacks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventRoom.callbacks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the CallbackHandler.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventRoom.at_object_delete">
 <code class="sig-name descname">at_object_delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/typeclasses.html#EventRoom.at_object_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventRoom.at_object_delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called just before the database object is permanently
@@ -407,24 +405,24 @@ delete()d from the database. If this method returns False,
 deletion is aborted.</p>
 </dd></dl>
 
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventRoom.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventRoom.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultRoom.DoesNotExist" title="evennia.objects.objects.DefaultRoom.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultRoom.DoesNotExist</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DoesNotExist</span></code></p>
 </dd></dl>
 
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventRoom.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventRoom.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultRoom.MultipleObjectsReturned" title="evennia.objects.objects.DefaultRoom.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultRoom.MultipleObjectsReturned</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventRoom.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.ingame_python.typeclasses.EventRoom'</em><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventRoom.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.ingame_python.typeclasses.EventRoom.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'EventRoom'</em><a class="headerlink" href="#evennia.contrib.ingame_python.typeclasses.EventRoom.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -434,7 +432,6 @@ deletion is aborted.</p>
 </div>
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -463,7 +460,7 @@ deletion is aborted.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.contrib.ingame_python.typeclasses.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.1/api/evennia.contrib.ingame_python.typeclasses.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../0.9.5/api/evennia.contrib.ingame_python.typeclasses.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -479,13 +476,12 @@ deletion is aborted.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.ingame_python.typeclasses</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

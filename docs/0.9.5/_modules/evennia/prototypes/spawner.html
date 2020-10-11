@@ -1,0 +1,1081 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.prototypes.spawner &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.prototypes.spawner</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Spawner</span>
+
+<span class="sd">The spawner takes input files containing object definitions in</span>
+<span class="sd">dictionary forms. These use a prototype architecture to define</span>
+<span class="sd">unique objects without having to make a Typeclass for each.</span>
+
+<span class="sd">There  main function is `spawn(*prototype)`, where the `prototype`</span>
+<span class="sd">is a dictionary like this:</span>
+
+<span class="sd">```python</span>
+<span class="sd">from evennia.prototypes import prototypes, spawner</span>
+
+<span class="sd">prot = {</span>
+<span class="sd"> &quot;prototype_key&quot;: &quot;goblin&quot;,</span>
+<span class="sd"> &quot;typeclass&quot;: &quot;types.objects.Monster&quot;,</span>
+<span class="sd"> &quot;key&quot;: &quot;goblin grunt&quot;,</span>
+<span class="sd"> &quot;health&quot;: lambda: randint(20,30),</span>
+<span class="sd"> &quot;resists&quot;: [&quot;cold&quot;, &quot;poison&quot;],</span>
+<span class="sd"> &quot;attacks&quot;: [&quot;fists&quot;],</span>
+<span class="sd"> &quot;weaknesses&quot;: [&quot;fire&quot;, &quot;light&quot;]</span>
+<span class="sd"> &quot;tags&quot;: [&quot;mob&quot;, &quot;evil&quot;, (&#39;greenskin&#39;,&#39;mob&#39;)]</span>
+<span class="sd"> &quot;attrs&quot;: [(&quot;weapon&quot;, &quot;sword&quot;)]</span>
+<span class="sd">}</span>
+<span class="sd"># spawn something with the prototype</span>
+<span class="sd">goblin = spawner.spawn(prot)</span>
+
+<span class="sd"># make this into a db-saved prototype (optional)</span>
+<span class="sd">prot = prototypes.create_prototype(prot)</span>
+
+<span class="sd">```</span>
+
+<span class="sd">Possible keywords are:</span>
+<span class="sd">    prototype_key (str):  name of this prototype. This is used when storing prototypes and should</span>
+<span class="sd">        be unique. This should always be defined but for prototypes defined in modules, the</span>
+<span class="sd">        variable holding the prototype dict will become the prototype_key if it&#39;s not explicitly</span>
+<span class="sd">        given.</span>
+<span class="sd">    prototype_desc (str, optional): describes prototype in listings</span>
+<span class="sd">    prototype_locks (str, optional): locks for restricting access to this prototype. Locktypes</span>
+<span class="sd">        supported are &#39;edit&#39; and &#39;use&#39;.</span>
+<span class="sd">    prototype_tags(list, optional): List of tags or tuples (tag, category) used to group prototype</span>
+<span class="sd">        in listings</span>
+<span class="sd">    prototype_parent (str, tuple or callable, optional): name (prototype_key) of eventual parent prototype, or</span>
+<span class="sd">        a list of parents, for multiple left-to-right inheritance.</span>
+<span class="sd">    prototype: Deprecated. Same meaning as &#39;parent&#39;.</span>
+
+<span class="sd">    typeclass (str or callable, optional): if not set, will use typeclass of parent prototype or use</span>
+<span class="sd">        `settings.BASE_OBJECT_TYPECLASS`</span>
+<span class="sd">    key (str or callable, optional): the name of the spawned object. If not given this will set to a</span>
+<span class="sd">        random hash</span>
+<span class="sd">    location (obj, str or callable, optional): location of the object - a valid object or #dbref</span>
+<span class="sd">    home (obj, str or callable, optional): valid object or #dbref</span>
+<span class="sd">    destination (obj, str or callable, optional): only valid for exits (object or #dbref)</span>
+
+<span class="sd">    permissions (str, list or callable, optional): which permissions for spawned object to have</span>
+<span class="sd">    locks (str or callable, optional): lock-string for the spawned object</span>
+<span class="sd">    aliases (str, list or callable, optional): Aliases for the spawned object</span>
+<span class="sd">    exec (str or callable, optional): this is a string of python code to execute or a list of such</span>
+<span class="sd">        codes.  This can be used e.g. to trigger custom handlers on the object. The execution</span>
+<span class="sd">        namespace contains &#39;evennia&#39; for the library and &#39;obj&#39;. All default spawn commands limit</span>
+<span class="sd">        this functionality to Developer/superusers. Usually it&#39;s better to use callables or</span>
+<span class="sd">        prototypefuncs instead of this.</span>
+<span class="sd">    tags (str, tuple, list or callable, optional): string or list of strings or tuples</span>
+<span class="sd">        `(tagstr, category)`. Plain strings will be result in tags with no category (default tags).</span>
+<span class="sd">    attrs (tuple, list or callable, optional): tuple or list of tuples of Attributes to add. This</span>
+<span class="sd">        form allows more complex Attributes to be set. Tuples at least specify `(key, value)`</span>
+<span class="sd">        but can also specify up to `(key, value, category, lockstring)`. If you want to specify a</span>
+<span class="sd">        lockstring but not a category, set the category to `None`.</span>
+<span class="sd">    ndb_&lt;name&gt; (any): value of a nattribute (ndb_ is stripped) - this is of limited use.</span>
+<span class="sd">    other (any): any other name is interpreted as the key of an Attribute with</span>
+<span class="sd">        its value. Such Attributes have no categories.</span>
+
+<span class="sd">Each value can also be a callable that takes no arguments. It should</span>
+<span class="sd">return the value to enter into the field and will be called every time</span>
+<span class="sd">the prototype is used to spawn an object. Note, if you want to store</span>
+<span class="sd">a callable in an Attribute, embed it in a tuple to the `args` keyword.</span>
+
+<span class="sd">By specifying the &quot;prototype_parent&quot; key, the prototype becomes a child of</span>
+<span class="sd">the given prototype, inheritng all prototype slots it does not explicitly</span>
+<span class="sd">define itself, while overloading those that it does specify.</span>
+
+<span class="sd">```python</span>
+<span class="sd">import random</span>
+
+
+<span class="sd">{</span>
+<span class="sd"> &quot;prototype_key&quot;: &quot;goblin_wizard&quot;,</span>
+<span class="sd"> &quot;prototype_parent&quot;: &quot;GOBLIN&quot;,</span>
+<span class="sd"> &quot;key&quot;: &quot;goblin wizard&quot;,</span>
+<span class="sd"> &quot;spells&quot;: [&quot;fire ball&quot;, &quot;lighting bolt&quot;]</span>
+<span class="sd"> }</span>
+
+<span class="sd">GOBLIN_ARCHER = {</span>
+<span class="sd"> &quot;prototype_parent&quot;: &quot;GOBLIN&quot;,</span>
+<span class="sd"> &quot;key&quot;: &quot;goblin archer&quot;,</span>
+<span class="sd"> &quot;attack_skill&quot;: (random, (5, 10))&quot;</span>
+<span class="sd"> &quot;attacks&quot;: [&quot;short bow&quot;]</span>
+<span class="sd">}</span>
+<span class="sd">```</span>
+
+<span class="sd">One can also have multiple prototypes. These are inherited from the</span>
+<span class="sd">left, with the ones further to the right taking precedence.</span>
+
+<span class="sd">```python</span>
+<span class="sd">ARCHWIZARD = {</span>
+<span class="sd"> &quot;attack&quot;: [&quot;archwizard staff&quot;, &quot;eye of doom&quot;]</span>
+
+<span class="sd">GOBLIN_ARCHWIZARD = {</span>
+<span class="sd"> &quot;key&quot; : &quot;goblin archwizard&quot;</span>
+<span class="sd"> &quot;prototype_parent&quot;: (&quot;GOBLIN_WIZARD&quot;, &quot;ARCHWIZARD&quot;),</span>
+<span class="sd">}</span>
+<span class="sd">```</span>
+
+<span class="sd">The *goblin archwizard* will have some different attacks, but will</span>
+<span class="sd">otherwise have the same spells as a *goblin wizard* who in turn shares</span>
+<span class="sd">many traits with a normal *goblin*.</span>
+
+
+<span class="sd">Storage mechanism:</span>
+
+<span class="sd">This sets up a central storage for prototypes. The idea is to make these</span>
+<span class="sd">available in a repository for buildiers to use. Each prototype is stored</span>
+<span class="sd">in a Script so that it can be tagged for quick sorting/finding and locked for limiting</span>
+<span class="sd">access.</span>
+
+<span class="sd">This system also takes into consideration prototypes defined and stored in modules.</span>
+<span class="sd">Such prototypes are considered &#39;read-only&#39; to the system and can only be modified</span>
+<span class="sd">in code. To replace a default prototype, add the same-name prototype in a</span>
+<span class="sd">custom module read later in the settings.PROTOTYPE_MODULES list. To remove a default</span>
+<span class="sd">prototype, override its name with an empty dict.</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+
+<span class="kn">import</span> <span class="nn">evennia</span>
+<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="k">import</span> <span class="n">ObjectDB</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">is_iter</span>
+<span class="kn">from</span> <span class="nn">evennia.prototypes</span> <span class="k">import</span> <span class="n">prototypes</span> <span class="k">as</span> <span class="n">protlib</span>
+<span class="kn">from</span> <span class="nn">evennia.prototypes.prototypes</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">value_to_obj</span><span class="p">,</span>
+    <span class="n">value_to_obj_or_any</span><span class="p">,</span>
+    <span class="n">init_spawn_value</span><span class="p">,</span>
+    <span class="n">PROTOTYPE_TAG_CATEGORY</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_CREATE_OBJECT_KWARGS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="s2">&quot;location&quot;</span><span class="p">,</span> <span class="s2">&quot;home&quot;</span><span class="p">,</span> <span class="s2">&quot;destination&quot;</span><span class="p">)</span>
+<span class="n">_PROTOTYPE_META_NAMES</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">,</span> <span class="s2">&quot;prototype_desc&quot;</span><span class="p">,</span> <span class="s2">&quot;prototype_tags&quot;</span><span class="p">,</span> <span class="s2">&quot;prototype_locks&quot;</span><span class="p">)</span>
+<span class="n">_PROTOTYPE_ROOT_NAMES</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;typeclass&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;key&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;aliases&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;attrs&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;tags&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;locks&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;permissions&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;location&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;home&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;destination&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">_NON_CREATE_KWARGS</span> <span class="o">=</span> <span class="n">_CREATE_OBJECT_KWARGS</span> <span class="o">+</span> <span class="n">_PROTOTYPE_META_NAMES</span>
+
+
+<div class="viewcode-block" id="Unset"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.Unset">[docs]</a><span class="k">class</span> <span class="nc">Unset</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper class representing a non-set diff element.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;Unset&gt;&quot;</span></div>
+
+
+<span class="c1"># Helper</span>
+
+
+<span class="k">def</span> <span class="nf">_get_prototype</span><span class="p">(</span><span class="n">inprot</span><span class="p">,</span> <span class="n">protparents</span><span class="p">,</span> <span class="n">uninherited</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_workprot</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Recursively traverse a prototype dictionary, including multiple</span>
+<span class="sd">    inheritance. Use validate_prototype before this, we don&#39;t check</span>
+<span class="sd">    for infinite recursion here.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        inprot (dict): Prototype dict (the individual prototype, with no inheritance included).</span>
+<span class="sd">        protparents (dict): Available protparents, keyed by prototype_key.</span>
+<span class="sd">        uninherited (dict): Parts of prototype to not inherit.</span>
+<span class="sd">        _workprot (dict, optional): Work dict for the recursive algorithm.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        merged (dict): A prototype where parent&#39;s have been merged as needed (the</span>
+<span class="sd">            `prototype_parent` key is removed).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_inherit_tags</span><span class="p">(</span><span class="n">old_tags</span><span class="p">,</span> <span class="n">new_tags</span><span class="p">):</span>
+        <span class="n">old</span> <span class="o">=</span> <span class="p">{(</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span> <span class="n">tup</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">old_tags</span><span class="p">}</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="p">{(</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span> <span class="n">tup</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">new_tags</span><span class="p">}</span>
+        <span class="n">old</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">old</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">_inherit_attrs</span><span class="p">(</span><span class="n">old_attrs</span><span class="p">,</span> <span class="n">new_attrs</span><span class="p">):</span>
+        <span class="n">old</span> <span class="o">=</span> <span class="p">{(</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tup</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span> <span class="n">tup</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">old_attrs</span><span class="p">}</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="p">{(</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tup</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span> <span class="n">tup</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">new_attrs</span><span class="p">}</span>
+        <span class="n">old</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">old</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+    <span class="n">_workprot</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">_workprot</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">_workprot</span>
+    <span class="k">if</span> <span class="s2">&quot;prototype_parent&quot;</span> <span class="ow">in</span> <span class="n">inprot</span><span class="p">:</span>
+        <span class="c1"># move backwards through the inheritance</span>
+        <span class="k">for</span> <span class="n">prototype</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">inprot</span><span class="p">[</span><span class="s2">&quot;prototype_parent&quot;</span><span class="p">]):</span>
+            <span class="c1"># Build the prot dictionary in reverse order, overloading</span>
+            <span class="n">new_prot</span> <span class="o">=</span> <span class="n">_get_prototype</span><span class="p">(</span>
+                <span class="n">protparents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">prototype</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="p">{}),</span> <span class="n">protparents</span><span class="p">,</span> <span class="n">_workprot</span><span class="o">=</span><span class="n">_workprot</span>
+            <span class="p">)</span>
+
+            <span class="c1"># attrs, tags have internal structure that should be inherited separately</span>
+            <span class="n">new_prot</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_inherit_attrs</span><span class="p">(</span>
+                <span class="n">_workprot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;attrs&quot;</span><span class="p">,</span> <span class="p">{}),</span> <span class="n">new_prot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;attrs&quot;</span><span class="p">,</span> <span class="p">{})</span>
+            <span class="p">)</span>
+            <span class="n">new_prot</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_inherit_tags</span><span class="p">(</span><span class="n">_workprot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">,</span> <span class="p">{}),</span> <span class="n">new_prot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">,</span> <span class="p">{}))</span>
+
+            <span class="n">_workprot</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_prot</span><span class="p">)</span>
+    <span class="c1"># the inprot represents a higher level (a child prot), which should override parents</span>
+
+    <span class="n">inprot</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_inherit_attrs</span><span class="p">(</span><span class="n">_workprot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;attrs&quot;</span><span class="p">,</span> <span class="p">{}),</span> <span class="n">inprot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;attrs&quot;</span><span class="p">,</span> <span class="p">{}))</span>
+    <span class="n">inprot</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_inherit_tags</span><span class="p">(</span><span class="n">_workprot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">,</span> <span class="p">{}),</span> <span class="n">inprot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">,</span> <span class="p">{}))</span>
+    <span class="n">_workprot</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">inprot</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">uninherited</span><span class="p">:</span>
+        <span class="c1"># put back the parts that should not be inherited</span>
+        <span class="n">_workprot</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">uninherited</span><span class="p">)</span>
+    <span class="n">_workprot</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;prototype_parent&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># we don&#39;t need this for spawning</span>
+    <span class="k">return</span> <span class="n">_workprot</span>
+
+
+<div class="viewcode-block" id="flatten_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.flatten_prototype">[docs]</a><span class="k">def</span> <span class="nf">flatten_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Produce a &#39;flattened&#39; prototype, where all prototype parents in the inheritance tree have been</span>
+<span class="sd">    merged into a final prototype.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        prototype (dict): Prototype to flatten. Its `prototype_parent` field will be parsed.</span>
+<span class="sd">        validate (bool, optional): Validate for valid keys etc.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        flattened (dict): The final, flattened prototype.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">prototype</span><span class="p">:</span>
+        <span class="n">prototype</span> <span class="o">=</span> <span class="n">protlib</span><span class="o">.</span><span class="n">homogenize_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">)</span>
+        <span class="n">protparents</span> <span class="o">=</span> <span class="p">{</span><span class="n">prot</span><span class="p">[</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">prot</span> <span class="k">for</span> <span class="n">prot</span> <span class="ow">in</span> <span class="n">protlib</span><span class="o">.</span><span class="n">search_prototype</span><span class="p">()}</span>
+        <span class="n">protlib</span><span class="o">.</span><span class="n">validate_prototype</span><span class="p">(</span>
+            <span class="n">prototype</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">protparents</span><span class="p">,</span> <span class="n">is_prototype_base</span><span class="o">=</span><span class="n">validate</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">validate</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">_get_prototype</span><span class="p">(</span>
+            <span class="n">prototype</span><span class="p">,</span> <span class="n">protparents</span><span class="p">,</span> <span class="n">uninherited</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">:</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">)}</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="p">{}</span></div>
+
+
+<span class="c1"># obj-related prototype functions</span>
+
+
+<div class="viewcode-block" id="prototype_from_object"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.prototype_from_object">[docs]</a><span class="k">def</span> <span class="nf">prototype_from_object</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Guess a minimal prototype from an existing object.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        obj (Object): An object to analyze.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        prototype (dict): A prototype estimating the current state of the object.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># first, check if this object already has a prototype</span>
+
+    <span class="n">prot</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">PROTOTYPE_TAG_CATEGORY</span><span class="p">,</span> <span class="n">return_list</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">prot</span><span class="p">:</span>
+        <span class="n">prot</span> <span class="o">=</span> <span class="n">protlib</span><span class="o">.</span><span class="n">search_prototype</span><span class="p">(</span><span class="n">prot</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">prot</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">prot</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># no unambiguous prototype found - build new prototype</span>
+        <span class="n">prot</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">prot</span><span class="p">[</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;From-Object-</span><span class="si">{}</span><span class="s2">-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()),</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()[:</span><span class="mi">7</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">prot</span><span class="p">[</span><span class="s2">&quot;prototype_desc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Built from </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+        <span class="n">prot</span><span class="p">[</span><span class="s2">&quot;prototype_locks&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;spawn:all();edit:all()&quot;</span>
+        <span class="n">prot</span><span class="p">[</span><span class="s2">&quot;prototype_tags&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">prot</span> <span class="o">=</span> <span class="n">prot</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">prot</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">db_key</span> <span class="ow">or</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()),</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()[:</span><span class="mi">6</span><span class="p">]</span>
+    <span class="n">prot</span><span class="p">[</span><span class="s2">&quot;typeclass&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">db_typeclass_path</span>
+
+    <span class="n">location</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">db_location</span>
+    <span class="k">if</span> <span class="n">location</span><span class="p">:</span>
+        <span class="n">prot</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">dbref</span>
+    <span class="n">home</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">db_home</span>
+    <span class="k">if</span> <span class="n">home</span><span class="p">:</span>
+        <span class="n">prot</span><span class="p">[</span><span class="s2">&quot;home&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">home</span><span class="o">.</span><span class="n">dbref</span>
+    <span class="n">destination</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">db_destination</span>
+    <span class="k">if</span> <span class="n">destination</span><span class="p">:</span>
+        <span class="n">prot</span><span class="p">[</span><span class="s2">&quot;destination&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">destination</span><span class="o">.</span><span class="n">dbref</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">locks</span><span class="p">:</span>
+        <span class="n">prot</span><span class="p">[</span><span class="s2">&quot;locks&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">locks</span><span class="p">)</span>
+    <span class="n">perms</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">return_list</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">perms</span><span class="p">:</span>
+        <span class="n">prot</span><span class="p">[</span><span class="s2">&quot;permissions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">perms</span><span class="p">)</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">return_list</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">aliases</span><span class="p">:</span>
+        <span class="n">prot</span><span class="p">[</span><span class="s2">&quot;aliases&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">aliases</span>
+    <span class="n">tags</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+        <span class="p">[(</span><span class="n">tag</span><span class="o">.</span><span class="n">db_key</span><span class="p">,</span> <span class="n">tag</span><span class="o">.</span><span class="n">db_category</span><span class="p">,</span> <span class="n">tag</span><span class="o">.</span><span class="n">db_data</span><span class="p">)</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">return_objs</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">tags</span><span class="p">:</span>
+        <span class="n">prot</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tags</span>
+    <span class="n">attrs</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="p">(</span><span class="n">attr</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">attr</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">attr</span><span class="o">.</span><span class="n">category</span><span class="p">,</span> <span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">attr</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">all</span><span class="p">()))</span>
+            <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">attrs</span><span class="p">:</span>
+        <span class="n">prot</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">attrs</span>
+
+    <span class="k">return</span> <span class="n">prot</span></div>
+
+
+<div class="viewcode-block" id="prototype_diff"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.prototype_diff">[docs]</a><span class="k">def</span> <span class="nf">prototype_diff</span><span class="p">(</span><span class="n">prototype1</span><span class="p">,</span> <span class="n">prototype2</span><span class="p">,</span> <span class="n">maxdepth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">homogenize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">implicit_keep</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A &#39;detailed&#39; diff specifies differences down to individual sub-sections</span>
+<span class="sd">    of the prototype, like individual attributes, permissions etc. It is used</span>
+<span class="sd">    by the menu to allow a user to customize what should be kept.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        prototype1 (dict): Original prototype.</span>
+<span class="sd">        prototype2 (dict): Comparison prototype.</span>
+<span class="sd">        maxdepth (int, optional): The maximum depth into the diff we go before treating the elements</span>
+<span class="sd">            of iterables as individual entities to compare. This is important since a single</span>
+<span class="sd">            attr/tag (for example) are represented by a tuple.</span>
+<span class="sd">        homogenize (bool, optional): Auto-homogenize both prototypes for the best comparison.</span>
+<span class="sd">            This is most useful for displaying.</span>
+<span class="sd">        implicit_keep (bool, optional): If set, the resulting diff will assume KEEP unless the new</span>
+<span class="sd">            prototype explicitly change them. That is, if a key exists in `prototype1` and</span>
+<span class="sd">            not in `prototype2`, it will not be REMOVEd but set to KEEP instead. This is particularly</span>
+<span class="sd">            useful for auto-generated prototypes when updating objects.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        diff (dict): A structure detailing how to convert prototype1 to prototype2. All</span>
+<span class="sd">            nested structures are dicts with keys matching either the prototype&#39;s matching</span>
+<span class="sd">            key or the first element in the tuple describing the prototype value (so for</span>
+<span class="sd">            a tag tuple `(tagname, category)` the second-level key in the diff would be tagname).</span>
+<span class="sd">            The the bottom level of the diff consist of tuples `(old, new, instruction)`, where</span>
+<span class="sd">            instruction can be one of &quot;REMOVE&quot;, &quot;ADD&quot;, &quot;UPDATE&quot; or &quot;KEEP&quot;.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_unset</span> <span class="o">=</span> <span class="n">Unset</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_recursive_diff</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
+        <span class="n">old_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">old</span><span class="p">)</span>
+        <span class="n">new_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">old_type</span> <span class="o">==</span> <span class="n">new_type</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">old</span> <span class="ow">or</span> <span class="n">new</span><span class="p">):</span>
+            <span class="c1"># both old and new are unset, like [] or None</span>
+            <span class="k">return</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;KEEP&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">old_type</span> <span class="o">!=</span> <span class="n">new_type</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">old</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">new</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">depth</span> <span class="o">&lt;</span> <span class="n">maxdepth</span> <span class="ow">and</span> <span class="n">old_type</span> <span class="o">==</span> <span class="nb">dict</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="p">(</span><span class="n">part</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;REMOVE&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">old</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+                <span class="k">elif</span> <span class="n">depth</span> <span class="o">&lt;</span> <span class="n">maxdepth</span> <span class="ow">and</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">old</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="p">{</span>
+                        <span class="n">part</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">part</span><span class="p">)</span> <span class="k">else</span> <span class="n">part</span><span class="p">:</span> <span class="p">(</span><span class="n">part</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;REMOVE&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">old</span>
+                    <span class="p">}</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new</span><span class="p">,</span> <span class="n">Unset</span><span class="p">)</span> <span class="ow">and</span> <span class="n">implicit_keep</span><span class="p">:</span>
+                    <span class="c1"># the new does not define any change, use implicit-keep</span>
+                    <span class="k">return</span> <span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;KEEP&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">,</span> <span class="s2">&quot;REMOVE&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">old</span> <span class="ow">and</span> <span class="n">new</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">depth</span> <span class="o">&lt;</span> <span class="n">maxdepth</span> <span class="ow">and</span> <span class="n">new_type</span> <span class="o">==</span> <span class="nb">dict</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">part</span><span class="p">,</span> <span class="s2">&quot;ADD&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">new</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+                <span class="k">elif</span> <span class="n">depth</span> <span class="o">&lt;</span> <span class="n">maxdepth</span> <span class="ow">and</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">new</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="p">{</span><span class="n">part</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">part</span><span class="p">)</span> <span class="k">else</span> <span class="n">part</span><span class="p">:</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">part</span><span class="p">,</span> <span class="s2">&quot;ADD&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">new</span><span class="p">}</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">,</span> <span class="s2">&quot;ADD&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># this condition should not occur in a standard diff</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">,</span> <span class="s2">&quot;UPDATE&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">depth</span> <span class="o">&lt;</span> <span class="n">maxdepth</span> <span class="ow">and</span> <span class="n">new_type</span> <span class="o">==</span> <span class="nb">dict</span><span class="p">:</span>
+            <span class="n">all_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">old</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">new</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="n">key</span><span class="p">:</span> <span class="n">_recursive_diff</span><span class="p">(</span><span class="n">old</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">_unset</span><span class="p">),</span> <span class="n">new</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">_unset</span><span class="p">),</span> <span class="n">depth</span><span class="o">=</span><span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">all_keys</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="n">depth</span> <span class="o">&lt;</span> <span class="n">maxdepth</span> <span class="ow">and</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">new</span><span class="p">):</span>
+            <span class="n">old_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">part</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">part</span><span class="p">)</span> <span class="k">else</span> <span class="n">part</span><span class="p">:</span> <span class="n">part</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">old</span><span class="p">}</span>
+            <span class="n">new_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">part</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">part</span><span class="p">)</span> <span class="k">else</span> <span class="n">part</span><span class="p">:</span> <span class="n">part</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">new</span><span class="p">}</span>
+            <span class="n">all_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">old_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">new_map</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="n">key</span><span class="p">:</span> <span class="n">_recursive_diff</span><span class="p">(</span>
+                    <span class="n">old_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">_unset</span><span class="p">),</span> <span class="n">new_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">_unset</span><span class="p">),</span> <span class="n">depth</span><span class="o">=</span><span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">all_keys</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="n">old</span> <span class="o">!=</span> <span class="n">new</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">,</span> <span class="s2">&quot;UPDATE&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">,</span> <span class="s2">&quot;KEEP&quot;</span><span class="p">)</span>
+
+    <span class="n">prot1</span> <span class="o">=</span> <span class="n">protlib</span><span class="o">.</span><span class="n">homogenize_prototype</span><span class="p">(</span><span class="n">prototype1</span><span class="p">)</span> <span class="k">if</span> <span class="n">homogenize</span> <span class="k">else</span> <span class="n">prototype1</span>
+    <span class="n">prot2</span> <span class="o">=</span> <span class="n">protlib</span><span class="o">.</span><span class="n">homogenize_prototype</span><span class="p">(</span><span class="n">prototype2</span><span class="p">)</span> <span class="k">if</span> <span class="n">homogenize</span> <span class="k">else</span> <span class="n">prototype2</span>
+
+    <span class="n">diff</span> <span class="o">=</span> <span class="n">_recursive_diff</span><span class="p">(</span><span class="n">prot1</span><span class="p">,</span> <span class="n">prot2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">diff</span></div>
+
+
+<div class="viewcode-block" id="flatten_diff"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.flatten_diff">[docs]</a><span class="k">def</span> <span class="nf">flatten_diff</span><span class="p">(</span><span class="n">diff</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    For spawning, a &#39;detailed&#39; diff is not necessary, rather we just want instructions on how to</span>
+<span class="sd">    handle each root key.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        diff (dict): Diff produced by `prototype_diff` and</span>
+<span class="sd">            possibly modified by the user. Note that also a pre-flattened diff will come out</span>
+<span class="sd">            unchanged by this function.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        flattened_diff (dict): A flat structure detailing how to operate on each</span>
+<span class="sd">            root component of the prototype.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        The flattened diff has the following possible instructions:</span>
+<span class="sd">            UPDATE, REPLACE, REMOVE</span>
+<span class="sd">        Many of the detailed diff&#39;s values can hold nested structures with their own</span>
+<span class="sd">        individual instructions. A detailed diff can have the following instructions:</span>
+<span class="sd">            REMOVE, ADD, UPDATE, KEEP</span>
+<span class="sd">        Here&#39;s how they are translated:</span>
+<span class="sd">            - All REMOVE -&gt; REMOVE</span>
+<span class="sd">            - All ADD|UPDATE -&gt; UPDATE</span>
+<span class="sd">            - All KEEP -&gt; KEEP</span>
+<span class="sd">            - Mix KEEP, UPDATE, ADD -&gt; UPDATE</span>
+<span class="sd">            - Mix REMOVE, KEEP, UPDATE, ADD -&gt; REPLACE</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">valid_instructions</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;KEEP&quot;</span><span class="p">,</span> <span class="s2">&quot;REMOVE&quot;</span><span class="p">,</span> <span class="s2">&quot;ADD&quot;</span><span class="p">,</span> <span class="s2">&quot;UPDATE&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_all_nested_diff_instructions</span><span class="p">(</span><span class="n">diffpart</span><span class="p">):</span>
+        <span class="s2">&quot;Started for each root key, returns all instructions nested under it&quot;</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">typ</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">diffpart</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">typ</span> <span class="o">==</span> <span class="nb">tuple</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">diffpart</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">diffpart</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">in</span> <span class="n">valid_instructions</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="p">[</span><span class="n">diffpart</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
+        <span class="k">elif</span> <span class="n">typ</span> <span class="o">==</span> <span class="nb">dict</span><span class="p">:</span>
+            <span class="c1"># all other are dicts</span>
+            <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">diffpart</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">out</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_get_all_nested_diff_instructions</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;Diff contains non-dicts that are not on the &quot;</span>
+                <span class="s2">&quot;form (old, new, inst): </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">diffpart</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="n">flat_diff</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># flatten diff based on rules</span>
+    <span class="k">for</span> <span class="n">rootkey</span><span class="p">,</span> <span class="n">diffpart</span> <span class="ow">in</span> <span class="n">diff</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">insts</span> <span class="o">=</span> <span class="n">_get_all_nested_diff_instructions</span><span class="p">(</span><span class="n">diffpart</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">inst</span> <span class="o">==</span> <span class="s2">&quot;KEEP&quot;</span> <span class="k">for</span> <span class="n">inst</span> <span class="ow">in</span> <span class="n">insts</span><span class="p">):</span>
+            <span class="n">rootinst</span> <span class="o">=</span> <span class="s2">&quot;KEEP&quot;</span>
+        <span class="k">elif</span> <span class="nb">all</span><span class="p">(</span><span class="n">inst</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;ADD&quot;</span><span class="p">,</span> <span class="s2">&quot;UPDATE&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">inst</span> <span class="ow">in</span> <span class="n">insts</span><span class="p">):</span>
+            <span class="n">rootinst</span> <span class="o">=</span> <span class="s2">&quot;UPDATE&quot;</span>
+        <span class="k">elif</span> <span class="nb">all</span><span class="p">(</span><span class="n">inst</span> <span class="o">==</span> <span class="s2">&quot;REMOVE&quot;</span> <span class="k">for</span> <span class="n">inst</span> <span class="ow">in</span> <span class="n">insts</span><span class="p">):</span>
+            <span class="n">rootinst</span> <span class="o">=</span> <span class="s2">&quot;REMOVE&quot;</span>
+        <span class="k">elif</span> <span class="s2">&quot;REMOVE&quot;</span> <span class="ow">in</span> <span class="n">insts</span><span class="p">:</span>
+            <span class="n">rootinst</span> <span class="o">=</span> <span class="s2">&quot;REPLACE&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rootinst</span> <span class="o">=</span> <span class="s2">&quot;UPDATE&quot;</span>
+
+        <span class="n">flat_diff</span><span class="p">[</span><span class="n">rootkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">rootinst</span>
+
+    <span class="k">return</span> <span class="n">flat_diff</span></div>
+
+
+<div class="viewcode-block" id="prototype_diff_from_object"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.prototype_diff_from_object">[docs]</a><span class="k">def</span> <span class="nf">prototype_diff_from_object</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">implicit_keep</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get a simple diff for a prototype compared to an object which may or may not already have a</span>
+<span class="sd">    prototype (or has one but changed locally). For more complex migratations a manual diff may be</span>
+<span class="sd">    needed.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        prototype (dict): New prototype.</span>
+<span class="sd">        obj (Object): Object to compare prototype against.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        diff (dict): Mapping for every prototype key: {&quot;keyname&quot;: &quot;REMOVE|UPDATE|KEEP&quot;, ...}</span>
+<span class="sd">        obj_prototype (dict): The prototype calculated for the given object. The diff is how to</span>
+<span class="sd">            convert this prototype into the new prototype.</span>
+<span class="sd">        implicit_keep (bool, optional): This is usually what one wants for object updating. When</span>
+<span class="sd">            set, this means the prototype diff will assume KEEP on differences</span>
+<span class="sd">            between the object-generated prototype and that which is not explicitly set in the</span>
+<span class="sd">            new prototype. This means e.g. that even though the object has a location, and the</span>
+<span class="sd">            prototype does not specify the location, it will not be unset.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        The `diff` is on the following form:</span>
+
+<span class="sd">            {&quot;key&quot;: (old, new, &quot;KEEP|REPLACE|UPDATE|REMOVE&quot;),</span>
+<span class="sd">                &quot;attrs&quot;: {&quot;attrkey&quot;: (old, new, &quot;KEEP|REPLACE|UPDATE|REMOVE&quot;),</span>
+<span class="sd">                          &quot;attrkey&quot;: (old, new, &quot;KEEP|REPLACE|UPDATE|REMOVE&quot;), ...},</span>
+<span class="sd">                &quot;aliases&quot;: {&quot;aliasname&quot;: (old, new, &quot;KEEP...&quot;, ...},</span>
+<span class="sd">                ... }</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">obj_prototype</span> <span class="o">=</span> <span class="n">prototype_from_object</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+    <span class="n">diff</span> <span class="o">=</span> <span class="n">prototype_diff</span><span class="p">(</span>
+        <span class="n">obj_prototype</span><span class="p">,</span> <span class="n">protlib</span><span class="o">.</span><span class="n">homogenize_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">),</span> <span class="n">implicit_keep</span><span class="o">=</span><span class="n">implicit_keep</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">diff</span><span class="p">,</span> <span class="n">obj_prototype</span></div>
+
+
+<div class="viewcode-block" id="format_diff"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.format_diff">[docs]</a><span class="k">def</span> <span class="nf">format_diff</span><span class="p">(</span><span class="n">diff</span><span class="p">,</span> <span class="n">minimal</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reformat a diff for presentation. This is a shortened version</span>
+<span class="sd">    of the olc _format_diff_text_and_options without the options.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        diff (dict): A diff as produced by `prototype_diff`.</span>
+<span class="sd">        minimal (bool, optional): Only show changes (remove KEEPs)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        texts (str): The formatted text.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">valid_instructions</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;KEEP&quot;</span><span class="p">,</span> <span class="s2">&quot;REMOVE&quot;</span><span class="p">,</span> <span class="s2">&quot;ADD&quot;</span><span class="p">,</span> <span class="s2">&quot;UPDATE&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_visualize</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">rootname</span><span class="p">,</span> <span class="n">get_name</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">get_name</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">obj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">obj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;&lt;unset&gt;&quot;</span>
+            <span class="k">if</span> <span class="n">rootname</span> <span class="o">==</span> <span class="s2">&quot;attrs&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> |w=|n </span><span class="si">{}</span><span class="s2"> |w(category:|n |n</span><span class="si">{}</span><span class="s2">|w, locks:|n </span><span class="si">{}</span><span class="s2">|w)|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">obj</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">rootname</span> <span class="o">==</span> <span class="s2">&quot;tags&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> |w(category:|n </span><span class="si">{}</span><span class="s2">|w)|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">obj</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_parse_diffpart</span><span class="p">(</span><span class="n">diffpart</span><span class="p">,</span> <span class="n">rootname</span><span class="p">):</span>
+        <span class="n">typ</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">diffpart</span><span class="p">)</span>
+        <span class="n">texts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">typ</span> <span class="o">==</span> <span class="nb">tuple</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">diffpart</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">diffpart</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">in</span> <span class="n">valid_instructions</span><span class="p">:</span>
+            <span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">,</span> <span class="n">instruction</span> <span class="o">=</span> <span class="n">diffpart</span>
+            <span class="k">if</span> <span class="n">instruction</span> <span class="o">==</span> <span class="s2">&quot;KEEP&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">minimal</span><span class="p">:</span>
+                    <span class="n">texts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;   |gKEEP|n: </span><span class="si">{old}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">old</span><span class="o">=</span><span class="n">_visualize</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">rootname</span><span class="p">)))</span>
+            <span class="k">elif</span> <span class="n">instruction</span> <span class="o">==</span> <span class="s2">&quot;ADD&quot;</span><span class="p">:</span>
+                <span class="n">texts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;   |yADD|n: </span><span class="si">{new}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">new</span><span class="o">=</span><span class="n">_visualize</span><span class="p">(</span><span class="n">new</span><span class="p">,</span> <span class="n">rootname</span><span class="p">)))</span>
+            <span class="k">elif</span> <span class="n">instruction</span> <span class="o">==</span> <span class="s2">&quot;REMOVE&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">new</span><span class="p">:</span>
+                <span class="n">texts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;   |rREMOVE|n: </span><span class="si">{old}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">old</span><span class="o">=</span><span class="n">_visualize</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">rootname</span><span class="p">)))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">vold</span> <span class="o">=</span> <span class="n">_visualize</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">rootname</span><span class="p">)</span>
+                <span class="n">vnew</span> <span class="o">=</span> <span class="n">_visualize</span><span class="p">(</span><span class="n">new</span><span class="p">,</span> <span class="n">rootname</span><span class="p">)</span>
+                <span class="n">vsep</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vold</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">78</span> <span class="k">else</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="n">vinst</span> <span class="o">=</span> <span class="s2">&quot;   |rREMOVE|n&quot;</span> <span class="k">if</span> <span class="n">instruction</span> <span class="o">==</span> <span class="s2">&quot;REMOVE&quot;</span> <span class="k">else</span> <span class="s2">&quot;|y</span><span class="si">{}</span><span class="s2">|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">instruction</span><span class="p">)</span>
+                <span class="n">varrow</span> <span class="o">=</span> <span class="s2">&quot;|r-&gt;|n&quot;</span> <span class="k">if</span> <span class="n">instruction</span> <span class="o">==</span> <span class="s2">&quot;REMOVE&quot;</span> <span class="k">else</span> <span class="s2">&quot;|y-&gt;|n&quot;</span>
+                <span class="n">texts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="s2">&quot;   </span><span class="si">{inst}</span><span class="s2">|W:|n </span><span class="si">{old}</span><span class="s2"> |W</span><span class="si">{varrow}</span><span class="s2">|n</span><span class="si">{sep}</span><span class="s2"> </span><span class="si">{new}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">inst</span><span class="o">=</span><span class="n">vinst</span><span class="p">,</span> <span class="n">old</span><span class="o">=</span><span class="n">vold</span><span class="p">,</span> <span class="n">varrow</span><span class="o">=</span><span class="n">varrow</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">vsep</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">vnew</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">diffpart</span><span class="o">.</span><span class="n">keys</span><span class="p">())):</span>
+                <span class="n">subdiffpart</span> <span class="o">=</span> <span class="n">diffpart</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">_parse_diffpart</span><span class="p">(</span><span class="n">subdiffpart</span><span class="p">,</span> <span class="n">rootname</span><span class="p">)</span>
+                <span class="n">texts</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">texts</span>
+
+    <span class="n">texts</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">root_key</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">diff</span><span class="p">):</span>
+        <span class="n">diffpart</span> <span class="o">=</span> <span class="n">diff</span><span class="p">[</span><span class="n">root_key</span><span class="p">]</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">_parse_diffpart</span><span class="p">(</span><span class="n">diffpart</span><span class="p">,</span> <span class="n">root_key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">text</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">minimal</span><span class="p">:</span>
+            <span class="n">heading</span> <span class="o">=</span> <span class="s2">&quot;- |w</span><span class="si">{}</span><span class="s2">:|n</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">root_key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">text</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="p">[</span><span class="n">heading</span> <span class="o">+</span> <span class="n">text</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">+</span> <span class="n">text</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="p">[</span><span class="n">heading</span><span class="p">]</span>
+
+            <span class="n">texts</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">texts</span> <span class="k">if</span> <span class="n">line</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="batch_update_objects_with_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.batch_update_objects_with_prototype">[docs]</a><span class="k">def</span> <span class="nf">batch_update_objects_with_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">diff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Update existing objects with the latest version of the prototype.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        prototype (str or dict): Either the `prototype_key` to use or the</span>
+<span class="sd">            prototype dict itself.</span>
+<span class="sd">        diff (dict, optional): This a diff structure that describes how to update the protototype.</span>
+<span class="sd">            If not given this will be constructed from the first object found.</span>
+<span class="sd">        objects (list, optional): List of objects to update. If not given, query for these</span>
+<span class="sd">            objects using the prototype&#39;s `prototype_key`.</span>
+<span class="sd">        exact (bool, optional): By default (`False`), keys not explicitly in the prototype will</span>
+<span class="sd">            not be applied to the object, but will be retained as-is. This is usually what is</span>
+<span class="sd">            expected - for example, one usually do not want to remove the object&#39;s location even</span>
+<span class="sd">            if it&#39;s not set in the prototype. With `exact=True`, all un-specified properties of the</span>
+<span class="sd">            objects will be removed if they exist. This will lead to a more accurate 1:1 correlation</span>
+<span class="sd">            between the  object and the prototype but is usually impractical.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        changed (int): The number of objects that had changes applied to them.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">prototype</span> <span class="o">=</span> <span class="n">protlib</span><span class="o">.</span><span class="n">homogenize_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">new_prototype</span> <span class="o">=</span> <span class="n">protlib</span><span class="o">.</span><span class="n">search_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">new_prototype</span> <span class="o">=</span> <span class="n">prototype</span>
+
+    <span class="n">prototype_key</span> <span class="o">=</span> <span class="n">new_prototype</span><span class="p">[</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">objects</span><span class="p">:</span>
+        <span class="n">objects</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_by_tag</span><span class="p">(</span><span class="n">prototype_key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">PROTOTYPE_TAG_CATEGORY</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">objects</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">diff</span><span class="p">:</span>
+        <span class="n">diff</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">prototype_diff_from_object</span><span class="p">(</span><span class="n">new_prototype</span><span class="p">,</span> <span class="n">objects</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># make sure the diff is flattened</span>
+    <span class="n">diff</span> <span class="o">=</span> <span class="n">flatten_diff</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span>
+
+    <span class="n">changed</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objects</span><span class="p">:</span>
+        <span class="n">do_save</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="n">old_prot_key</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">PROTOTYPE_TAG_CATEGORY</span><span class="p">,</span> <span class="n">return_list</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">old_prot_key</span> <span class="o">=</span> <span class="n">old_prot_key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">old_prot_key</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">directive</span> <span class="ow">in</span> <span class="n">diff</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">new_prototype</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">exact</span><span class="p">:</span>
+                    <span class="c1"># we don&#39;t update the object if the prototype does not actually</span>
+                    <span class="c1"># contain the key (the diff will report REMOVE but we ignore it</span>
+                    <span class="c1"># since exact=False)</span>
+                    <span class="k">continue</span>
+
+                <span class="k">if</span> <span class="n">directive</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;UPDATE&quot;</span><span class="p">,</span> <span class="s2">&quot;REPLACE&quot;</span><span class="p">):</span>
+
+                    <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">_PROTOTYPE_META_NAMES</span><span class="p">:</span>
+                        <span class="c1"># prototype meta keys are not stored on-object</span>
+                        <span class="k">continue</span>
+
+                    <span class="n">val</span> <span class="o">=</span> <span class="n">new_prototype</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                    <span class="n">do_save</span> <span class="o">=</span> <span class="kc">True</span>
+
+                    <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;key&quot;</span><span class="p">:</span>
+                        <span class="n">obj</span><span class="o">.</span><span class="n">db_key</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;typeclass&quot;</span><span class="p">:</span>
+                        <span class="n">obj</span><span class="o">.</span><span class="n">db_typeclass_path</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;location&quot;</span><span class="p">:</span>
+                        <span class="n">obj</span><span class="o">.</span><span class="n">db_location</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">value_to_obj</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;home&quot;</span><span class="p">:</span>
+                        <span class="n">obj</span><span class="o">.</span><span class="n">db_home</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">value_to_obj</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;destination&quot;</span><span class="p">:</span>
+                        <span class="n">obj</span><span class="o">.</span><span class="n">db_destination</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">value_to_obj</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;locks&quot;</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">directive</span> <span class="o">==</span> <span class="s2">&quot;REPLACE&quot;</span><span class="p">:</span>
+                            <span class="n">obj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                        <span class="n">obj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">))</span>
+                    <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;permissions&quot;</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">directive</span> <span class="o">==</span> <span class="s2">&quot;REPLACE&quot;</span><span class="p">:</span>
+                            <span class="n">obj</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                        <span class="n">obj</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">init_spawn_value</span><span class="p">(</span><span class="n">perm</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">perm</span> <span class="ow">in</span> <span class="n">val</span><span class="p">))</span>
+                    <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;aliases&quot;</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">directive</span> <span class="o">==</span> <span class="s2">&quot;REPLACE&quot;</span><span class="p">:</span>
+                            <span class="n">obj</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                        <span class="n">obj</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">init_spawn_value</span><span class="p">(</span><span class="n">alias</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">val</span><span class="p">))</span>
+                    <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;tags&quot;</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">directive</span> <span class="o">==</span> <span class="s2">&quot;REPLACE&quot;</span><span class="p">:</span>
+                            <span class="n">obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                        <span class="n">obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span>
+                            <span class="o">*</span><span class="p">(</span>
+                                <span class="p">(</span><span class="n">init_spawn_value</span><span class="p">(</span><span class="n">ttag</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="n">tcategory</span><span class="p">,</span> <span class="n">tdata</span><span class="p">)</span>
+                                <span class="k">for</span> <span class="n">ttag</span><span class="p">,</span> <span class="n">tcategory</span><span class="p">,</span> <span class="n">tdata</span> <span class="ow">in</span> <span class="n">val</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;attrs&quot;</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">directive</span> <span class="o">==</span> <span class="s2">&quot;REPLACE&quot;</span><span class="p">:</span>
+                            <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                        <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span>
+                            <span class="o">*</span><span class="p">(</span>
+                                <span class="p">(</span>
+                                    <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">akey</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
+                                    <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">aval</span><span class="p">,</span> <span class="n">value_to_obj</span><span class="p">),</span>
+                                    <span class="n">acategory</span><span class="p">,</span>
+                                    <span class="n">alocks</span><span class="p">,</span>
+                                <span class="p">)</span>
+                                <span class="k">for</span> <span class="n">akey</span><span class="p">,</span> <span class="n">aval</span><span class="p">,</span> <span class="n">acategory</span><span class="p">,</span> <span class="n">alocks</span> <span class="ow">in</span> <span class="n">val</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;exec&quot;</span><span class="p">:</span>
+                        <span class="c1"># we don&#39;t auto-rerun exec statements, it would be huge security risk!</span>
+                        <span class="k">pass</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">value_to_obj</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="n">directive</span> <span class="o">==</span> <span class="s2">&quot;REMOVE&quot;</span><span class="p">:</span>
+                    <span class="n">do_save</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;key&quot;</span><span class="p">:</span>
+                        <span class="n">obj</span><span class="o">.</span><span class="n">db_key</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                    <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;typeclass&quot;</span><span class="p">:</span>
+                        <span class="c1"># fall back to default</span>
+                        <span class="n">obj</span><span class="o">.</span><span class="n">db_typeclass_path</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span>
+                    <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;location&quot;</span><span class="p">:</span>
+                        <span class="n">obj</span><span class="o">.</span><span class="n">db_location</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;home&quot;</span><span class="p">:</span>
+                        <span class="n">obj</span><span class="o">.</span><span class="n">db_home</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;destination&quot;</span><span class="p">:</span>
+                        <span class="n">obj</span><span class="o">.</span><span class="n">db_destination</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;locks&quot;</span><span class="p">:</span>
+                        <span class="n">obj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                    <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;permissions&quot;</span><span class="p">:</span>
+                        <span class="n">obj</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                    <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;aliases&quot;</span><span class="p">:</span>
+                        <span class="n">obj</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                    <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;tags&quot;</span><span class="p">:</span>
+                        <span class="n">obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                    <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;attrs&quot;</span><span class="p">:</span>
+                        <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                    <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;exec&quot;</span><span class="p">:</span>
+                        <span class="c1"># we don&#39;t auto-rerun exec statements, it would be huge security risk!</span>
+                        <span class="k">pass</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Failed to apply prototype &#39;</span><span class="si">{prototype_key}</span><span class="s2">&#39; to </span><span class="si">{obj}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="c1"># we must always make sure to re-add the prototype tag</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">PROTOTYPE_TAG_CATEGORY</span><span class="p">)</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">prototype_key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">PROTOTYPE_TAG_CATEGORY</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">do_save</span><span class="p">:</span>
+            <span class="n">changed</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">changed</span></div>
+
+
+<div class="viewcode-block" id="batch_create_object"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.batch_create_object">[docs]</a><span class="k">def</span> <span class="nf">batch_create_object</span><span class="p">(</span><span class="o">*</span><span class="n">objparams</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a cut-down version of the create_object() function,</span>
+<span class="sd">    optimized for speed. It does NOT check and convert various input</span>
+<span class="sd">    so make sure the spawned Typeclass works before using this!</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        objsparams (tuple): Each paremter tuple will create one object instance using the parameters</span>
+<span class="sd">            within.</span>
+<span class="sd">            The parameters should be given in the following order:</span>
+<span class="sd">                - `create_kwargs` (dict): For use as new_obj = `ObjectDB(**create_kwargs)`.</span>
+<span class="sd">                - `permissions` (str): Permission string used with `new_obj.batch_add(permission)`.</span>
+<span class="sd">                - `lockstring` (str): Lockstring used with `new_obj.locks.add(lockstring)`.</span>
+<span class="sd">                - `aliases` (list): A list of alias strings for</span>
+<span class="sd">                    adding with `new_object.aliases.batch_add(*aliases)`.</span>
+<span class="sd">                - `nattributes` (list): list of tuples `(key, value)` to be loop-added to</span>
+<span class="sd">                    add with `new_obj.nattributes.add(*tuple)`.</span>
+<span class="sd">                - `attributes` (list): list of tuples `(key, value[,category[,lockstring]])` for</span>
+<span class="sd">                    adding with `new_obj.attributes.batch_add(*attributes)`.</span>
+<span class="sd">                - `tags` (list): list of tuples `(key, category)` for adding</span>
+<span class="sd">                    with `new_obj.tags.batch_add(*tags)`.</span>
+<span class="sd">                - `execs` (list): Code strings to execute together with the creation</span>
+<span class="sd">                    of each object. They will be executed with `evennia` and `obj`</span>
+<span class="sd">                        (the newly created object) available in the namespace. Execution</span>
+<span class="sd">                        will happend after all other properties have been assigned and</span>
+<span class="sd">                        is intended for calling custom handlers etc.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        objects (list): A list of created objects</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        The `exec` list will execute arbitrary python code so don&#39;t allow this to be available to</span>
+<span class="sd">        unprivileged users!</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># bulk create all objects in one go</span>
+
+    <span class="c1"># unfortunately this doesn&#39;t work since bulk_create doesn&#39;t creates pks;</span>
+    <span class="c1"># the result would be duplicate objects at the next stage, so we comment</span>
+    <span class="c1"># it out for now:</span>
+    <span class="c1">#  dbobjs = _ObjectDB.objects.bulk_create(dbobjs)</span>
+
+    <span class="n">objs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">objparam</span> <span class="ow">in</span> <span class="n">objparams</span><span class="p">:</span>
+
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="p">(</span><span class="o">**</span><span class="n">objparam</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="c1"># setup</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_createdict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">objparam</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+            <span class="s2">&quot;locks&quot;</span><span class="p">:</span> <span class="n">objparam</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+            <span class="s2">&quot;aliases&quot;</span><span class="p">:</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">objparam</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span>
+            <span class="s2">&quot;nattributes&quot;</span><span class="p">:</span> <span class="n">objparam</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>
+            <span class="s2">&quot;attributes&quot;</span><span class="p">:</span> <span class="n">objparam</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+            <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">objparam</span><span class="p">[</span><span class="mi">6</span><span class="p">]),</span>
+        <span class="p">}</span>
+        <span class="c1"># this triggers all hooks</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="c1"># run eventual extra code</span>
+        <span class="k">for</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">objparam</span><span class="p">[</span><span class="mi">7</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">code</span><span class="p">:</span>
+                <span class="n">exec</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="p">{},</span> <span class="p">{</span><span class="s2">&quot;evennia&quot;</span><span class="p">:</span> <span class="n">evennia</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">:</span> <span class="n">obj</span><span class="p">})</span>
+        <span class="n">objs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">objs</span></div>
+
+
+<span class="c1"># Spawner mechanism</span>
+
+
+<div class="viewcode-block" id="spawn"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.spawn">[docs]</a><span class="k">def</span> <span class="nf">spawn</span><span class="p">(</span><span class="o">*</span><span class="n">prototypes</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Spawn a number of prototyped objects.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        prototypes (str or dict): Each argument should either be a</span>
+<span class="sd">            prototype_key (will be used to find the prototype) or a full prototype</span>
+<span class="sd">            dictionary. These will be batched-spawned as one object each.</span>
+<span class="sd">    Keyword args:</span>
+<span class="sd">        prototype_modules (str or list): A python-path to a prototype</span>
+<span class="sd">            module, or a list of such paths. These will be used to build</span>
+<span class="sd">            the global protparents dictionary accessible by the input</span>
+<span class="sd">            prototypes. If not given, it will instead look for modules</span>
+<span class="sd">            defined by settings.PROTOTYPE_MODULES.</span>
+<span class="sd">        prototype_parents (dict): A dictionary holding a custom</span>
+<span class="sd">            prototype-parent dictionary. Will overload same-named</span>
+<span class="sd">            prototypes from prototype_modules.</span>
+<span class="sd">        return_parents (bool): Return a dict of the entire prototype-parent tree</span>
+<span class="sd">            available to this prototype (no object creation happens). This is a</span>
+<span class="sd">            merged result between the globally found protparents and whatever</span>
+<span class="sd">            custom `prototype_parents` are given to this function.</span>
+<span class="sd">        only_validate (bool): Only run validation of prototype/parents</span>
+<span class="sd">            (no object creation) and return the create-kwargs.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        object (Object, dict or list): Spawned object(s). If `only_validate` is given, return</span>
+<span class="sd">            a list of the creation kwargs to build the object(s) without actually creating it. If</span>
+<span class="sd">            `return_parents` is set, instead return dict of prototype parents.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># search string (=prototype_key) from input</span>
+    <span class="n">prototypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">protlib</span><span class="o">.</span><span class="n">search_prototype</span><span class="p">(</span><span class="n">prot</span><span class="p">,</span> <span class="n">require_single</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prot</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">prot</span>
+        <span class="k">for</span> <span class="n">prot</span> <span class="ow">in</span> <span class="n">prototypes</span>
+    <span class="p">]</span>
+
+    <span class="c1"># get available protparents</span>
+    <span class="n">protparents</span> <span class="o">=</span> <span class="p">{</span><span class="n">prot</span><span class="p">[</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">prot</span> <span class="k">for</span> <span class="n">prot</span> <span class="ow">in</span> <span class="n">protlib</span><span class="o">.</span><span class="n">search_prototype</span><span class="p">()}</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;only_validate&quot;</span><span class="p">):</span>
+        <span class="c1"># homogenization to be more lenient about prototype format when entering the prototype manually</span>
+        <span class="n">prototypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">protlib</span><span class="o">.</span><span class="n">homogenize_prototype</span><span class="p">(</span><span class="n">prot</span><span class="p">)</span> <span class="k">for</span> <span class="n">prot</span> <span class="ow">in</span> <span class="n">prototypes</span><span class="p">]</span>
+
+    <span class="c1"># overload module&#39;s protparents with specifically given protparents</span>
+    <span class="c1"># we allow prototype_key to be the key of the protparent dict, to allow for module-level</span>
+    <span class="c1"># prototype imports. We need to insert prototype_key in this case</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">protparent</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_parents&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">protparent</span><span class="p">[</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">protparent</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">,</span> <span class="n">key</span><span class="p">))</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">protparents</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">protparent</span>
+
+    <span class="k">if</span> <span class="s2">&quot;return_parents&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="c1"># only return the parents</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">protparents</span><span class="p">)</span>
+
+    <span class="n">objsparams</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">prototype</span> <span class="ow">in</span> <span class="n">prototypes</span><span class="p">:</span>
+
+        <span class="n">protlib</span><span class="o">.</span><span class="n">validate_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">protparents</span><span class="p">,</span> <span class="n">is_prototype_base</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">prot</span> <span class="o">=</span> <span class="n">_get_prototype</span><span class="p">(</span>
+            <span class="n">prototype</span><span class="p">,</span> <span class="n">protparents</span><span class="p">,</span> <span class="n">uninherited</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">:</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">)}</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">prot</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># extract the keyword args we need to create the object itself. If we get a callable,</span>
+        <span class="c1"># call that to get the value (don&#39;t catch errors)</span>
+        <span class="n">create_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># we must always add a key, so if not given we use a shortened md5 hash. There is a (small)</span>
+        <span class="c1"># chance this is not unique but it should usually not be a problem.</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">prot</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span>
+            <span class="s2">&quot;key&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Spawned-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()),</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()[:</span><span class="mi">6</span><span class="p">]),</span>
+        <span class="p">)</span>
+        <span class="n">create_kwargs</span><span class="p">[</span><span class="s2">&quot;db_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+
+        <span class="n">val</span> <span class="o">=</span> <span class="n">prot</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;location&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">create_kwargs</span><span class="p">[</span><span class="s2">&quot;db_location&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">value_to_obj</span><span class="p">)</span>
+
+        <span class="n">val</span> <span class="o">=</span> <span class="n">prot</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;home&quot;</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_HOME</span><span class="p">)</span>
+        <span class="n">create_kwargs</span><span class="p">[</span><span class="s2">&quot;db_home&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">value_to_obj</span><span class="p">)</span>
+
+        <span class="n">val</span> <span class="o">=</span> <span class="n">prot</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;destination&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">create_kwargs</span><span class="p">[</span><span class="s2">&quot;db_destination&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">value_to_obj</span><span class="p">)</span>
+
+        <span class="n">val</span> <span class="o">=</span> <span class="n">prot</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;typeclass&quot;</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span><span class="p">)</span>
+        <span class="n">create_kwargs</span><span class="p">[</span><span class="s2">&quot;db_typeclass_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+
+        <span class="c1"># extract calls to handlers</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">prot</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;permissions&quot;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">permission_string</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">)</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">prot</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;locks&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">lock_string</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">prot</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;aliases&quot;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">alias_string</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">)</span>
+
+        <span class="n">val</span> <span class="o">=</span> <span class="n">prot</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">tags</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span> <span class="ow">in</span> <span class="n">val</span><span class="p">:</span>
+            <span class="n">tags</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">init_spawn_value</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="n">category</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span>
+
+        <span class="n">prototype_key</span> <span class="o">=</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">prototype_key</span><span class="p">:</span>
+            <span class="c1"># we make sure to add a tag identifying which prototype created this object</span>
+            <span class="n">tags</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">prototype_key</span><span class="p">,</span> <span class="n">PROTOTYPE_TAG_CATEGORY</span><span class="p">))</span>
+
+        <span class="n">val</span> <span class="o">=</span> <span class="n">prot</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;exec&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">execs</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">)</span>
+
+        <span class="c1"># extract ndb assignments</span>
+        <span class="n">nattributes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">value_to_obj</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">prot</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;ndb_&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># the rest are attribute tuples (attrname, value, category, locks)</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">prot</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;attrs&quot;</span><span class="p">,</span> <span class="p">[]))</span>
+        <span class="n">attributes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">attrname</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">locks</span><span class="p">)</span> <span class="ow">in</span> <span class="n">val</span><span class="p">:</span>
+            <span class="n">attributes</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">attrname</span><span class="p">,</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="n">category</span><span class="p">,</span> <span class="n">locks</span><span class="p">))</span>
+
+        <span class="n">simple_attributes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">prot</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;ndb_&quot;</span><span class="p">))</span>
+        <span class="p">):</span>
+            <span class="c1"># we don&#39;t support categories, nor locks for simple attributes</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">_PROTOTYPE_META_NAMES</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">simple_attributes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">value_to_obj_or_any</span><span class="p">),</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="p">)</span>
+
+        <span class="n">attributes</span> <span class="o">=</span> <span class="n">attributes</span> <span class="o">+</span> <span class="n">simple_attributes</span>
+        <span class="n">attributes</span> <span class="o">=</span> <span class="p">[</span><span class="n">tup</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">attributes</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">_NON_CREATE_KWARGS</span><span class="p">]</span>
+
+        <span class="c1"># pack for call into _batch_create_object</span>
+        <span class="n">objsparams</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">create_kwargs</span><span class="p">,</span>
+                <span class="n">permission_string</span><span class="p">,</span>
+                <span class="n">lock_string</span><span class="p">,</span>
+                <span class="n">alias_string</span><span class="p">,</span>
+                <span class="n">nattributes</span><span class="p">,</span>
+                <span class="n">attributes</span><span class="p">,</span>
+                <span class="n">tags</span><span class="p">,</span>
+                <span class="n">execs</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;only_validate&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">objsparams</span>
+    <span class="k">return</span> <span class="n">batch_create_object</span><span class="p">(</span><span class="o">*</span><span class="n">objsparams</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="spawner.html">0.9.5 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

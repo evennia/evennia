@@ -1,0 +1,412 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.utils.optionclasses &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.utils.optionclasses</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="k">import</span> <span class="n">strip_ansi</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.validatorfuncs</span> <span class="k">import</span> <span class="n">_TZ_DICT</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">crop</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">validatorfuncs</span>
+
+
+<div class="viewcode-block" id="BaseOption"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.BaseOption">[docs]</a><span class="k">class</span> <span class="nc">BaseOption</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Abstract Class to deal with encapsulating individual Options. An Option has</span>
+<span class="sd">    a name/key, a description to display in relevant commands and menus, and a</span>
+<span class="sd">    default value. It saves to the owner&#39;s Attributes using its Handler&#39;s save</span>
+<span class="sd">    category.</span>
+
+<span class="sd">    Designed to be extremely overloadable as some options can be cantankerous.</span>
+
+<span class="sd">    Properties:</span>
+<span class="sd">        valid: Shortcut to the loaded VALID_HANDLER.</span>
+<span class="sd">        validator_key (str): The key of the Validator this uses.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;Option </span><span class="si">{key}</span><span class="s2">: </span><span class="si">{value}</span><span class="s2">&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">crop</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="mi">10</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BaseOption.__init__"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.BaseOption.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">default</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            handler (OptionHandler): The OptionHandler that &#39;owns&#39; this Option.</span>
+<span class="sd">            key (str): The name this will be used for storage in a dictionary.</span>
+<span class="sd">                Must be unique per OptionHandler.</span>
+<span class="sd">            description (str): What this Option&#39;s text will show in commands and menus.</span>
+<span class="sd">            default: A default value for this Option.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span> <span class="o">=</span> <span class="n">handler</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_value</span> <span class="o">=</span> <span class="n">default</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
+
+        <span class="c1"># Value Storage contains None until the Option is loaded.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value_storage</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># And it&#39;s not loaded until it&#39;s called upon to spit out its contents.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loaded</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">changed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_storage</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_storage</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span>
+
+    <span class="nd">@value</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BaseOption.set"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.BaseOption.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Takes user input and stores appropriately. This method allows for</span>
+<span class="sd">        passing extra instructions into the validator.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value (str): The new value of this Option.</span>
+<span class="sd">            kwargs (any): Any kwargs will be passed into</span>
+<span class="sd">                `self.validate(value, **kwargs)` and `self.save(**kwargs)`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">final_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value_storage</span> <span class="o">=</span> <span class="n">final_value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loaded</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseOption.load"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.BaseOption.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Takes the provided save data, validates it, and gets this Option ready to use.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Boolean: Whether loading was successful.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">loadfunc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">loadfunc</span>
+        <span class="n">load_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">load_kwargs</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">value_storage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span>
+                <span class="n">loadfunc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">default_value</span><span class="p">,</span> <span class="o">**</span><span class="n">load_kwargs</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loaded</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="BaseOption.save"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.BaseOption.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stores the current value using `.handler.save_handler(self.key, value, **kwargs)`</span>
+<span class="sd">        where `kwargs` are a combination of those passed into this function and</span>
+<span class="sd">        the ones specified by the `OptionHandler`.</span>
+
+<span class="sd">        Keyword args:</span>
+<span class="sd">            any (any): Not used by default. These are passed in from self.set</span>
+<span class="sd">                and allows the option to let the caller customize saving by</span>
+<span class="sd">                overriding or extend the default save kwargs</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
+        <span class="n">save_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">save_kwargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">}</span>
+        <span class="n">savefunc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">savefunc</span>
+        <span class="n">savefunc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">save_kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseOption.deserialize"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.BaseOption.deserialize">[docs]</a>    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform sanity-checking on the save data as it is loaded from storage.</span>
+<span class="sd">        This isn&#39;t the same as what validator-functions provide (those work on</span>
+<span class="sd">        user input). For example, save data might be a timedelta or a list or</span>
+<span class="sd">        some other object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            save_data: The data to check.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            any (any): Whatever the Option needs to track, like a string or a</span>
+<span class="sd">                datetime. The display hook is responsible for what is actually</span>
+<span class="sd">                displayed to user.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">save_data</span></div>
+
+<div class="viewcode-block" id="BaseOption.serialize"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.BaseOption.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Serializes the save data for Attribute storage.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            any (any): Whatever is best for storage.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_storage</span></div>
+
+<div class="viewcode-block" id="BaseOption.validate"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.BaseOption.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate user input, which is presumed to be a string.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value (str): User input.</span>
+<span class="sd">            account (AccountDB): The Account that is performing the validation.</span>
+<span class="sd">                This is necessary because of other settings which may affect the</span>
+<span class="sd">                check, such as an Account&#39;s timezone affecting how their datetime</span>
+<span class="sd">                entries are processed.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            any (any): The results of the validation.</span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValidationError: If input value failed validation.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">validatorfuncs</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">option_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseOption.display"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.BaseOption.display">[docs]</a>    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Renders the Option&#39;s value as something pretty to look at.</span>
+
+<span class="sd">        Keyword args:</span>
+<span class="sd">            any (any): These are options passed by the caller to potentially</span>
+<span class="sd">                customize display dynamically.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: How the stored value should be projected to users (e.g. a raw</span>
+<span class="sd">                timedelta is pretty ugly).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span></div></div>
+
+
+<span class="c1"># Option classes</span>
+
+
+<div class="viewcode-block" id="Text"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Text">[docs]</a><span class="k">class</span> <span class="nc">Text</span><span class="p">(</span><span class="n">BaseOption</span><span class="p">):</span>
+<div class="viewcode-block" id="Text.deserialize"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Text.deserialize">[docs]</a>    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_data</span><span class="p">):</span>
+        <span class="n">got_data</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">save_data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">got_data</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.key}</span><span class="s2"> expected Text data, got &#39;</span><span class="si">{save_data}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">got_data</span></div></div>
+
+
+<div class="viewcode-block" id="Email"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Email">[docs]</a><span class="k">class</span> <span class="nc">Email</span><span class="p">(</span><span class="n">BaseOption</span><span class="p">):</span>
+<div class="viewcode-block" id="Email.validate"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Email.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">validatorfuncs</span><span class="o">.</span><span class="n">email</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">option_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Email.deserialize"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Email.deserialize">[docs]</a>    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_data</span><span class="p">):</span>
+        <span class="n">got_data</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">save_data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">got_data</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.key}</span><span class="s2"> expected String data, got &#39;</span><span class="si">{save_data}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">got_data</span></div></div>
+
+
+<div class="viewcode-block" id="Boolean"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Boolean">[docs]</a><span class="k">class</span> <span class="nc">Boolean</span><span class="p">(</span><span class="n">BaseOption</span><span class="p">):</span>
+<div class="viewcode-block" id="Boolean.validate"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Boolean.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">validatorfuncs</span><span class="o">.</span><span class="n">boolean</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">option_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Boolean.display"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Boolean.display">[docs]</a>    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;1 - On/True&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;0 - Off/False&quot;</span></div>
+
+<div class="viewcode-block" id="Boolean.serialize"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Boolean.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span></div>
+
+<div class="viewcode-block" id="Boolean.deserialize"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Boolean.deserialize">[docs]</a>    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">save_data</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.key}</span><span class="s2"> expected Boolean, got &#39;</span><span class="si">{save_data}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">save_data</span></div></div>
+
+
+<div class="viewcode-block" id="Color"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Color">[docs]</a><span class="k">class</span> <span class="nc">Color</span><span class="p">(</span><span class="n">BaseOption</span><span class="p">):</span>
+<div class="viewcode-block" id="Color.validate"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Color.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">validatorfuncs</span><span class="o">.</span><span class="n">color</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">option_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Color.display"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Color.display">[docs]</a>    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.value}</span><span class="s2"> - |</span><span class="si">{self.value}</span><span class="s2">this|n&quot;</span></div>
+
+<div class="viewcode-block" id="Color.deserialize"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Color.deserialize">[docs]</a>    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">save_data</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">strip_ansi</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;|</span><span class="si">{save_data}</span><span class="s2">|n&quot;</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.key}</span><span class="s2"> expected Color Code, got &#39;</span><span class="si">{save_data}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">save_data</span></div></div>
+
+
+<div class="viewcode-block" id="Timezone"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Timezone">[docs]</a><span class="k">class</span> <span class="nc">Timezone</span><span class="p">(</span><span class="n">BaseOption</span><span class="p">):</span>
+<div class="viewcode-block" id="Timezone.validate"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Timezone.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">validatorfuncs</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">option_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_TZ_DICT</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">default_value</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Timezone.deserialize"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Timezone.deserialize">[docs]</a>    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">save_data</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_TZ_DICT</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.key}</span><span class="s2"> expected Timezone Data, got &#39;</span><span class="si">{save_data}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_TZ_DICT</span><span class="p">[</span><span class="n">save_data</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Timezone.serialize"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Timezone.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value_storage</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="UnsignedInteger"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.UnsignedInteger">[docs]</a><span class="k">class</span> <span class="nc">UnsignedInteger</span><span class="p">(</span><span class="n">BaseOption</span><span class="p">):</span>
+    <span class="n">validator_key</span> <span class="o">=</span> <span class="s2">&quot;unsigned_integer&quot;</span>
+
+<div class="viewcode-block" id="UnsignedInteger.validate"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.UnsignedInteger.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">validatorfuncs</span><span class="o">.</span><span class="n">unsigned_integer</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">option_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UnsignedInteger.deserialize"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.UnsignedInteger.deserialize">[docs]</a>    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">save_data</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">save_data</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">save_data</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.key}</span><span class="s2"> expected Whole Number 0+, got &#39;</span><span class="si">{save_data}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="SignedInteger"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.SignedInteger">[docs]</a><span class="k">class</span> <span class="nc">SignedInteger</span><span class="p">(</span><span class="n">BaseOption</span><span class="p">):</span>
+<div class="viewcode-block" id="SignedInteger.validate"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.SignedInteger.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">validatorfuncs</span><span class="o">.</span><span class="n">signed_integer</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">option_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SignedInteger.deserialize"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.SignedInteger.deserialize">[docs]</a>    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">save_data</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">save_data</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.key}</span><span class="s2"> expected Whole Number, got &#39;</span><span class="si">{save_data}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="PositiveInteger"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.PositiveInteger">[docs]</a><span class="k">class</span> <span class="nc">PositiveInteger</span><span class="p">(</span><span class="n">BaseOption</span><span class="p">):</span>
+<div class="viewcode-block" id="PositiveInteger.validate"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.PositiveInteger.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">validatorfuncs</span><span class="o">.</span><span class="n">positive_integer</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">option_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PositiveInteger.deserialize"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.PositiveInteger.deserialize">[docs]</a>    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">save_data</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">save_data</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">save_data</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.key}</span><span class="s2"> expected Whole Number 1+, got &#39;</span><span class="si">{save_data}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Duration"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Duration">[docs]</a><span class="k">class</span> <span class="nc">Duration</span><span class="p">(</span><span class="n">BaseOption</span><span class="p">):</span>
+<div class="viewcode-block" id="Duration.validate"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Duration.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">validatorfuncs</span><span class="o">.</span><span class="n">duration</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">option_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Duration.deserialize"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Duration.deserialize">[docs]</a>    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">save_data</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">save_data</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.key}</span><span class="s2"> expected Timedelta in seconds, got &#39;</span><span class="si">{save_data}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Duration.serialize"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Duration.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_storage</span><span class="o">.</span><span class="n">seconds</span></div></div>
+
+
+<div class="viewcode-block" id="Datetime"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Datetime">[docs]</a><span class="k">class</span> <span class="nc">Datetime</span><span class="p">(</span><span class="n">BaseOption</span><span class="p">):</span>
+<div class="viewcode-block" id="Datetime.validate"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Datetime.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">validatorfuncs</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">option_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Datetime.deserialize"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Datetime.deserialize">[docs]</a>    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">save_data</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcfromtimestamp</span><span class="p">(</span><span class="n">save_data</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.key}</span><span class="s2"> expected UTC Datetime in EPOCH format, got &#39;</span><span class="si">{save_data}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Datetime.serialize"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Datetime.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value_storage</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="Future"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Future">[docs]</a><span class="k">class</span> <span class="nc">Future</span><span class="p">(</span><span class="n">Datetime</span><span class="p">):</span>
+<div class="viewcode-block" id="Future.validate"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Future.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">validatorfuncs</span><span class="o">.</span><span class="n">future</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">option_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Lock"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Lock">[docs]</a><span class="k">class</span> <span class="nc">Lock</span><span class="p">(</span><span class="n">Text</span><span class="p">):</span>
+<div class="viewcode-block" id="Lock.validate"><a class="viewcode-back" href="../../../api/evennia.utils.optionclasses.html#evennia.utils.optionclasses.Lock.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">validatorfuncs</span><span class="o">.</span><span class="n">lock</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">option_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="optionclasses.html">0.9.5 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

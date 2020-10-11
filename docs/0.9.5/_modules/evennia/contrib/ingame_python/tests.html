@@ -1,0 +1,632 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.contrib.ingame_python.tests &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.ingame_python.tests</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module containing the test cases for the in-game Python system.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">mock</span> <span class="k">import</span> <span class="n">Mock</span>
+<span class="kn">from</span> <span class="nn">textwrap</span> <span class="k">import</span> <span class="n">dedent</span>
+
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="k">import</span> <span class="n">ScriptDB</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="k">import</span> <span class="n">CommandTest</span>
+<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="k">import</span> <span class="n">ExitCommand</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">ansi</span><span class="p">,</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="k">import</span> <span class="n">create_object</span><span class="p">,</span> <span class="n">create_script</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="k">import</span> <span class="n">EvenniaTest</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.ingame_python.commands</span> <span class="k">import</span> <span class="n">CmdCallback</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.ingame_python.callbackhandler</span> <span class="k">import</span> <span class="n">CallbackHandler</span>
+
+<span class="c1"># Force settings</span>
+<span class="n">settings</span><span class="o">.</span><span class="n">EVENTS_CALENDAR</span> <span class="o">=</span> <span class="s2">&quot;standard&quot;</span>
+
+<span class="c1"># Constants</span>
+<span class="n">OLD_EVENTS</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+<div class="viewcode-block" id="TestEventHandler"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.tests.html#evennia.contrib.ingame_python.tests.TestEventHandler">[docs]</a><span class="k">class</span> <span class="nc">TestEventHandler</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Test cases of the event handler to add, edit or delete events.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestEventHandler.setUp"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.tests.html#evennia.contrib.ingame_python.tests.TestEventHandler.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create the event handler.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span> <span class="o">=</span> <span class="n">create_script</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.ingame_python.scripts.EventHandler&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Copy old events if necessary</span>
+        <span class="k">if</span> <span class="n">OLD_EVENTS</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">events</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">OLD_EVENTS</span><span class="p">)</span>
+
+        <span class="c1"># Alter typeclasses</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.ingame_python.typeclasses.EventCharacter&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.ingame_python.typeclasses.EventCharacter&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.ingame_python.typeclasses.EventRoom&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">room2</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.ingame_python.typeclasses.EventRoom&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.ingame_python.typeclasses.EventExit&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestEventHandler.tearDown"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.tests.html#evennia.contrib.ingame_python.tests.TestEventHandler.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Stop the event handler.&quot;&quot;&quot;</span>
+        <span class="n">OLD_EVENTS</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="n">OLD_EVENTS</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">events</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="n">CallbackHandler</span><span class="o">.</span><span class="n">script</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TestEventHandler.test_start"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.tests.html#evennia.contrib.ingame_python.tests.TestEventHandler.test_start">[docs]</a>    <span class="k">def</span> <span class="nf">test_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Simply make sure the handler runs with proper initial values.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">callbacks</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">to_valid</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">locked</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tasks</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">events</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestEventHandler.test_add_validation"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.tests.html#evennia.contrib.ingame_python.tests.TestEventHandler.test_add_validation">[docs]</a>    <span class="k">def</span> <span class="nf">test_add_validation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a callback while needing validation.&quot;&quot;&quot;</span>
+        <span class="n">author</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="s2">&quot;character.db.strength = 40&quot;</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="n">author</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="n">callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">get_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dummy&quot;</span><span class="p">)</span>
+        <span class="n">callback</span> <span class="o">=</span> <span class="n">callback</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">callback</span><span class="p">[</span><span class="s2">&quot;author&quot;</span><span class="p">],</span> <span class="n">author</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">callback</span><span class="p">[</span><span class="s2">&quot;valid&quot;</span><span class="p">],</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Since this callback is not valid, it should appear in &#39;to_valid&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">to_valid</span><span class="p">)</span>
+
+        <span class="c1"># Run this dummy callback (shouldn&#39;t do anything)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">strength</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="nb">locals</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;character&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="nb">locals</span><span class="o">=</span><span class="nb">locals</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">strength</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestEventHandler.test_edit"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.tests.html#evennia.contrib.ingame_python.tests.TestEventHandler.test_edit">[docs]</a>    <span class="k">def</span> <span class="nf">test_edit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test editing a callback.&quot;&quot;&quot;</span>
+        <span class="n">author</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="s2">&quot;character.db.strength = 60&quot;</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="n">author</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Edit it right away</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">edit_callback</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;character.db.strength = 65&quot;</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Check that the callback was written</span>
+        <span class="n">callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">get_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dummy&quot;</span><span class="p">)</span>
+        <span class="n">callback</span> <span class="o">=</span> <span class="n">callback</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">callback</span><span class="p">[</span><span class="s2">&quot;author&quot;</span><span class="p">],</span> <span class="n">author</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">callback</span><span class="p">[</span><span class="s2">&quot;valid&quot;</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">callback</span><span class="p">[</span><span class="s2">&quot;updated_by&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">)</span>
+
+        <span class="c1"># Run this dummy callback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">strength</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="nb">locals</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;character&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="nb">locals</span><span class="o">=</span><span class="nb">locals</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">strength</span><span class="p">,</span> <span class="mi">65</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestEventHandler.test_edit_validation"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.tests.html#evennia.contrib.ingame_python.tests.TestEventHandler.test_edit_validation">[docs]</a>    <span class="k">def</span> <span class="nf">test_edit_validation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Edit a callback when validation isn&#39;t automatic.&quot;&quot;&quot;</span>
+        <span class="n">author</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="s2">&quot;character.db.strength = 70&quot;</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="n">author</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Edit it right away</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">edit_callback</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;character.db.strength = 80&quot;</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Run this dummy callback (shouldn&#39;t do anything)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">strength</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="nb">locals</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;character&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="nb">locals</span><span class="o">=</span><span class="nb">locals</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">strength</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestEventHandler.test_del"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.tests.html#evennia.contrib.ingame_python.tests.TestEventHandler.test_del">[docs]</a>    <span class="k">def</span> <span class="nf">test_del</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Try to delete a callback.&quot;&quot;&quot;</span>
+        <span class="c1"># Add 3 callbacks</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="s2">&quot;character.db.strength = 5&quot;</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="s2">&quot;character.db.strength = 8&quot;</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="s2">&quot;character.db.strength = 9&quot;</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Note that the second callback isn&#39;t valid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">to_valid</span><span class="p">)</span>
+
+        <span class="c1"># Lock the third callback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">locked</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+        <span class="c1"># Delete the first callback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">del_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># The callback #1 that was to valid should be #0 now</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">to_valid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertNotIn</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">to_valid</span><span class="p">)</span>
+
+        <span class="c1"># The lock has been updated too</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">locked</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertNotIn</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">locked</span><span class="p">)</span>
+
+        <span class="c1"># Now delete the first (not valid) callback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">del_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">to_valid</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">locked</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertNotIn</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">locked</span><span class="p">)</span>
+
+        <span class="c1"># Call the remaining callback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">strength</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="nb">locals</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;character&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="nb">locals</span><span class="o">=</span><span class="nb">locals</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">strength</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestEventHandler.test_accept"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.tests.html#evennia.contrib.ingame_python.tests.TestEventHandler.test_accept">[docs]</a>    <span class="k">def</span> <span class="nf">test_accept</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Accept an callback.&quot;&quot;&quot;</span>
+        <span class="c1"># Add 2 callbacks</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="s2">&quot;character.db.strength = 5&quot;</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="s2">&quot;character.db.strength = 8&quot;</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Note that the second callback isn&#39;t valid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">to_valid</span><span class="p">)</span>
+
+        <span class="c1"># Accept the second callback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">accept_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">get_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dummy&quot;</span><span class="p">)</span>
+        <span class="n">callback</span> <span class="o">=</span> <span class="n">callback</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">callback</span><span class="p">[</span><span class="s2">&quot;valid&quot;</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Call the dummy callback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">strength</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="nb">locals</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;character&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="nb">locals</span><span class="o">=</span><span class="nb">locals</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">strength</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestEventHandler.test_call"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.tests.html#evennia.contrib.ingame_python.tests.TestEventHandler.test_call">[docs]</a>    <span class="k">def</span> <span class="nf">test_call</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test to call amore complex callback.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;one&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;two&quot;</span>
+
+        <span class="c1"># Add an callback</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="n">dedent</span><span class="p">(</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            if character.key == &quot;one&quot;:</span>
+<span class="sd">                character.db.health = 50</span>
+<span class="sd">            else:</span>
+<span class="sd">                character.db.health = 0</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Call the dummy callback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="nb">locals</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;character&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">}))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">health</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="nb">locals</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;character&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">}))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">health</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestEventHandler.test_handler"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.tests.html#evennia.contrib.ingame_python.tests.TestEventHandler.test_handler">[docs]</a>    <span class="k">def</span> <span class="nf">test_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test the object handler.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">callbacks</span><span class="p">)</span>
+
+        <span class="c1"># Add an callback</span>
+        <span class="n">callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="s2">&quot;pass&quot;</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">callback</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">callback</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">callback</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="s2">&quot;pass&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">callback</span><span class="o">.</span><span class="n">author</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">callback</span><span class="o">.</span><span class="n">valid</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">([</span><span class="n">callback</span><span class="p">],</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+
+        <span class="c1"># Edit this very callback</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">edit</span><span class="p">(</span>
+            <span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;character.db.say = True&quot;</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">([</span><span class="n">new</span><span class="p">],</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertNotIn</span><span class="p">([</span><span class="n">callback</span><span class="p">],</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+
+        <span class="c1"># Try to call this callback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="nb">locals</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;character&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">}))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">say</span><span class="p">)</span>
+
+        <span class="c1"># Delete the callback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;dummy&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> <span class="p">{})</span></div></div>
+
+
+<div class="viewcode-block" id="TestCmdCallback"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.tests.html#evennia.contrib.ingame_python.tests.TestCmdCallback">[docs]</a><span class="k">class</span> <span class="nc">TestCmdCallback</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;Test the @callback command.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestCmdCallback.setUp"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.tests.html#evennia.contrib.ingame_python.tests.TestCmdCallback.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create the callback handler.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span> <span class="o">=</span> <span class="n">create_script</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.ingame_python.scripts.EventHandler&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Copy old events if necessary</span>
+        <span class="k">if</span> <span class="n">OLD_EVENTS</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">events</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">OLD_EVENTS</span><span class="p">)</span>
+
+        <span class="c1"># Alter typeclasses</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.ingame_python.typeclasses.EventCharacter&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.ingame_python.typeclasses.EventCharacter&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.ingame_python.typeclasses.EventRoom&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">room2</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.ingame_python.typeclasses.EventRoom&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.ingame_python.typeclasses.EventExit&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCmdCallback.tearDown"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.tests.html#evennia.contrib.ingame_python.tests.TestCmdCallback.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Stop the callback handler.&quot;&quot;&quot;</span>
+        <span class="n">OLD_EVENTS</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="n">OLD_EVENTS</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">events</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">script</span> <span class="ow">in</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="n">db_typeclass_path</span><span class="o">=</span><span class="s2">&quot;evennia.contrib.ingame_python.scripts.TimeEventScript&quot;</span>
+        <span class="p">):</span>
+            <span class="n">script</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+
+        <span class="n">CallbackHandler</span><span class="o">.</span><span class="n">script</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TestCmdCallback.test_list"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.tests.html#evennia.contrib.ingame_python.tests.TestCmdCallback.test_list">[docs]</a>    <span class="k">def</span> <span class="nf">test_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test listing callbacks with different rights.&quot;&quot;&quot;</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">CmdCallback</span><span class="p">(),</span> <span class="s2">&quot;out&quot;</span><span class="p">)</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="mi">3</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="p">[])</span>
+
+        <span class="c1"># Check that the second column only contains 0 (0) (no callback yet)</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="n">cols</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="n">cols</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="p">(</span><span class="s2">&quot;0 (0)&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+
+        <span class="c1"># Add some callback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">,</span> <span class="s2">&quot;traverse&quot;</span><span class="p">,</span> <span class="s2">&quot;pass&quot;</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Try to obtain more details on a specific callback on exit</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">CmdCallback</span><span class="p">(),</span> <span class="s2">&quot;out = traverse&quot;</span><span class="p">)</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="mi">3</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">cols</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="n">cols</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="n">cols</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">),</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="n">cols</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="p">(</span><span class="s2">&quot;Yes&quot;</span><span class="p">,</span> <span class="s2">&quot;No&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+
+        <span class="c1"># Run the same command with char2</span>
+        <span class="c1"># char2 shouldn&#39;t see the last column (Valid)</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">CmdCallback</span><span class="p">(),</span> <span class="s2">&quot;out = traverse&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">)</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="mi">3</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">cols</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">cols</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertNotIn</span><span class="p">(</span><span class="n">cols</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="p">(</span><span class="s2">&quot;Yes&quot;</span><span class="p">,</span> <span class="s2">&quot;No&quot;</span><span class="p">))</span>
+
+        <span class="c1"># In any case, display the callback</span>
+        <span class="c1"># The last line should be &quot;pass&quot; (the callback code)</span>
+        <span class="n">details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">CmdCallback</span><span class="p">(),</span> <span class="s2">&quot;out = traverse 1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">details</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;pass&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCmdCallback.test_add"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.tests.html#evennia.contrib.ingame_python.tests.TestCmdCallback.test_add">[docs]</a>    <span class="k">def</span> <span class="nf">test_add</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test to add an callback.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">CmdCallback</span><span class="p">(),</span> <span class="s2">&quot;/add out = traverse&quot;</span><span class="p">)</span>
+        <span class="n">editor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_eveditor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="n">editor</span><span class="p">)</span>
+
+        <span class="c1"># Edit the callback</span>
+        <span class="n">editor</span><span class="o">.</span><span class="n">update_buffer</span><span class="p">(</span>
+            <span class="n">dedent</span><span class="p">(</span>
+                <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            if character.key == &quot;one&quot;:</span>
+<span class="sd">                character.msg(&quot;You can pass.&quot;)</span>
+<span class="sd">            else:</span>
+<span class="sd">                character.msg(&quot;You can&#39;t pass.&quot;)</span>
+<span class="sd">                deny()</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">editor</span><span class="o">.</span><span class="n">save_buffer</span><span class="p">()</span>
+        <span class="n">editor</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
+        <span class="n">callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;traverse&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">callback</span><span class="o">.</span><span class="n">author</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">callback</span><span class="o">.</span><span class="n">valid</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">callback</span><span class="o">.</span><span class="n">code</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># We&#39;re going to try the same thing but with char2</span>
+        <span class="c1"># char2 being a player for our test, the callback won&#39;t be validated.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">CmdCallback</span><span class="p">(),</span> <span class="s2">&quot;/add out = traverse&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">)</span>
+        <span class="n">editor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_eveditor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="n">editor</span><span class="p">)</span>
+
+        <span class="c1"># Edit the callback</span>
+        <span class="n">editor</span><span class="o">.</span><span class="n">update_buffer</span><span class="p">(</span>
+            <span class="n">dedent</span><span class="p">(</span>
+                <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            character.msg(&quot;No way.&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">editor</span><span class="o">.</span><span class="n">save_buffer</span><span class="p">()</span>
+        <span class="n">editor</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
+        <span class="n">callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;traverse&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">callback</span><span class="o">.</span><span class="n">author</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">callback</span><span class="o">.</span><span class="n">valid</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">callback</span><span class="o">.</span><span class="n">code</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCmdCallback.test_del"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.tests.html#evennia.contrib.ingame_python.tests.TestCmdCallback.test_del">[docs]</a>    <span class="k">def</span> <span class="nf">test_del</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add and remove an callback.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">,</span> <span class="s2">&quot;traverse&quot;</span><span class="p">,</span> <span class="s2">&quot;pass&quot;</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Try to delete the callback</span>
+        <span class="c1"># char2 shouldn&#39;t be allowed to do so (that&#39;s not HIS callback)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">CmdCallback</span><span class="p">(),</span> <span class="s2">&quot;/del out = traverse 1&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">get_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;traverse&quot;</span><span class="p">,</span> <span class="p">[]))</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Now, char1 should be allowed to delete it</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">CmdCallback</span><span class="p">(),</span> <span class="s2">&quot;/del out = traverse 1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">get_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;traverse&quot;</span><span class="p">,</span> <span class="p">[]))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCmdCallback.test_lock"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.tests.html#evennia.contrib.ingame_python.tests.TestCmdCallback.test_lock">[docs]</a>    <span class="k">def</span> <span class="nf">test_lock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test the lock of multiple editing.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">CmdCallback</span><span class="p">(),</span> <span class="s2">&quot;/add here = time 8:00&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_eveditor</span><span class="p">)</span>
+
+        <span class="c1"># Now ask char1 to edit</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">CmdCallback</span><span class="p">(),</span> <span class="s2">&quot;/edit here = time 1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_eveditor</span><span class="p">)</span>
+
+        <span class="c1"># Try to delete this callback while char2 is editing it</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">CmdCallback</span><span class="p">(),</span> <span class="s2">&quot;/del here = time 1&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCmdCallback.test_accept"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.tests.html#evennia.contrib.ingame_python.tests.TestCmdCallback.test_accept">[docs]</a>    <span class="k">def</span> <span class="nf">test_accept</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Accept an callback.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">CmdCallback</span><span class="p">(),</span> <span class="s2">&quot;/add here = time 8:00&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">)</span>
+        <span class="n">editor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_eveditor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="n">editor</span><span class="p">)</span>
+
+        <span class="c1"># Edit the callback</span>
+        <span class="n">editor</span><span class="o">.</span><span class="n">update_buffer</span><span class="p">(</span>
+            <span class="n">dedent</span><span class="p">(</span>
+                <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            room.msg_contents(&quot;It&#39;s 8 PM, everybody up!&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">editor</span><span class="o">.</span><span class="n">save_buffer</span><span class="p">()</span>
+        <span class="n">editor</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
+        <span class="n">callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">callback</span><span class="o">.</span><span class="n">valid</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># chars shouldn&#39;t be allowed to the callback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">CmdCallback</span><span class="p">(),</span> <span class="s2">&quot;/accept here = time 1&quot;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">)</span>
+        <span class="n">callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">callback</span><span class="o">.</span><span class="n">valid</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># char1 will accept the callback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">CmdCallback</span><span class="p">(),</span> <span class="s2">&quot;/accept here = time 1&quot;</span><span class="p">)</span>
+        <span class="n">callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">callback</span><span class="o">.</span><span class="n">valid</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TestDefaultCallbacks"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.tests.html#evennia.contrib.ingame_python.tests.TestDefaultCallbacks">[docs]</a><span class="k">class</span> <span class="nc">TestDefaultCallbacks</span><span class="p">(</span><span class="n">CommandTest</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;Test the default callbacks.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestDefaultCallbacks.setUp"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.tests.html#evennia.contrib.ingame_python.tests.TestDefaultCallbacks.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create the callback handler.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span> <span class="o">=</span> <span class="n">create_script</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.ingame_python.scripts.EventHandler&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Copy old events if necessary</span>
+        <span class="k">if</span> <span class="n">OLD_EVENTS</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">events</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">OLD_EVENTS</span><span class="p">)</span>
+
+        <span class="c1"># Alter typeclasses</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.ingame_python.typeclasses.EventCharacter&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.ingame_python.typeclasses.EventCharacter&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.ingame_python.typeclasses.EventRoom&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">room2</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.ingame_python.typeclasses.EventRoom&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.ingame_python.typeclasses.EventExit&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestDefaultCallbacks.tearDown"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.tests.html#evennia.contrib.ingame_python.tests.TestDefaultCallbacks.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Stop the callback handler.&quot;&quot;&quot;</span>
+        <span class="n">OLD_EVENTS</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="n">OLD_EVENTS</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">events</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="n">CallbackHandler</span><span class="o">.</span><span class="n">script</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TestDefaultCallbacks.test_exit"><a class="viewcode-back" href="../../../../api/evennia.contrib.ingame_python.tests.html#evennia.contrib.ingame_python.tests.TestDefaultCallbacks.test_exit">[docs]</a>    <span class="k">def</span> <span class="nf">test_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test the callbacks of an exit.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;char1&quot;</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="n">dedent</span><span class="p">(</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            if character.key == &quot;char1&quot;:</span>
+<span class="sd">                character.msg(&quot;You can leave.&quot;)</span>
+<span class="sd">            else:</span>
+<span class="sd">                character.msg(&quot;You cannot leave.&quot;)</span>
+<span class="sd">                deny()</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="c1"># Enforce self.exit.destination since swapping typeclass lose it</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room2</span>
+
+        <span class="c1"># Try the can_traverse callback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">,</span> <span class="s2">&quot;can_traverse&quot;</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Have char1 move through the exit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">ExitCommand</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;You can leave.&quot;</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">room2</span><span class="p">)</span>
+
+        <span class="c1"># Have char2 move through this exit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">ExitCommand</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;You cannot leave.&quot;</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">)</span>
+
+        <span class="c1"># Try the traverse callback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">del_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">,</span> <span class="s2">&quot;can_traverse&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">,</span> <span class="s2">&quot;traverse&quot;</span><span class="p">,</span> <span class="s2">&quot;character.msg(&#39;Fine!&#39;)&quot;</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Have char2 move through the exit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">ExitCommand</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">room2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">del_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">,</span> <span class="s2">&quot;traverse&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># Move char1 and char2 back</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span>
+
+        <span class="c1"># Test msg_arrive and msg_leave</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="s1">&#39;message = &quot;</span><span class="si">{character}</span><span class="s1"> goes out.&quot;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">,</span> <span class="s2">&quot;msg_leave&quot;</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Have char1 move through the exit</span>
+        <span class="n">old_msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">msg</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">ExitCommand</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">)</span>
+            <span class="n">stored_msg</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">args</span> <span class="ow">and</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_str</span><span class="p">(</span><span class="n">kwargs</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">mock_calls</span>
+            <span class="p">]</span>
+            <span class="c1"># Get the first element of a tuple if msg received a tuple instead of a string</span>
+            <span class="n">stored_msg</span> <span class="o">=</span> <span class="p">[</span><span class="n">smsg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">smsg</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">smsg</span> <span class="k">for</span> <span class="n">smsg</span> <span class="ow">in</span> <span class="n">stored_msg</span><span class="p">]</span>
+            <span class="n">returned_msg</span> <span class="o">=</span> <span class="n">ansi</span><span class="o">.</span><span class="n">parse_ansi</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">stored_msg</span><span class="p">),</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">returned_msg</span><span class="p">,</span> <span class="s2">&quot;char1 goes out.&quot;</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">old_msg</span>
+
+        <span class="c1"># Create a return exit</span>
+        <span class="n">back</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span>
+            <span class="s2">&quot;evennia.objects.objects.DefaultExit&quot;</span><span class="p">,</span>
+            <span class="n">key</span><span class="o">=</span><span class="s2">&quot;in&quot;</span><span class="p">,</span>
+            <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">room2</span><span class="p">,</span>
+            <span class="n">destination</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="s1">&#39;message = &quot;</span><span class="si">{character}</span><span class="s1"> goes in.&quot;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">,</span> <span class="s2">&quot;msg_arrive&quot;</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Have char1 move through the exit</span>
+        <span class="n">old_msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">msg</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">ExitCommand</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="n">back</span><span class="p">)</span>
+            <span class="n">stored_msg</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">args</span> <span class="ow">and</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_str</span><span class="p">(</span><span class="n">kwargs</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">mock_calls</span>
+            <span class="p">]</span>
+            <span class="c1"># Get the first element of a tuple if msg received a tuple instead of a string</span>
+            <span class="n">stored_msg</span> <span class="o">=</span> <span class="p">[</span><span class="n">smsg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">smsg</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">smsg</span> <span class="k">for</span> <span class="n">smsg</span> <span class="ow">in</span> <span class="n">stored_msg</span><span class="p">]</span>
+            <span class="n">returned_msg</span> <span class="o">=</span> <span class="n">ansi</span><span class="o">.</span><span class="n">parse_ansi</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">stored_msg</span><span class="p">),</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">returned_msg</span><span class="p">,</span> <span class="s2">&quot;char1 goes in.&quot;</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">old_msg</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="tests.html">0.9.5 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

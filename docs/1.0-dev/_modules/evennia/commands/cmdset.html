@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.commands.cmdset &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -28,8 +27,7 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdset</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -147,9 +145,9 @@
 <span class="sd">              commands preference.</span>
 
 <span class="sd">    duplicates - determines what happens when two sets of equal</span>
-<span class="sd">                 priority merge. Default has the first of them in the</span>
+<span class="sd">                 priority merge (only). Defaults to None and has the first of them in the</span>
 <span class="sd">                 merger (i.e. A above) automatically taking</span>
-<span class="sd">                 precedence. But if allow_duplicates is true, the</span>
+<span class="sd">                 precedence. But if `duplicates` is true, the</span>
 <span class="sd">                 result will be a merger with more than one of each</span>
 <span class="sd">                 name match.  This will usually lead to the account</span>
 <span class="sd">                 receiving a multiple-match error higher up the road,</span>
@@ -160,6 +158,16 @@
 <span class="sd">                 select which ball to kick ...  Allowing duplicates</span>
 <span class="sd">                 only makes sense for Union and Intersect, the setting</span>
 <span class="sd">                 is ignored for the other mergetypes.</span>
+<span class="sd">                 Note that the `duplicates` flag is *not* propagated in</span>
+<span class="sd">                 a cmdset merger. So `A + B = C` will result in</span>
+<span class="sd">                 a cmdset with duplicate commands, but C.duplicates will</span>
+<span class="sd">                 be `None`. For duplication to apply to a whole cmdset</span>
+<span class="sd">                 stack merge, _all_ cmdsets in the stack must have</span>
+<span class="sd">                 `.duplicates=True` set.</span>
+<span class="sd">                Finally, if a final cmdset has `.duplicates=None` (the normal</span>
+<span class="sd">                unless created alone with another value), the cmdhandler</span>
+<span class="sd">                will assume True for object-based cmdsets and False for</span>
+<span class="sd">                all other. This is usually the most intuitive outcome.</span>
 
 <span class="sd">    key_mergetype (dict) - allows the cmdset to define a unique</span>
 <span class="sd">             mergetype for particular cmdsets.  Format is</span>
@@ -185,14 +193,27 @@
     <span class="n">mergetype</span> <span class="o">=</span> <span class="s2">&quot;Union&quot;</span>
     <span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>
 
-    <span class="c1"># These flags, if set to None, will allow &quot;pass-through&quot; of lower-prio settings</span>
-    <span class="c1"># of True/False. If set to True/False, will override lower-prio settings.</span>
+    <span class="c1"># These flags, if set to None should be interpreted as &#39;I don&#39;t care&#39; and,</span>
+    <span class="c1"># will allow &quot;pass-through&quot; even of lower-prio cmdsets&#39; explicitly True/False</span>
+    <span class="c1"># options. If this is set to True/False however, priority matters.</span>
     <span class="n">no_exits</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">no_objs</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">no_channels</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="c1"># same as above, but if left at None in the final merged set, the</span>
-    <span class="c1"># cmdhandler will auto-assume True for Objects and stay False for all</span>
-    <span class="c1"># other entities.</span>
+    <span class="c1"># The .duplicates setting does not propagate and since duplicates can only happen</span>
+    <span class="c1"># on same-prio cmdsets, there is no concept of passthrough on `None`.</span>
+    <span class="c1"># The merger of two cmdsets always return in a cmdset with `duplicates=None`</span>
+    <span class="c1"># (even if the result may have duplicated commands).</span>
+    <span class="c1"># If a final cmdset has `duplicates=None` (normal, unless the cmdset is</span>
+    <span class="c1"># created on its own with the flag set), the cmdhandler will auto-assume it to be</span>
+    <span class="c1"># True for Object-based cmdsets and stay None/False for all other entities.</span>
+    <span class="c1">#</span>
+    <span class="c1"># Example:</span>
+    <span class="c1">#  A and C has .duplicates=True, B has .duplicates=None (or False)</span>
+    <span class="c1">#  B + A = BA, where BA will have duplicate cmds, but BA.duplicates = None</span>
+    <span class="c1">#  BA + C = BAC, where BAC will have more duplication, but BAC.duplicates = None</span>
+    <span class="c1">#</span>
+    <span class="c1"># Basically, for the `.duplicate` setting to survive throughout a</span>
+    <span class="c1"># merge-stack, every cmdset in the stack must have `duplicates` set explicitly.</span>
     <span class="n">duplicates</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="n">permanent</span> <span class="o">=</span> <span class="kc">False</span>
@@ -375,7 +396,15 @@
 <span class="sd">            commands (str): Representation of commands in Cmdset.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">o</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">key</span><span class="p">)])</span>
+        <span class="n">perm</span> <span class="o">=</span> <span class="s2">&quot;perm&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">permanent</span> <span class="k">else</span> <span class="s2">&quot;non-perm&quot;</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
+            <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="s2">&quot;T&quot;</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;F&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;no_exits&quot;</span><span class="p">,</span> <span class="s2">&quot;no_objs&quot;</span><span class="p">,</span> <span class="s2">&quot;no_channels&quot;</span><span class="p">,</span> <span class="s2">&quot;duplicates&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">])</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;, &quot;</span> <span class="o">+</span> <span class="n">options</span><span class="p">)</span> <span class="k">if</span> <span class="n">options</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;&lt;CmdSet </span><span class="si">{self.key}</span><span class="s2">, </span><span class="si">{self.mergetype}</span><span class="s2">, </span><span class="si">{perm}</span><span class="s2">, prio </span><span class="si">{self.priority}{options}</span><span class="s2">&gt;: &quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">o</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">key</span><span class="p">)])</span>
 
     <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -442,12 +471,15 @@
 
             <span class="c1"># pass through options whenever they are set, unless the merging or higher-prio</span>
             <span class="c1"># set changes the setting (i.e. has a non-None value). We don&#39;t pass through</span>
-            <span class="c1"># the duplicates setting; that is per-merge</span>
+            <span class="c1"># the duplicates setting; that is per-merge; the resulting .duplicates value</span>
+            <span class="c1"># is always None (so merging cmdsets must all have explicit values if wanting</span>
+            <span class="c1"># to cause duplicates).</span>
             <span class="n">cmdset_c</span><span class="o">.</span><span class="n">no_channels</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">no_channels</span> <span class="k">if</span> <span class="n">cmdset_a</span><span class="o">.</span><span class="n">no_channels</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">cmdset_a</span><span class="o">.</span><span class="n">no_channels</span>
             <span class="p">)</span>
             <span class="n">cmdset_c</span><span class="o">.</span><span class="n">no_exits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_exits</span> <span class="k">if</span> <span class="n">cmdset_a</span><span class="o">.</span><span class="n">no_exits</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">cmdset_a</span><span class="o">.</span><span class="n">no_exits</span>
             <span class="n">cmdset_c</span><span class="o">.</span><span class="n">no_objs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_objs</span> <span class="k">if</span> <span class="n">cmdset_a</span><span class="o">.</span><span class="n">no_objs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">cmdset_a</span><span class="o">.</span><span class="n">no_objs</span>
+            <span class="n">cmdset_c</span><span class="o">.</span><span class="n">duplicates</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># B higher priority than A</span>
@@ -469,12 +501,15 @@
 
             <span class="c1"># pass through options whenever they are set, unless the higher-prio</span>
             <span class="c1"># set changes the setting (i.e. has a non-None value). We don&#39;t pass through</span>
-            <span class="c1"># the duplicates setting; that is per-merge</span>
+            <span class="c1"># the duplicates setting; that is per-merge; the resulting .duplicates value#</span>
+            <span class="c1"># is always None (so merging cmdsets must all have explicit values if wanting</span>
+            <span class="c1"># to cause duplicates).</span>
             <span class="n">cmdset_c</span><span class="o">.</span><span class="n">no_channels</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">cmdset_a</span><span class="o">.</span><span class="n">no_channels</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_channels</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_channels</span>
             <span class="p">)</span>
             <span class="n">cmdset_c</span><span class="o">.</span><span class="n">no_exits</span> <span class="o">=</span> <span class="n">cmdset_a</span><span class="o">.</span><span class="n">no_exits</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_exits</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_exits</span>
             <span class="n">cmdset_c</span><span class="o">.</span><span class="n">no_objs</span> <span class="o">=</span> <span class="n">cmdset_a</span><span class="o">.</span><span class="n">no_objs</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_objs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_objs</span>
+            <span class="n">cmdset_c</span><span class="o">.</span><span class="n">duplicates</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># we store actual_mergetype since key_mergetypes</span>
         <span class="c1"># might be different from the main mergetype.</span>
@@ -677,7 +712,6 @@
         <span class="k">pass</span></div></div>
 </pre></div>
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -699,7 +733,7 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="cmdset.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../0.9.1/index.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../../../0.9.5/index.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -717,13 +751,12 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdset</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

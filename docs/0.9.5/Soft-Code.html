@@ -1,0 +1,187 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Soft Code &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="soft-code">
+<h1>Soft Code<a class="headerlink" href="#soft-code" title="Permalink to this headline">¶</a></h1>
+<p>Softcode is a very simple programming language that was created for in-game development on TinyMUD
+derivatives such as MUX, PennMUSH, TinyMUSH, and RhostMUSH. The idea is that by providing a stripped
+down, minimalistic language for in-game use, you can allow quick and easy building and game
+development to happen without having to learn C/C++. There is an added benefit of not having to have
+to hand out shell access to all developers, and permissions can be used to alleviate many security
+problems.</p>
+<p>Writing and installing softcode is done through a MUD client. Thus it is not a formatted language.
+Each softcode function is a single line of varying size. Some functions can be a half of a page long
+or more which is obviously not very readable nor (easily) maintainable over time.</p>
+<div class="section" id="examples-of-softcode">
+<h2>Examples of Softcode<a class="headerlink" href="#examples-of-softcode" title="Permalink to this headline">¶</a></h2>
+<p>Here is a simple ‘Hello World!’ command:</p>
+<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    @set <span class="nv">me</span><span class="o">=</span>HELLO_WORLD.C:<span class="nv">$hello</span>:@pemit %#<span class="o">=</span>Hello World!
+</pre></div>
+</td></tr></table></div>
+<p>Pasting this into a MUX/MUSH and typing ‘hello’ will theoretically yield ‘Hello World!’, assuming
+certain flags are not set on your account object.</p>
+<p>Setting attributes is done via <code class="docutils literal notranslate"><span class="pre">&#64;set</span></code>. Softcode also allows the use of the ampersand (<code class="docutils literal notranslate"><span class="pre">&amp;</span></code>) symbol.
+This shorter version looks like this:</p>
+<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="p">&amp;</span>HELLO_WORLD.C <span class="nv">me</span><span class="o">=</span><span class="nv">$hello</span>:@pemit %#<span class="o">=</span>Hello World!
+</pre></div>
+</td></tr></table></div>
+<p>Perhaps I want to break the Hello World into an attribute which is retrieved when emitting:</p>
+<div class="highlight-bash notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="p">&amp;</span>HELLO_VALUE.D <span class="nv">me</span><span class="o">=</span>Hello World
+    <span class="p">&amp;</span>HELLO_WORLD.C <span class="nv">me</span><span class="o">=</span><span class="nv">$hello</span>:@pemit %#<span class="o">=[</span>v<span class="o">(</span>HELLO_VALUE.D<span class="o">)]</span>
+</pre></div>
+</td></tr></table></div>
+<p>The <code class="docutils literal notranslate"><span class="pre">v()</span></code> function returns the <code class="docutils literal notranslate"><span class="pre">HELLO_VALUE.D</span></code> attribute on the object that the command resides
+(<code class="docutils literal notranslate"><span class="pre">me</span></code>, which is yourself in this case). This should yield the same output as the first example.</p>
+<p>If you are still curious about how Softcode works, take a look at some external resources:</p>
+<ul class="simple">
+<li><p>http://www.tinymux.com/wiki/index.php/Softcode</p></li>
+<li><p>http://www.duh.com/discordia/mushman/man2x1</p></li>
+</ul>
+</div>
+<div class="section" id="problems-with-softcode">
+<h2>Problems with Softcode<a class="headerlink" href="#problems-with-softcode" title="Permalink to this headline">¶</a></h2>
+<p>Softcode is excellent at what it was intended for: <em>simple things</em>. It is a great tool for making an
+interactive object, a room with ambiance, simple global commands, simple economies and coded
+systems.  However, once you start to try to write something like a complex combat system or a higher
+end economy, you’re likely to find yourself buried under a mountain of functions that span multiple
+objects across your entire code.</p>
+<p>Not to mention, softcode is not an inherently fast language. It is not compiled, it is parsed with
+each calling of a function. While MUX and MUSH parsers have jumped light years ahead of where they
+once were they can still stutter under the weight of more complex systems if not designed properly.</p>
+</div>
+<div class="section" id="changing-times">
+<h2>Changing Times<a class="headerlink" href="#changing-times" title="Permalink to this headline">¶</a></h2>
+<p>Now that starting text-based games is easy and an option for even the most technically inarticulate,
+new projects are a dime a dozen. People are starting new MUDs every day with varying levels of
+commitment and ability. Because of this shift from fewer, larger, well-staffed games to a bunch of
+small, one or two developer games, some of the benefit of softcode fades.</p>
+<p>Softcode is great in that it allows a mid to large sized staff all work on the same game without
+stepping on one another’s toes. As mentioned before, shell access is not necessary to develop a MUX
+or a MUSH. However, now that we are seeing a lot more small, one or two-man shops, the issue of
+shell access and stepping on each other’s toes is a lot less.</p>
+</div>
+<div class="section" id="our-solution">
+<h2>Our Solution<a class="headerlink" href="#our-solution" title="Permalink to this headline">¶</a></h2>
+<p>Evennia shuns in-game softcode for on-disk Python modules. Python is a popular, mature and
+professional programming language. You code it using the conveniences of modern text editors.
+Evennia developers have access to the entire library of Python modules out there in the wild - not
+to mention the vast online help resources available. Python code is not bound to one-line functions
+on objects but complex systems may be organized neatly into real source code modules, sub-modules,
+or even broken out into entire Python packages as desired.</p>
+<p>So what is <em>not</em> included in Evennia is a MUX/MOO-like online player-coding system.  Advanced coding
+in Evennia is primarily intended to be done outside the game, in full-fledged Python modules.
+Advanced building is best handled by extending Evennia’s command system with your own sophisticated
+building commands. We feel that with a small development team you are better off using a
+professional source-control system (svn, git, bazaar, mercurial etc) anyway.</p>
+</div>
+<div class="section" id="your-solution">
+<h2>Your Solution<a class="headerlink" href="#your-solution" title="Permalink to this headline">¶</a></h2>
+<p>Adding advanced and flexible building commands to your game is easy and will probably be enough to
+satisfy most creative builders. However, if you really, <em>really</em> want to offer online coding, there
+is of course nothing stopping you from adding that to Evennia, no matter our recommendations. You
+could even re-implement MUX’ softcode in Python should you be very ambitious. The
+<a class="reference internal" href="Dialogues-in-events.html"><span class="doc">in-game-python</span></a> is an optional
+pseudo-softcode plugin aimed at developers wanting to script their game from inside it.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Soft Code</a><ul>
+<li><a class="reference internal" href="#examples-of-softcode">Examples of Softcode</a></li>
+<li><a class="reference internal" href="#problems-with-softcode">Problems with Softcode</a></li>
+<li><a class="reference internal" href="#changing-times">Changing Times</a></li>
+<li><a class="reference internal" href="#our-solution">Our Solution</a></li>
+<li><a class="reference internal" href="#your-solution">Your Solution</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Soft-Code.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Soft-Code.html">0.9.5 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

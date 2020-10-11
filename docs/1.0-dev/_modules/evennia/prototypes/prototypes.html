@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.prototypes.prototypes &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -28,8 +27,7 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.prototypes.prototypes</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -50,9 +48,13 @@
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">ast</span> <span class="k">import</span> <span class="n">literal_eval</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="k">import</span> <span class="n">Q</span><span class="p">,</span> <span class="n">Subquery</span>
+<span class="kn">from</span> <span class="nn">django.core.paginator</span> <span class="k">import</span> <span class="n">Paginator</span>
 <span class="kn">from</span> <span class="nn">evennia.scripts.scripts</span> <span class="k">import</span> <span class="n">DefaultScript</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="k">import</span> <span class="n">ObjectDB</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="k">import</span> <span class="n">Attribute</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="k">import</span> <span class="n">create_script</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.evmore</span> <span class="k">import</span> <span class="n">EvMore</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="p">(</span>
     <span class="n">all_from_module</span><span class="p">,</span>
     <span class="n">make_iter</span><span class="p">,</span>
@@ -204,7 +206,9 @@
                     <span class="k">if</span> <span class="s2">&quot;prototype_locks&quot;</span> <span class="ow">in</span> <span class="n">prot</span>
                     <span class="k">else</span> <span class="s2">&quot;use:all();edit:false()&quot;</span>
                 <span class="p">),</span>
-                <span class="s2">&quot;prototype_tags&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">make_iter</span><span class="p">(</span><span class="n">prot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_tags&quot;</span><span class="p">,</span> <span class="p">[]))</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">])),</span>
+                <span class="s2">&quot;prototype_tags&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span>
+                    <span class="nb">set</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">make_iter</span><span class="p">(</span><span class="n">prot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_tags&quot;</span><span class="p">,</span> <span class="p">[])))</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">])</span>
+                <span class="p">),</span>
             <span class="p">}</span>
         <span class="p">)</span>
         <span class="n">_MODULE_PROTOTYPES</span><span class="p">[</span><span class="n">actual_prot_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">prot</span>
@@ -361,7 +365,7 @@
     <span class="k">return</span> <span class="kc">True</span></div>
 
 
-<div class="viewcode-block" id="search_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.search_prototype">[docs]</a><span class="k">def</span> <span class="nf">search_prototype</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">require_single</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="search_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.search_prototype">[docs]</a><span class="k">def</span> <span class="nf">search_prototype</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">require_single</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_iterators</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find prototypes based on key and/or tags, or all prototypes.</span>
 
@@ -372,11 +376,17 @@
 <span class="sd">            tag category.</span>
 <span class="sd">        require_single (bool): If set, raise KeyError if the result</span>
 <span class="sd">            was not found or if there are multiple matches.</span>
+<span class="sd">        return_iterators (bool): Optimized return for large numbers of db-prototypes.</span>
+<span class="sd">            If set, separate returns of module based prototypes and paginate</span>
+<span class="sd">            the db-prototype return.</span>
 
 <span class="sd">    Return:</span>
-<span class="sd">        matches (list): All found prototype dicts. Empty list if</span>
+<span class="sd">        matches (list): Default return, all found prototype dicts. Empty list if</span>
 <span class="sd">            no match was found. Note that if neither `key` nor `tags`</span>
 <span class="sd">            were given, *all* available prototypes will be returned.</span>
+<span class="sd">        list, queryset: If `return_iterators` are found, this is a list of</span>
+<span class="sd">            module-based prototypes followed by a *paginated* queryset of</span>
+<span class="sd">            db-prototypes.</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        KeyError: If `require_single` is True and there are 0 or &gt;1 matches.</span>
@@ -424,31 +434,37 @@
         <span class="n">tag_categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;db_prototype&quot;</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">]</span>
         <span class="n">db_matches</span> <span class="o">=</span> <span class="n">DbPrototype</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_by_tag</span><span class="p">(</span><span class="n">tags</span><span class="p">,</span> <span class="n">tag_categories</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">db_matches</span> <span class="o">=</span> <span class="n">DbPrototype</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+        <span class="n">db_matches</span> <span class="o">=</span> <span class="n">DbPrototype</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
     <span class="k">if</span> <span class="n">key</span><span class="p">:</span>
         <span class="c1"># exact or partial match on key</span>
-        <span class="n">db_matches</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">db_matches</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span> <span class="ow">or</span> <span class="n">db_matches</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key__icontains</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
-        <span class="c1"># return prototype</span>
-    <span class="n">db_prototypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">dbprot</span><span class="o">.</span><span class="n">prototype</span> <span class="k">for</span> <span class="n">dbprot</span> <span class="ow">in</span> <span class="n">db_matches</span><span class="p">]</span>
+        <span class="n">exact_match</span> <span class="o">=</span> <span class="n">db_matches</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Q</span><span class="p">(</span><span class="n">db_key__iexact</span><span class="o">=</span><span class="n">key</span><span class="p">))</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;db_key&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">exact_match</span><span class="p">:</span>
+            <span class="c1"># try with partial match instead</span>
+            <span class="n">db_matches</span> <span class="o">=</span> <span class="n">db_matches</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Q</span><span class="p">(</span><span class="n">db_key__icontains</span><span class="o">=</span><span class="n">key</span><span class="p">))</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;db_key&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">db_matches</span> <span class="o">=</span> <span class="n">exact_match</span>
 
-    <span class="n">matches</span> <span class="o">=</span> <span class="n">db_prototypes</span> <span class="o">+</span> <span class="n">module_prototypes</span>
-    <span class="n">nmatches</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">nmatches</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">key</span><span class="p">:</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-        <span class="c1"># avoid duplicates if an exact match exist between the two types</span>
-        <span class="n">filter_matches</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">mta</span> <span class="k">for</span> <span class="n">mta</span> <span class="ow">in</span> <span class="n">matches</span> <span class="k">if</span> <span class="n">mta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">mta</span><span class="p">[</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">key</span>
-        <span class="p">]</span>
-        <span class="k">if</span> <span class="n">filter_matches</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">filter_matches</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">nmatches</span><span class="p">:</span>
-            <span class="n">matches</span> <span class="o">=</span> <span class="n">filter_matches</span>
+    <span class="c1"># convert to prototype</span>
+    <span class="n">db_ids</span> <span class="o">=</span> <span class="n">db_matches</span><span class="o">.</span><span class="n">values_list</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="n">flat</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">db_matches</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">Attribute</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">scriptdb__pk__in</span><span class="o">=</span><span class="n">db_ids</span><span class="p">,</span> <span class="n">db_key</span><span class="o">=</span><span class="s2">&quot;prototype&quot;</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">values_list</span><span class="p">(</span><span class="s2">&quot;db_value&quot;</span><span class="p">,</span> <span class="n">flat</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;scriptdb__db_key&quot;</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">key</span> <span class="ow">and</span> <span class="n">require_single</span><span class="p">:</span>
+        <span class="n">nmodules</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">module_prototypes</span><span class="p">)</span>
+        <span class="n">ndbprots</span> <span class="o">=</span> <span class="n">db_matches</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">nmodules</span> <span class="o">+</span> <span class="n">ndbprots</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Found {nmodules + ndbprots} matching prototypes.&quot;</span><span class="p">)</span>
 
-    <span class="n">nmatches</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">nmatches</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">require_single</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Found </span><span class="si">{}</span><span class="s2"> matching prototypes.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nmatches</span><span class="p">))</span>
-
-    <span class="k">return</span> <span class="n">matches</span></div>
+    <span class="k">if</span> <span class="n">return_iterators</span><span class="p">:</span>
+        <span class="c1"># trying to get the entire set of prototypes - we must paginate</span>
+        <span class="c1"># the result instead of trying to fetch the entire set at once</span>
+        <span class="k">return</span> <span class="n">db_matches</span><span class="p">,</span> <span class="n">module_prototypes</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># full fetch, no pagination (compatibility mode)</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">db_matches</span><span class="p">)</span> <span class="o">+</span> <span class="n">module_prototypes</span></div>
 
 
 <div class="viewcode-block" id="search_objects_with_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.search_objects_with_prototype">[docs]</a><span class="k">def</span> <span class="nf">search_objects_with_prototype</span><span class="p">(</span><span class="n">prototype_key</span><span class="p">):</span>
@@ -465,7 +481,110 @@
     <span class="k">return</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_by_tag</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">prototype_key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">PROTOTYPE_TAG_CATEGORY</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="list_prototypes"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.list_prototypes">[docs]</a><span class="k">def</span> <span class="nf">list_prototypes</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show_non_use</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_non_edit</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="PrototypeEvMore"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.PrototypeEvMore">[docs]</a><span class="k">class</span> <span class="nc">PrototypeEvMore</span><span class="p">(</span><span class="n">EvMore</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Listing 1000+ prototypes can be very slow. So we customize EvMore to</span>
+<span class="sd">    display an EvTable per paginated page rather than to try creating an</span>
+<span class="sd">    EvTable for the entire dataset and then paginate it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PrototypeEvMore.__init__"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.PrototypeEvMore.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Store some extra properties on the EvMore class&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_non_use</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;show_non_use&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_non_edit</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;show_non_edit&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PrototypeEvMore.init_pages"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.PrototypeEvMore.init_pages">[docs]</a>    <span class="k">def</span> <span class="nf">init_pages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This will be initialized with a tuple (mod_prototype_list, paginated_db_query)</span>
+<span class="sd">        and we must handle these separately since they cannot be paginated in the same</span>
+<span class="sd">        way. We will build the prototypes so that the db-prototypes come first (they</span>
+<span class="sd">        are likely the most volatile), followed by the mod-prototypes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dbprot_query</span><span class="p">,</span> <span class="n">modprot_list</span> <span class="o">=</span> <span class="n">inp</span>
+        <span class="c1"># set the number of entries per page to half the reported height of the screen</span>
+        <span class="c1"># to account for long descs etc</span>
+        <span class="n">dbprot_paged</span> <span class="o">=</span> <span class="n">Paginator</span><span class="p">(</span><span class="n">dbprot_query</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)))</span>
+
+        <span class="c1"># we separate the different types of data, so we track how many pages there are</span>
+        <span class="c1"># of each.</span>
+        <span class="n">n_mod</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">modprot_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_npages_mod</span> <span class="o">=</span> <span class="n">n_mod</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">+</span> <span class="p">(</span><span class="mi">0</span> <span class="k">if</span> <span class="n">n_mod</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_db_count</span> <span class="o">=</span> <span class="n">dbprot_paged</span><span class="o">.</span><span class="n">count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_npages_db</span> <span class="o">=</span> <span class="n">dbprot_paged</span><span class="o">.</span><span class="n">num_pages</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db_count</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="c1"># total number of pages</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_npages</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_npages_mod</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_npages_db</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">dbprot_paged</span><span class="p">,</span> <span class="n">modprot_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_paginator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prototype_paginator</span></div>
+
+<div class="viewcode-block" id="PrototypeEvMore.prototype_paginator"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.PrototypeEvMore.prototype_paginator">[docs]</a>    <span class="k">def</span> <span class="nf">prototype_paginator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pageno</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The listing is separated in db/mod prototypes, so we need to figure out which</span>
+<span class="sd">        one to pick based on the page number. Also, pageno starts from 0.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dbprot_pages</span><span class="p">,</span> <span class="n">modprot_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db_count</span> <span class="ow">and</span> <span class="n">pageno</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_npages_db</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dbprot_pages</span><span class="o">.</span><span class="n">page</span><span class="p">(</span><span class="n">pageno</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># get the correct slice, adjusted for the db-prototypes</span>
+            <span class="n">pageno</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">pageno</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_npages_db</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">modprot_list</span><span class="p">[</span><span class="n">pageno</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="p">:</span> <span class="n">pageno</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="PrototypeEvMore.page_formatter"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.PrototypeEvMore.page_formatter">[docs]</a>    <span class="k">def</span> <span class="nf">page_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Input is a queryset page from django.Paginator&quot;&quot;&quot;</span>
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_caller</span>
+
+        <span class="c1"># get use-permissions of readonly attributes (edit is always False)</span>
+        <span class="n">display_tuples</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">table</span> <span class="o">=</span> <span class="n">EvTable</span><span class="p">(</span>
+            <span class="s2">&quot;|wKey|n&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;|wSpawn/Edit|n&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;|wTags|n&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;|wDesc|n&quot;</span><span class="p">,</span>
+            <span class="n">border</span><span class="o">=</span><span class="s2">&quot;tablecols&quot;</span><span class="p">,</span>
+            <span class="n">crop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">prototype</span> <span class="ow">in</span> <span class="n">page</span><span class="p">:</span>
+            <span class="n">lock_use</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">check_lockstring</span><span class="p">(</span>
+                <span class="n">caller</span><span class="p">,</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_locks&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;spawn&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_non_use</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">lock_use</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">_MODULE_PROTOTYPES</span><span class="p">:</span>
+                <span class="n">lock_edit</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">lock_edit</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">check_lockstring</span><span class="p">(</span>
+                    <span class="n">caller</span><span class="p">,</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_locks&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;edit&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_non_edit</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">lock_edit</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">ptags</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">ptag</span> <span class="ow">in</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_tags&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+                <span class="k">if</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">ptag</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ptag</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">ptags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ptag</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">ptags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ptag</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">ptags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ptag</span><span class="p">))</span>
+
+            <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+                <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;unset&gt;&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;Y&quot;</span> <span class="k">if</span> <span class="n">lock_use</span> <span class="k">else</span> <span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span> <span class="k">if</span> <span class="n">lock_edit</span> <span class="k">else</span> <span class="s2">&quot;N&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">ptags</span><span class="p">))),</span>
+                <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_desc&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;unset&gt;&quot;</span><span class="p">),</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">table</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="list_prototypes"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.list_prototypes">[docs]</a><span class="k">def</span> <span class="nf">list_prototypes</span><span class="p">(</span>
+    <span class="n">caller</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show_non_use</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_non_edit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Collate a list of found prototypes based on search criteria and access.</span>
 
@@ -475,65 +594,29 @@
 <span class="sd">        tags (str or list, optional): Tag key or keys to query for.</span>
 <span class="sd">        show_non_use (bool, optional): Show also prototypes the caller may not use.</span>
 <span class="sd">        show_non_edit (bool, optional): Show also prototypes the caller may not edit.</span>
+<span class="sd">        session (Session, optional): If given, this is used for display formatting.</span>
 <span class="sd">    Returns:</span>
-<span class="sd">        table (EvTable or None): An EvTable representation of the prototypes. None</span>
-<span class="sd">            if no prototypes were found.</span>
+<span class="sd">        PrototypeEvMore: An EvMore subclass optimized for prototype listings.</span>
+<span class="sd">        None: If no matches were found. In this case the caller has already been notified.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># this allows us to pass lists of empty strings</span>
     <span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">tag</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span> <span class="k">if</span> <span class="n">tag</span><span class="p">]</span>
 
-    <span class="c1"># get prototypes for readonly and db-based prototypes</span>
-    <span class="n">prototypes</span> <span class="o">=</span> <span class="n">search_prototype</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">tags</span><span class="p">)</span>
+    <span class="n">dbprot_query</span><span class="p">,</span> <span class="n">modprot_list</span> <span class="o">=</span> <span class="n">search_prototype</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">tags</span><span class="p">,</span> <span class="n">return_iterators</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="c1"># get use-permissions of readonly attributes (edit is always False)</span>
-    <span class="n">display_tuples</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">prototype</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">prototypes</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)):</span>
-        <span class="n">lock_use</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">check_lockstring</span><span class="p">(</span>
-            <span class="n">caller</span><span class="p">,</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_locks&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;spawn&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">show_non_use</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">lock_use</span><span class="p">:</span>
-            <span class="k">continue</span>
-        <span class="k">if</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">_MODULE_PROTOTYPES</span><span class="p">:</span>
-            <span class="n">lock_edit</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">lock_edit</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">check_lockstring</span><span class="p">(</span>
-                <span class="n">caller</span><span class="p">,</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_locks&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;edit&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span>
-            <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">show_non_edit</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">lock_edit</span><span class="p">:</span>
-            <span class="k">continue</span>
-        <span class="n">ptags</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">ptag</span> <span class="ow">in</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_tags&quot;</span><span class="p">,</span> <span class="p">[]):</span>
-            <span class="k">if</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">ptag</span><span class="p">):</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ptag</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="n">ptags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> (category: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ptag</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ptag</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">ptags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ptag</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">ptags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ptag</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dbprot_query</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">modprot_list</span><span class="p">:</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;No prototypes found.&quot;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
 
-        <span class="n">display_tuples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="p">(</span>
-                <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;unset&gt;&quot;</span><span class="p">),</span>
-                <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_desc&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;unset&gt;&quot;</span><span class="p">),</span>
-                <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;Y&quot;</span> <span class="k">if</span> <span class="n">lock_use</span> <span class="k">else</span> <span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span> <span class="k">if</span> <span class="n">lock_edit</span> <span class="k">else</span> <span class="s2">&quot;N&quot;</span><span class="p">),</span>
-                <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ptags</span><span class="p">),</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">display_tuples</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
-
-    <span class="n">table</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">width</span> <span class="o">=</span> <span class="mi">78</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">display_tuples</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
-        <span class="n">table</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">display_tuple</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">display_tuple</span> <span class="ow">in</span> <span class="n">display_tuples</span><span class="p">])</span>
-    <span class="n">table</span> <span class="o">=</span> <span class="n">EvTable</span><span class="p">(</span><span class="s2">&quot;Key&quot;</span><span class="p">,</span> <span class="s2">&quot;Desc&quot;</span><span class="p">,</span> <span class="s2">&quot;Spawn/Edit&quot;</span><span class="p">,</span> <span class="s2">&quot;Tags&quot;</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="n">table</span><span class="p">,</span> <span class="n">crop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
-    <span class="n">table</span><span class="o">.</span><span class="n">reformat_column</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">22</span><span class="p">)</span>
-    <span class="n">table</span><span class="o">.</span><span class="n">reformat_column</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">29</span><span class="p">)</span>
-    <span class="n">table</span><span class="o">.</span><span class="n">reformat_column</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;c&quot;</span><span class="p">)</span>
-    <span class="n">table</span><span class="o">.</span><span class="n">reformat_column</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">table</span></div>
+    <span class="c1"># get specific prototype (one value or exception)</span>
+    <span class="k">return</span> <span class="n">PrototypeEvMore</span><span class="p">(</span>
+        <span class="n">caller</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">dbprot_query</span><span class="p">,</span> <span class="n">modprot_list</span><span class="p">),</span>
+        <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
+        <span class="n">show_non_use</span><span class="o">=</span><span class="n">show_non_use</span><span class="p">,</span>
+        <span class="n">show_non_edit</span><span class="o">=</span><span class="n">show_non_edit</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="validate_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.validate_prototype">[docs]</a><span class="k">def</span> <span class="nf">validate_prototype</span><span class="p">(</span>
@@ -610,7 +693,7 @@
         <span class="n">protparent</span> <span class="o">=</span> <span class="n">protparents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">protstring</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">protparent</span><span class="p">:</span>
             <span class="n">_flags</span><span class="p">[</span><span class="s2">&quot;errors&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="s2">&quot;Prototype </span><span class="si">{}</span><span class="s2">&#39;s prototype_parent &#39;</span><span class="si">{}</span><span class="s2">&#39; was not found.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">((</span><span class="n">protkey</span><span class="p">,</span> <span class="n">protstring</span><span class="p">))</span>
+                <span class="s2">&quot;Prototype </span><span class="si">{}</span><span class="s2">&#39;s prototype_parent &#39;</span><span class="si">{}</span><span class="s2">&#39; was not found.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">protkey</span><span class="p">,</span> <span class="n">protstring</span><span class="p">)</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="nb">id</span><span class="p">(</span><span class="n">prototype</span><span class="p">)</span> <span class="ow">in</span> <span class="n">_flags</span><span class="p">[</span><span class="s2">&quot;visited&quot;</span><span class="p">]:</span>
             <span class="n">_flags</span><span class="p">[</span><span class="s2">&quot;errors&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
@@ -913,7 +996,6 @@
     <span class="k">return</span> <span class="n">dbid_to_obj</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ObjectDB</span><span class="p">)</span></div>
 </pre></div>
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -935,7 +1017,7 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="prototypes.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../0.9.1/index.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../../../0.9.5/index.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -953,13 +1035,12 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.prototypes.prototypes</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

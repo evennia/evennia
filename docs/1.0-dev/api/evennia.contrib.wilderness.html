@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.wilderness &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +25,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.wilderness</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -150,9 +148,9 @@ separate rooms.
 Rooms are created as needed. Unneeded rooms are stored away to avoid the
 overhead cost of creating new rooms again in the future.</p>
 </div></blockquote>
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.wilderness.create_wilderness">
-<code class="sig-prename descclassname">evennia.contrib.wilderness.</code><code class="sig-name descname">create_wilderness</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">mapprovider</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#create_wilderness"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.create_wilderness" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.wilderness.</code><code class="sig-name descname">create_wilderness</code><span class="sig-paren">(</span><em class="sig-param">name='default'</em>, <em class="sig-param">mapprovider=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#create_wilderness"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.create_wilderness" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a new wilderness map. Does nothing if a wilderness map already
 exists with the same name.</p>
 <dl class="field-list simple">
@@ -168,9 +166,9 @@ infinite grid map will be used.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.wilderness.enter_wilderness">
-<code class="sig-prename descclassname">evennia.contrib.wilderness.</code><code class="sig-name descname">enter_wilderness</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">coordinates</span><span class="o">=</span><span class="default_value">0, 0</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'default'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#enter_wilderness"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.enter_wilderness" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.wilderness.</code><code class="sig-name descname">enter_wilderness</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">coordinates=(0</em>, <em class="sig-param">0)</em>, <em class="sig-param">name='default'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#enter_wilderness"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.enter_wilderness" title="Permalink to this definition">¶</a></dt>
 <dd><p>Moves obj into the wilderness. The wilderness needs to exist first and the
 provided coordinates needs to be valid inside that wilderness.</p>
 <dl class="field-list simple">
@@ -189,9 +187,9 @@ default one</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.wilderness.get_new_coordinates">
-<code class="sig-prename descclassname">evennia.contrib.wilderness.</code><code class="sig-name descname">get_new_coordinates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">coordinates</span></em>, <em class="sig-param"><span class="n">direction</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#get_new_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.get_new_coordinates" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.wilderness.</code><code class="sig-name descname">get_new_coordinates</code><span class="sig-paren">(</span><em class="sig-param">coordinates</em>, <em class="sig-param">direction</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#get_new_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.get_new_coordinates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the coordinates of direction applied to the provided coordinates.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -206,22 +204,22 @@ default one</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.wilderness.WildernessScript">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.wilderness.</code><code class="sig-name descname">WildernessScript</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessScript"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessScript" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.wilderness.</code><code class="sig-name descname">WildernessScript</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessScript"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessScript" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript" title="evennia.scripts.scripts.DefaultScript"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript</span></code></a></p>
 <p>This is the main “handler” for the wilderness system: inside here the
 coordinates of every item currently inside the wilderness is stored. This
 script is responsible for creating rooms as needed and storing rooms away
 into storage when they are not needed anymore.</p>
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.wilderness.WildernessScript.at_script_creation">
 <code class="sig-name descname">at_script_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessScript.at_script_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessScript.at_script_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Only called once, when the script is created. This is a default Evennia
 hook.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.wilderness.WildernessScript.mapprovider">
 <em class="property">property </em><code class="sig-name descname">mapprovider</code><a class="headerlink" href="#evennia.contrib.wilderness.WildernessScript.mapprovider" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shortcut property to the map provider.</p>
@@ -232,7 +230,7 @@ hook.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.wilderness.WildernessScript.itemcoordinates">
 <em class="property">property </em><code class="sig-name descname">itemcoordinates</code><a class="headerlink" href="#evennia.contrib.wilderness.WildernessScript.itemcoordinates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a dictionary with the coordinates of every item inside this
@@ -245,15 +243,15 @@ wilderness map. The key is the item, the value are the coordinates as
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.wilderness.WildernessScript.at_start">
 <code class="sig-name descname">at_start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessScript.at_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessScript.at_start" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when the script is started and also after server reloads.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.wilderness.WildernessScript.is_valid_coordinates">
-<code class="sig-name descname">is_valid_coordinates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">coordinates</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessScript.is_valid_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessScript.is_valid_coordinates" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">is_valid_coordinates</code><span class="sig-paren">(</span><em class="sig-param">coordinates</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessScript.is_valid_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessScript.is_valid_coordinates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns True if coordinates are valid (and can be travelled to).
 Otherwise returns False</p>
 <dl class="field-list simple">
@@ -266,9 +264,9 @@ Otherwise returns False</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.wilderness.WildernessScript.get_obj_coordinates">
-<code class="sig-name descname">get_obj_coordinates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessScript.get_obj_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessScript.get_obj_coordinates" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_obj_coordinates</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessScript.get_obj_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessScript.get_obj_coordinates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the coordinates of obj in the wilderness.</p>
 <p>Returns (x, y)</p>
 <dl class="field-list simple">
@@ -281,9 +279,9 @@ Otherwise returns False</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.wilderness.WildernessScript.get_objs_at_coordinates">
-<code class="sig-name descname">get_objs_at_coordinates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">coordinates</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessScript.get_objs_at_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessScript.get_objs_at_coordinates" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_objs_at_coordinates</code><span class="sig-paren">(</span><em class="sig-param">coordinates</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessScript.get_objs_at_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessScript.get_objs_at_coordinates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of every object at certain coordinates.</p>
 <p>Imeplementation detail: this uses a naive iteration through every
 object inside the wilderness which could cause slow downs when there
@@ -298,9 +296,9 @@ are a lot of objects in the map.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.wilderness.WildernessScript.move_obj">
-<code class="sig-name descname">move_obj</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">new_coordinates</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessScript.move_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessScript.move_obj" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">move_obj</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">new_coordinates</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessScript.move_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessScript.move_obj" title="Permalink to this definition">¶</a></dt>
 <dd><p>Moves obj to new coordinates in this wilderness.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -312,9 +310,9 @@ are a lot of objects in the map.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.wilderness.WildernessScript.at_after_object_leave">
-<code class="sig-name descname">at_after_object_leave</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessScript.at_after_object_leave"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessScript.at_after_object_leave" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_after_object_leave</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessScript.at_after_object_leave"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessScript.at_after_object_leave" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called after an object left this wilderness map. Used for cleaning up.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -323,39 +321,39 @@ are a lot of objects in the map.</p>
 </dl>
 </dd></dl>
 
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.wilderness.WildernessScript.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.wilderness.WildernessScript.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.DoesNotExist" title="evennia.scripts.scripts.DefaultScript.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.DoesNotExist</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DoesNotExist</span></code></p>
 </dd></dl>
 
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.wilderness.WildernessScript.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.wilderness.WildernessScript.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned" title="evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.wilderness.WildernessScript.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.wilderness.WildernessScript'</em><a class="headerlink" href="#evennia.contrib.wilderness.WildernessScript.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.wilderness.WildernessScript.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'WildernessScript'</em><a class="headerlink" href="#evennia.contrib.wilderness.WildernessScript.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.wilderness.WildernessRoom">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.wilderness.</code><code class="sig-name descname">WildernessRoom</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessRoom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessRoom" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.wilderness.</code><code class="sig-name descname">WildernessRoom</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessRoom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessRoom" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultRoom" title="evennia.objects.objects.DefaultRoom"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultRoom</span></code></a></p>
 <p>This is a single room inside the wilderness. This room provides a “view”
 into the wilderness map. When an account moves around, instead of going to
 another room as with traditional rooms, they stay in the same room but the
 room itself changes to display another area of the wilderness.</p>
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.wilderness.WildernessRoom.wilderness">
 <em class="property">property </em><code class="sig-name descname">wilderness</code><a class="headerlink" href="#evennia.contrib.wilderness.WildernessRoom.wilderness" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shortcut property to the wilderness script this room belongs to.</p>
@@ -366,7 +364,7 @@ room itself changes to display another area of the wilderness.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.wilderness.WildernessRoom.location_name">
 <em class="property">property </em><code class="sig-name descname">location_name</code><a class="headerlink" href="#evennia.contrib.wilderness.WildernessRoom.location_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the name of the wilderness at this room’s coordinates.</p>
@@ -377,7 +375,7 @@ room itself changes to display another area of the wilderness.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.wilderness.WildernessRoom.coordinates">
 <em class="property">property </em><code class="sig-name descname">coordinates</code><a class="headerlink" href="#evennia.contrib.wilderness.WildernessRoom.coordinates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the coordinates of this room into the wilderness.</p>
@@ -393,9 +391,9 @@ room itself changes to display another area of the wilderness.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.wilderness.WildernessRoom.at_object_receive">
-<code class="sig-name descname">at_object_receive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">moved_obj</span></em>, <em class="sig-param"><span class="n">source_location</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessRoom.at_object_receive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessRoom.at_object_receive" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_object_receive</code><span class="sig-paren">(</span><em class="sig-param">moved_obj</em>, <em class="sig-param">source_location</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessRoom.at_object_receive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessRoom.at_object_receive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called after an object has been moved into this object. This is a
 default Evennia hook.</p>
 <dl class="field-list simple">
@@ -408,9 +406,9 @@ default Evennia hook.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.wilderness.WildernessRoom.at_object_leave">
-<code class="sig-name descname">at_object_leave</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">moved_obj</span></em>, <em class="sig-param"><span class="n">target_location</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessRoom.at_object_leave"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessRoom.at_object_leave" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_object_leave</code><span class="sig-paren">(</span><em class="sig-param">moved_obj</em>, <em class="sig-param">target_location</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessRoom.at_object_leave"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessRoom.at_object_leave" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called just before an object leaves from inside this object. This is a
 default Evennia hook.</p>
 <dl class="field-list simple">
@@ -423,9 +421,9 @@ default Evennia hook.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.wilderness.WildernessRoom.set_active_coordinates">
-<code class="sig-name descname">set_active_coordinates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_coordinates</span></em>, <em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessRoom.set_active_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessRoom.set_active_coordinates" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_active_coordinates</code><span class="sig-paren">(</span><em class="sig-param">new_coordinates</em>, <em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessRoom.set_active_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessRoom.set_active_coordinates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Changes this room to show the wilderness map from other coordinates.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -438,9 +436,9 @@ coordinates to change</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.wilderness.WildernessRoom.get_display_name">
-<code class="sig-name descname">get_display_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">looker</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessRoom.get_display_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessRoom.get_display_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_display_name</code><span class="sig-paren">(</span><em class="sig-param">looker</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessRoom.get_display_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessRoom.get_display_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Displays the name of the object in a viewer-aware manner.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -465,39 +463,39 @@ searching, and is expected to produce something useful for
 builders.</p>
 </dd></dl>
 
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.wilderness.WildernessRoom.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.wilderness.WildernessRoom.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultRoom.DoesNotExist" title="evennia.objects.objects.DefaultRoom.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultRoom.DoesNotExist</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DoesNotExist</span></code></p>
 </dd></dl>
 
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.wilderness.WildernessRoom.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.wilderness.WildernessRoom.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultRoom.MultipleObjectsReturned" title="evennia.objects.objects.DefaultRoom.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultRoom.MultipleObjectsReturned</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.wilderness.WildernessRoom.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.wilderness.WildernessRoom'</em><a class="headerlink" href="#evennia.contrib.wilderness.WildernessRoom.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.wilderness.WildernessRoom.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'WildernessRoom'</em><a class="headerlink" href="#evennia.contrib.wilderness.WildernessRoom.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.wilderness.WildernessExit">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.wilderness.</code><code class="sig-name descname">WildernessExit</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessExit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessExit" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.wilderness.</code><code class="sig-name descname">WildernessExit</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessExit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessExit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit" title="evennia.objects.objects.DefaultExit"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultExit</span></code></a></p>
 <p>This is an Exit object used inside a WildernessRoom. Instead of changing
 the location of an Object traversing through it (like a traditional exit
 would do) it changes the coordinates of that traversing Object inside
 the wilderness map.</p>
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.wilderness.WildernessExit.wilderness">
 <em class="property">property </em><code class="sig-name descname">wilderness</code><a class="headerlink" href="#evennia.contrib.wilderness.WildernessExit.wilderness" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shortcut property to the wilderness script.</p>
@@ -508,7 +506,7 @@ the wilderness map.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.wilderness.WildernessExit.mapprovider">
 <em class="property">property </em><code class="sig-name descname">mapprovider</code><a class="headerlink" href="#evennia.contrib.wilderness.WildernessExit.mapprovider" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shortcut property to the map provider.</p>
@@ -524,9 +522,9 @@ the wilderness map.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.wilderness.WildernessExit.at_traverse_coordinates">
-<code class="sig-name descname">at_traverse_coordinates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">traversing_object</span></em>, <em class="sig-param"><span class="n">current_coordinates</span></em>, <em class="sig-param"><span class="n">new_coordinates</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessExit.at_traverse_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessExit.at_traverse_coordinates" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_traverse_coordinates</code><span class="sig-paren">(</span><em class="sig-param">traversing_object</em>, <em class="sig-param">current_coordinates</em>, <em class="sig-param">new_coordinates</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessExit.at_traverse_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessExit.at_traverse_coordinates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when an object wants to travel from one place inside the
 wilderness to another place inside the wilderness.</p>
 <p>If this returns True, then the traversing can happen. Otherwise it will
@@ -548,9 +546,9 @@ be blocked.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.wilderness.WildernessExit.at_traverse">
-<code class="sig-name descname">at_traverse</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">traversing_object</span></em>, <em class="sig-param"><span class="n">target_location</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessExit.at_traverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessExit.at_traverse" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_traverse</code><span class="sig-paren">(</span><em class="sig-param">traversing_object</em>, <em class="sig-param">target_location</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessExit.at_traverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessExit.at_traverse" title="Permalink to this definition">¶</a></dt>
 <dd><p>This implements the actual traversal. The traverse lock has
 already been checked (in the Exit command) at this point.</p>
 <dl class="field-list simple">
@@ -566,51 +564,51 @@ already been checked (in the Exit command) at this point.</p>
 </dl>
 </dd></dl>
 
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.wilderness.WildernessExit.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.wilderness.WildernessExit.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.DoesNotExist" title="evennia.objects.objects.DefaultExit.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultExit.DoesNotExist</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DoesNotExist</span></code></p>
 </dd></dl>
 
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.wilderness.WildernessExit.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.wilderness.WildernessExit.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.MultipleObjectsReturned" title="evennia.objects.objects.DefaultExit.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultExit.MultipleObjectsReturned</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.wilderness.WildernessExit.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.wilderness.WildernessExit'</em><a class="headerlink" href="#evennia.contrib.wilderness.WildernessExit.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.wilderness.WildernessExit.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'WildernessExit'</em><a class="headerlink" href="#evennia.contrib.wilderness.WildernessExit.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.wilderness.WildernessMapProvider">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.wilderness.</code><code class="sig-name descname">WildernessMapProvider</code><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessMapProvider"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessMapProvider" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Default Wilderness Map provider.</p>
 <p>This is a simple provider that just creates an infinite large grid area.</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.wilderness.WildernessMapProvider.room_typeclass">
 <code class="sig-name descname">room_typeclass</code><a class="headerlink" href="#evennia.contrib.wilderness.WildernessMapProvider.room_typeclass" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#evennia.contrib.wilderness.WildernessRoom" title="evennia.contrib.wilderness.WildernessRoom"><code class="xref py py-class docutils literal notranslate"><span class="pre">WildernessRoom</span></code></a></p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.wilderness.WildernessMapProvider.exit_typeclass">
 <code class="sig-name descname">exit_typeclass</code><a class="headerlink" href="#evennia.contrib.wilderness.WildernessMapProvider.exit_typeclass" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#evennia.contrib.wilderness.WildernessExit" title="evennia.contrib.wilderness.WildernessExit"><code class="xref py py-class docutils literal notranslate"><span class="pre">WildernessExit</span></code></a></p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.wilderness.WildernessMapProvider.is_valid_coordinates">
-<code class="sig-name descname">is_valid_coordinates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">wilderness</span></em>, <em class="sig-param"><span class="n">coordinates</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessMapProvider.is_valid_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessMapProvider.is_valid_coordinates" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">is_valid_coordinates</code><span class="sig-paren">(</span><em class="sig-param">wilderness</em>, <em class="sig-param">coordinates</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessMapProvider.is_valid_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessMapProvider.is_valid_coordinates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns True if coordinates is valid and can be walked to.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -625,9 +623,9 @@ already been checked (in the Exit command) at this point.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.wilderness.WildernessMapProvider.get_location_name">
-<code class="sig-name descname">get_location_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">coordinates</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessMapProvider.get_location_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessMapProvider.get_location_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_location_name</code><span class="sig-paren">(</span><em class="sig-param">coordinates</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessMapProvider.get_location_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessMapProvider.get_location_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a name for the position at coordinates.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -639,9 +637,9 @@ already been checked (in the Exit command) at this point.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.wilderness.WildernessMapProvider.at_prepare_room">
-<code class="sig-name descname">at_prepare_room</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">coordinates</span></em>, <em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">room</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessMapProvider.at_prepare_room"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessMapProvider.at_prepare_room" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_prepare_room</code><span class="sig-paren">(</span><em class="sig-param">coordinates</em>, <em class="sig-param">caller</em>, <em class="sig-param">room</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/wilderness.html#WildernessMapProvider.at_prepare_room"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.wilderness.WildernessMapProvider.at_prepare_room" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when a room gets activated for certain coordinates. This happens
 after every object is moved in it.
 This can be used to set a custom room desc for instance or run other
@@ -668,7 +666,6 @@ coordinate.</p>
 </div>
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -697,7 +694,7 @@ coordinate.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.contrib.wilderness.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.1/api/evennia.contrib.wilderness.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../0.9.5/api/evennia.contrib.wilderness.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -713,13 +710,12 @@ coordinate.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.wilderness</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

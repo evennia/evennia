@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.server.evennia_launcher &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +25,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.server.evennia_launcher</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -43,137 +41,137 @@
 <p>Sets the appropriate environmental variables for managing an Evennia game. It will start and connect
 to the Portal, through which the Server is also controlled. This pprogram</p>
 <p>Run the script with the -h flag to see usage information.</p>
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.server.evennia_launcher.MsgStatus">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">MsgStatus</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kw</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#MsgStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.MsgStatus" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">MsgStatus</code><span class="sig-paren">(</span><em class="sig-param">**kw</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#MsgStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.MsgStatus" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.protocols.amp.Command</span></code></p>
 <p>Ping between AMP services</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.server.evennia_launcher.MsgStatus.key">
 <code class="sig-name descname">key</code><em class="property"> = 'MsgStatus'</em><a class="headerlink" href="#evennia.server.evennia_launcher.MsgStatus.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.server.evennia_launcher.MsgStatus.arguments">
 <code class="sig-name descname">arguments</code><em class="property"> = [(b'status', &lt;twisted.protocols.amp.String object&gt;)]</em><a class="headerlink" href="#evennia.server.evennia_launcher.MsgStatus.arguments" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.server.evennia_launcher.MsgStatus.errors">
 <code class="sig-name descname">errors</code><em class="property"> = {&lt;class 'Exception'&gt;: b'EXCEPTION'}</em><a class="headerlink" href="#evennia.server.evennia_launcher.MsgStatus.errors" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.server.evennia_launcher.MsgStatus.response">
 <code class="sig-name descname">response</code><em class="property"> = [(b'status', &lt;twisted.protocols.amp.String object&gt;)]</em><a class="headerlink" href="#evennia.server.evennia_launcher.MsgStatus.response" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.server.evennia_launcher.MsgStatus.allErrors">
 <code class="sig-name descname">allErrors</code><em class="property"> = {&lt;class 'Exception'&gt;: b'EXCEPTION'}</em><a class="headerlink" href="#evennia.server.evennia_launcher.MsgStatus.allErrors" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.server.evennia_launcher.MsgStatus.commandName">
 <code class="sig-name descname">commandName</code><em class="property"> = b'MsgStatus'</em><a class="headerlink" href="#evennia.server.evennia_launcher.MsgStatus.commandName" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.server.evennia_launcher.MsgStatus.reverseErrors">
 <code class="sig-name descname">reverseErrors</code><em class="property"> = {b'EXCEPTION': &lt;class 'Exception'&gt;}</em><a class="headerlink" href="#evennia.server.evennia_launcher.MsgStatus.reverseErrors" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.server.evennia_launcher.MsgLauncher2Portal">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">MsgLauncher2Portal</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kw</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#MsgLauncher2Portal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.MsgLauncher2Portal" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">MsgLauncher2Portal</code><span class="sig-paren">(</span><em class="sig-param">**kw</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#MsgLauncher2Portal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.MsgLauncher2Portal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.protocols.amp.Command</span></code></p>
 <p>Message Launcher -&gt; Portal</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.server.evennia_launcher.MsgLauncher2Portal.key">
 <code class="sig-name descname">key</code><em class="property"> = 'MsgLauncher2Portal'</em><a class="headerlink" href="#evennia.server.evennia_launcher.MsgLauncher2Portal.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.server.evennia_launcher.MsgLauncher2Portal.arguments">
 <code class="sig-name descname">arguments</code><em class="property"> = [(b'operation', &lt;twisted.protocols.amp.String object&gt;), (b'arguments', &lt;twisted.protocols.amp.String object&gt;)]</em><a class="headerlink" href="#evennia.server.evennia_launcher.MsgLauncher2Portal.arguments" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.server.evennia_launcher.MsgLauncher2Portal.errors">
 <code class="sig-name descname">errors</code><em class="property"> = {&lt;class 'Exception'&gt;: b'EXCEPTION'}</em><a class="headerlink" href="#evennia.server.evennia_launcher.MsgLauncher2Portal.errors" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.server.evennia_launcher.MsgLauncher2Portal.response">
 <code class="sig-name descname">response</code><em class="property"> = []</em><a class="headerlink" href="#evennia.server.evennia_launcher.MsgLauncher2Portal.response" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.server.evennia_launcher.MsgLauncher2Portal.allErrors">
 <code class="sig-name descname">allErrors</code><em class="property"> = {&lt;class 'Exception'&gt;: b'EXCEPTION'}</em><a class="headerlink" href="#evennia.server.evennia_launcher.MsgLauncher2Portal.allErrors" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.server.evennia_launcher.MsgLauncher2Portal.commandName">
 <code class="sig-name descname">commandName</code><em class="property"> = b'MsgLauncher2Portal'</em><a class="headerlink" href="#evennia.server.evennia_launcher.MsgLauncher2Portal.commandName" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.server.evennia_launcher.MsgLauncher2Portal.reverseErrors">
 <code class="sig-name descname">reverseErrors</code><em class="property"> = {b'EXCEPTION': &lt;class 'Exception'&gt;}</em><a class="headerlink" href="#evennia.server.evennia_launcher.MsgLauncher2Portal.reverseErrors" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.server.evennia_launcher.AMPLauncherProtocol">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">AMPLauncherProtocol</code><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#AMPLauncherProtocol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.AMPLauncherProtocol" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.protocols.amp.AMP</span></code></p>
 <p>Defines callbacks to the launcher</p>
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.evennia_launcher.AMPLauncherProtocol.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#AMPLauncherProtocol.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.AMPLauncherProtocol.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.evennia_launcher.AMPLauncherProtocol.wait_for_status">
-<code class="sig-name descname">wait_for_status</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">callback</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#AMPLauncherProtocol.wait_for_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.AMPLauncherProtocol.wait_for_status" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">wait_for_status</code><span class="sig-paren">(</span><em class="sig-param">callback</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#AMPLauncherProtocol.wait_for_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.AMPLauncherProtocol.wait_for_status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Register a waiter for a status return.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.evennia_launcher.AMPLauncherProtocol.receive_status_from_portal">
-<code class="sig-name descname">receive_status_from_portal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">status</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#AMPLauncherProtocol.receive_status_from_portal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.AMPLauncherProtocol.receive_status_from_portal" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">receive_status_from_portal</code><span class="sig-paren">(</span><em class="sig-param">status</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#AMPLauncherProtocol.receive_status_from_portal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.AMPLauncherProtocol.receive_status_from_portal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a status signal from portal - fire next queued
 callback</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.send_instruction">
-<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">send_instruction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">operation</span></em>, <em class="sig-param"><span class="n">arguments</span></em>, <em class="sig-param"><span class="n">callback</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">errback</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#send_instruction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.send_instruction" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">send_instruction</code><span class="sig-paren">(</span><em class="sig-param">operation</em>, <em class="sig-param">arguments</em>, <em class="sig-param">callback=None</em>, <em class="sig-param">errback=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#send_instruction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.send_instruction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send instruction and handle the response.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.query_status">
-<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">query_status</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">callback</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#query_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.query_status" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">query_status</code><span class="sig-paren">(</span><em class="sig-param">callback=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#query_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.query_status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send status ping to portal</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.wait_for_status_reply">
-<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">wait_for_status_reply</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">callback</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#wait_for_status_reply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.wait_for_status_reply" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">wait_for_status_reply</code><span class="sig-paren">(</span><em class="sig-param">callback</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#wait_for_status_reply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.wait_for_status_reply" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wait for an explicit STATUS signal to be sent back from Evennia.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.wait_for_status">
-<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">wait_for_status</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">portal_running</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">server_running</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">callback</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">errback</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rate</span><span class="o">=</span><span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">retries</span><span class="o">=</span><span class="default_value">20</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#wait_for_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.wait_for_status" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">wait_for_status</code><span class="sig-paren">(</span><em class="sig-param">portal_running=True</em>, <em class="sig-param">server_running=True</em>, <em class="sig-param">callback=None</em>, <em class="sig-param">errback=None</em>, <em class="sig-param">rate=0.5</em>, <em class="sig-param">retries=20</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#wait_for_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.wait_for_status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Repeat the status ping until the desired state combination is achieved.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -193,55 +191,55 @@ request is timed out.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.collectstatic">
 <code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">collectstatic</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#collectstatic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.collectstatic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run the collectstatic django command</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.start_evennia">
-<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">start_evennia</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pprofiler</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">sprofiler</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#start_evennia"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.start_evennia" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">start_evennia</code><span class="sig-paren">(</span><em class="sig-param">pprofiler=False</em>, <em class="sig-param">sprofiler=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#start_evennia"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.start_evennia" title="Permalink to this definition">¶</a></dt>
 <dd><p>This will start Evennia anew by launching the Evennia Portal (which in turn
 will start the Server)</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.reload_evennia">
-<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">reload_evennia</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sprofiler</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">reset</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#reload_evennia"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.reload_evennia" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">reload_evennia</code><span class="sig-paren">(</span><em class="sig-param">sprofiler=False</em>, <em class="sig-param">reset=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#reload_evennia"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.reload_evennia" title="Permalink to this definition">¶</a></dt>
 <dd><p>This will instruct the Portal to reboot the Server component. We
 do this manually by telling the server to shutdown (in reload mode)
 and wait for the portal to report back, at which point we start the
 server again. This way we control the process exactly.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.stop_evennia">
 <code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">stop_evennia</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#stop_evennia"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.stop_evennia" title="Permalink to this definition">¶</a></dt>
 <dd><p>This instructs the Portal to stop the Server and then itself.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.reboot_evennia">
-<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">reboot_evennia</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pprofiler</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">sprofiler</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#reboot_evennia"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.reboot_evennia" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">reboot_evennia</code><span class="sig-paren">(</span><em class="sig-param">pprofiler=False</em>, <em class="sig-param">sprofiler=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#reboot_evennia"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.reboot_evennia" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is essentially an evennia stop &amp;&amp; evennia start except we make sure
 the system has successfully shut down before starting it again.</p>
 <p>If evennia was not running, start it.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.start_only_server">
 <code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">start_only_server</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#start_only_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.start_only_server" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tell portal to start server (debug)</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.start_server_interactive">
 <code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">start_server_interactive</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#start_server_interactive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.start_server_interactive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start the Server under control of the launcher process (foreground)</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.start_portal_interactive">
 <code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">start_portal_interactive</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#start_portal_interactive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.start_portal_interactive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start the Portal under control of the launcher process (foreground)</p>
@@ -254,9 +252,9 @@ relies on a fixed server server-cmdline stored as a fallback on the
 portal application in evennia/server/portal/portal.py.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.stop_server_only">
-<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">stop_server_only</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">when_stopped</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">interactive</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#stop_server_only"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.stop_server_only" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">stop_server_only</code><span class="sig-paren">(</span><em class="sig-param">when_stopped=None</em>, <em class="sig-param">interactive=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#stop_server_only"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.stop_server_only" title="Permalink to this definition">¶</a></dt>
 <dd><p>Only stop the Server-component of Evennia (this is not useful except for debug)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -270,15 +268,15 @@ mechanism.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.query_info">
 <code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">query_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#query_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.query_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display the info strings from the running Evennia</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.tail_log_files">
-<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">tail_log_files</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename1</span></em>, <em class="sig-param"><span class="n">filename2</span></em>, <em class="sig-param"><span class="n">start_lines1</span><span class="o">=</span><span class="default_value">20</span></em>, <em class="sig-param"><span class="n">start_lines2</span><span class="o">=</span><span class="default_value">20</span></em>, <em class="sig-param"><span class="n">rate</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#tail_log_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.tail_log_files" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">tail_log_files</code><span class="sig-paren">(</span><em class="sig-param">filename1</em>, <em class="sig-param">filename2</em>, <em class="sig-param">start_lines1=20</em>, <em class="sig-param">start_lines2=20</em>, <em class="sig-param">rate=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#tail_log_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.tail_log_files" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tail two logfiles interactively, combining their output to stdout</p>
 <p>When first starting, this will display the tail of the log files. After
 that it will poll the log files repeatedly and display changes.</p>
@@ -295,13 +293,13 @@ that it will poll the log files repeatedly and display changes.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.evennia_version">
 <code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">evennia_version</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#evennia_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.evennia_version" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the Evennia version info from the main package.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.check_main_evennia_dependencies">
 <code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">check_main_evennia_dependencies</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#check_main_evennia_dependencies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.check_main_evennia_dependencies" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks and imports the Evennia dependencies. This must be done
@@ -313,23 +311,23 @@ already before the paths are set up.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.set_gamedir">
-<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">set_gamedir</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#set_gamedir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.set_gamedir" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">set_gamedir</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#set_gamedir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.set_gamedir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set GAMEDIR based on path, by figuring out where the setting file
 is inside the directory tree. This allows for running the launcher
 from elsewhere than the top of the gamedir folder.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.create_secret_key">
 <code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">create_secret_key</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#create_secret_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.create_secret_key" title="Permalink to this definition">¶</a></dt>
 <dd><p>Randomly create the secret key for the settings file</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.create_settings_file">
-<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">create_settings_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">init</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">secret_settings</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#create_settings_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.create_settings_file" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">create_settings_file</code><span class="sig-paren">(</span><em class="sig-param">init=True</em>, <em class="sig-param">secret_settings=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#create_settings_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.create_settings_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Uses the template settings file to build a working settings file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -344,9 +342,9 @@ create the secret_settings.py file.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.create_game_directory">
-<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">create_game_directory</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dirname</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#create_game_directory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.create_game_directory" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">create_game_directory</code><span class="sig-paren">(</span><em class="sig-param">dirname</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#create_game_directory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.create_game_directory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize a new game directory named dirname
 at the current path. This means copying the
 template directory from evennia’s root.</p>
@@ -357,15 +355,15 @@ template directory from evennia’s root.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.create_superuser">
 <code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">create_superuser</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#create_superuser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.create_superuser" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create the superuser account</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.check_database">
-<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">check_database</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">always_return</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#check_database"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.check_database" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">check_database</code><span class="sig-paren">(</span><em class="sig-param">always_return=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#check_database"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.check_database" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check so the database exists.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -378,7 +376,7 @@ also on critical errors. No output will be printed.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.getenv">
 <code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">getenv</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#getenv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.getenv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get current environment and add PYTHONPATH.</p>
@@ -389,9 +387,9 @@ also on critical errors. No output will be printed.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.get_pid">
-<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">get_pid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pidfile</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#get_pid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.get_pid" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">get_pid</code><span class="sig-paren">(</span><em class="sig-param">pidfile</em>, <em class="sig-param">default=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#get_pid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.get_pid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the PID (Process ID) by trying to access an PID file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -406,9 +404,9 @@ also on critical errors. No output will be printed.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.del_pid">
-<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">del_pid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pidfile</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#del_pid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.del_pid" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">del_pid</code><span class="sig-paren">(</span><em class="sig-param">pidfile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#del_pid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.del_pid" title="Permalink to this definition">¶</a></dt>
 <dd><p>The pidfile should normally be removed after a process has
 finished, but when sending certain signals they remain, so we need
 to clean them manually.</p>
@@ -419,7 +417,7 @@ to clean them manually.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.kill">
 <code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">kill</code><span class="sig-paren">(</span><em class="sig-param">pidfile</em>, <em class="sig-param">component='Server'</em>, <em class="sig-param">callback=None</em>, <em class="sig-param">errback=None</em>, <em class="sig-param">killsignal=&lt;Signals.SIGINT: 2&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#kill"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.kill" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send a kill signal to a process based on PID. A customized
@@ -445,9 +443,9 @@ ignored on Windows.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.show_version_info">
-<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">show_version_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">about</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#show_version_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.show_version_info" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">show_version_info</code><span class="sig-paren">(</span><em class="sig-param">about=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#show_version_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.show_version_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display version info.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -459,9 +457,9 @@ ignored on Windows.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.error_check_python_modules">
-<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">error_check_python_modules</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">show_warnings</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#error_check_python_modules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.error_check_python_modules" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">error_check_python_modules</code><span class="sig-paren">(</span><em class="sig-param">show_warnings=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#error_check_python_modules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.error_check_python_modules" title="Permalink to this definition">¶</a></dt>
 <dd><p>Import settings modules in settings. This will raise exceptions on
 pure python-syntax issues which are hard to catch gracefully with
 exceptions in the engine (since they are formatting errors in the
@@ -474,9 +472,9 @@ before we get any further.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.init_game_directory">
-<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">init_game_directory</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">check_db</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">need_gamedir</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#init_game_directory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.init_game_directory" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">init_game_directory</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">check_db=True</em>, <em class="sig-param">need_gamedir=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#init_game_directory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.init_game_directory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Try to analyze the given path to find settings.py - this defines
 the game directory and also sets PYTHONPATH as well as the django
 path.</p>
@@ -492,9 +490,9 @@ be run in a valid game directory.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.run_dummyrunner">
-<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">run_dummyrunner</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">number_of_dummies</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#run_dummyrunner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.run_dummyrunner" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">run_dummyrunner</code><span class="sig-paren">(</span><em class="sig-param">number_of_dummies</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#run_dummyrunner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.run_dummyrunner" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start an instance of the dummyrunner</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -507,15 +505,15 @@ be run in a valid game directory.</p></li>
 directory.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.run_connect_wizard">
 <code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">run_connect_wizard</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#run_connect_wizard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.run_connect_wizard" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run the linking wizard, for adding new external connections.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.list_settings">
-<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">list_settings</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">keys</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#list_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.list_settings" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">list_settings</code><span class="sig-paren">(</span><em class="sig-param">keys</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#list_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.list_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display the server settings. We only display the Evennia specific
 settings here. The result will be printed to the terminal.</p>
 <dl class="field-list simple">
@@ -525,13 +523,13 @@ settings here. The result will be printed to the terminal.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.run_menu">
 <code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">run_menu</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#run_menu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.run_menu" title="Permalink to this definition">¶</a></dt>
 <dd><p>This launches an interactive menu.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.evennia_launcher.main">
 <code class="sig-prename descclassname">evennia.server.evennia_launcher.</code><code class="sig-name descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.evennia_launcher.main" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run the evennia launcher main program.</p>
@@ -540,7 +538,6 @@ settings here. The result will be printed to the terminal.</p>
 </div>
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -569,7 +566,7 @@ settings here. The result will be printed to the terminal.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.server.evennia_launcher.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.1/api/evennia.server.evennia_launcher.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../0.9.5/api/evennia.server.evennia_launcher.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -585,13 +582,12 @@ settings here. The result will be printed to the terminal.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.server.evennia_launcher</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

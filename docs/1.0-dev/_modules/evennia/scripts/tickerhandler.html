@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.scripts.tickerhandler &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -28,8 +27,7 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.scripts.tickerhandler</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -114,7 +112,7 @@
 <span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="k">import</span> <span class="n">ServerConfig</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="k">import</span> <span class="n">log_trace</span><span class="p">,</span> <span class="n">log_err</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.dbserialize</span> <span class="k">import</span> <span class="n">dbserialize</span><span class="p">,</span> <span class="n">dbunserialize</span><span class="p">,</span> <span class="n">pack_dbobj</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">variable_from_module</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">variable_from_module</span><span class="p">,</span> <span class="n">inherits_from</span>
 
 <span class="n">_GA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__getattribute__</span>
 <span class="n">_SA</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span>
@@ -360,7 +358,6 @@
 <span class="sd">            callback (function or method): This is either a stand-alone</span>
 <span class="sd">                function or class method on a typeclassed entitye (that is,</span>
 <span class="sd">                an entity that can be saved to the database).</span>
-
 <span class="sd">        Returns:</span>
 <span class="sd">            ret (tuple): This is a tuple of the form `(obj, path, callfunc)`,</span>
 <span class="sd">                where `obj` is the database object the callback is defined on</span>
@@ -368,6 +365,8 @@
 <span class="sd">                the python-path to the stand-alone function (`None` if a method).</span>
 <span class="sd">                The `callfunc` is either the name of the method to call or the</span>
 <span class="sd">                callable function object itself.</span>
+<span class="sd">        Raises:</span>
+<span class="sd">            TypeError: If the callback is of an unsupported type.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">outobj</span><span class="p">,</span> <span class="n">outpath</span><span class="p">,</span> <span class="n">outcallfunc</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
@@ -378,8 +377,17 @@
             <span class="k">elif</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isfunction</span><span class="p">(</span><span class="n">callback</span><span class="p">):</span>
                 <span class="n">outpath</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">callback</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="n">callback</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
                 <span class="n">outcallfunc</span> <span class="o">=</span> <span class="n">callback</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{callback}</span><span class="s2"> is not a method or function.&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is not a callable function or method.&quot;</span> <span class="o">%</span> <span class="n">callback</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{callback}</span><span class="s2"> is not a callable function or method.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">outobj</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">outobj</span><span class="p">,</span> <span class="s2">&quot;evennia.typeclasses.models.TypedObject&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="n">f</span><span class="s2">&quot;</span><span class="si">{callback}</span><span class="s2"> is a method on a normal object - it must &quot;</span>
+                <span class="s2">&quot;be either a method on a typeclass, or a stand-alone function.&quot;</span>
+            <span class="p">)</span>
+
         <span class="k">return</span> <span class="n">outobj</span><span class="p">,</span> <span class="n">outpath</span><span class="p">,</span> <span class="n">outcallfunc</span>
 
     <span class="k">def</span> <span class="nf">_store_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">callfunc</span><span class="p">,</span> <span class="n">idstring</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -545,12 +553,6 @@
 <span class="sd">            when wanting to modify/remove the ticker later.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="s2">&quot;TICKER_HANDLER.add has changed: &quot;</span>
-                <span class="s2">&quot;the interval is now the first argument, callback the second.&quot;</span>
-            <span class="p">)</span>
-
         <span class="n">obj</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">callfunc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_callback</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
         <span class="n">store_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_store_key</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">callfunc</span><span class="p">,</span> <span class="n">idstring</span><span class="p">,</span> <span class="n">persistent</span><span class="p">)</span>
         <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;_obj&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
@@ -670,7 +672,6 @@
 <span class="n">TICKER_HANDLER</span> <span class="o">=</span> <span class="n">TickerHandler</span><span class="p">()</span>
 </pre></div>
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -692,7 +693,7 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="tickerhandler.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../0.9.1/index.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../../../0.9.5/index.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -710,13 +711,12 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.scripts.tickerhandler</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.server.portal.amp_server &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +25,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.amp_server</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -41,7 +39,7 @@
 <p>The Evennia Portal service acts as an AMP-server, handling AMP
 communication to the AMP clients connecting to it (by default
 these are the Evennia Server and the evennia launcher).</p>
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.portal.amp_server.getenv">
 <code class="sig-prename descclassname">evennia.server.portal.amp_server.</code><code class="sig-name descname">getenv</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp_server.html#getenv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp_server.getenv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get current environment and add PYTHONPATH.</p>
@@ -52,26 +50,26 @@ these are the Evennia Server and the evennia launcher).</p>
 </dl>
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.server.portal.amp_server.AMPServerFactory">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.amp_server.</code><code class="sig-name descname">AMPServerFactory</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">portal</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp_server.html#AMPServerFactory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerFactory" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.amp_server.</code><code class="sig-name descname">AMPServerFactory</code><span class="sig-paren">(</span><em class="sig-param">portal</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp_server.html#AMPServerFactory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerFactory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.internet.protocol.ServerFactory</span></code></p>
 <p>This factory creates AMP Server connection. This acts as the ‘Portal’-side communication to the
 ‘Server’ process.</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.server.portal.amp_server.AMPServerFactory.noisy">
 <code class="sig-name descname">noisy</code><em class="property"> = False</em><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerFactory.noisy" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.portal.amp_server.AMPServerFactory.logPrefix">
 <code class="sig-name descname">logPrefix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp_server.html#AMPServerFactory.logPrefix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerFactory.logPrefix" title="Permalink to this definition">¶</a></dt>
 <dd><p>How this is named in logs</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.portal.amp_server.AMPServerFactory.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">portal</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp_server.html#AMPServerFactory.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerFactory.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">portal</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp_server.html#AMPServerFactory.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerFactory.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize the factory. This is called as the Portal service starts.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -84,9 +82,9 @@ instances of.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.portal.amp_server.AMPServerFactory.buildProtocol">
-<code class="sig-name descname">buildProtocol</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">addr</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp_server.html#AMPServerFactory.buildProtocol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerFactory.buildProtocol" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">buildProtocol</code><span class="sig-paren">(</span><em class="sig-param">addr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp_server.html#AMPServerFactory.buildProtocol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerFactory.buildProtocol" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start a new connection, and store it on the service object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -100,18 +98,18 @@ instances of.</p></li>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.server.portal.amp_server.AMPServerProtocol">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.amp_server.</code><code class="sig-name descname">AMPServerProtocol</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp_server.html#AMPServerProtocol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerProtocol" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.amp_server.</code><code class="sig-name descname">AMPServerProtocol</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp_server.html#AMPServerProtocol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerProtocol" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.server.portal.amp.html#evennia.server.portal.amp.AMPMultiConnectionProtocol" title="evennia.server.portal.amp.AMPMultiConnectionProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.server.portal.amp.AMPMultiConnectionProtocol</span></code></a></p>
 <p>Protocol subclass for the AMP-server run by the Portal.</p>
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.portal.amp_server.AMPServerProtocol.connectionLost">
-<code class="sig-name descname">connectionLost</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reason</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp_server.html#AMPServerProtocol.connectionLost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerProtocol.connectionLost" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">connectionLost</code><span class="sig-paren">(</span><em class="sig-param">reason</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp_server.html#AMPServerProtocol.connectionLost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerProtocol.connectionLost" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set up a simple callback mechanism to let the amp-server wait for a connection to close.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.portal.amp_server.AMPServerProtocol.get_status">
 <code class="sig-name descname">get_status</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp_server.html#AMPServerProtocol.get_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerProtocol.get_status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return status for the Evennia infrastructure.</p>
@@ -127,9 +125,9 @@ instances of.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.portal.amp_server.AMPServerProtocol.data_to_server">
-<code class="sig-name descname">data_to_server</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">command</span></em>, <em class="sig-param"><span class="n">sessid</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp_server.html#AMPServerProtocol.data_to_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerProtocol.data_to_server" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">data_to_server</code><span class="sig-paren">(</span><em class="sig-param">command</em>, <em class="sig-param">sessid</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp_server.html#AMPServerProtocol.data_to_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerProtocol.data_to_server" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send data across the wire to the Server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -148,9 +146,9 @@ instances of.</p></li>
 (sessid, kwargs).</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.portal.amp_server.AMPServerProtocol.start_server">
-<code class="sig-name descname">start_server</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">server_twistd_cmd</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp_server.html#AMPServerProtocol.start_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerProtocol.start_server" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">start_server</code><span class="sig-paren">(</span><em class="sig-param">server_twistd_cmd</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp_server.html#AMPServerProtocol.start_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerProtocol.start_server" title="Permalink to this definition">¶</a></dt>
 <dd><p>(Re-)Launch the Evennia server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -160,9 +158,9 @@ to pass to POpen to start the server.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.portal.amp_server.AMPServerProtocol.wait_for_disconnect">
-<code class="sig-name descname">wait_for_disconnect</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">callback</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp_server.html#AMPServerProtocol.wait_for_disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerProtocol.wait_for_disconnect" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">wait_for_disconnect</code><span class="sig-paren">(</span><em class="sig-param">callback</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp_server.html#AMPServerProtocol.wait_for_disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerProtocol.wait_for_disconnect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a callback for when this connection is lost.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -172,9 +170,9 @@ once this protocol is disconnected.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.portal.amp_server.AMPServerProtocol.wait_for_server_connect">
-<code class="sig-name descname">wait_for_server_connect</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">callback</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp_server.html#AMPServerProtocol.wait_for_server_connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerProtocol.wait_for_server_connect" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">wait_for_server_connect</code><span class="sig-paren">(</span><em class="sig-param">callback</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp_server.html#AMPServerProtocol.wait_for_server_connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerProtocol.wait_for_server_connect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a callback for when the Server is sure to have connected.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -184,9 +182,9 @@ once the Server handshake with Portal is complete.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.portal.amp_server.AMPServerProtocol.stop_server">
-<code class="sig-name descname">stop_server</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'shutdown'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp_server.html#AMPServerProtocol.stop_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerProtocol.stop_server" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">stop_server</code><span class="sig-paren">(</span><em class="sig-param">mode='shutdown'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp_server.html#AMPServerProtocol.stop_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerProtocol.stop_server" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shut down server in one or more modes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -195,15 +193,15 @@ once the Server handshake with Portal is complete.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.portal.amp_server.AMPServerProtocol.send_Status2Launcher">
 <code class="sig-name descname">send_Status2Launcher</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp_server.html#AMPServerProtocol.send_Status2Launcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerProtocol.send_Status2Launcher" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send a status stanza to the launcher.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.portal.amp_server.AMPServerProtocol.send_MsgPortal2Server">
-<code class="sig-name descname">send_MsgPortal2Server</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp_server.html#AMPServerProtocol.send_MsgPortal2Server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerProtocol.send_MsgPortal2Server" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">send_MsgPortal2Server</code><span class="sig-paren">(</span><em class="sig-param">session</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp_server.html#AMPServerProtocol.send_MsgPortal2Server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerProtocol.send_MsgPortal2Server" title="Permalink to this definition">¶</a></dt>
 <dd><p>Access method called by the Portal and executed on the Portal.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -218,9 +216,9 @@ once the Server handshake with Portal is complete.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.portal.amp_server.AMPServerProtocol.send_AdminPortal2Server">
-<code class="sig-name descname">send_AdminPortal2Server</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="n">operation</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp_server.html#AMPServerProtocol.send_AdminPortal2Server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerProtocol.send_AdminPortal2Server" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">send_AdminPortal2Server</code><span class="sig-paren">(</span><em class="sig-param">session</em>, <em class="sig-param">operation=''</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp_server.html#AMPServerProtocol.send_AdminPortal2Server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerProtocol.send_AdminPortal2Server" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send Admin instructions from the Portal to the Server.
 Executed on the Portal.</p>
 <dl class="field-list simple">
@@ -235,27 +233,27 @@ global variables in <strong>evennia/server/amp.py</strong>.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.portal.amp_server.AMPServerProtocol.portal_receive_status">
-<code class="sig-name descname">portal_receive_status</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">status</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerProtocol.portal_receive_status" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">portal_receive_status</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerProtocol.portal_receive_status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper decorator</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.portal.amp_server.AMPServerProtocol.portal_receive_launcher2portal">
-<code class="sig-name descname">portal_receive_launcher2portal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">operation</span></em>, <em class="sig-param"><span class="n">arguments</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerProtocol.portal_receive_launcher2portal" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">portal_receive_launcher2portal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerProtocol.portal_receive_launcher2portal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper decorator</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.portal.amp_server.AMPServerProtocol.portal_receive_server2portal">
-<code class="sig-name descname">portal_receive_server2portal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">packed_data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerProtocol.portal_receive_server2portal" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">portal_receive_server2portal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerProtocol.portal_receive_server2portal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper decorator</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.portal.amp_server.AMPServerProtocol.portal_receive_adminserver2portal">
-<code class="sig-name descname">portal_receive_adminserver2portal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">packed_data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerProtocol.portal_receive_adminserver2portal" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">portal_receive_adminserver2portal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#evennia.server.portal.amp_server.AMPServerProtocol.portal_receive_adminserver2portal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper decorator</p>
 </dd></dl>
 
@@ -264,7 +262,6 @@ global variables in <strong>evennia/server/amp.py</strong>.</p></li>
 </div>
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -293,7 +290,7 @@ global variables in <strong>evennia/server/amp.py</strong>.</p></li>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.server.portal.amp_server.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.1/api/evennia.server.portal.amp_server.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../0.9.5/api/evennia.server.portal.amp_server.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -309,13 +306,12 @@ global variables in <strong>evennia/server/amp.py</strong>.</p></li>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.amp_server</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

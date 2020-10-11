@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.web.utils.backends &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +25,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.web.utils.backends</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -38,16 +36,16 @@
             
   <div class="section" id="module-evennia.web.utils.backends">
 <span id="evennia-web-utils-backends"></span><h1>evennia.web.utils.backends<a class="headerlink" href="#module-evennia.web.utils.backends" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.web.utils.backends.CaseInsensitiveModelBackend">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.web.utils.backends.</code><code class="sig-name descname">CaseInsensitiveModelBackend</code><a class="reference internal" href="../_modules/evennia/web/utils/backends.html#CaseInsensitiveModelBackend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.utils.backends.CaseInsensitiveModelBackend" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.auth.backends.ModelBackend</span></code></p>
 <p>By default ModelBackend does case _sensitive_ username
 authentication, which isn’t what is generally expected.  This
 backend supports case insensitive username authentication.</p>
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.web.utils.backends.CaseInsensitiveModelBackend.authenticate">
-<code class="sig-name descname">authenticate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">username</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">password</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">autologin</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/utils/backends.html#CaseInsensitiveModelBackend.authenticate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.utils.backends.CaseInsensitiveModelBackend.authenticate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">authenticate</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">username=None</em>, <em class="sig-param">password=None</em>, <em class="sig-param">autologin=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/utils/backends.html#CaseInsensitiveModelBackend.authenticate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.utils.backends.CaseInsensitiveModelBackend.authenticate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Custom authenticate with bypass for auto-logins</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -67,7 +65,6 @@ an already authenticated account and bypass authentication.</p></li>
 </div>
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -96,7 +93,7 @@ an already authenticated account and bypass authentication.</p></li>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.web.utils.backends.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.1/api/evennia.web.utils.backends.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../0.9.5/api/evennia.web.utils.backends.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -112,13 +109,12 @@ an already authenticated account and bypass authentication.</p></li>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.web.utils.backends</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

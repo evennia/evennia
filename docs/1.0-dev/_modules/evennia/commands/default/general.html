@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.commands.default.general &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -28,8 +27,7 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.general</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -419,10 +417,12 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">items</span><span class="p">:</span>
             <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You are not carrying anything.&quot;</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="k">import</span> <span class="n">raw</span> <span class="k">as</span> <span class="n">raw_ansi</span>
             <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">styled_table</span><span class="p">(</span><span class="n">border</span><span class="o">=</span><span class="s2">&quot;header&quot;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
-                <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s2">&quot;|C</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;|wYou are carrying:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">table</span>
+                <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;|C</span><span class="si">{item.name}</span><span class="s2">|n&quot;</span><span class="p">,</span>
+                              <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">raw_ansi</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;|wYou are carrying:</span><span class="se">\n</span><span class="si">{table}</span><span class="s2">&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
 
 
@@ -767,7 +767,6 @@
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
 </pre></div>
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -789,7 +788,7 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="general.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../../0.9.1/index.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../../../../0.9.5/index.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -807,13 +806,12 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.general</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

@@ -91,7 +91,7 @@ bulletin boards.
 #### How will the world be built?
  
 There are two main ways to handle this: 
-- Traditionally, from in-game with build-commands:  This pretty means builders creating content in their game
+- Traditionally, from in-game with build-commands:  This means builders creating content in their game
   client. This has the advantage of not requiring Python skills nor server access. This can often be a quite 
   intuitive way to build since you are sort-of walking around in your creation as you build it. However, the 
   developer (you) must make sure to provide build-commands that are flexible enough for builders to be able to 
@@ -119,13 +119,13 @@ code (such as what you can do with the `py` command). You can
 it's suggested that this is accomplished by adding more powerful build-commands for them to use. 
 
 For our tutorial-game, we will only allow privileged builders to modify the world. The exception is crafting, 
-where we will allow players to to use in-game commands to create specific, prescribed objects from recipes. 
+which we will limit to repairing broken items by combining them with other repair-related items.
 
 ### Systems
 
 #### Do you base your game off an existing RPG system or make up your own? 
 
-We will make use of [Open Adventure](http://www.geekguild.com/openadventure/), an 'old school' RRG-system 
+We will make use of [Open Adventure](http://www.geekguild.com/openadventure/), a simple 'old school' RPG-system 
 that is available for free under the Creative Commons license. We'll only use a subset of the rules from 
 the blue "basic" book. For the sake of keeping down the length of this tutorial we will limit what features
 we will include: 
@@ -140,12 +140,11 @@ we will include:
 #### What are the game mechanics? How do you decide if an action succeeds or fails?
 
 Open Adventure's conflict resolution is based on adding a trait (such as Strength) with a random number in 
-order beat a target. We will emulate this in code. 
+order to beat a target. We will emulate this in code. 
 
-There are no pre-set "skills", all resolution is based on using suitable traits in different combinations. 
-The computer can't do this decision on-the-fly like a GM could, so we need to encode what is needed
-to achieve a certain effect - this will be a set of 'skills'. We will only make the minimum amount of skills
-needed to accomplish the actions we want to support. This will mean custom Commands. 
+Having a "skill" means getting a bonus to that roll for a more narrow action. 
+Since the computer will need to know exactly what those skills are, we will add them more explicitly than
+in the rules, but we will only add the minimum to show off the functionality we need.
 
 #### Does the flow of time matter in your game - does night and day change? What about seasons?
 

@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.commands.default.system &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -28,8 +27,7 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.system</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -57,6 +55,7 @@
 <span class="kn">import</span> <span class="nn">time</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.core.paginator</span> <span class="k">import</span> <span class="n">Paginator</span>
 <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="k">import</span> <span class="n">SESSIONS</span>
 <span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="k">import</span> <span class="n">ScriptDB</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="k">import</span> <span class="n">ObjectDB</span>
@@ -449,59 +448,71 @@
         <span class="p">)</span></div></div>
 
 
-<span class="c1"># helper function. Kept outside so it can be imported and run</span>
-<span class="c1"># by other commands.</span>
+<span class="k">class</span> <span class="nc">ScriptEvMore</span><span class="p">(</span><span class="n">EvMore</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Listing 1000+ Scripts can be very slow and memory-consuming. So</span>
+<span class="sd">    we use this custom EvMore child to build en EvTable only for</span>
+<span class="sd">    each page of the list.</span>
 
+<span class="sd">    &quot;&quot;&quot;</span>
 
-<span class="k">def</span> <span class="nf">format_script_list</span><span class="p">(</span><span class="n">scripts</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Takes a list of scripts and formats the output.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">scripts</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;&lt;No scripts&gt;&quot;</span>
+    <span class="k">def</span> <span class="nf">init_pages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scripts</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Prepare the script list pagination&quot;&quot;&quot;</span>
+        <span class="n">script_pages</span> <span class="o">=</span> <span class="n">Paginator</span><span class="p">(</span><span class="n">scripts</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)))</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">init_pages</span><span class="p">(</span><span class="n">script_pages</span><span class="p">)</span>
 
-    <span class="n">table</span> <span class="o">=</span> <span class="n">EvTable</span><span class="p">(</span>
-        <span class="s2">&quot;|wdbref|n&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;|wobj|n&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;|wkey|n&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;|wintval|n&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;|wnext|n&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;|wrept|n&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;|wdb&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;|wtypeclass|n&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;|wdesc|n&quot;</span><span class="p">,</span>
-        <span class="n">align</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span>
-        <span class="n">border</span><span class="o">=</span><span class="s2">&quot;tablecols&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">page_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scripts</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Takes a page of scripts and formats the output</span>
+<span class="sd">        into an EvTable.&quot;&quot;&quot;</span>
 
-    <span class="k">for</span> <span class="n">script</span> <span class="ow">in</span> <span class="n">scripts</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">scripts</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&lt;No scripts&gt;&quot;</span>
 
-        <span class="n">nextrep</span> <span class="o">=</span> <span class="n">script</span><span class="o">.</span><span class="n">time_until_next_repeat</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">nextrep</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">nextrep</span> <span class="o">=</span> <span class="s2">&quot;PAUSED&quot;</span> <span class="k">if</span> <span class="n">script</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_paused_time</span> <span class="k">else</span> <span class="s2">&quot;--&quot;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">nextrep</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">s&quot;</span> <span class="o">%</span> <span class="n">nextrep</span>
-
-        <span class="n">maxrepeat</span> <span class="o">=</span> <span class="n">script</span><span class="o">.</span><span class="n">repeats</span>
-        <span class="n">remaining</span> <span class="o">=</span> <span class="n">script</span><span class="o">.</span><span class="n">remaining_repeats</span><span class="p">()</span> <span class="ow">or</span> <span class="mi">0</span>
-        <span class="k">if</span> <span class="n">maxrepeat</span><span class="p">:</span>
-            <span class="n">rept</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%i</span><span class="s2">/</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">maxrepeat</span> <span class="o">-</span> <span class="n">remaining</span><span class="p">,</span> <span class="n">maxrepeat</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">rept</span> <span class="o">=</span> <span class="s2">&quot;-/-&quot;</span>
-
-        <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
-            <span class="n">script</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-            <span class="n">f</span><span class="s2">&quot;</span><span class="si">{script.obj.key}</span><span class="s2">(</span><span class="si">{script.obj.dbref}</span><span class="s2">)&quot;</span>
-            <span class="k">if</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">script</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
-            <span class="k">else</span> <span class="s2">&quot;&lt;Global&gt;&quot;</span><span class="p">,</span>
-            <span class="n">script</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
-            <span class="n">script</span><span class="o">.</span><span class="n">interval</span> <span class="k">if</span> <span class="n">script</span><span class="o">.</span><span class="n">interval</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span>
-            <span class="n">nextrep</span><span class="p">,</span>
-            <span class="n">rept</span><span class="p">,</span>
-            <span class="s2">&quot;*&quot;</span> <span class="k">if</span> <span class="n">script</span><span class="o">.</span><span class="n">persistent</span> <span class="k">else</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span>
-            <span class="n">script</span><span class="o">.</span><span class="n">typeclass_path</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-            <span class="n">crop</span><span class="p">(</span><span class="n">script</span><span class="o">.</span><span class="n">desc</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">),</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="n">EvTable</span><span class="p">(</span>
+            <span class="s2">&quot;|wdbref|n&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;|wobj|n&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;|wkey|n&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;|wintval|n&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;|wnext|n&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;|wrept|n&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;|wdb&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;|wtypeclass|n&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;|wdesc|n&quot;</span><span class="p">,</span>
+            <span class="n">align</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span>
+            <span class="n">border</span><span class="o">=</span><span class="s2">&quot;tablecols&quot;</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">table</span>
+        <span class="k">for</span> <span class="n">script</span> <span class="ow">in</span> <span class="n">scripts</span><span class="p">:</span>
+
+            <span class="n">nextrep</span> <span class="o">=</span> <span class="n">script</span><span class="o">.</span><span class="n">time_until_next_repeat</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">nextrep</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">nextrep</span> <span class="o">=</span> <span class="s2">&quot;PAUSED&quot;</span> <span class="k">if</span> <span class="n">script</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_paused_time</span> <span class="k">else</span> <span class="s2">&quot;--&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">nextrep</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">s&quot;</span> <span class="o">%</span> <span class="n">nextrep</span>
+
+            <span class="n">maxrepeat</span> <span class="o">=</span> <span class="n">script</span><span class="o">.</span><span class="n">repeats</span>
+            <span class="n">remaining</span> <span class="o">=</span> <span class="n">script</span><span class="o">.</span><span class="n">remaining_repeats</span><span class="p">()</span> <span class="ow">or</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">maxrepeat</span><span class="p">:</span>
+                <span class="n">rept</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%i</span><span class="s2">/</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">maxrepeat</span> <span class="o">-</span> <span class="n">remaining</span><span class="p">,</span> <span class="n">maxrepeat</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rept</span> <span class="o">=</span> <span class="s2">&quot;-/-&quot;</span>
+
+            <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+                <span class="n">script</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="n">f</span><span class="s2">&quot;</span><span class="si">{script.obj.key}</span><span class="s2">(</span><span class="si">{script.obj.dbref}</span><span class="s2">)&quot;</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">script</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
+                <span class="k">else</span> <span class="s2">&quot;&lt;Global&gt;&quot;</span><span class="p">,</span>
+                <span class="n">script</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+                <span class="n">script</span><span class="o">.</span><span class="n">interval</span> <span class="k">if</span> <span class="n">script</span><span class="o">.</span><span class="n">interval</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span>
+                <span class="n">nextrep</span><span class="p">,</span>
+                <span class="n">rept</span><span class="p">,</span>
+                <span class="s2">&quot;*&quot;</span> <span class="k">if</span> <span class="n">script</span><span class="o">.</span><span class="n">persistent</span> <span class="k">else</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span>
+                <span class="n">script</span><span class="o">.</span><span class="n">typeclass_path</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                <span class="n">crop</span><span class="p">(</span><span class="n">script</span><span class="o">.</span><span class="n">desc</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">),</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="CmdScripts"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdScripts">[docs]</a><span class="k">class</span> <span class="nc">CmdScripts</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
@@ -590,7 +601,7 @@
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># multiple matches.</span>
-                <span class="n">EvMore</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">scripts</span><span class="p">,</span> <span class="n">page_formatter</span><span class="o">=</span><span class="n">format_script_list</span><span class="p">)</span>
+                <span class="n">ScriptEvMore</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">scripts</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Multiple script matches. Please refine your search&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;validate&quot;</span><span class="p">,</span> <span class="s2">&quot;valid&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">):</span>
             <span class="c1"># run validation on all found scripts</span>
@@ -600,7 +611,7 @@
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># No stopping or validation. We just want to view things.</span>
-            <span class="n">EvMore</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">scripts</span><span class="p">,</span> <span class="n">page_formatter</span><span class="o">=</span><span class="n">format_script_list</span><span class="p">)</span></div></div>
+            <span class="n">ScriptEvMore</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">scripts</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">),</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="CmdObjects"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdObjects">[docs]</a><span class="k">class</span> <span class="nc">CmdObjects</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
@@ -1195,7 +1206,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|wActive tickers|n:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">table</span><span class="p">))</span>
 </pre></div>
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -1217,7 +1227,7 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="system.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../../0.9.1/index.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../../../../0.9.5/index.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -1235,13 +1245,12 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.system</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

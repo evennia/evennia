@@ -1,0 +1,472 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>TextTags &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="texttags">
+<h1>TextTags<a class="headerlink" href="#texttags" title="Permalink to this headline">¶</a></h1>
+<p>This documentation details the various text tags supported by Evennia, namely <em>colours</em>, <em>command
+links</em> and <em>inline functions</em>.</p>
+<p>There is also an <a class="reference internal" href="Understanding-Color-Tags.html"><span class="doc">Understanding Color Tags</span></a> tutorial which expands on the
+use of ANSI color tags and the pitfalls of mixing ANSI and Xterms256 color tags in the same context.</p>
+<div class="section" id="coloured-text">
+<h2>Coloured text<a class="headerlink" href="#coloured-text" title="Permalink to this headline">¶</a></h2>
+<p><em>Note that the Documentation does not display colour the way it would look on the screen.</em></p>
+<p>Color can be a very useful tool for your game. It can be used to increase readability and make your
+game more appealing visually.</p>
+<p>Remember however that, with the exception of the webclient, you generally don’t control the client
+used to connect to the game.  There is, for example, one special tag meaning “yellow”. But exactly
+<em>which</em> hue of yellow is actually displayed on the user’s screen depends on the settings of their
+particular mud client. They could even swap the colours around or turn them off altogether if so
+desired. Some clients don’t even support color - text games are also played with special reading
+equipment by people who are blind or have otherwise diminished eyesight.</p>
+<p>So a good rule of thumb is to use colour to enhance your game but don’t <em>rely</em> on it to display
+critical information. If you are coding the game, you can add functionality to let users disable
+colours as they please, as described <a class="reference internal" href="Manually-Configuring-Color.html"><span class="doc">here</span></a>.</p>
+<p>To see which colours your client support, use the default <code class="docutils literal notranslate"><span class="pre">&#64;color</span></code> command. This will list all
+available colours for ANSI and Xterm256 along with the codes you use for them. You can find a list
+of all the parsed <code class="docutils literal notranslate"><span class="pre">ANSI</span></code>-colour codes in <code class="docutils literal notranslate"><span class="pre">evennia/utils/ansi.py</span></code>.</p>
+<div class="section" id="ansi-colours">
+<h3>ANSI colours<a class="headerlink" href="#ansi-colours" title="Permalink to this headline">¶</a></h3>
+<p>Evennia supports the <code class="docutils literal notranslate"><span class="pre">ANSI</span></code> standard for text. This is by far the most supported MUD-color standard,
+available in all but the most ancient mud clients. The ANSI colours are <strong>r</strong>ed, <strong>g</strong>reen,
+<strong>y</strong>ellow, <strong>b</strong>lue, <strong>m</strong>agenta, <strong>c</strong>yan, <strong>w</strong>hite and black. They are abbreviated by their
+first letter except for black which is abbreviated with the letter <strong>x</strong>. In ANSI there are “bright”
+and “normal” (darker) versions of each color, adding up to a total of 16 colours to use for
+foreground text. There are also 8 “background” colours. These have no bright alternative in ANSI
+(but Evennia uses the <a class="reference external" href="TextTags.html#xterm256-colours">Xterm256</a> extension behind the scenes to offer
+them anyway).</p>
+<p>To colour your text you put special tags in it. Evennia will parse these and convert them to the
+correct markup for the client used. If the user’s client/console/display supports ANSI colour, they
+will see the text in the specified colour, otherwise the tags will be stripped (uncolored text).
+This works also for non-terminal clients, such as the webclient. For the webclient, Evennia will
+translate the codes to HTML RGB colors.</p>
+<p>Here is an example of the tags in action:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="o">|</span><span class="n">rThis</span> <span class="n">text</span> <span class="ow">is</span> <span class="n">bright</span> <span class="n">red</span><span class="o">.|</span><span class="n">n</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">normal</span> <span class="n">text</span><span class="o">.</span>
+ <span class="o">|</span><span class="n">RThis</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">dark</span> <span class="n">red</span> <span class="n">text</span><span class="o">.|</span><span class="n">n</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">normal</span> <span class="n">text</span><span class="o">.</span>
+ <span class="o">|</span><span class="p">[</span><span class="n">rThis</span> <span class="n">text</span> <span class="n">has</span> <span class="n">red</span> <span class="n">background</span><span class="o">.|</span><span class="n">n</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">normal</span> <span class="n">text</span><span class="o">.</span>
+ <span class="o">|</span><span class="n">b</span><span class="o">|</span><span class="p">[</span><span class="n">yThis</span> <span class="ow">is</span> <span class="n">bright</span> <span class="n">blue</span> <span class="n">text</span> <span class="n">on</span> <span class="n">yellow</span> <span class="n">background</span><span class="o">.|</span><span class="n">n</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">normal</span> <span class="n">text</span><span class="o">.</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">|n</span></code> - this tag will turn off all color formatting, including background colors.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">|#</span></code>- markup marks the start of foreground color. The case defines if the text is “bright” or
+“normal”. So <code class="docutils literal notranslate"><span class="pre">|g</span></code> is a bright green and <code class="docutils literal notranslate"><span class="pre">|G</span></code> is “normal” (darker) green.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">|[#</span></code> is used to add a background colour to the text. The case again specifies if it is “bright”
+or “normal”, so <code class="docutils literal notranslate"><span class="pre">|[c</span></code> starts a bright cyan background and <code class="docutils literal notranslate"><span class="pre">|[C</span></code> a darker cyan background.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">|!#</span></code> is used to add foreground color without any enforced brightness/normal information.
+These are normal-intensity and are thus always given as uppercase, such as
+<code class="docutils literal notranslate"><span class="pre">|!R</span></code> for red. The difference between e.g. <code class="docutils literal notranslate"><span class="pre">|!R</span></code> and <code class="docutils literal notranslate"><span class="pre">|R</span></code> is that
+<code class="docutils literal notranslate"><span class="pre">|!R</span></code> will “inherit” the brightness setting from previously set color tags, whereas <code class="docutils literal notranslate"><span class="pre">|R</span></code> will
+always reset to the normal-intensity red. The <code class="docutils literal notranslate"><span class="pre">|#</span></code> format contains an implicit <code class="docutils literal notranslate"><span class="pre">|h</span></code>/<code class="docutils literal notranslate"><span class="pre">|H</span></code> tag in it:
+disabling highlighting when switching to a normal color, and enabling it for bright ones. So <code class="docutils literal notranslate"><span class="pre">|btest</span> <span class="pre">|!Rtest2</span></code> will result in a bright red <code class="docutils literal notranslate"><span class="pre">test2</span></code> since the brightness setting from <code class="docutils literal notranslate"><span class="pre">|b</span></code> “bleeds over”.
+You could use this to for example quickly switch the intensity of a multitude of color tags.  There
+is  no background-color equivalent to <code class="docutils literal notranslate"><span class="pre">|!</span></code> style tags.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">|h</span></code> is used to make any following foreground ANSI colors bright (it has no effect on Xterm
+colors). This is only relevant  to use with <code class="docutils literal notranslate"><span class="pre">|!</span></code> type tags and will be valid until the next <code class="docutils literal notranslate"><span class="pre">|n</span></code>,
+<code class="docutils literal notranslate"><span class="pre">|H</span></code> or normal (upper-case) <code class="docutils literal notranslate"><span class="pre">|#</span></code> tag. This tag will never affect background colors, those have to be
+set bright/normal explicitly.  Technically, <code class="docutils literal notranslate"><span class="pre">|h|!G</span></code> is identical to <code class="docutils literal notranslate"><span class="pre">|g</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">|H</span></code> negates the effects <code class="docutils literal notranslate"><span class="pre">|h</span></code> and returns all ANSI foreground colors (<code class="docutils literal notranslate"><span class="pre">|!</span></code> and <code class="docutils literal notranslate"><span class="pre">|</span></code> types) to
+‘normal’ intensity. It has no effect on background and Xterm colors.</p></li>
+</ul>
+<blockquote>
+<div><p>Note: The ANSI standard does not actually support bright backgrounds like <code class="docutils literal notranslate"><span class="pre">|[r</span></code> - the standard
+only supports “normal” intensity backgrounds.  To get around this Evennia instead implements these
+as <a class="reference external" href="TextTags.html#xterm256-colours">Xterm256 colours</a> behind the scenes. If the client does not support
+Xterm256 the ANSI colors will be used instead and there will be no visible difference between using
+upper- and lower-case background tags.</p>
+</div></blockquote>
+<p>If you want to display an ANSI marker as output text (without having any effect), you need to escape
+it by preceding its <code class="docutils literal notranslate"><span class="pre">|</span></code> with another <code class="docutils literal notranslate"><span class="pre">|</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">say</span> <span class="n">The</span> <span class="o">||</span><span class="n">r</span> <span class="n">ANSI</span> <span class="n">marker</span> <span class="n">changes</span> <span class="n">text</span> <span class="n">color</span> <span class="n">to</span> <span class="n">bright</span> <span class="n">red</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>This will output the raw <code class="docutils literal notranslate"><span class="pre">|r</span></code> without any color change. This can also be necessary if you are doing
+ansi art that uses <code class="docutils literal notranslate"><span class="pre">|</span></code> with a letter directly following it.</p>
+<p>Use the command</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@color</span> <span class="n">ansi</span>
+</pre></div>
+</div>
+<p>to get a list of all supported ANSI colours and the tags used to produce them.</p>
+<p>A few additional ANSI codes are supported:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">|/</span></code> A line break. You cannot put the normal Python <code class="docutils literal notranslate"><span class="pre">\n</span></code> line breaks in text entered inside the
+game (Evennia will filter this for security reasons). This is what you use instead: use the <code class="docutils literal notranslate"><span class="pre">|/</span></code>
+marker to format text with line breaks from the game command line.</p></li>
+<li><p>`` This will translate into a <code class="docutils literal notranslate"><span class="pre">TAB</span></code> character. This will not always show (or show differently) to
+the client since it depends on their local settings. It’s often better to use multiple spaces.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">|_</span></code> This is a space. You can usually use the normal space character, but if the space is <em>at the
+end of the line</em>, Evennia will likely crop it. This tag will not be cropped but always result in a
+space.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">|*</span></code> This will invert the current text/background colours. Can be useful to mark things (but see
+below).</p></li>
+</ul>
+<div class="section" id="caveats-of">
+<h4>Caveats of <code class="docutils literal notranslate"><span class="pre">|*</span></code><a class="headerlink" href="#caveats-of" title="Permalink to this headline">¶</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">|*</span></code> tag (inverse video) is an old ANSI standard and should usually not be used for more than to
+mark short snippets of text. If combined with other tags it comes with a series of potentially
+confusing behaviors:</p>
+<ul>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">|*</span></code> tag will only work once in a row:, ie: after using it once it won’t have an effect again
+until you declare another tag. This is an example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Normal</span> <span class="n">text</span><span class="p">,</span> <span class="o">|*</span><span class="nb">reversed</span> <span class="n">text</span><span class="o">|*</span><span class="p">,</span> <span class="n">still</span> <span class="nb">reversed</span> <span class="n">text</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>that is, it will not reverse to normal at the second <code class="docutils literal notranslate"><span class="pre">|*</span></code>. You need to reset it manually:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Normal</span> <span class="n">text</span><span class="p">,</span> <span class="o">|*</span><span class="nb">reversed</span> <span class="n">text</span><span class="o">|</span><span class="n">n</span><span class="p">,</span> <span class="n">normal</span> <span class="n">again</span><span class="o">.</span>
+</pre></div>
+</div>
+</li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">|*</span></code> tag does not take “bright” colors into account:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">|</span><span class="n">RNormal</span> <span class="n">red</span><span class="p">,</span> <span class="o">|</span><span class="n">hnow</span> <span class="n">brightened</span><span class="o">.</span> <span class="o">|*</span><span class="n">BG</span> <span class="ow">is</span> <span class="n">normal</span> <span class="n">red</span><span class="o">.</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>So <code class="docutils literal notranslate"><span class="pre">|*</span></code> only considers the ‘true’ foreground color, ignoring any highlighting. Think of the bright
+state (<code class="docutils literal notranslate"><span class="pre">|h</span></code>) as something like like <code class="docutils literal notranslate"><span class="pre">&lt;strong&gt;</span></code> in HTML: it modifies the <em>appearance</em> of a normal
+foreground color to match its bright counterpart, without changing its normal color.</p>
+<ul>
+<li><p>Finally, after a <code class="docutils literal notranslate"><span class="pre">|*</span></code>, if the previous background was set to a dark color (via <code class="docutils literal notranslate"><span class="pre">|[</span></code>), <code class="docutils literal notranslate"><span class="pre">|!#</span></code>) will
+actually change the background color instead of the foreground:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>|*reversed text |!R now BG is red.
+</pre></div>
+</div>
+</li>
+</ul>
+<p>For a detailed explanation of these caveats, see the [Understanding Color Tags](Understanding-Color-
+Tags) tutorial. But most of the time you might be better off to simply avoid <code class="docutils literal notranslate"><span class="pre">|*</span></code> and mark your text
+manually instead.</p>
+</div>
+</div>
+<div class="section" id="xterm256-colours">
+<h3>Xterm256 Colours<a class="headerlink" href="#xterm256-colours" title="Permalink to this headline">¶</a></h3>
+<p>The <em>Xterm256</em> standard is a colour scheme that supports 256 colours for text and/or background.
+While this offers many more possibilities than traditional ANSI colours, be wary that too many text
+colors will be confusing to the eye. Also, not all clients support Xterm256 - these will instead see
+the closest equivalent ANSI color. You can mix Xterm256 tags with ANSI tags as you please.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">|</span><span class="mi">555</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">pure</span> <span class="n">white</span> <span class="n">text</span><span class="o">.|</span><span class="n">n</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">normal</span> <span class="n">text</span><span class="o">.</span>
+<span class="o">|</span><span class="mi">230</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">olive</span> <span class="n">green</span> <span class="n">text</span><span class="o">.</span>
+<span class="o">|</span><span class="p">[</span><span class="mi">300</span> <span class="n">This</span> <span class="n">text</span> <span class="n">has</span> <span class="n">a</span> <span class="n">dark</span> <span class="n">red</span> <span class="n">background</span><span class="o">.</span>
+<span class="o">|</span><span class="mi">005</span><span class="o">|</span><span class="p">[</span><span class="mi">054</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">dark</span> <span class="n">blue</span> <span class="n">text</span> <span class="n">on</span> <span class="n">a</span> <span class="n">bright</span> <span class="n">cyan</span> <span class="n">background</span><span class="o">.</span>
+<span class="o">|=</span><span class="n">a</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">greyscale</span> <span class="n">value</span><span class="p">,</span> <span class="n">equal</span> <span class="n">to</span> <span class="n">black</span><span class="o">.</span>
+<span class="o">|=</span><span class="n">m</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">greyscale</span> <span class="n">value</span><span class="p">,</span> <span class="n">midway</span> <span class="n">between</span> <span class="n">white</span> <span class="ow">and</span> <span class="n">black</span><span class="o">.</span>
+<span class="o">|=</span><span class="n">z</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">greyscale</span> <span class="n">value</span><span class="p">,</span> <span class="n">equal</span> <span class="n">to</span> <span class="n">white</span><span class="o">.</span>
+<span class="o">|</span><span class="p">[</span><span class="o">=</span><span class="n">m</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">background</span> <span class="n">greyscale</span> <span class="n">value</span><span class="o">.</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">|###</span></code> - markup consists of three digits, each an integer from 0 to 5. The three digits describe
+the amount of <strong>r</strong>ed, <strong>g</strong>reen and <strong>b</strong>lue (RGB) components used in the colour. So <code class="docutils literal notranslate"><span class="pre">|500</span></code> means
+maximum red and none of the other colours - the result is a bright red. <code class="docutils literal notranslate"><span class="pre">|520</span></code> is red with a touch
+of green - the result is orange. As opposed to ANSI colors, Xterm256 syntax does not worry about
+bright/normal intensity, a brighter (lighter) color is just achieved by upping all RGB values with
+the same amount.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">|[###</span></code> - this works the same way but produces a coloured background.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">|=#</span></code> - markup produces the xterm256 gray scale tones, where <code class="docutils literal notranslate"><span class="pre">#</span></code> is a letter from <code class="docutils literal notranslate"><span class="pre">a</span></code> (black) to
+<code class="docutils literal notranslate"><span class="pre">z</span></code> (white). This offers many more nuances of gray than the normal <code class="docutils literal notranslate"><span class="pre">|###</span></code> markup (which only has
+four gray tones between solid black and white (<code class="docutils literal notranslate"><span class="pre">|000</span></code>, <code class="docutils literal notranslate"><span class="pre">|111</span></code>, <code class="docutils literal notranslate"><span class="pre">|222</span></code>, <code class="docutils literal notranslate"><span class="pre">|333</span></code> and <code class="docutils literal notranslate"><span class="pre">|444</span></code>)).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">|[=#</span></code> - this works in the same way but produces background gray scale tones.</p></li>
+</ul>
+<p>If you have a client that supports Xterm256, you can use</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@color</span> <span class="n">xterm256</span>
+</pre></div>
+</div>
+<p>to get a table of all the 256 colours and the codes that produce them. If the table looks broken up
+into a few blocks of colors, it means Xterm256 is not supported and ANSI are used as a replacement.
+You can use the <code class="docutils literal notranslate"><span class="pre">&#64;options</span></code> command to see if xterm256 is active for you. This depends on if your
+client told Evennia what it supports - if not, and you know what your client supports, you may have
+to activate some features manually.</p>
+</div>
+</div>
+<div class="section" id="clickable-links">
+<h2>Clickable links<a class="headerlink" href="#clickable-links" title="Permalink to this headline">¶</a></h2>
+<p>Evennia supports clickable links for clients that supports it. This marks certain text so it can be
+clicked by a mouse and trigger a given Evennia command. To support clickable links, Evennia requires
+the webclient or an third-party telnet client with <a class="reference external" href="http://www.zuggsoft.com/zmud/mxp.htm">MXP</a>
+support (<em>Note: Evennia only supports clickable links, no other MXP features</em>).</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">|lc</span></code> to start the link, by defining the command to execute.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">|lt</span></code> to continue with the text to show to the user (the link text).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">|le</span></code> to end the link text and the link definition.</p></li>
+</ul>
+<p>All elements must appear in exactly this order to make a valid link. For example,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;If you go |lcnorth|ltto the north|le you will find a cottage.&quot;</span>
+</pre></div>
+</div>
+<p>This will display as “If you go <strong>to the north</strong> you will find a cottage.” where clicking the link
+will execute the command <code class="docutils literal notranslate"><span class="pre">north</span></code>. If the client does not support clickable links, only the link text
+will be shown.</p>
+</div>
+<div class="section" id="inline-functions">
+<h2>Inline functions<a class="headerlink" href="#inline-functions" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Note: Inlinefuncs are <strong>not</strong> activated by default. To use them you need to add
+<code class="docutils literal notranslate"><span class="pre">INLINEFUNC_ENABLED=True</span></code> to your settings file.</p>
+</div></blockquote>
+<p>Evennia has its own inline text formatting language, known as <em>inlinefuncs</em>. It allows the builder
+to include special function calls in code. They are executed dynamically by each session that
+receives them.</p>
+<p>To add an inlinefunc, you embed it in a text string like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;A normal string with $funcname(arg, arg, ...) embedded inside it.&quot;</span>
+</pre></div>
+</div>
+<p>When this string is sent to a session (with the <code class="docutils literal notranslate"><span class="pre">msg()</span></code> method), these embedded inlinefuncs will be
+parsed. Their return value (which always is a string) replace their call location in the finalized
+string. The interesting thing with this is that the function called will have access to which
+session is seeing the string, meaning the string can end up looking different depending on who is
+looking. It could of course also vary depending on other factors like game time.</p>
+<p>Any number of comma-separated arguments can be given (or none). No keywords are supported. You can
+also nest inlinefuncs by letting an argument itself also be another <code class="docutils literal notranslate"><span class="pre">$funcname(arg,</span> <span class="pre">arg,</span> <span class="pre">...)</span></code> call
+(down to a depth of nesting given by <code class="docutils literal notranslate"><span class="pre">settings.INLINEFUNC_STACK_MAXSIZE</span></code>). Function call resolution
+happens as in all programming languages inside-out, with the nested calls replacing the argument
+with their return strings before calling he parent.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="o">&gt;</span> <span class="n">say</span>  <span class="s2">&quot;This is $pad(a center-padded text, 30,c,-) of width 30.&quot;</span>
+   <span class="n">You</span> <span class="n">say</span><span class="p">,</span> <span class="s2">&quot;This is ---- a center-padded text----- of width 30.&quot;</span>
+   <span class="o">&gt;</span> <span class="n">say</span> <span class="s2">&quot;I roll a die and the result is ... a $random(1,6)!&quot;</span>
+   <span class="n">You</span> <span class="n">say</span><span class="p">,</span> <span class="s2">&quot;I roll a die and the result is ... a 5!&quot;</span>
+</pre></div>
+</div>
+<p>A special case happens if wanting to use an inlinefunc argument that itself includes a comma - this
+would be parsed as an argument separator. To escape commas you can either escape each comma manually
+with a backslash <code class="docutils literal notranslate"><span class="pre">\,</span></code>, or you can embed the entire string in python triple-quotes <code class="docutils literal notranslate"><span class="pre">&quot;&quot;&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">'''</span></code> -
+this will escape the entire argument, including commas and any nested inlinefunc calls within.</p>
+<p>Only certain functions are available to use as inlinefuncs and the game developer may add their own
+functions as needed.</p>
+<div class="section" id="new-inlinefuncs">
+<h3>New inlinefuncs<a class="headerlink" href="#new-inlinefuncs" title="Permalink to this headline">¶</a></h3>
+<p>To add new inlinefuncs, edit the file <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/inlinefuncs.py</span></code>.</p>
+<p><em>All globally defined functions in this module</em> are considered inline functions by the system. The
+only exception is functions whose name starts with an underscore <code class="docutils literal notranslate"><span class="pre">_</span></code>.  An inlinefunc must be of the
+following form:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">funcname</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="c1"># ...</span>
+    <span class="k">return</span> <span class="n">modified_text</span>
+</pre></div>
+</td></tr></table></div>
+<p>where <code class="docutils literal notranslate"><span class="pre">*args</span></code> denotes all the arguments this function will accept as an <code class="docutils literal notranslate"><span class="pre">$inlinefunc</span></code>. The inline
+function is expected to clean arguments and check that they are valid. If needed arguments are not
+given, default values should be used. The function should always return a string (even if it’s
+empty). An inlinefunc should never cause a traceback regardless of the input (but it could log
+errors if desired).</p>
+<p>Note that whereas the function should accept <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>, keyword inputs are <em>not</em> usable in the call
+to the inlinefunction. The <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> part is instead intended for Evennia to be able to supply extra
+information. Currently Evennia sends a single keyword to every inline function and that is
+<code class="docutils literal notranslate"><span class="pre">session</span></code>, which holds the <a class="reference internal" href="Sessions.html"><span class="doc">serversession</span></a> this text is targeted at. Through the session
+object, a lot of dynamic possibilities are opened up for your inline functions.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">settings.INLINEFUNC_MODULES</span></code> configuration option is a list that decides which modules should
+be parsed for inline function definitions. This will include <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/inlinefuncs.py</span></code> but
+more could be added. The list is read from left to right so if you want to overload default
+functions you just have to put your custom module-paths later in the list and name your functions
+the same as default ones.</p>
+<p>Here is an example, the <code class="docutils literal notranslate"><span class="pre">crop</span></code> default inlinefunction:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">utils</span>
+
+<span class="k">def</span> <span class="nf">crop</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Inlinefunc. Crops ingoing text to given widths.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        text (str, optional): Text to crop.</span>
+<span class="sd">        width (str, optional): Will be converted to an integer. Width of</span>
+<span class="sd">            crop in characters.</span>
+<span class="sd">        suffix (str, optional): End string to mark the fact that a part</span>
+<span class="sd">            of the string was cropped. Defaults to `[...]`.</span>
+<span class="sd">    Kwargs:</span>
+<span class="sd">        session (Session): Session performing the crop.</span>
+<span class="sd">    Example:</span>
+<span class="sd">        `$crop(text, 50, [...])`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">78</span><span class="p">,</span> <span class="s2">&quot;[...]&quot;</span>
+    <span class="n">nargs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">nargs</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">nargs</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">if</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="k">else</span> <span class="mi">78</span>
+    <span class="k">if</span> <span class="n">nargs</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>Another example, making use of the Session:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">charactername</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Inserts the character name of whomever sees the string</span>
+<span class="sd">    (so everyone will see their own name). Uses the account</span>
+<span class="sd">    name for OOC communications.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        say &quot;This means YOU, $charactername()!&quot;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">session</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">session</span><span class="o">.</span><span class="n">puppet</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">puppet</span><span class="o">.</span><span class="n">key</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">session</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">key</span>
+</pre></div>
+</td></tr></table></div>
+<p>Evennia itself offers the following default inline functions (mostly as examples):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">crop(text,</span> <span class="pre">width,</span> <span class="pre">suffix)</span></code> - See above.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pad(text,</span> <span class="pre">width,</span> <span class="pre">align,</span> <span class="pre">fillchar)</span></code> - this pads the text to <code class="docutils literal notranslate"><span class="pre">width</span></code> (default 78), alignment (“c”,
+“l” or “r”, defaulting to “c”) and fill-in character (defaults to space). Example: <code class="docutils literal notranslate"><span class="pre">$pad(40,l,-)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clr(startclr,</span> <span class="pre">text,</span> <span class="pre">endclr)</span></code> - A programmatic way to enter colored text for those who don’t want
+to use the normal <code class="docutils literal notranslate"><span class="pre">|c</span></code> type color markers for some reason. The <code class="docutils literal notranslate"><span class="pre">color</span></code> argument is the same as the
+color markers except without the actual pre-marker, so <code class="docutils literal notranslate"><span class="pre">|r</span></code> would be just <code class="docutils literal notranslate"><span class="pre">r</span></code>. If <code class="docutils literal notranslate"><span class="pre">endclr</span></code> is not
+given, it defaults to resetting the color (<code class="docutils literal notranslate"><span class="pre">n</span></code>). Example: <code class="docutils literal notranslate"><span class="pre">$clr(b,</span> <span class="pre">A</span> <span class="pre">blue</span> <span class="pre">text)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">space(number)</span></code> - Inserts the given number of spaces. If no argument is given, use 4 spaces.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">random()</span></code>, <code class="docutils literal notranslate"><span class="pre">random(max)</span></code>, <code class="docutils literal notranslate"><span class="pre">random(min,</span> <span class="pre">max)</span></code> - gives a random value between min and max. With no
+arguments, give 0 or 1 (on/off). If one argument, returns 0…max. If values are floats, random
+value will be a float (so <code class="docutils literal notranslate"><span class="pre">random(1.0)</span></code> replicates the normal Python <code class="docutils literal notranslate"><span class="pre">random</span></code> function).</p></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">TextTags</a><ul>
+<li><a class="reference internal" href="#coloured-text">Coloured text</a><ul>
+<li><a class="reference internal" href="#ansi-colours">ANSI colours</a><ul>
+<li><a class="reference internal" href="#caveats-of">Caveats of <code class="docutils literal notranslate"><span class="pre">|*</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#xterm256-colours">Xterm256 Colours</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#clickable-links">Clickable links</a></li>
+<li><a class="reference internal" href="#inline-functions">Inline functions</a><ul>
+<li><a class="reference internal" href="#new-inlinefuncs">New inlinefuncs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/TextTags.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="TextTags.html">0.9.5 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

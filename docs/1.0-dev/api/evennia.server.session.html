@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.server.session &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +25,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.server.session</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -40,7 +38,7 @@
 <span id="evennia-server-session"></span><h1>evennia.server.session<a class="headerlink" href="#module-evennia.server.session" title="Permalink to this headline">¶</a></h1>
 <p>This module defines a generic session class. All connection instances
 (both on Portal and Server side) should inherit from this class.</p>
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.server.session.Session">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.server.session.</code><code class="sig-name descname">Session</code><a class="reference internal" href="../_modules/evennia/server/session.html#Session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.session.Session" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
@@ -63,9 +61,9 @@ regardless of how they connect.</p></li>
 are synced whenever new connections happen or the Server restarts etc,
 which means much of the same information must be stored in both places
 e.g. the portal can re-sync with the server when the server reboots.</p>
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.session.Session.init_session">
-<code class="sig-name descname">init_session</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">protocol_key</span></em>, <em class="sig-param"><span class="n">address</span></em>, <em class="sig-param"><span class="n">sessionhandler</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/session.html#Session.init_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.session.Session.init_session" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">init_session</code><span class="sig-paren">(</span><em class="sig-param">protocol_key</em>, <em class="sig-param">address</em>, <em class="sig-param">sessionhandler</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/session.html#Session.init_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.session.Session.init_session" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize the Session. This should be called by the protocol when
 a new session is established.</p>
 <dl class="field-list simple">
@@ -81,7 +79,7 @@ main sessionhandler instance.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.session.Session.get_sync_data">
 <code class="sig-name descname">get_sync_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/session.html#Session.get_sync_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.session.Session.get_sync_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all data relevant to sync the session.</p>
@@ -93,9 +91,9 @@ the keys given by self._attrs_to_sync.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.session.Session.load_sync_data">
-<code class="sig-name descname">load_sync_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sessdata</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/session.html#Session.load_sync_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.session.Session.load_sync_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">load_sync_data</code><span class="sig-paren">(</span><em class="sig-param">sessdata</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/session.html#Session.load_sync_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.session.Session.load_sync_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Takes a session dictionary, as created by get_sync_data, and
 loads it into the correct properties of the session.</p>
 <dl class="field-list simple">
@@ -105,7 +103,7 @@ loads it into the correct properties of the session.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.session.Session.at_sync">
 <code class="sig-name descname">at_sync</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/session.html#Session.at_sync"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.session.Session.at_sync" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called after a session has been fully synced (including
@@ -113,9 +111,9 @@ secondary operations such as setting self.account based
 on uid etc).</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.session.Session.disconnect">
-<code class="sig-name descname">disconnect</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reason</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/session.html#Session.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.session.Session.disconnect" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">disconnect</code><span class="sig-paren">(</span><em class="sig-param">reason=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/session.html#Session.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.session.Session.disconnect" title="Permalink to this definition">¶</a></dt>
 <dd><p>generic hook called from the outside to disconnect this session
 should be connected to the protocols actual disconnect mechanism.</p>
 <dl class="field-list simple">
@@ -125,9 +123,9 @@ should be connected to the protocols actual disconnect mechanism.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.session.Session.data_out">
-<code class="sig-name descname">data_out</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/session.html#Session.data_out"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.session.Session.data_out" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">data_out</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/session.html#Session.data_out"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.session.Session.data_out" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generic hook for sending data out through the protocol. Server
 protocols can use this right away. Portal sessions
 should overload this to format/handle the outgoing data as needed.</p>
@@ -138,9 +136,9 @@ should overload this to format/handle the outgoing data as needed.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.server.session.Session.data_in">
-<code class="sig-name descname">data_in</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/session.html#Session.data_in"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.session.Session.data_in" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">data_in</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/session.html#Session.data_in"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.session.Session.data_in" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hook for protocols to send incoming data to the engine.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
@@ -154,7 +152,6 @@ should overload this to format/handle the outgoing data as needed.</p>
 </div>
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -183,7 +180,7 @@ should overload this to format/handle the outgoing data as needed.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.server.session.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.1/api/evennia.server.session.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../0.9.5/api/evennia.server.session.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -199,13 +196,12 @@ should overload this to format/handle the outgoing data as needed.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.server.session</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

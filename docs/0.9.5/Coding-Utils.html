@@ -1,0 +1,463 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Coding Utils &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="coding-utils">
+<h1>Coding Utils<a class="headerlink" href="#coding-utils" title="Permalink to this headline">¶</a></h1>
+<p>Evennia comes with many utilities to help with common coding tasks. Most are accessible directly
+from the flat API, otherwise you can find them in the <code class="docutils literal notranslate"><span class="pre">evennia/utils/</span></code> folder.</p>
+<div class="section" id="searching">
+<h2>Searching<a class="headerlink" href="#searching" title="Permalink to this headline">¶</a></h2>
+<p>A common thing to do is to search for objects. There it’s easiest to use the <code class="docutils literal notranslate"><span class="pre">search</span></code> method defined
+on all objects. This will search for objects in the same location and inside the self object:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">objname</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>The most common time one needs to do this is inside a command body. <code class="docutils literal notranslate"><span class="pre">obj</span> <span class="pre">=</span> <span class="pre">self.caller.search(objname)</span></code> will search inside the caller’s (typically, the character that typed
+the command) <code class="docutils literal notranslate"><span class="pre">.contents</span></code> (their “inventory”) and <code class="docutils literal notranslate"><span class="pre">.location</span></code> (their “room”).</p>
+<p>Give the keyword <code class="docutils literal notranslate"><span class="pre">global_search=True</span></code> to extend search to encompass entire database. Aliases will
+also be matched by this search. You will find multiple examples of this functionality in the default
+command set.</p>
+<p>If you need to search for objects in a code module you can use the functions in
+<code class="docutils literal notranslate"><span class="pre">evennia.utils.search</span></code>. You can access these as shortcuts <code class="docutils literal notranslate"><span class="pre">evennia.search_*</span></code>.</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">search_object</span>
+     <span class="n">obj</span> <span class="o">=</span> <span class="n">search_object</span><span class="p">(</span><span class="n">objname</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<ul class="simple">
+<li><p><a class="reference external" href="../wiki/evennia.accounts.manager#accountdbmanagersearch_account">evennia.search_account</a></p></li>
+<li><p><a class="reference external" href="../wiki/evennia.objects.manager#objectdbmanagersearch_object">evennia.search_object</a></p></li>
+<li><p><a class="reference external" href="../wiki/evennia.utils.search#search_object_by_tag">evennia.search_object_by_tag</a></p></li>
+<li><p><a class="reference external" href="../wiki/evennia.scripts.manager#scriptdbmanagersearch_script">evennia.search_script</a></p></li>
+<li><p><a class="reference external" href="../wiki/evennia.comms.managers#channeldbmanagersearch_channel">evennia.search_channel</a></p></li>
+<li><p><a class="reference external" href="../wiki/evennia.comms.managers#msgmanagersearch_message">evennia.search_message</a></p></li>
+<li><p><a class="reference external" href="../wiki/evennia.help.manager#helpentrymanagersearch_help">evennia.search_help</a></p></li>
+</ul>
+<p>Note that these latter methods will always return a <code class="docutils literal notranslate"><span class="pre">list</span></code> of results, even if the list has one or
+zero entries.</p>
+</div>
+<div class="section" id="create">
+<h2>Create<a class="headerlink" href="#create" title="Permalink to this headline">¶</a></h2>
+<p>Apart from the in-game build commands (<code class="docutils literal notranslate"><span class="pre">&#64;create</span></code> etc), you can also build all of Evennia’s game
+entities directly in code (for example when defining new create commands).</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>   <span class="kn">import</span> <span class="nn">evennia</span>
+
+   <span class="n">myobj</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">create_objects</span><span class="p">(</span><span class="s2">&quot;game.gamesrc.objects.myobj.MyObj&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;MyObj&quot;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<ul class="simple">
+<li><p><a class="reference external" href="../wiki/evennia.utils.create#create_account">evennia.create_account</a></p></li>
+<li><p><a class="reference external" href="../wiki/evennia.utils.create#create_object">evennia.create_object</a></p></li>
+<li><p><a class="reference external" href="../wiki/evennia.utils.create#create_script">evennia.create_script</a></p></li>
+<li><p><a class="reference external" href="../wiki/evennia.utils.create#create_channel">evennia.create_channel</a></p></li>
+<li><p><a class="reference external" href="../wiki/evennia.utils.create#create_help_entry">evennia.create_help_entry</a></p></li>
+<li><p><a class="reference external" href="../wiki/evennia.utils.create#create_message">evennia.create_message</a></p></li>
+</ul>
+<p>Each of these create-functions have a host of arguments to further customize the created entity. See
+<code class="docutils literal notranslate"><span class="pre">evennia/utils/create.py</span></code> for more information.</p>
+</div>
+<div class="section" id="logging">
+<h2>Logging<a class="headerlink" href="#logging" title="Permalink to this headline">¶</a></h2>
+<p>Normally you can use Python <code class="docutils literal notranslate"><span class="pre">print</span></code> statements to see output to the terminal/log. The <code class="docutils literal notranslate"><span class="pre">print</span></code>
+statement should only be used for debugging though. For producion output, use the <code class="docutils literal notranslate"><span class="pre">logger</span></code> which
+will create proper logs either to terminal or to file.</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">logger</span>
+     <span class="c1">#</span>
+     <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="s2">&quot;This is an Error!&quot;</span><span class="p">)</span>
+     <span class="n">logger</span><span class="o">.</span><span class="n">log_warn</span><span class="p">(</span><span class="s2">&quot;This is a Warning!&quot;</span><span class="p">)</span>
+     <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s2">&quot;This is normal information&quot;</span><span class="p">)</span>
+     <span class="n">logger</span><span class="o">.</span><span class="n">log_dep</span><span class="p">(</span><span class="s2">&quot;This feature is deprecated&quot;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>There is a special log-message type, <code class="docutils literal notranslate"><span class="pre">log_trace()</span></code> that is intended to be called from inside a
+traceback - this can be very useful for relaying the traceback message back to log without having it
+kill the server.</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="k">try</span><span class="p">:</span>
+       <span class="c1"># [some code that may fail...]</span>
+     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+       <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="s2">&quot;This text will show beneath the traceback itself.&quot;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>The <code class="docutils literal notranslate"><span class="pre">log_file</span></code> logger,  finally, is a very useful logger for outputting arbitrary log messages. This
+is a heavily optimized asynchronous log mechanism using
+<a class="reference external" href="https://en.wikipedia.org/wiki/Thread_%28computing%29">threads</a> to avoid overhead. You should be
+able to use it for very heavy custom logging without fearing disk-write delays.</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span> <span class="n">logger</span><span class="o">.</span><span class="n">log_file</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;mylog.log&quot;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>If not an absolute path is given, the log file will appear in the <code class="docutils literal notranslate"><span class="pre">mygame/server/logs/</span></code> directory.
+If the file already exists, it will be appended to. Timestamps on the same format as the normal
+Evennia logs will be automatically added to each entry.  If a filename is not specified, output will
+be written to a file <code class="docutils literal notranslate"><span class="pre">game/logs/game.log</span></code>.</p>
+</div>
+<div class="section" id="time-utilities">
+<h2>Time Utilities<a class="headerlink" href="#time-utilities" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="game-time">
+<h3>Game time<a class="headerlink" href="#game-time" title="Permalink to this headline">¶</a></h3>
+<p>Evennia tracks the current server time. You can access this time via the <code class="docutils literal notranslate"><span class="pre">evennia.gametime</span></code>
+shortcut:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">gametime</span>
+
+<span class="c1"># all the functions below return times in seconds).</span>
+
+<span class="c1"># total running time of the server</span>
+<span class="n">runtime</span> <span class="o">=</span> <span class="n">gametime</span><span class="o">.</span><span class="n">runtime</span><span class="p">()</span>
+<span class="c1"># time since latest hard reboot (not including reloads)</span>
+<span class="n">uptime</span> <span class="o">=</span> <span class="n">gametime</span><span class="o">.</span><span class="n">uptime</span><span class="p">()</span>
+<span class="c1"># server epoch (its start time)</span>
+<span class="n">server_epoch</span> <span class="o">=</span> <span class="n">gametime</span><span class="o">.</span><span class="n">server_epoch</span><span class="p">()</span>
+
+<span class="c1"># in-game epoch (this can be set by `settings.TIME_GAME_EPOCH`.</span>
+<span class="c1"># If not, the server epoch is used.</span>
+<span class="n">game_epoch</span> <span class="o">=</span> <span class="n">gametime</span><span class="o">.</span><span class="n">game_epoch</span><span class="p">()</span>
+<span class="c1"># in-game time passed since time started running</span>
+<span class="n">gametime</span> <span class="o">=</span> <span class="n">gametime</span><span class="o">.</span><span class="n">gametime</span><span class="p">()</span>
+<span class="c1"># in-game time plus game epoch (i.e. the current in-game</span>
+<span class="c1"># time stamp)</span>
+<span class="n">gametime</span> <span class="o">=</span> <span class="n">gametime</span><span class="o">.</span><span class="n">gametime</span><span class="p">(</span><span class="n">absolute</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="c1"># reset the game time (back to game epoch)</span>
+<span class="n">gametime</span><span class="o">.</span><span class="n">reset_gametime</span><span class="p">()</span>
+</pre></div>
+</td></tr></table></div>
+<p>The setting <code class="docutils literal notranslate"><span class="pre">TIME_FACTOR</span></code> determines how fast/slow in-game time runs compared to the real world. The
+setting <code class="docutils literal notranslate"><span class="pre">TIME_GAME_EPOCH</span></code> sets the starting game epoch (in seconds). The functions from the
+<code class="docutils literal notranslate"><span class="pre">gametime</span></code> module all return their times in seconds. You can convert this to whatever units of time
+you desire for your game. You can use the <code class="docutils literal notranslate"><span class="pre">&#64;time</span></code> command to view the server time info.</p>
+<p>You can also <em>schedule</em> things to happen at specific in-game times using the
+<a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia.utils.gametime#schedule">gametime.schedule</a> function:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">evennia</span>
+
+<span class="k">def</span> <span class="nf">church_clock</span><span class="p">:</span>
+    <span class="n">limbo</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">search_object</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;Limbo&quot;</span><span class="p">)</span>
+    <span class="n">limbo</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;The church clock chimes two.&quot;</span><span class="p">)</span>
+
+<span class="n">gametime</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span><span class="n">church_clock</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="utils-time-format">
+<h3>utils.time_format()<a class="headerlink" href="#utils-time-format" title="Permalink to this headline">¶</a></h3>
+<p>This function takes a number of seconds as input (e.g. from the <code class="docutils literal notranslate"><span class="pre">gametime</span></code> module above) and
+converts it to a nice text output in days, hours etc. It’s useful when you want to show how old
+something is. It converts to four different styles of output using the <em>style</em> keyword:</p>
+<ul class="simple">
+<li><p>style 0 - <code class="docutils literal notranslate"><span class="pre">5d:45m:12s</span></code> (standard colon output)</p></li>
+<li><p>style 1 - <code class="docutils literal notranslate"><span class="pre">5d</span></code> (shows only the longest time unit)</p></li>
+<li><p>style 2 - <code class="docutils literal notranslate"><span class="pre">5</span> <span class="pre">days,</span> <span class="pre">45</span> <span class="pre">minutes</span></code> (full format, ignores seconds)</p></li>
+<li><p>style 3 - <code class="docutils literal notranslate"><span class="pre">5</span> <span class="pre">days,</span> <span class="pre">45</span> <span class="pre">minutes,</span> <span class="pre">12</span> <span class="pre">seconds</span></code> (full format, with seconds)</p></li>
+</ul>
+</div>
+<div class="section" id="utils-delay">
+<h3>utils.delay()<a class="headerlink" href="#utils-delay" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">utils</span>
+
+<span class="k">def</span> <span class="nf">_callback</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+    <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+<span class="c1"># wait 10 seconds before sending &quot;Echo!&quot; to obj (which we assume is defined)</span>
+<span class="n">deferred</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">_callback</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;Echo!&quot;</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<span class="c1"># code here will run immediately, not waiting for the delay to fire!</span>
+</pre></div>
+</td></tr></table></div>
+<p>This creates an asynchronous delayed call. It will fire the given callback function after the given
+number of seconds. This is a very light wrapper over a Twisted
+<a class="reference external" href="https://twistedmatrix.com/documents/current/core/howto/defer.html">Deferred</a>. Normally this is run
+non-persistently, which means that if the server is <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code>ed before the delay is over, the
+callback will never run (the server forgets it). If setting <code class="docutils literal notranslate"><span class="pre">persistent</span></code> to True, the delay will be
+stored in the database and survive a <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> - but for this to work it is susceptible to the same
+limitations incurred when saving to an <a class="reference internal" href="Attributes.html"><span class="doc">Attribute</span></a>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">deferred</span></code> return object can usually be ignored, but calling its <code class="docutils literal notranslate"><span class="pre">.cancel()</span></code> method will abort
+the delay prematurely.</p>
+<p><code class="docutils literal notranslate"><span class="pre">utils.delay</span></code> is the lightest form of delayed call in Evennia. For other way to create time-bound
+tasks, see the <a class="reference internal" href="TickerHandler.html"><span class="doc">TickerHandler</span></a> and <a class="reference internal" href="Scripts.html"><span class="doc">Scripts</span></a>.</p>
+<blockquote>
+<div><p>Note that many delayed effects can be achieved without any need for an active timer. For example
+if you have a trait that should recover a point every 5 seconds you might just need its value when
+it’s needed, but checking the current time and calculating on the fly what value it should have.</p>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="object-classes">
+<h2>Object Classes<a class="headerlink" href="#object-classes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="utils-inherits-from">
+<h3>utils.inherits_from()<a class="headerlink" href="#utils-inherits-from" title="Permalink to this headline">¶</a></h3>
+<p>This useful function takes two arguments - an object to check and a parent. It returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if
+object inherits from parent <em>at any distance</em> (as opposed to Python’s in-built <code class="docutils literal notranslate"><span class="pre">is_instance()</span></code> that
+will only catch immediate dependence). This function also accepts as input any combination of
+classes, instances or python-paths-to-classes.</p>
+<p>Note that Python code should usually work with <a class="reference external" href="http://en.wikipedia.org/wiki/Duck_typing">duck
+typing</a>. But in Evennia’s case it can sometimes be useful
+to check if an object inherits from a given <a class="reference internal" href="Typeclasses.html"><span class="doc">Typeclass</span></a> as a way of identification. Say
+for example that we have a typeclass <em>Animal</em>. This has a subclass <em>Felines</em> which in turn has a
+subclass <em>HouseCat</em>. Maybe there are a bunch of other animal types too, like horses and dogs. Using
+<code class="docutils literal notranslate"><span class="pre">inherits_from</span></code> will allow you to check for all animals in one go:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">utils</span>
+     <span class="k">if</span> <span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">inherits_from</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;typeclasses.objects.animals.Animal&quot;</span><span class="p">):</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The bouncer stops you in the door. He says: &#39;No talking animals allowed.&#39;&quot;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+</div>
+<div class="section" id="text-utilities">
+<h2>Text utilities<a class="headerlink" href="#text-utilities" title="Permalink to this headline">¶</a></h2>
+<p>In a text game, you are naturally doing a lot of work shuffling text back and forth. Here is a <em>non-
+complete</em> selection of text utilities found in <code class="docutils literal notranslate"><span class="pre">evennia/utils/utils.py</span></code> (shortcut <code class="docutils literal notranslate"><span class="pre">evennia.utils</span></code>).
+If nothing else it can be good to look here before starting to develop a solution of your own.</p>
+<div class="section" id="utils-fill">
+<h3>utils.fill()<a class="headerlink" href="#utils-fill" title="Permalink to this headline">¶</a></h3>
+<p>This flood-fills a text to a given width (shuffles the words to make each line evenly wide). It also
+indents as needed.</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="n">outtxt</span> <span class="o">=</span> <span class="n">fill</span><span class="p">(</span><span class="n">intxt</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">78</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="utils-crop">
+<h3>utils.crop()<a class="headerlink" href="#utils-crop" title="Permalink to this headline">¶</a></h3>
+<p>This function will crop a very long line, adding a suffix to show the line actually continues. This
+can be useful in listings when showing multiple lines would mess up things.</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span>     <span class="n">intxt</span> <span class="o">=</span> <span class="s2">&quot;This is a long text that we want to crop.&quot;</span>
+     <span class="n">outtxt</span> <span class="o">=</span> <span class="n">crop</span><span class="p">(</span><span class="n">intxt</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">19</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;[...]&quot;</span><span class="p">)</span>
+     <span class="c1"># outtxt is now &quot;This is a long text[...]&quot;</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="utils-dedent">
+<h3>utils.dedent()<a class="headerlink" href="#utils-dedent" title="Permalink to this headline">¶</a></h3>
+<p>This solves what may at first glance appear to be a trivial problem with text - removing
+indentations. It is used to shift entire paragraphs to the left, without disturbing any further
+formatting they may have. A common case for this is when using Python triple-quoted strings in code</p>
+<ul class="simple">
+<li><p>they will retain whichever indentation they have in the code, and to make easily-readable source
+code one usually don’t want to shift the string to the left edge.</p></li>
+</ul>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="c1">#python code is entered at a given indentation</span>
+          <span class="n">intxt</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">          This is an example text that will end</span>
+<span class="s2">          up with a lot of whitespace on the left.</span>
+<span class="s2">                    It also has indentations of</span>
+<span class="s2">                    its own.&quot;&quot;&quot;</span>
+          <span class="n">outtxt</span> <span class="o">=</span> <span class="n">dedent</span><span class="p">(</span><span class="n">intxt</span><span class="p">)</span>
+          <span class="c1"># outtxt will now retain all internal indentation</span>
+          <span class="c1"># but be shifted all the way to the left.</span>
+</pre></div>
+</td></tr></table></div>
+<p>Normally you do the dedent in the display code (this is for example how the help system homogenizes
+help entries).</p>
+</div>
+<div class="section" id="to-str-and-to-bytes">
+<h3>to_str() and to_bytes()<a class="headerlink" href="#to-str-and-to-bytes" title="Permalink to this headline">¶</a></h3>
+<p>Evennia supplies two utility functions for converting text to the correct
+encodings. <code class="docutils literal notranslate"><span class="pre">to_str()</span></code> and <code class="docutils literal notranslate"><span class="pre">to_bytes()</span></code>. Unless you are adding a custom protocol and
+need to send byte-data over the wire, <code class="docutils literal notranslate"><span class="pre">to_str</span></code> is the only one you’ll need.</p>
+<p>The difference from Python’s in-built <code class="docutils literal notranslate"><span class="pre">str()</span></code> and <code class="docutils literal notranslate"><span class="pre">bytes()</span></code> operators are that
+the Evennia ones makes use of the <code class="docutils literal notranslate"><span class="pre">ENCODINGS</span></code> setting and will try very hard to
+never raise a traceback but instead echo errors through logging. See
+<a class="reference internal" href="Text-Encodings.html"><span class="doc">here</span></a> for more info.</p>
+</div>
+<div class="section" id="ansi-coloring-tools">
+<h3>Ansi Coloring Tools<a class="headerlink" href="#ansi-coloring-tools" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="api/evennia.utils.ansi.html">evennia.ansi</a></p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="display-utilities">
+<h2>Display utilities<a class="headerlink" href="#display-utilities" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="making-ascii-tables">
+<h3>Making ascii tables<a class="headerlink" href="#making-ascii-tables" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia.utils.evtable#evtable">EvTable</a> class (<code class="docutils literal notranslate"><span class="pre">evennia/utils/evtable.py</span></code>) can be used
+to create correctly formatted text tables. There is also
+<a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia.utils.evform#evform">EvForm</a> (<code class="docutils literal notranslate"><span class="pre">evennia/utils/evform.py</span></code>). This reads a fixed-format
+text template from a file in order to create any level of sophisticated ascii layout.  Both evtable
+and evform have lots of options and inputs so see the header of each module for help.</p>
+<p>The third-party <a class="reference external" href="https://code.google.com/p/prettytable/">PrettyTable</a> module is also included in
+Evennia. PrettyTable is considered deprecated in favor of EvTable since PrettyTable cannot handle
+ANSI colour. PrettyTable can be found in <code class="docutils literal notranslate"><span class="pre">evennia/utils/prettytable/</span></code>.  See its homepage above for
+instructions.</p>
+</div>
+<div class="section" id="menus">
+<h3>Menus<a class="headerlink" href="#menus" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia.utils.evmenu#evmenu">evennia.EvMenu</a></p></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Coding Utils</a><ul>
+<li><a class="reference internal" href="#searching">Searching</a></li>
+<li><a class="reference internal" href="#create">Create</a></li>
+<li><a class="reference internal" href="#logging">Logging</a></li>
+<li><a class="reference internal" href="#time-utilities">Time Utilities</a><ul>
+<li><a class="reference internal" href="#game-time">Game time</a></li>
+<li><a class="reference internal" href="#utils-time-format">utils.time_format()</a></li>
+<li><a class="reference internal" href="#utils-delay">utils.delay()</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#object-classes">Object Classes</a><ul>
+<li><a class="reference internal" href="#utils-inherits-from">utils.inherits_from()</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#text-utilities">Text utilities</a><ul>
+<li><a class="reference internal" href="#utils-fill">utils.fill()</a></li>
+<li><a class="reference internal" href="#utils-crop">utils.crop()</a></li>
+<li><a class="reference internal" href="#utils-dedent">utils.dedent()</a></li>
+<li><a class="reference internal" href="#to-str-and-to-bytes">to_str() and to_bytes()</a></li>
+<li><a class="reference internal" href="#ansi-coloring-tools">Ansi Coloring Tools</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#display-utilities">Display utilities</a><ul>
+<li><a class="reference internal" href="#making-ascii-tables">Making ascii tables</a></li>
+<li><a class="reference internal" href="#menus">Menus</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Coding-Utils.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Coding-Utils.html">0.9.5 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.commands.default.tests &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -28,8 +27,7 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.tests</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -1025,7 +1023,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetHome</span><span class="p">(),</span> <span class="s2">&quot;Obj = Room2&quot;</span><span class="p">,</span> <span class="s2">&quot;Home location of Obj was set to Room&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestBuilding.test_list_cmdsets"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding.test_list_cmdsets">[docs]</a>    <span class="k">def</span> <span class="nf">test_list_cmdsets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdListCmdSets</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;DefaultCharacter (Union, prio 0, perm)&gt;:&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdListCmdSets</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;&lt;CmdSetHandler&gt; stack:</span><span class="se">\n</span><span class="s2"> &lt;CmdSet DefaultCharacter, Union, perm, prio 0&gt;:&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdListCmdSets</span><span class="p">(),</span> <span class="s2">&quot;NotFound&quot;</span><span class="p">,</span> <span class="s2">&quot;Could not find &#39;NotFound&#39;&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestBuilding.test_typeclass"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding.test_typeclass">[docs]</a>    <span class="k">def</span> <span class="nf">test_typeclass</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1200,7 +1199,7 @@
             <span class="s2">&quot;= Obj&quot;</span><span class="p">,</span>
             <span class="s2">&quot;To create a global script you need scripts/add &lt;typeclass&gt;.&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdScript</span><span class="p">(),</span> <span class="s2">&quot;Obj = &quot;</span><span class="p">,</span> <span class="s2">&quot;dbref     obj&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdScript</span><span class="p">(),</span> <span class="s2">&quot;Obj &quot;</span><span class="p">,</span> <span class="s2">&quot;dbref &quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdScript</span><span class="p">(),</span> <span class="s2">&quot;/start Obj&quot;</span><span class="p">,</span> <span class="s2">&quot;0 scripts started on Obj&quot;</span>
@@ -1293,10 +1292,10 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestBuilding.test_spawn"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding.test_spawn">[docs]</a>    <span class="k">def</span> <span class="nf">test_spawn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">def</span> <span class="nf">getObject</span><span class="p">(</span><span class="n">commandTest</span><span class="p">,</span> <span class="n">objKeyStr</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">get_object</span><span class="p">(</span><span class="n">commandTest</span><span class="p">,</span> <span class="n">obj_key</span><span class="p">):</span>
             <span class="c1"># A helper function to get a spawned object and</span>
             <span class="c1"># check that it exists in the process.</span>
-            <span class="n">query</span> <span class="o">=</span> <span class="n">search_object</span><span class="p">(</span><span class="n">objKeyStr</span><span class="p">)</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="n">search_object</span><span class="p">(</span><span class="n">obj_key</span><span class="p">)</span>
             <span class="n">commandTest</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
             <span class="n">commandTest</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">query</span><span class="p">))</span>
             <span class="n">obj</span> <span class="o">=</span> <span class="n">query</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -1325,7 +1324,7 @@
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSpawn</span><span class="p">(),</span> <span class="s2">&quot;/search &quot;</span><span class="p">,</span> <span class="s2">&quot;Key &quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSpawn</span><span class="p">(),</span> <span class="s2">&quot;/search test;test2&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSpawn</span><span class="p">(),</span> <span class="s2">&quot;/search test;test2&quot;</span><span class="p">,</span> <span class="s2">&quot;No prototypes found.&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSpawn</span><span class="p">(),</span>
@@ -1335,11 +1334,11 @@
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSpawn</span><span class="p">(),</span> <span class="s2">&quot;/list&quot;</span><span class="p">,</span> <span class="s2">&quot;Key &quot;</span><span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSpawn</span><span class="p">(),</span> <span class="s2">&quot;testprot&quot;</span><span class="p">,</span> <span class="s2">&quot;Spawned Test Char&quot;</span><span class="p">)</span>
-        <span class="c1"># Tests that the spawned object&#39;s location is the same as the caharacter&#39;s location, since</span>
+
+        <span class="c1"># Tests that the spawned object&#39;s location is the same as the character&#39;s location, since</span>
         <span class="c1"># we did not specify it.</span>
-        <span class="n">testchar</span> <span class="o">=</span> <span class="n">getObject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;Test Char&quot;</span><span class="p">)</span>
+        <span class="n">testchar</span> <span class="o">=</span> <span class="n">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;Test Char&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">testchar</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
         <span class="n">testchar</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
 
@@ -1356,7 +1355,7 @@
             <span class="s2">&quot;&#39;key&#39;:&#39;goblin&#39;, &#39;location&#39;:&#39;</span><span class="si">%s</span><span class="s2">&#39;}&quot;</span> <span class="o">%</span> <span class="n">spawnLoc</span><span class="o">.</span><span class="n">dbref</span><span class="p">,</span>
             <span class="s2">&quot;Spawned goblin&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">goblin</span> <span class="o">=</span> <span class="n">getObject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;goblin&quot;</span><span class="p">)</span>
+        <span class="n">goblin</span> <span class="o">=</span> <span class="n">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;goblin&quot;</span><span class="p">)</span>
         <span class="c1"># Tests that the spawned object&#39;s type is a DefaultCharacter.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsInstance</span><span class="p">(</span><span class="n">goblin</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">goblin</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">spawnLoc</span><span class="p">)</span>
@@ -1375,7 +1374,7 @@
         <span class="c1"># Tests &quot;spawn &lt;prototype_name&gt;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSpawn</span><span class="p">(),</span> <span class="s2">&quot;testball&quot;</span><span class="p">,</span> <span class="s2">&quot;Spawned Ball&quot;</span><span class="p">)</span>
 
-        <span class="n">ball</span> <span class="o">=</span> <span class="n">getObject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;Ball&quot;</span><span class="p">)</span>
+        <span class="n">ball</span> <span class="o">=</span> <span class="n">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;Ball&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">ball</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsInstance</span><span class="p">(</span><span class="n">ball</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">)</span>
         <span class="n">ball</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
@@ -1385,7 +1384,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSpawn</span><span class="p">(),</span> <span class="s2">&quot;/n &#39;BALL&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;Spawned Ball&quot;</span>
         <span class="p">)</span>  <span class="c1"># /n switch is abbreviated form of /noloc</span>
-        <span class="n">ball</span> <span class="o">=</span> <span class="n">getObject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;Ball&quot;</span><span class="p">)</span>
+        <span class="n">ball</span> <span class="o">=</span> <span class="n">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;Ball&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="n">ball</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
         <span class="n">ball</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
 
@@ -1404,7 +1403,7 @@
             <span class="o">%</span> <span class="n">spawnLoc</span><span class="o">.</span><span class="n">dbref</span><span class="p">,</span>
             <span class="s2">&quot;Spawned Ball&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">ball</span> <span class="o">=</span> <span class="n">getObject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;Ball&quot;</span><span class="p">)</span>
+        <span class="n">ball</span> <span class="o">=</span> <span class="n">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;Ball&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">ball</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">spawnLoc</span><span class="p">)</span>
         <span class="n">ball</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
 
@@ -1638,7 +1637,6 @@
         <span class="n">channel</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span></div></div>
 </pre></div>
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -1660,7 +1658,7 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="tests.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../../0.9.1/index.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../../../../0.9.5/index.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -1678,13 +1676,12 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.tests</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

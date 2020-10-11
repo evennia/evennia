@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Planning our tutorial game &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -26,8 +25,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Planning our tutorial game</a></li> 
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -124,7 +122,7 @@ bulletin boards.</p>
 <h3>How will the world be built?<a class="headerlink" href="#how-will-the-world-be-built" title="Permalink to this headline">¶</a></h3>
 <p>There are two main ways to handle this:</p>
 <ul class="simple">
-<li><p>Traditionally, from in-game with build-commands:  This pretty means builders creating content in their game
+<li><p>Traditionally, from in-game with build-commands:  This means builders creating content in their game
 client. This has the advantage of not requiring Python skills nor server access. This can often be a quite
 intuitive way to build since you are sort-of walking around in your creation as you build it. However, the
 developer (you) must make sure to provide build-commands that are flexible enough for builders to be able to
@@ -151,14 +149,14 @@ code (such as what you can do with the <code class="docutils literal notranslate
 <a class="reference internal" href="../../../Concepts/Soft-Code.html"><span class="doc">read more about Evennia’s stance on softcode here</span></a>. If you want users to do limited scripting,
 it’s suggested that this is accomplished by adding more powerful build-commands for them to use.</p>
 <p>For our tutorial-game, we will only allow privileged builders to modify the world. The exception is crafting,
-where we will allow players to to use in-game commands to create specific, prescribed objects from recipes.</p>
+which we will limit to repairing broken items by combining them with other repair-related items.</p>
 </div>
 </div>
 <div class="section" id="systems">
 <h2>Systems<a class="headerlink" href="#systems" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="do-you-base-your-game-off-an-existing-rpg-system-or-make-up-your-own">
 <h3>Do you base your game off an existing RPG system or make up your own?<a class="headerlink" href="#do-you-base-your-game-off-an-existing-rpg-system-or-make-up-your-own" title="Permalink to this headline">¶</a></h3>
-<p>We will make use of <a class="reference external" href="http://www.geekguild.com/openadventure/">Open Adventure</a>, an ‘old school’ RRG-system
+<p>We will make use of <a class="reference external" href="http://www.geekguild.com/openadventure/">Open Adventure</a>, a simple ‘old school’ RPG-system
 that is available for free under the Creative Commons license. We’ll only use a subset of the rules from
 the blue “basic” book. For the sake of keeping down the length of this tutorial we will limit what features
 we will include:</p>
@@ -174,11 +172,10 @@ out a character, these will work the same as other bonuses and are thus not that
 <div class="section" id="what-are-the-game-mechanics-how-do-you-decide-if-an-action-succeeds-or-fails">
 <h3>What are the game mechanics? How do you decide if an action succeeds or fails?<a class="headerlink" href="#what-are-the-game-mechanics-how-do-you-decide-if-an-action-succeeds-or-fails" title="Permalink to this headline">¶</a></h3>
 <p>Open Adventure’s conflict resolution is based on adding a trait (such as Strength) with a random number in
-order beat a target. We will emulate this in code.</p>
-<p>There are no pre-set “skills”, all resolution is based on using suitable traits in different combinations.
-The computer can’t do this decision on-the-fly like a GM could, so we need to encode what is needed
-to achieve a certain effect - this will be a set of ‘skills’. We will only make the minimum amount of skills
-needed to accomplish the actions we want to support. This will mean custom Commands.</p>
+order to beat a target. We will emulate this in code.</p>
+<p>Having a “skill” means getting a bonus to that roll for a more narrow action.
+Since the computer will need to know exactly what those skills are, we will add them more explicitly than
+in the rules, but we will only add the minimum to show off the functionality we need.</p>
 </div>
 <div class="section" id="does-the-flow-of-time-matter-in-your-game-does-night-and-day-change-what-about-seasons">
 <h3>Does the flow of time matter in your game - does night and day change? What about seasons?<a class="headerlink" href="#does-the-flow-of-time-matter-in-your-game-does-night-and-day-change-what-about-seasons" title="Permalink to this headline">¶</a></h3>
@@ -460,7 +457,6 @@ to code themselves. So in the next lesson we will check out what help we have fr
 </div>
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -547,7 +543,7 @@ to code themselves. So in the next lesson we will check out what help we have fr
 <h3>Versions</h3>
 <ul>
   <li><a href="Planning-The-Tutorial-Game.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../0.9.1/index.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../../../0.9.5/index.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -563,13 +559,12 @@ to code themselves. So in the next lesson we will check out what help we have fr
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Planning our tutorial game</a></li> 
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.utils.utils &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -28,8 +27,7 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.utils.utils</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -2140,6 +2138,12 @@
         <span class="k">for</span> <span class="n">num</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">matches</span><span class="p">):</span>
             <span class="c1"># we need to consider Commands, where .aliases is a list</span>
             <span class="n">aliases</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">aliases</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">result</span><span class="o">.</span><span class="n">aliases</span>
+            <span class="c1"># remove any pluralization aliases</span>
+            <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">alias</span>
+                <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">aliases</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">alias</span><span class="p">,</span> <span class="s2">&quot;category&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">alias</span><span class="o">.</span><span class="n">category</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;plural_key&quot;</span><span class="p">,)</span>
+            <span class="p">]</span>
             <span class="n">error</span> <span class="o">+=</span> <span class="n">_MULTIMATCH_TEMPLATE</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">number</span><span class="o">=</span><span class="n">num</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
                 <span class="n">name</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
@@ -2341,7 +2345,6 @@
     <span class="k">return</span> <span class="n">decorator</span></div>
 </pre></div>
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -2363,7 +2366,7 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="utils.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../0.9.1/index.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../../../0.9.5/index.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -2381,13 +2384,12 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.utils.utils</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

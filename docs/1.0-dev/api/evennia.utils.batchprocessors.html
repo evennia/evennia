@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.utils.batchprocessors &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +25,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.utils.batchprocessors</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -197,9 +195,9 @@ when running a CODE block multiple times during testing.
 <span class="n">script</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">()</span>
 </pre></div>
 </div>
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.utils.batchprocessors.read_batchfile">
-<code class="sig-prename descclassname">evennia.utils.batchprocessors.</code><code class="sig-name descname">read_batchfile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pythonpath</span></em>, <em class="sig-param"><span class="n">file_ending</span><span class="o">=</span><span class="default_value">'.py'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/batchprocessors.html#read_batchfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.batchprocessors.read_batchfile" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.batchprocessors.</code><code class="sig-name descname">read_batchfile</code><span class="sig-paren">(</span><em class="sig-param">pythonpath</em>, <em class="sig-param">file_ending='.py'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/batchprocessors.html#read_batchfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.batchprocessors.read_batchfile" title="Permalink to this definition">¶</a></dt>
 <dd><p>This reads the contents of a batch-file.  Filename is considered
 to be a python path to a batch file relative the directory
 specified in <strong>settings.py</strong>.</p>
@@ -221,14 +219,14 @@ or .py). The ending should not be included in the python path.</p>
 </dl>
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.utils.batchprocessors.BatchCommandProcessor">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.utils.batchprocessors.</code><code class="sig-name descname">BatchCommandProcessor</code><a class="reference internal" href="../_modules/evennia/utils/batchprocessors.html#BatchCommandProcessor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.batchprocessors.BatchCommandProcessor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This class implements a batch-command processor.</p>
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.utils.batchprocessors.BatchCommandProcessor.parse_file">
-<code class="sig-name descname">parse_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pythonpath</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/batchprocessors.html#BatchCommandProcessor.parse_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.batchprocessors.BatchCommandProcessor.parse_file" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">parse_file</code><span class="sig-paren">(</span><em class="sig-param">pythonpath</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/batchprocessors.html#BatchCommandProcessor.parse_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.batchprocessors.BatchCommandProcessor.parse_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>This parses the lines of a batch-command-file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -259,26 +257,26 @@ a newline (so two empty lines is a paragraph).</p></li>
 
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.utils.batchprocessors.tb_filename">
-<code class="sig-prename descclassname">evennia.utils.batchprocessors.</code><code class="sig-name descname">tb_filename</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tb</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/batchprocessors.html#tb_filename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.batchprocessors.tb_filename" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.batchprocessors.</code><code class="sig-name descname">tb_filename</code><span class="sig-paren">(</span><em class="sig-param">tb</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/batchprocessors.html#tb_filename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.batchprocessors.tb_filename" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper to get filename from traceback</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.utils.batchprocessors.tb_iter">
-<code class="sig-prename descclassname">evennia.utils.batchprocessors.</code><code class="sig-name descname">tb_iter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tb</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/batchprocessors.html#tb_iter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.batchprocessors.tb_iter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.batchprocessors.</code><code class="sig-name descname">tb_iter</code><span class="sig-paren">(</span><em class="sig-param">tb</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/batchprocessors.html#tb_iter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.batchprocessors.tb_iter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Traceback iterator.</p>
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.utils.batchprocessors.BatchCodeProcessor">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.utils.batchprocessors.</code><code class="sig-name descname">BatchCodeProcessor</code><a class="reference internal" href="../_modules/evennia/utils/batchprocessors.html#BatchCodeProcessor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.batchprocessors.BatchCodeProcessor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This implements a batch-code processor</p>
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.utils.batchprocessors.BatchCodeProcessor.parse_file">
-<code class="sig-name descname">parse_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pythonpath</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/batchprocessors.html#BatchCodeProcessor.parse_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.batchprocessors.BatchCodeProcessor.parse_file" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">parse_file</code><span class="sig-paren">(</span><em class="sig-param">pythonpath</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/batchprocessors.html#BatchCodeProcessor.parse_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.batchprocessors.BatchCodeProcessor.parse_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>This parses the lines of a batch-code file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -311,9 +309,9 @@ block</p></li>
 </ol>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.utils.batchprocessors.BatchCodeProcessor.code_exec">
-<code class="sig-name descname">code_exec</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">code</span></em>, <em class="sig-param"><span class="n">extra_environ</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/batchprocessors.html#BatchCodeProcessor.code_exec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.batchprocessors.BatchCodeProcessor.code_exec" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">code_exec</code><span class="sig-paren">(</span><em class="sig-param">code</em>, <em class="sig-param">extra_environ=None</em>, <em class="sig-param">debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/batchprocessors.html#BatchCodeProcessor.code_exec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.batchprocessors.BatchCodeProcessor.code_exec" title="Permalink to this definition">¶</a></dt>
 <dd><p>Execute a single code block, including imports and appending
 global vars.</p>
 <dl class="field-list simple">
@@ -338,7 +336,6 @@ namespace.</p></li>
 </div>
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -382,7 +379,7 @@ namespace.</p></li>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.utils.batchprocessors.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.1/api/evennia.utils.batchprocessors.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../0.9.5/api/evennia.utils.batchprocessors.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -398,13 +395,12 @@ namespace.</p></li>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.utils.batchprocessors</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

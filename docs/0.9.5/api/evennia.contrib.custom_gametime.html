@@ -1,0 +1,319 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.contrib.custom_gametime &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-evennia.contrib.custom_gametime">
+<span id="evennia-contrib-custom-gametime"></span><h1>evennia.contrib.custom_gametime<a class="headerlink" href="#module-evennia.contrib.custom_gametime" title="Permalink to this headline">¶</a></h1>
+<p>Custom gametime</p>
+<p>Contrib - Griatch 2017, vlgeoff 2017</p>
+<p>This implements the evennia.utils.gametime module but supporting
+a custom calendar for your game world. It allows for scheduling
+events to happen at given in-game times, taking this custom
+calendar into account.</p>
+<p>Usage:</p>
+<p>Use as the normal gametime module, that is by importing and using the
+helper functions in this module in your own code. The calendar can be
+customized by adding the <strong>TIME_UNITS</strong> dictionary to your settings
+file. This maps unit names to their length, expressed in the smallest
+unit. Here’s the default as an example:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>TIME_UNITS = {</dt><dd><p>“sec”: 1,
+“min”: 60,
+“hr”: 60 * 60,
+“hour”: 60 * 60,
+“day”: 60 * 60 * 24,
+“week”: 60 * 60 * 24 * 7,
+“month”: 60 * 60 * 24 * 7 * 4,
+“yr”: 60 * 60 * 24 * 7 * 4 * 12,
+“year”: 60 * 60 * 24 * 7 * 4 * 12, }</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>When using a custom calendar, these time unit names are used as kwargs to
+the converter functions in this module.</p>
+<dl class="function">
+<dt id="evennia.contrib.custom_gametime.time_to_tuple">
+<code class="sig-prename descclassname">evennia.contrib.custom_gametime.</code><code class="sig-name descname">time_to_tuple</code><span class="sig-paren">(</span><em class="sig-param">seconds</em>, <em class="sig-param">*divisors</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/custom_gametime.html#time_to_tuple"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.custom_gametime.time_to_tuple" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function. Creates a tuple of even dividends given a range
+of divisors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seconds</strong> (<em>int</em>) – Number of seconds to format</p></li>
+<li><p><strong>*divisors</strong> (<em>int</em>) – a sequence of numbers of integer dividends. The
+number of seconds will be integer-divided by the first number in
+this sequence, the remainder will be divided with the second and
+so on.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>time (tuple)</em> –</p>
+<dl class="simple">
+<dt>This tuple has length len(<a href="#id1"><span class="problematic" id="id2">*</span></a>args)+1, with the</dt><dd><p>last element being the last remaining seconds not evenly
+divided by the supplied dividends.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="evennia.contrib.custom_gametime.gametime_to_realtime">
+<code class="sig-prename descclassname">evennia.contrib.custom_gametime.</code><code class="sig-name descname">gametime_to_realtime</code><span class="sig-paren">(</span><em class="sig-param">format=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/custom_gametime.html#gametime_to_realtime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.custom_gametime.gametime_to_realtime" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method helps to figure out the real-world time it will take until an
+in-game time has passed. E.g. if an event should take place a month later
+in-game, you will be able to find the number of real-world seconds this
+corresponds to (hint: Interval events deal with real life seconds).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>format</strong> (<em>bool</em>) – Formatting the output.</p></li>
+<li><p><strong>month etc</strong> (<em>days</em><em>,</em>) – These are the names of time units that must
+match the <strong>settings.TIME_UNITS</strong> dict keys.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>time (float or tuple)</em> –</p>
+<dl class="simple">
+<dt>The realtime difference or the same</dt><dd><p>time split up into time units.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<dl class="simple">
+<dt>gametime_to_realtime(days=2) -&gt; number of seconds in real life from</dt><dd><p>now after which 2 in-game days will have passed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="evennia.contrib.custom_gametime.realtime_to_gametime">
+<code class="sig-prename descclassname">evennia.contrib.custom_gametime.</code><code class="sig-name descname">realtime_to_gametime</code><span class="sig-paren">(</span><em class="sig-param">secs=0</em>, <em class="sig-param">mins=0</em>, <em class="sig-param">hrs=0</em>, <em class="sig-param">days=0</em>, <em class="sig-param">weeks=0</em>, <em class="sig-param">months=0</em>, <em class="sig-param">yrs=0</em>, <em class="sig-param">format=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/custom_gametime.html#realtime_to_gametime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.custom_gametime.realtime_to_gametime" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method calculates how much in-game time a real-world time
+interval would correspond to. This is usually a lot less
+interesting than the other way around.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>times</strong> (<em>int</em>) – The various components of the time.</p></li>
+<li><p><strong>format</strong> (<em>bool</em>) – Formatting the output.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>time (float or tuple)</em> –</p>
+<blockquote>
+<div><dl class="simple">
+<dt>The gametime difference or the same</dt><dd><p>time split up into time units.</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="simple">
+<dt>Example:</dt><dd><p>realtime_to_gametime(days=2) -&gt; number of game-world seconds</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="evennia.contrib.custom_gametime.custom_gametime">
+<code class="sig-prename descclassname">evennia.contrib.custom_gametime.</code><code class="sig-name descname">custom_gametime</code><span class="sig-paren">(</span><em class="sig-param">absolute=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/custom_gametime.html#custom_gametime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.custom_gametime.custom_gametime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the custom game time as a tuple of units, as defined in settings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>absolute</strong> (<em>bool</em><em>, </em><em>optional</em>) – return the relative or absolute time.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The tuple describing the game time.  The length of the tuple
+is related to the number of unique units defined in the
+settings.  By default, the tuple would be (year, month,
+week, day, hour, minute, second).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="evennia.contrib.custom_gametime.real_seconds_until">
+<code class="sig-prename descclassname">evennia.contrib.custom_gametime.</code><code class="sig-name descname">real_seconds_until</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/custom_gametime.html#real_seconds_until"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.custom_gametime.real_seconds_until" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the real seconds until game time.</p>
+<p>If the game time is 5:00, TIME_FACTOR is set to 2 and you ask
+the number of seconds until it’s 5:10, then this function should
+return 300 (5 minutes).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>str</strong> (<em>times</em>) – int): the time units.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>real_seconds_until(hour=5, min=10, sec=0)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The number of real seconds before the given game time is up.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="evennia.contrib.custom_gametime.schedule">
+<code class="sig-prename descclassname">evennia.contrib.custom_gametime.</code><code class="sig-name descname">schedule</code><span class="sig-paren">(</span><em class="sig-param">callback</em>, <em class="sig-param">repeat=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/custom_gametime.html#schedule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.custom_gametime.schedule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call the callback when the game time is up.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>callback</strong> (<em>function</em>) – The callback function that will be called. This
+must be a top-level function since the script will be persistent.</p></li>
+<li><p><strong>repeat</strong> (<em>bool</em><em>, </em><em>optional</em>) – Should the callback be called regularly?</p></li>
+<li><p><strong>month</strong><strong>, </strong><strong>etc</strong><strong> (</strong><strong>str</strong> (<em>day</em><em>,</em>) – int): The time units to call the callback; should
+match the keys of TIME_UNITS.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>script (Script)</em> – The created script.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>schedule(func, min=5, sec=0)          # Will call next hour at :05.
+schedule(func, hour=2, min=30, sec=0) # Will call the next day at 02:30.</p>
+<p class="rubric">Notes</p>
+<p>This function will setup a script that will be called when the
+time corresponds to the game time.  If the game is stopped for
+more than a few seconds, the callback may be called with a
+slight delay. If <strong>repeat</strong> is set to True, the callback will be
+called again next time the game time matches the given time.
+The time is given in units as keyword arguments.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="evennia.contrib.custom_gametime.GametimeScript">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.custom_gametime.</code><code class="sig-name descname">GametimeScript</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/custom_gametime.html#GametimeScript"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.custom_gametime.GametimeScript" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript" title="evennia.scripts.scripts.DefaultScript"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript</span></code></a></p>
+<p>Gametime-sensitive script.</p>
+<dl class="method">
+<dt id="evennia.contrib.custom_gametime.GametimeScript.at_script_creation">
+<code class="sig-name descname">at_script_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/custom_gametime.html#GametimeScript.at_script_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.custom_gametime.GametimeScript.at_script_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>The script is created.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="evennia.contrib.custom_gametime.GametimeScript.at_repeat">
+<code class="sig-name descname">at_repeat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/custom_gametime.html#GametimeScript.at_repeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.custom_gametime.GametimeScript.at_repeat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call the callback and reset interval.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="evennia.contrib.custom_gametime.GametimeScript.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.custom_gametime.GametimeScript.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="evennia.contrib.custom_gametime.GametimeScript.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.custom_gametime.GametimeScript.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="evennia.contrib.custom_gametime.GametimeScript.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.custom_gametime.GametimeScript'</em><a class="headerlink" href="#evennia.contrib.custom_gametime.GametimeScript.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evennia.contrib.custom_gametime.GametimeScript.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'GametimeScript'</em><a class="headerlink" href="#evennia.contrib.custom_gametime.GametimeScript.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.custom_gametime.rst.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../1.0-dev/api/evennia.contrib.custom_gametime.html">1.0-dev (develop branch)</a></li>
+  <li><a href="evennia.contrib.custom_gametime.html">0.9.5 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

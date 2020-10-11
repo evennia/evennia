@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.traits &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +25,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.traits</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -337,9 +335,9 @@ just add <strong>rage</strong> property get/setters/deleters on the class.</p>
 </pre></div>
 </div>
 <hr class="docutils" />
-<dl class="py exception">
+<dl class="exception">
 <dt id="evennia.contrib.traits.TraitException">
-<em class="property">exception </em><code class="sig-prename descclassname">evennia.contrib.traits.</code><code class="sig-name descname">TraitException</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#TraitException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.TraitException" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><code class="sig-prename descclassname">evennia.contrib.traits.</code><code class="sig-name descname">TraitException</code><span class="sig-paren">(</span><em class="sig-param">msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#TraitException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.TraitException" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></p>
 <p>Base exception class raised by <strong>Trait</strong> objects.</p>
 <dl class="field-list simple">
@@ -347,15 +345,15 @@ just add <strong>rage</strong> property get/setters/deleters on the class.</p>
 <dd class="field-odd"><p><strong>msg</strong> (<em>str</em>) – informative error message</p>
 </dd>
 </dl>
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.TraitException.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#TraitException.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.TraitException.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#TraitException.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.TraitException.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.traits.MandatoryTraitKey">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.traits.</code><code class="sig-name descname">MandatoryTraitKey</code><a class="reference internal" href="../_modules/evennia/contrib/traits.html#MandatoryTraitKey"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.MandatoryTraitKey" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
@@ -364,14 +362,14 @@ supplied when a Trait is initialized. It’s used
 by Trait classes when defining their required keys.</p>
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.traits.TraitHandler">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.traits.</code><code class="sig-name descname">TraitHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">db_attribute_key</span><span class="o">=</span><span class="default_value">'traits'</span></em>, <em class="sig-param"><span class="n">db_attribute_category</span><span class="o">=</span><span class="default_value">'traits'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#TraitHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.TraitHandler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.traits.</code><code class="sig-name descname">TraitHandler</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">db_attribute_key='traits'</em>, <em class="sig-param">db_attribute_category='traits'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#TraitHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.TraitHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Factory class that instantiates Trait objects.</p>
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.TraitHandler.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">db_attribute_key</span><span class="o">=</span><span class="default_value">'traits'</span></em>, <em class="sig-param"><span class="n">db_attribute_category</span><span class="o">=</span><span class="default_value">'traits'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#TraitHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.TraitHandler.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">db_attribute_key='traits'</em>, <em class="sig-param">db_attribute_category='traits'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#TraitHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.TraitHandler.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize the handler and set up its internal Attribute-based storage.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -383,7 +381,7 @@ by Trait classes when defining their required keys.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.TraitHandler.all">
 <em class="property">property </em><code class="sig-name descname">all</code><a class="headerlink" href="#evennia.contrib.traits.TraitHandler.all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all trait keys in this handler.</p>
@@ -394,9 +392,9 @@ by Trait classes when defining their required keys.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.TraitHandler.get">
-<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trait_key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#TraitHandler.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.TraitHandler.get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param">trait_key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#TraitHandler.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.TraitHandler.get" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>trait_key</strong> (<em>str</em>) – key from the traits dict containing config data.</p>
@@ -408,9 +406,9 @@ is not found in traits collection.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.TraitHandler.add">
-<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trait_key</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">trait_type</span><span class="o">=</span><span class="default_value">'static'</span></em>, <em class="sig-param"><span class="n">force</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">trait_properties</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#TraitHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.TraitHandler.add" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param">trait_key</em>, <em class="sig-param">name=None</em>, <em class="sig-param">trait_type='static'</em>, <em class="sig-param">force=True</em>, <em class="sig-param">**trait_properties</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#TraitHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.TraitHandler.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new Trait and add it to the handler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -435,9 +433,9 @@ already exists (and <strong>force</strong> is unset).</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.TraitHandler.remove">
-<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trait_key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#TraitHandler.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.TraitHandler.remove" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param">trait_key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#TraitHandler.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.TraitHandler.remove" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove a Trait from the handler’s parent object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -446,7 +444,7 @@ already exists (and <strong>force</strong> is unset).</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.TraitHandler.clear">
 <code class="sig-name descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#TraitHandler.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.TraitHandler.clear" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove all Traits from the handler’s parent object.</p>
@@ -454,9 +452,9 @@ already exists (and <strong>force</strong> is unset).</p>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.traits.Trait">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.traits.</code><code class="sig-name descname">Trait</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trait_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#Trait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.Trait" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.traits.</code><code class="sig-name descname">Trait</code><span class="sig-paren">(</span><em class="sig-param">trait_data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#Trait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.Trait" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Represents an object or Character trait. This simple base is just
 storing anything in it’s ‘value’ property, so it’s pretty much just a
@@ -467,24 +465,24 @@ stored.</p>
 <p>See module docstring for configuration details.</p>
 </div>
 <p>value</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.traits.Trait.trait_type">
 <code class="sig-name descname">trait_type</code><em class="property"> = 'trait'</em><a class="headerlink" href="#evennia.contrib.traits.Trait.trait_type" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.traits.Trait.default_keys">
 <code class="sig-name descname">default_keys</code><em class="property"> = {'value': None}</em><a class="headerlink" href="#evennia.contrib.traits.Trait.default_keys" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.traits.Trait.allow_extra_properties">
 <code class="sig-name descname">allow_extra_properties</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.traits.Trait.allow_extra_properties" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.Trait.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trait_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#Trait.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.Trait.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">trait_data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#Trait.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.Trait.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>This both initializes and validates the Trait on creation. It must
 raise exception if validation fails. The TraitHandler will call this
 when the trait is furst added, to make sure it validates before
@@ -503,9 +501,9 @@ variable <strong>allow_extra_properties</strong> is set.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.Trait.validate_input">
-<em class="property">static </em><code class="sig-name descname">validate_input</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cls</span></em>, <em class="sig-param"><span class="n">trait_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#Trait.validate_input"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.Trait.validate_input" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">validate_input</code><span class="sig-paren">(</span><em class="sig-param">cls</em>, <em class="sig-param">trait_data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#Trait.validate_input"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.Trait.validate_input" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate input</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -526,19 +524,19 @@ initialization of this trait.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.Trait.name">
 <em class="property">property </em><code class="sig-name descname">name</code><a class="headerlink" href="#evennia.contrib.traits.Trait.name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display name for the trait.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.Trait.key">
 <em class="property">property </em><code class="sig-name descname">key</code><a class="headerlink" href="#evennia.contrib.traits.Trait.key" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display name for the trait.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.Trait.value">
 <em class="property">property </em><code class="sig-name descname">value</code><a class="headerlink" href="#evennia.contrib.traits.Trait.value" title="Permalink to this definition">¶</a></dt>
 <dd><p>Store a value</p>
@@ -546,30 +544,30 @@ initialization of this trait.</p>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.traits.StaticTrait">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.traits.</code><code class="sig-name descname">StaticTrait</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trait_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#StaticTrait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.StaticTrait" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.traits.</code><code class="sig-name descname">StaticTrait</code><span class="sig-paren">(</span><em class="sig-param">trait_data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#StaticTrait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.StaticTrait" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.contrib.traits.Trait" title="evennia.contrib.traits.Trait"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.traits.Trait</span></code></a></p>
 <p>Static Trait. This is a single value with a modifier,
 with no concept of a ‘current’ value.</p>
 <p>value = base + mod</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.traits.StaticTrait.trait_type">
 <code class="sig-name descname">trait_type</code><em class="property"> = 'static'</em><a class="headerlink" href="#evennia.contrib.traits.StaticTrait.trait_type" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.traits.StaticTrait.default_keys">
 <code class="sig-name descname">default_keys</code><em class="property"> = {'base': 0, 'mod': 0}</em><a class="headerlink" href="#evennia.contrib.traits.StaticTrait.default_keys" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.StaticTrait.mod">
 <em class="property">property </em><code class="sig-name descname">mod</code><a class="headerlink" href="#evennia.contrib.traits.StaticTrait.mod" title="Permalink to this definition">¶</a></dt>
 <dd><p>The trait’s modifier.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.StaticTrait.value">
 <em class="property">property </em><code class="sig-name descname">value</code><a class="headerlink" href="#evennia.contrib.traits.StaticTrait.value" title="Permalink to this definition">¶</a></dt>
 <dd><p>The value of the Trait</p>
@@ -577,9 +575,9 @@ with no concept of a ‘current’ value.</p>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.traits.CounterTrait">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.traits.</code><code class="sig-name descname">CounterTrait</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trait_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#CounterTrait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.CounterTrait" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.traits.</code><code class="sig-name descname">CounterTrait</code><span class="sig-paren">(</span><em class="sig-param">trait_data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#CounterTrait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.CounterTrait" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.contrib.traits.Trait" title="evennia.contrib.traits.Trait"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.traits.Trait</span></code></a></p>
 <p>Counter Trait.</p>
 <p>This includes modifications and min/max limits as well as the notion of a
@@ -620,62 +618,62 @@ describing a value that is gradually growing smaller/bigger. The
 increase will stop when either reaching a boundary (if set) or
 ratetarget. Setting the rate to 0 (default) stops any change.</p></li>
 </ul>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.traits.CounterTrait.trait_type">
 <code class="sig-name descname">trait_type</code><em class="property"> = 'counter'</em><a class="headerlink" href="#evennia.contrib.traits.CounterTrait.trait_type" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.traits.CounterTrait.default_keys">
 <code class="sig-name descname">default_keys</code><em class="property"> = {'base': 0, 'descs': None, 'max': None, 'min': None, 'mod': 0, 'rate': 0, 'ratetarget': None}</em><a class="headerlink" href="#evennia.contrib.traits.CounterTrait.default_keys" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.CounterTrait.validate_input">
-<em class="property">static </em><code class="sig-name descname">validate_input</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cls</span></em>, <em class="sig-param"><span class="n">trait_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#CounterTrait.validate_input"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.CounterTrait.validate_input" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">validate_input</code><span class="sig-paren">(</span><em class="sig-param">cls</em>, <em class="sig-param">trait_data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#CounterTrait.validate_input"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.CounterTrait.validate_input" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add extra validation for descs</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.CounterTrait.base">
 <em class="property">property </em><code class="sig-name descname">base</code><a class="headerlink" href="#evennia.contrib.traits.CounterTrait.base" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.CounterTrait.mod">
 <em class="property">property </em><code class="sig-name descname">mod</code><a class="headerlink" href="#evennia.contrib.traits.CounterTrait.mod" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.CounterTrait.min">
 <em class="property">property </em><code class="sig-name descname">min</code><a class="headerlink" href="#evennia.contrib.traits.CounterTrait.min" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.CounterTrait.max">
 <em class="property">property </em><code class="sig-name descname">max</code><a class="headerlink" href="#evennia.contrib.traits.CounterTrait.max" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.CounterTrait.current">
 <em class="property">property </em><code class="sig-name descname">current</code><a class="headerlink" href="#evennia.contrib.traits.CounterTrait.current" title="Permalink to this definition">¶</a></dt>
 <dd><p>The <strong>current</strong> value of the <strong>Trait</strong>. This does not have .mod added.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.CounterTrait.value">
 <em class="property">property </em><code class="sig-name descname">value</code><a class="headerlink" href="#evennia.contrib.traits.CounterTrait.value" title="Permalink to this definition">¶</a></dt>
 <dd><p>The value of the Trait (current + mod)</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.CounterTrait.ratetarget">
 <em class="property">property </em><code class="sig-name descname">ratetarget</code><a class="headerlink" href="#evennia.contrib.traits.CounterTrait.ratetarget" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.CounterTrait.percent">
-<code class="sig-name descname">percent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">formatting</span><span class="o">=</span><span class="default_value">'{:3.1f}%'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#CounterTrait.percent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.CounterTrait.percent" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">percent</code><span class="sig-paren">(</span><em class="sig-param">formatting='{:3.1f}%'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#CounterTrait.percent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.CounterTrait.percent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the current value as a percentage.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -695,13 +693,13 @@ returned.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.CounterTrait.reset">
 <code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#CounterTrait.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.CounterTrait.reset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Resets <strong>current</strong> property equal to <strong>base</strong> value.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.CounterTrait.desc">
 <code class="sig-name descname">desc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#CounterTrait.desc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.CounterTrait.desc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve descriptions of the current value, if available.</p>
@@ -724,9 +722,9 @@ describe the interval.</p>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.contrib.traits.GaugeTrait">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.traits.</code><code class="sig-name descname">GaugeTrait</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trait_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#GaugeTrait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.GaugeTrait" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.traits.</code><code class="sig-name descname">GaugeTrait</code><span class="sig-paren">(</span><em class="sig-param">trait_data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#GaugeTrait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.GaugeTrait" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.contrib.traits.CounterTrait" title="evennia.contrib.traits.CounterTrait"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.traits.CounterTrait</span></code></a></p>
 <p>Gauge Trait.</p>
 <p>This emulates a gauge-meter that empties from a base+mod value.</p>
@@ -763,52 +761,52 @@ values between 0 and 100:</p>
 </dl>
 </li>
 </ul>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.traits.GaugeTrait.trait_type">
 <code class="sig-name descname">trait_type</code><em class="property"> = 'gauge'</em><a class="headerlink" href="#evennia.contrib.traits.GaugeTrait.trait_type" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.contrib.traits.GaugeTrait.default_keys">
 <code class="sig-name descname">default_keys</code><em class="property"> = {'base': 0, 'descs': None, 'min': 0, 'mod': 0, 'rate': 0, 'ratetarget': None}</em><a class="headerlink" href="#evennia.contrib.traits.GaugeTrait.default_keys" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.GaugeTrait.base">
 <em class="property">property </em><code class="sig-name descname">base</code><a class="headerlink" href="#evennia.contrib.traits.GaugeTrait.base" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.GaugeTrait.mod">
 <em class="property">property </em><code class="sig-name descname">mod</code><a class="headerlink" href="#evennia.contrib.traits.GaugeTrait.mod" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.GaugeTrait.min">
 <em class="property">property </em><code class="sig-name descname">min</code><a class="headerlink" href="#evennia.contrib.traits.GaugeTrait.min" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.GaugeTrait.max">
 <em class="property">property </em><code class="sig-name descname">max</code><a class="headerlink" href="#evennia.contrib.traits.GaugeTrait.max" title="Permalink to this definition">¶</a></dt>
 <dd><p>The max is always base + mod.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.GaugeTrait.current">
 <em class="property">property </em><code class="sig-name descname">current</code><a class="headerlink" href="#evennia.contrib.traits.GaugeTrait.current" title="Permalink to this definition">¶</a></dt>
 <dd><p>The <strong>current</strong> value of the gauge.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.GaugeTrait.value">
 <em class="property">property </em><code class="sig-name descname">value</code><a class="headerlink" href="#evennia.contrib.traits.GaugeTrait.value" title="Permalink to this definition">¶</a></dt>
 <dd><p>The value of the trait</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.GaugeTrait.percent">
-<code class="sig-name descname">percent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">formatting</span><span class="o">=</span><span class="default_value">'{:3.1f}%'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#GaugeTrait.percent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.GaugeTrait.percent" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">percent</code><span class="sig-paren">(</span><em class="sig-param">formatting='{:3.1f}%'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#GaugeTrait.percent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.GaugeTrait.percent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the current value as a percentage.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -828,7 +826,7 @@ returned.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.contrib.traits.GaugeTrait.reset">
 <code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#GaugeTrait.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.GaugeTrait.reset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fills the gauge to its maximum allowed by base + mod</p>
@@ -836,18 +834,10 @@ returned.</p>
 
 </dd></dl>
 
-<dl class="py class">
-<dt id="evennia.contrib.traits.UpdatingTrait">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.traits.</code><code class="sig-name descname">UpdatingTrait</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trait_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/traits.html#UpdatingTrait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.traits.UpdatingTrait" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.traits.CounterTrait" title="evennia.contrib.traits.CounterTrait"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.traits.CounterTrait</span></code></a></p>
-<p>This is a trait that</p>
-</dd></dl>
-
 </div>
 </div>
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -897,7 +887,7 @@ returned.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.contrib.traits.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.1/index.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -913,13 +903,12 @@ returned.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.traits</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

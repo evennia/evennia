@@ -1,0 +1,616 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.server.portal.ssh &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.server.portal.ssh</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module implements the ssh (Secure SHell) protocol for encrypted</span>
+<span class="sd">connections.</span>
+
+<span class="sd">This depends on a generic session module that implements the actual</span>
+<span class="sd">login procedure of the game, tracks sessions etc.</span>
+
+<span class="sd">Using standard ssh client,</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="kn">from</span> <span class="nn">twisted.cred.checkers</span> <span class="k">import</span> <span class="n">credentials</span>
+<span class="kn">from</span> <span class="nn">twisted.cred.portal</span> <span class="k">import</span> <span class="n">Portal</span>
+<span class="kn">from</span> <span class="nn">twisted.conch.interfaces</span> <span class="k">import</span> <span class="n">IConchUser</span>
+
+<span class="n">_SSH_IMPORT_ERROR</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">ERROR: Missing crypto library for SSH. Install it with</span>
+
+<span class="s2">       pip install cryptography pyasn1 bcrypt</span>
+
+<span class="s2">(On older Twisted versions you may have to do &#39;pip install pycrypto pyasn1&#39; instead).</span>
+
+<span class="s2">If you get a compilation error you must install a C compiler and the</span>
+<span class="s2">SSL dev headers (On Debian-derived systems this is the gcc and libssl-dev</span>
+<span class="s2">packages).</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">twisted.conch.ssh.keys</span> <span class="k">import</span> <span class="n">Key</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="n">_SSH_IMPORT_ERROR</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">twisted.conch.ssh.userauth</span> <span class="k">import</span> <span class="n">SSHUserAuthServer</span>
+<span class="kn">from</span> <span class="nn">twisted.conch.ssh</span> <span class="k">import</span> <span class="n">common</span>
+<span class="kn">from</span> <span class="nn">twisted.conch.insults</span> <span class="k">import</span> <span class="n">insults</span>
+<span class="kn">from</span> <span class="nn">twisted.conch.manhole_ssh</span> <span class="k">import</span> <span class="n">TerminalRealm</span><span class="p">,</span> <span class="n">_Glue</span><span class="p">,</span> <span class="n">ConchFactory</span>
+<span class="kn">from</span> <span class="nn">twisted.conch.manhole</span> <span class="k">import</span> <span class="n">Manhole</span><span class="p">,</span> <span class="n">recvline</span>
+<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="k">import</span> <span class="n">defer</span><span class="p">,</span> <span class="n">protocol</span>
+<span class="kn">from</span> <span class="nn">twisted.conch</span> <span class="k">import</span> <span class="n">interfaces</span> <span class="k">as</span> <span class="n">iconch</span>
+<span class="kn">from</span> <span class="nn">twisted.python</span> <span class="k">import</span> <span class="n">components</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="k">import</span> <span class="n">settings</span>
+
+<span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="k">import</span> <span class="n">AccountDB</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="k">import</span> <span class="n">ansi</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="k">import</span> <span class="n">to_str</span><span class="p">,</span> <span class="n">class_from_module</span>
+
+<span class="n">_RE_N</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\|n$&quot;</span><span class="p">)</span>
+<span class="n">_RE_SCREENREADER_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="sa">r</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">settings</span><span class="o">.</span><span class="n">SCREENREADER_REGEX_STRIP</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span>
+<span class="p">)</span>
+<span class="n">_GAME_DIR</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">GAME_DIR</span>
+<span class="n">_PRIVATE_KEY_FILE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_GAME_DIR</span><span class="p">,</span> <span class="s2">&quot;server&quot;</span><span class="p">,</span> <span class="s2">&quot;ssh-private.key&quot;</span><span class="p">)</span>
+<span class="n">_PUBLIC_KEY_FILE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_GAME_DIR</span><span class="p">,</span> <span class="s2">&quot;server&quot;</span><span class="p">,</span> <span class="s2">&quot;ssh-public.key&quot;</span><span class="p">)</span>
+<span class="n">_KEY_LENGTH</span> <span class="o">=</span> <span class="mi">2048</span>
+
+<span class="n">CTRL_C</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\x03</span><span class="s2">&quot;</span>
+<span class="n">CTRL_D</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\x04</span><span class="s2">&quot;</span>
+<span class="n">CTRL_BACKSLASH</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\x1c</span><span class="s2">&quot;</span>
+<span class="n">CTRL_L</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\x0c</span><span class="s2">&quot;</span>
+
+<span class="n">_NO_AUTOGEN</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Evennia could not generate SSH private- and public keys ({{err}})</span>
+<span class="s2">Using conch default keys instead.</span>
+
+<span class="s2">If this error persists, create the keys manually (using the tools for your OS)</span>
+<span class="s2">and put them here:</span>
+<span class="s2">    </span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">    </span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="n">_PRIVATE_KEY_FILE</span><span class="p">,</span> <span class="n">_PUBLIC_KEY_FILE</span>
+<span class="p">)</span>
+
+<span class="n">_BASE_SESSION_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_SESSION_CLASS</span><span class="p">)</span>
+
+
+<span class="c1"># not used atm</span>
+<div class="viewcode-block" id="SSHServerFactory"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SSHServerFactory">[docs]</a><span class="k">class</span> <span class="nc">SSHServerFactory</span><span class="p">(</span><span class="n">protocol</span><span class="o">.</span><span class="n">ServerFactory</span><span class="p">):</span>
+    <span class="s2">&quot;This is only to name this better in logs&quot;</span>
+    <span class="n">noisy</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="SSHServerFactory.logPrefix"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SSHServerFactory.logPrefix">[docs]</a>    <span class="k">def</span> <span class="nf">logPrefix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;SSH&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="SshProtocol"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SshProtocol">[docs]</a><span class="k">class</span> <span class="nc">SshProtocol</span><span class="p">(</span><span class="n">Manhole</span><span class="p">,</span> <span class="n">_BASE_SESSION_CLASS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Each account connecting over ssh gets this protocol assigned to</span>
+<span class="sd">    them.  All communication between game and account goes through</span>
+<span class="sd">    here.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">noisy</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="SshProtocol.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SshProtocol.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">starttuple</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For setting up the account.  If account is not None then we&#39;ll</span>
+<span class="sd">        login automatically.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            starttuple (tuple): A (account, factory) tuple.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol_key</span> <span class="o">=</span> <span class="s2">&quot;ssh&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">authenticated_account</span> <span class="o">=</span> <span class="n">starttuple</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># obs must not be called self.factory, that gets overwritten!</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfactory</span> <span class="o">=</span> <span class="n">starttuple</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="SshProtocol.terminalSize"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SshProtocol.terminalSize">[docs]</a>    <span class="k">def</span> <span class="nf">terminalSize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the terminal and connect to the new session.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            width (int): Width of terminal.</span>
+<span class="sd">            height (int): Height of terminal.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Clear the previous input line, redraw it at the new</span>
+        <span class="c1"># cursor position</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">eraseDisplay</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">cursorHome</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">height</span>
+
+        <span class="c1"># initialize the session</span>
+        <span class="n">client_address</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getClientAddress</span><span class="p">()</span>
+        <span class="n">client_address</span> <span class="o">=</span> <span class="n">client_address</span><span class="o">.</span><span class="n">host</span> <span class="k">if</span> <span class="n">client_address</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_session</span><span class="p">(</span><span class="s2">&quot;ssh&quot;</span><span class="p">,</span> <span class="n">client_address</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfactory</span><span class="o">.</span><span class="n">sessionhandler</span><span class="p">)</span>
+
+        <span class="c1"># since we might have authenticated already, we might set this here.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">authenticated_account</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logged_in</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">authenticated_account</span><span class="o">.</span><span class="n">id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SshProtocol.connectionMade"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SshProtocol.connectionMade">[docs]</a>    <span class="k">def</span> <span class="nf">connectionMade</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is called when the connection is first established.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">recvline</span><span class="o">.</span><span class="n">HistoricRecvLine</span><span class="o">.</span><span class="n">connectionMade</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keyHandlers</span><span class="p">[</span><span class="n">CTRL_C</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_INT</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keyHandlers</span><span class="p">[</span><span class="n">CTRL_D</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_EOF</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keyHandlers</span><span class="p">[</span><span class="n">CTRL_L</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_FF</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keyHandlers</span><span class="p">[</span><span class="n">CTRL_BACKSLASH</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_QUIT</span></div>
+
+        <span class="c1"># initalize</span>
+
+<div class="viewcode-block" id="SshProtocol.handle_INT"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SshProtocol.handle_INT">[docs]</a>    <span class="k">def</span> <span class="nf">handle_INT</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle ^C as an interrupt keystroke by resetting the current</span>
+<span class="sd">        input variables to their initial state.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lineBuffer</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lineBufferIndex</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">nextLine</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;KeyboardInterrupt&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">nextLine</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SshProtocol.handle_EOF"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SshProtocol.handle_EOF">[docs]</a>    <span class="k">def</span> <span class="nf">handle_EOF</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handles EOF generally used to exit.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lineBuffer</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\a</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handle_QUIT</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SshProtocol.handle_FF"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SshProtocol.handle_FF">[docs]</a>    <span class="k">def</span> <span class="nf">handle_FF</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle a &#39;form feed&#39; byte - generally used to request a screen</span>
+<span class="sd">        refresh/redraw.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">eraseDisplay</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">cursorHome</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SshProtocol.handle_QUIT"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SshProtocol.handle_QUIT">[docs]</a>    <span class="k">def</span> <span class="nf">handle_QUIT</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Quit, end, and lose the connection.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">loseConnection</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SshProtocol.connectionLost"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SshProtocol.connectionLost">[docs]</a>    <span class="k">def</span> <span class="nf">connectionLost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is executed when the connection is lost for whatever</span>
+<span class="sd">        reason. It can also be called directly, from the disconnect</span>
+<span class="sd">        method.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            reason (str): Motivation for loosing connection.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">insults</span><span class="o">.</span><span class="n">TerminalProtocol</span><span class="o">.</span><span class="n">connectionLost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">loseConnection</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SshProtocol.getClientAddress"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SshProtocol.getClientAddress">[docs]</a>    <span class="k">def</span> <span class="nf">getClientAddress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get client address.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            address_and_port (tuple): The client&#39;s address and port in</span>
+<span class="sd">                a tuple. For example `(&#39;127.0.0.1&#39;, 41917)`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">getPeer</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SshProtocol.lineReceived"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SshProtocol.lineReceived">[docs]</a>    <span class="k">def</span> <span class="nf">lineReceived</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Communication User -&gt; Evennia. Any line return indicates a</span>
+<span class="sd">        command for the purpose of the MUD.  So we take the user input</span>
+<span class="sd">        and pass it on to the game engine.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            string (str): Input text.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">data_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">string</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SshProtocol.sendLine"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SshProtocol.sendLine">[docs]</a>    <span class="k">def</span> <span class="nf">sendLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Communication Evennia -&gt; User.  Any string sent should</span>
+<span class="sd">        already have been properly formatted and processed before</span>
+<span class="sd">        reaching this point.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            string (str): Output text.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
+            <span class="c1"># the telnet-specific method for sending</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span><span class="o">.</span><span class="n">nextLine</span><span class="p">()</span></div>
+
+    <span class="c1"># session-general method hooks</span>
+
+<div class="viewcode-block" id="SshProtocol.at_login"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SshProtocol.at_login">[docs]</a>    <span class="k">def</span> <span class="nf">at_login</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when this session gets authenticated by the server.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="SshProtocol.disconnect"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SshProtocol.disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Connection closed. Goodbye for now.&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Disconnect from server.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            reason (str): Motivation for disconnect.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">reason</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_out</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">((</span><span class="n">reason</span><span class="p">,),</span> <span class="p">{}))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connectionLost</span><span class="p">(</span><span class="n">reason</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SshProtocol.data_out"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SshProtocol.data_out">[docs]</a>    <span class="k">def</span> <span class="nf">data_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Data Evennia -&gt; User</span>
+
+<span class="sd">        Keyword args:</span>
+<span class="sd">            kwargs (any): Options to the protocol.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">data_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SshProtocol.send_text"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SshProtocol.send_text">[docs]</a>    <span class="k">def</span> <span class="nf">send_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send text data. This is an in-band telnet operation.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text (str): The first argument is always the text string to send. No other arguments</span>
+<span class="sd">                are considered.</span>
+<span class="sd">        Keyword args:</span>
+<span class="sd">            options (dict): Send-option flags (booleans)</span>
+
+<span class="sd">                - mxp: enforce mxp link support.</span>
+<span class="sd">                - ansi: enforce no ansi colors.</span>
+<span class="sd">                - xterm256: enforce xterm256 colors, regardless of ttype setting.</span>
+<span class="sd">                - nocolor: strip all colors.</span>
+<span class="sd">                - raw: pass string through without any ansi processing</span>
+<span class="sd">                  (i.e. include evennia ansi markers but do not</span>
+<span class="sd">                  convert them into ansi tokens)</span>
+<span class="sd">                - echo: turn on/off line echo on the client. turn</span>
+<span class="sd">                  off line echo for client, for example for password.</span>
+<span class="sd">                  note that it must be actively turned back on again!</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># print &quot;telnet.send_text&quot;, args,kwargs  # DEBUG</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">args</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">text</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">to_str</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="c1"># handle arguments</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;options&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">flags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_flags</span>
+        <span class="n">xterm256</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;xterm256&quot;</span><span class="p">,</span> <span class="n">flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;XTERM256&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span>
+        <span class="n">useansi</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ansi&quot;</span><span class="p">,</span> <span class="n">flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ANSI&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;raw&quot;</span><span class="p">,</span> <span class="n">flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;RAW&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+        <span class="n">nocolor</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nocolor&quot;</span><span class="p">,</span> <span class="n">flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;NOCOLOR&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="n">xterm256</span> <span class="ow">or</span> <span class="n">useansi</span><span class="p">))</span>
+        <span class="c1"># echo = options.get(&quot;echo&quot;, None)  # DEBUG</span>
+        <span class="n">screenreader</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;screenreader&quot;</span><span class="p">,</span> <span class="n">flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SCREENREADER&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">screenreader</span><span class="p">:</span>
+            <span class="c1"># screenreader mode cleans up output</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">ansi</span><span class="o">.</span><span class="n">parse_ansi</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">xterm256</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mxp</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">_RE_SCREENREADER_REGEX</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">raw</span><span class="p">:</span>
+            <span class="c1"># no processing</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sendLine</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># we need to make sure to kill the color at the end in order</span>
+            <span class="c1"># to match the webclient output.</span>
+            <span class="n">linetosend</span> <span class="o">=</span> <span class="n">ansi</span><span class="o">.</span><span class="n">parse_ansi</span><span class="p">(</span>
+                <span class="n">_RE_N</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;||n&quot;</span> <span class="k">if</span> <span class="n">text</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;|n&quot;</span><span class="p">),</span>
+                <span class="n">strip_ansi</span><span class="o">=</span><span class="n">nocolor</span><span class="p">,</span>
+                <span class="n">xterm256</span><span class="o">=</span><span class="n">xterm256</span><span class="p">,</span>
+                <span class="n">mxp</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sendLine</span><span class="p">(</span><span class="n">linetosend</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SshProtocol.send_prompt"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SshProtocol.send_prompt">[docs]</a>    <span class="k">def</span> <span class="nf">send_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_text</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SshProtocol.send_default"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.SshProtocol.send_default">[docs]</a>    <span class="k">def</span> <span class="nf">send_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="ExtraInfoAuthServer"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.ExtraInfoAuthServer">[docs]</a><span class="k">class</span> <span class="nc">ExtraInfoAuthServer</span><span class="p">(</span><span class="n">SSHUserAuthServer</span><span class="p">):</span>
+
+    <span class="n">noisy</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="ExtraInfoAuthServer.auth_password"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.ExtraInfoAuthServer.auth_password">[docs]</a>    <span class="k">def</span> <span class="nf">auth_password</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packet</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Password authentication.</span>
+
+<span class="sd">        Used mostly for setting up the transport so we can query</span>
+<span class="sd">        username and password later.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            packet (Packet): Auth packet.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">password</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">getNS</span><span class="p">(</span><span class="n">packet</span><span class="p">[</span><span class="mi">1</span><span class="p">:])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">credentials</span><span class="o">.</span><span class="n">UsernamePassword</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">transport</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transport</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">IConchUser</span><span class="p">)</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ebPassword</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="AccountDBPasswordChecker"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.AccountDBPasswordChecker">[docs]</a><span class="k">class</span> <span class="nc">AccountDBPasswordChecker</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks the django db for the correct credentials for</span>
+<span class="sd">    username/password otherwise it returns the account or None which is</span>
+<span class="sd">    useful for the Realm.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">noisy</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">credentialInterfaces</span> <span class="o">=</span> <span class="p">(</span><span class="n">credentials</span><span class="o">.</span><span class="n">IUsernamePassword</span><span class="p">,)</span>
+
+<div class="viewcode-block" id="AccountDBPasswordChecker.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.AccountDBPasswordChecker.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factory</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the factory.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            factory (SSHFactory): Checker factory.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">factory</span> <span class="o">=</span> <span class="n">factory</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="AccountDBPasswordChecker.requestAvatarId"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.AccountDBPasswordChecker.requestAvatarId">[docs]</a>    <span class="k">def</span> <span class="nf">requestAvatarId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generic credentials.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">up</span> <span class="o">=</span> <span class="n">credentials</span><span class="o">.</span><span class="n">IUsernamePassword</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">username</span> <span class="o">=</span> <span class="n">up</span><span class="o">.</span><span class="n">username</span>
+        <span class="n">password</span> <span class="o">=</span> <span class="n">up</span><span class="o">.</span><span class="n">password</span>
+        <span class="n">account</span> <span class="o">=</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_account_from_name</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">account</span> <span class="ow">and</span> <span class="n">account</span><span class="o">.</span><span class="n">check_password</span><span class="p">(</span><span class="n">password</span><span class="p">):</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">defer</span><span class="o">.</span><span class="n">succeed</span><span class="p">(</span><span class="n">res</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="PassAvatarIdTerminalRealm"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.PassAvatarIdTerminalRealm">[docs]</a><span class="k">class</span> <span class="nc">PassAvatarIdTerminalRealm</span><span class="p">(</span><span class="n">TerminalRealm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns an avatar that passes the avatarId through to the</span>
+<span class="sd">    protocol.  This is probably not the best way to do it.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">noisy</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_getAvatar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">avatarId</span><span class="p">):</span>
+        <span class="n">comp</span> <span class="o">=</span> <span class="n">components</span><span class="o">.</span><span class="n">Componentized</span><span class="p">()</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">userFactory</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="n">avatarId</span><span class="p">)</span>
+        <span class="n">sess</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessionFactory</span><span class="p">(</span><span class="n">comp</span><span class="p">)</span>
+
+        <span class="n">sess</span><span class="o">.</span><span class="n">transportFactory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transportFactory</span>
+        <span class="n">sess</span><span class="o">.</span><span class="n">chainedProtocolFactory</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">chainedProtocolFactory</span><span class="p">(</span><span class="n">avatarId</span><span class="p">)</span>
+
+        <span class="n">comp</span><span class="o">.</span><span class="n">setComponent</span><span class="p">(</span><span class="n">iconch</span><span class="o">.</span><span class="n">IConchUser</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
+        <span class="n">comp</span><span class="o">.</span><span class="n">setComponent</span><span class="p">(</span><span class="n">iconch</span><span class="o">.</span><span class="n">ISession</span><span class="p">,</span> <span class="n">sess</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">user</span></div>
+
+
+<div class="viewcode-block" id="TerminalSessionTransport_getPeer"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.TerminalSessionTransport_getPeer">[docs]</a><span class="k">class</span> <span class="nc">TerminalSessionTransport_getPeer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Taken from twisted&#39;s TerminalSessionTransport which doesn&#39;t</span>
+<span class="sd">    provide getPeer to the transport.  This one does.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">noisy</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="TerminalSessionTransport_getPeer.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.TerminalSessionTransport_getPeer.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">proto</span><span class="p">,</span> <span class="n">chainedProtocol</span><span class="p">,</span> <span class="n">avatar</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proto</span> <span class="o">=</span> <span class="n">proto</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">avatar</span> <span class="o">=</span> <span class="n">avatar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chainedProtocol</span> <span class="o">=</span> <span class="n">chainedProtocol</span>
+
+        <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">session</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">makeConnection</span><span class="p">(</span>
+            <span class="n">_Glue</span><span class="p">(</span>
+                <span class="n">write</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">chainedProtocol</span><span class="o">.</span><span class="n">dataReceived</span><span class="p">,</span>
+                <span class="n">loseConnection</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">avatar</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">sendClose</span><span class="p">(</span><span class="n">session</span><span class="p">),</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;SSH Proto Transport&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">loseConnection</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">loseConnection</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">getPeer</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">session</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">getPeer</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">chainedProtocol</span><span class="o">.</span><span class="n">makeConnection</span><span class="p">(</span>
+            <span class="n">_Glue</span><span class="p">(</span>
+                <span class="n">getPeer</span><span class="o">=</span><span class="n">getPeer</span><span class="p">,</span>
+                <span class="n">write</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">write</span><span class="p">,</span>
+                <span class="n">loseConnection</span><span class="o">=</span><span class="n">loseConnection</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Chained Proto Transport&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">chainedProtocol</span><span class="o">.</span><span class="n">terminalProtocol</span><span class="o">.</span><span class="n">terminalSize</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="getKeyPair"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.getKeyPair">[docs]</a><span class="k">def</span> <span class="nf">getKeyPair</span><span class="p">(</span><span class="n">pubkeyfile</span><span class="p">,</span> <span class="n">privkeyfile</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function looks for RSA keypair files in the current directory. If they</span>
+<span class="sd">    do not exist, the keypair is created.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">pubkeyfile</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">privkeyfile</span><span class="p">)):</span>
+        <span class="c1"># No keypair exists. Generate a new RSA keypair</span>
+        <span class="kn">from</span> <span class="nn">cryptography.hazmat.backends</span> <span class="k">import</span> <span class="n">default_backend</span>
+        <span class="kn">from</span> <span class="nn">cryptography.hazmat.primitives.asymmetric</span> <span class="k">import</span> <span class="n">rsa</span>
+
+        <span class="n">rsa_key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">(</span>
+            <span class="n">rsa</span><span class="o">.</span><span class="n">generate_private_key</span><span class="p">(</span>
+                <span class="n">public_exponent</span><span class="o">=</span><span class="mi">65537</span><span class="p">,</span> <span class="n">key_size</span><span class="o">=</span><span class="n">_KEY_LENGTH</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">default_backend</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">public_key_string</span> <span class="o">=</span> <span class="n">rsa_key</span><span class="o">.</span><span class="n">public</span><span class="p">()</span><span class="o">.</span><span class="n">toString</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;OPENSSH&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="n">private_key_string</span> <span class="o">=</span> <span class="n">rsa_key</span><span class="o">.</span><span class="n">toString</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;OPENSSH&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+
+        <span class="c1"># save keys for the future.</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">privkeyfile</span><span class="p">,</span> <span class="s2">&quot;wt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pfile</span><span class="p">:</span>
+            <span class="n">pfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">private_key_string</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Created SSH private key in &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_PRIVATE_KEY_FILE</span><span class="p">))</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pubkeyfile</span><span class="p">,</span> <span class="s2">&quot;wt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pfile</span><span class="p">:</span>
+            <span class="n">pfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">public_key_string</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Created SSH public key in &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_PUBLIC_KEY_FILE</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pubkeyfile</span><span class="p">)</span> <span class="k">as</span> <span class="n">pfile</span><span class="p">:</span>
+            <span class="n">public_key_string</span> <span class="o">=</span> <span class="n">pfile</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">privkeyfile</span><span class="p">)</span> <span class="k">as</span> <span class="n">pfile</span><span class="p">:</span>
+            <span class="n">private_key_string</span> <span class="o">=</span> <span class="n">pfile</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">Key</span><span class="o">.</span><span class="n">fromString</span><span class="p">(</span><span class="n">public_key_string</span><span class="p">),</span> <span class="n">Key</span><span class="o">.</span><span class="n">fromString</span><span class="p">(</span><span class="n">private_key_string</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="makeFactory"><a class="viewcode-back" href="../../../../api/evennia.server.portal.ssh.html#evennia.server.portal.ssh.makeFactory">[docs]</a><span class="k">def</span> <span class="nf">makeFactory</span><span class="p">(</span><span class="n">configdict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates the ssh server factory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">chainProtocolFactory</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">insults</span><span class="o">.</span><span class="n">ServerProtocol</span><span class="p">(</span>
+            <span class="n">configdict</span><span class="p">[</span><span class="s2">&quot;protocolFactory&quot;</span><span class="p">],</span>
+            <span class="o">*</span><span class="n">configdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;protocolConfigdict&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">username</span><span class="p">,)),</span>
+            <span class="o">**</span><span class="n">configdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;protocolKwArgs&quot;</span><span class="p">,</span> <span class="p">{}),</span>
+        <span class="p">)</span>
+
+    <span class="n">rlm</span> <span class="o">=</span> <span class="n">PassAvatarIdTerminalRealm</span><span class="p">()</span>
+    <span class="n">rlm</span><span class="o">.</span><span class="n">transportFactory</span> <span class="o">=</span> <span class="n">TerminalSessionTransport_getPeer</span>
+    <span class="n">rlm</span><span class="o">.</span><span class="n">chainedProtocolFactory</span> <span class="o">=</span> <span class="n">chainProtocolFactory</span>
+    <span class="n">factory</span> <span class="o">=</span> <span class="n">ConchFactory</span><span class="p">(</span><span class="n">Portal</span><span class="p">(</span><span class="n">rlm</span><span class="p">))</span>
+    <span class="n">factory</span><span class="o">.</span><span class="n">sessionhandler</span> <span class="o">=</span> <span class="n">configdict</span><span class="p">[</span><span class="s2">&quot;sessions&quot;</span><span class="p">]</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># create/get RSA keypair</span>
+        <span class="n">publicKey</span><span class="p">,</span> <span class="n">privateKey</span> <span class="o">=</span> <span class="n">getKeyPair</span><span class="p">(</span><span class="n">_PUBLIC_KEY_FILE</span><span class="p">,</span> <span class="n">_PRIVATE_KEY_FILE</span><span class="p">)</span>
+        <span class="n">factory</span><span class="o">.</span><span class="n">publicKeys</span> <span class="o">=</span> <span class="p">{</span><span class="sa">b</span><span class="s2">&quot;ssh-rsa&quot;</span><span class="p">:</span> <span class="n">publicKey</span><span class="p">}</span>
+        <span class="n">factory</span><span class="o">.</span><span class="n">privateKeys</span> <span class="o">=</span> <span class="p">{</span><span class="sa">b</span><span class="s2">&quot;ssh-rsa&quot;</span><span class="p">:</span> <span class="n">privateKey</span><span class="p">}</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">_NO_AUTOGEN</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="n">err</span><span class="p">))</span>
+
+    <span class="n">factory</span><span class="o">.</span><span class="n">services</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="n">services</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">factory</span><span class="o">.</span><span class="n">services</span><span class="p">[</span><span class="s2">&quot;ssh-userauth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExtraInfoAuthServer</span>
+
+    <span class="n">factory</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">registerChecker</span><span class="p">(</span><span class="n">AccountDBPasswordChecker</span><span class="p">(</span><span class="n">factory</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">factory</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="ssh.html">0.9.5 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

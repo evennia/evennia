@@ -1,0 +1,478 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Gametime Tutorial &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="gametime-tutorial">
+<h1>Gametime Tutorial<a class="headerlink" href="#gametime-tutorial" title="Permalink to this headline">¶</a></h1>
+<p>A lot of games use a separate time system we refer to as <em>game time</em>. This runs in parallel to what
+we usually think of as <em>real time</em>.  The game time might run at a different speed, use different
+names for its time units or might even use a completely custom calendar. You don’t need to rely on a
+game time system at all. But if you do, Evennia offers basic tools to handle these various
+situations. This tutorial will walk you through these features.</p>
+<div class="section" id="a-game-time-with-a-standard-calendar">
+<h2>A game time with a standard calendar<a class="headerlink" href="#a-game-time-with-a-standard-calendar" title="Permalink to this headline">¶</a></h2>
+<p>Many games let their in-game time run faster or slower than real time, but still use our normal
+real-world calendar. This is common both for games set in present day as well as for games in
+historical or futuristic settings. Using a standard calendar has some advantages:</p>
+<ul class="simple">
+<li><p>Handling repetitive actions is much easier, since converting from the real time experience to the
+in-game perceived one is easy.</p></li>
+<li><p>The intricacies of the real world calendar, with leap years and months of different length etc are
+automatically handled by the system.</p></li>
+</ul>
+<p>Evennia’s game time features assume a standard calendar (see the relevant section below for a custom
+calendar).</p>
+<div class="section" id="setting-up-game-time-for-a-standard-calendar">
+<h3>Setting up game time for a standard calendar<a class="headerlink" href="#setting-up-game-time-for-a-standard-calendar" title="Permalink to this headline">¶</a></h3>
+<p>All is done through the settings.  Here are the settings you should use if you want a game time with
+a standard calendar:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in a file settings.py in mygame/server/conf</span>
+<span class="c1"># The time factor dictates if the game world runs faster (timefactor&gt;1)</span>
+<span class="c1"># or slower (timefactor&lt;1) than the real world.</span>
+<span class="n">TIME_FACTOR</span> <span class="o">=</span> <span class="mf">2.0</span>
+
+<span class="c1"># The starting point of your game time (the epoch), in seconds.</span>
+<span class="c1"># In Python a value of 0 means Jan 1 1970 (use negatives for earlier</span>
+<span class="c1"># start date). This will affect the returns from the utils.gametime</span>
+<span class="c1"># module.</span>
+<span class="n">TIME_GAME_EPOCH</span> <span class="o">=</span> <span class="bp">None</span>
+</pre></div>
+</td></tr></table></div>
+<p>By default, the game time runs twice as fast as the real time.  You can set the time factor to be 1
+(the game time would run exactly at the same speed than the real time) or lower (the game time will
+be slower than the real time).  Most games choose to have the game time spinning faster (you will
+find some games that have a time factor of 60, meaning the game time runs sixty times as fast as the
+real time, a minute in real time would be an hour in game time).</p>
+<p>The epoch is a slightly more complex setting.  It should contain a number of seconds that would
+indicate the time your game started.  As indicated, an epoch of 0 would mean January 1st, 1970.  If
+you want to set your time in the future, you just need to find the starting point in seconds.  There
+are several ways to do this in Python, this method will show you how to do it in local time:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># We&#39;re looking for the number of seconds representing</span>
+<span class="c1"># January 1st, 2020</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">mktime</span><span class="p">(</span><span class="n">start</span><span class="o">.</span><span class="n">timetuple</span><span class="p">())</span>
+</pre></div>
+</td></tr></table></div>
+<p>This should return a huge number - the number of seconds since Jan 1 1970. Copy that directly into
+your settings (editing <code class="docutils literal notranslate"><span class="pre">server/conf/settings.py</span></code>):</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in a file settings.py in mygame/server/conf</span>
+<span class="n">TIME_GAME_EPOCH</span> <span class="o">=</span> <span class="mi">1577865600</span>
+</pre></div>
+</td></tr></table></div>
+<p>Reload the game with <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code>, and then use the <code class="docutils literal notranslate"><span class="pre">&#64;time</span></code> command.  You should see something like
+this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">+----------------------------+-------------------------------------+</span>
+<span class="o">|</span> <span class="n">Server</span> <span class="n">time</span>                <span class="o">|</span>                                     <span class="o">|</span>
+<span class="o">+~~~~~~~~~~~~~~~~~~~~~~~~~~~~+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+</span>
+<span class="o">|</span> <span class="n">Current</span> <span class="n">uptime</span>             <span class="o">|</span> <span class="mi">20</span> <span class="n">seconds</span>                          <span class="o">|</span>
+<span class="o">|</span> <span class="n">Total</span> <span class="n">runtime</span>              <span class="o">|</span> <span class="mi">1</span> <span class="n">day</span><span class="p">,</span> <span class="mi">1</span> <span class="n">hour</span><span class="p">,</span> <span class="mi">55</span> <span class="n">minutes</span>           <span class="o">|</span>
+<span class="o">|</span> <span class="n">First</span> <span class="n">start</span>                <span class="o">|</span> <span class="mi">2017</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">12</span> <span class="mi">15</span><span class="p">:</span><span class="mi">47</span><span class="p">:</span><span class="mf">50.565000</span>          <span class="o">|</span>
+<span class="o">|</span> <span class="n">Current</span> <span class="n">time</span>               <span class="o">|</span> <span class="mi">2017</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">13</span> <span class="mi">17</span><span class="p">:</span><span class="mi">43</span><span class="p">:</span><span class="mf">10.760000</span>          <span class="o">|</span>
+<span class="o">+----------------------------+-------------------------------------+</span>
+<span class="o">|</span> <span class="n">In</span><span class="o">-</span><span class="n">Game</span> <span class="n">time</span>               <span class="o">|</span> <span class="n">Real</span> <span class="n">time</span> <span class="n">x</span> <span class="mi">2</span>                       <span class="o">|</span>
+<span class="o">+~~~~~~~~~~~~~~~~~~~~~~~~~~~~+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+</span>
+<span class="o">|</span> <span class="n">Epoch</span> <span class="p">(</span><span class="kn">from</span> <span class="nn">settings</span><span class="p">)</span>      <span class="o">|</span> <span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">01</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span>                 <span class="o">|</span>
+<span class="o">|</span> <span class="n">Total</span> <span class="n">time</span> <span class="n">passed</span><span class="p">:</span>         <span class="o">|</span> <span class="mi">1</span> <span class="n">day</span><span class="p">,</span> <span class="mi">17</span> <span class="n">hours</span><span class="p">,</span> <span class="mi">34</span> <span class="n">minutes</span>         <span class="o">|</span>
+<span class="o">|</span> <span class="n">Current</span> <span class="n">time</span>               <span class="o">|</span> <span class="mi">2020</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">02</span> <span class="mi">17</span><span class="p">:</span><span class="mi">34</span><span class="p">:</span><span class="mf">55.430000</span>          <span class="o">|</span>
+<span class="o">+----------------------------+-------------------------------------+</span>
+</pre></div>
+</div>
+<p>The line that is most relevant here is the game time epoch.  You see it shown at 2020-01-01.  From
+this point forward, the game time keeps increasing.  If you keep typing <code class="docutils literal notranslate"><span class="pre">&#64;time</span></code>, you’ll see the game
+time updated correctly… and going (by default) twice as fast as the real time.</p>
+</div>
+<div class="section" id="time-related-events">
+<h3>Time-related events<a class="headerlink" href="#time-related-events" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">gametime</span></code> utility also has a way to schedule game-related events, taking into account your game
+time, and assuming a standard calendar (see below for the same feature with a custom calendar).  For
+instance, it can be used to have a specific message every (in-game) day at 6:00 AM showing how the
+sun rises.</p>
+<p>The function <code class="docutils literal notranslate"><span class="pre">schedule()</span></code> should be used here.  It will create a <a class="reference internal" href="Scripts.html"><span class="doc">script</span></a> with some
+additional features to make sure the script is always executed when the game time matches the given
+parameters.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">schedule</span></code> function takes the following arguments:</p>
+<ul class="simple">
+<li><p>The <em>callback</em>, a function to be called when time is up.</p></li>
+<li><p>The keyword <code class="docutils literal notranslate"><span class="pre">repeat</span></code> (<code class="docutils literal notranslate"><span class="pre">False</span></code> by default) to indicate whether this function should be called
+repeatedly.</p></li>
+<li><p>Additional keyword arguments <code class="docutils literal notranslate"><span class="pre">sec</span></code>, <code class="docutils literal notranslate"><span class="pre">min</span></code>, <code class="docutils literal notranslate"><span class="pre">hour</span></code>, <code class="docutils literal notranslate"><span class="pre">day</span></code>, <code class="docutils literal notranslate"><span class="pre">month</span></code> and <code class="docutils literal notranslate"><span class="pre">year</span></code> to describe the time
+to schedule.  If the parameter isn’t given, it assumes the current time value of this specific unit.</p></li>
+</ul>
+<p>Here is a short example for making the sun rise every day:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in a file ingame_time.py in mygame/world/</span>
+
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">gametime</span>
+<span class="kn">from</span> <span class="nn">typeclasses.rooms</span> <span class="kn">import</span> <span class="n">Room</span>
+
+<span class="k">def</span> <span class="nf">at_sunrise</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;When the sun rises, display a message in every room.&quot;&quot;&quot;</span>
+    <span class="c1"># Browse all rooms</span>
+    <span class="k">for</span> <span class="n">room</span> <span class="ow">in</span> <span class="n">Room</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+        <span class="n">room</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;The sun rises from the eastern horizon.&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">start_sunrise_event</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Schedule an sunrise event to happen every day at 6 AM.&quot;&quot;&quot;</span>
+    <span class="n">script</span> <span class="o">=</span> <span class="n">gametime</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span><span class="n">at_sunrise</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">script</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;at sunrise&quot;</span>
+</pre></div>
+</td></tr></table></div>
+<p>If you want to test this function, you can easily do something like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@py</span> <span class="kn">from</span> <span class="nn">world</span> <span class="k">import</span> <span class="n">ingame_time</span><span class="p">;</span> <span class="n">ingame_time</span><span class="o">.</span><span class="n">start_sunrise_event</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The script will be created silently. The <code class="docutils literal notranslate"><span class="pre">at_sunrise</span></code> function will now be called every in-game day
+at 6 AM. You can use the <code class="docutils literal notranslate"><span class="pre">&#64;scripts</span></code> command to see it. You could stop it using <code class="docutils literal notranslate"><span class="pre">&#64;scripts/stop</span></code>. If
+we hadn’t set <code class="docutils literal notranslate"><span class="pre">repeat</span></code> the sun would only have risen once and then never again.</p>
+<p>We used the <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code> command here: nothing prevents you from adding the system into your game code.
+Remember to be careful not to add each event at startup, however, otherwise there will be a lot of
+overlapping events scheduled when the sun rises.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">schedule</span></code> function when using <code class="docutils literal notranslate"><span class="pre">repeat</span></code> set to <code class="docutils literal notranslate"><span class="pre">True</span></code> works with the higher, non-specified unit.
+In our example, we have specified hour, minute and second.  The higher unit we haven’t specified is
+day: <code class="docutils literal notranslate"><span class="pre">schedule</span></code> assumes we mean “run the callback every day at the specified time”.  Therefore, you
+can have an event that runs every hour at HH:30, or every month on the 3rd day.</p>
+<blockquote>
+<div><p>A word of caution for repeated scripts on a monthly or yearly basis: due to the variations in the
+real-life calendar you need to be careful when scheduling events for the end of the month or year.
+For example, if you set a script to run every month on the 31st it will run in January but find no
+such day in February, April etc. Similarly, leap years may change the number of days in the year.</p>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="a-game-time-with-a-custom-calendar">
+<h2>A game time with a custom calendar<a class="headerlink" href="#a-game-time-with-a-custom-calendar" title="Permalink to this headline">¶</a></h2>
+<p>Using a custom calendar to handle game time is sometimes needed if you want to place your game in a
+fictional universe.  For instance you may want to create the Shire calendar which Tolkien described
+having 12 months, each which 30 days. That would give only 360 days per year (presumably hobbits
+weren’t really fond of the hassle of following the astronomical calendar).  Another example would be
+creating a planet in a different solar system with, say, days 29 hours long and months of only 18
+days.</p>
+<p>Evennia handles custom calendars through an optional <em>contrib</em> module, called <code class="docutils literal notranslate"><span class="pre">custom_gametime</span></code>.
+Contrary to the normal <code class="docutils literal notranslate"><span class="pre">gametime</span></code> module described above it is not active by default.</p>
+<div class="section" id="setting-up-the-custom-calendar">
+<h3>Setting up the custom calendar<a class="headerlink" href="#setting-up-the-custom-calendar" title="Permalink to this headline">¶</a></h3>
+<p>In our first example of the Shire calendar, used by hobbits in books by Tolkien, we don’t really
+need the notion of weeks… but we need the notion of months having 30 days, not 28.</p>
+<p>The custom calendar is defined by adding the <code class="docutils literal notranslate"><span class="pre">TIME_UNITS</span></code> setting to your settings file. It’s a
+dictionary containing as keys the name of the units, and as value the number of seconds (the
+smallest unit for us) in this unit. Its keys must be picked among the following: “sec”, “min”,
+“hour”, “day”, “week”, “month” and “year” but you don’t have to include them all.  Here is the
+configuration for the Shire calendar:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in a file settings.py in mygame/server/conf</span>
+<span class="n">TIME_UNITS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;sec&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+              <span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
+              <span class="s2">&quot;hour&quot;</span><span class="p">:</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">,</span>
+              <span class="s2">&quot;day&quot;</span><span class="p">:</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">24</span><span class="p">,</span>
+              <span class="s2">&quot;month&quot;</span><span class="p">:</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">30</span><span class="p">,</span>
+              <span class="s2">&quot;year&quot;</span><span class="p">:</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">30</span> <span class="o">*</span> <span class="mi">12</span> <span class="p">}</span>
+</pre></div>
+</td></tr></table></div>
+<p>We give each unit we want as keys.  Values represent the number of seconds in that unit.  Hour is
+set to 60 * 60 (that is, 3600 seconds per hour).  Notice that we don’t specify the week unit in this
+configuration:  instead, we skip from days to months directly.</p>
+<p>In order for this setting to work properly, remember all units have to be multiples of the previous
+units.  If you create “day”, it needs to be multiple of hours, for instance.</p>
+<p>So for our example, our settings may look like this:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in a file settings.py in mygame/server/conf</span>
+<span class="c1"># Time factor</span>
+<span class="n">TIME_FACTOR</span> <span class="o">=</span> <span class="mi">4</span>
+
+<span class="c1"># Game time epoch</span>
+<span class="n">TIME_GAME_EPOCH</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1"># Units</span>
+<span class="n">TIME_UNITS</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;sec&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
+        <span class="s2">&quot;hour&quot;</span><span class="p">:</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">,</span>
+        <span class="s2">&quot;day&quot;</span><span class="p">:</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">24</span><span class="p">,</span>
+        <span class="s2">&quot;month&quot;</span><span class="p">:</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">30</span><span class="p">,</span>
+        <span class="s2">&quot;year&quot;</span><span class="p">:</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">30</span> <span class="o">*</span> <span class="mi">12</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</td></tr></table></div>
+<p>Notice we have set a time epoch of 0.  Using a custom calendar, we will come up with a nice display
+of time on our own. In our case the game time starts at year 0, month 0, day 0, and at midnight.</p>
+<p>Note that while we use “month”, “week” etc in the settings, your game may not use those terms in-
+game, instead referring to them as “cycles”, “moons”, “sand falls” etc. This is just a matter of you
+displaying them differently. See next section.</p>
+</div>
+<div class="section" id="a-command-to-display-the-current-game-time">
+<h3>A command to display the current game time<a class="headerlink" href="#a-command-to-display-the-current-game-time" title="Permalink to this headline">¶</a></h3>
+<p>As pointed out earlier, the <code class="docutils literal notranslate"><span class="pre">&#64;time</span></code> command is meant to be used with a standard calendar, not a
+custom one.  We can easily create a new command though.  We’ll call it <code class="docutils literal notranslate"><span class="pre">time</span></code>, as is often the case
+on other MU*.  Here’s an example of how we could write it (for the example, you can create a file
+<code class="docutils literal notranslate"><span class="pre">showtime.py</span></code> in your <code class="docutils literal notranslate"><span class="pre">commands</span></code> directory and paste this code in it):</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in a file mygame/commands/gametime.py</span>
+
+<span class="kn">from</span> <span class="nn">evennia.contrib</span> <span class="kn">import</span> <span class="n">custom_gametime</span>
+
+<span class="kn">from</span> <span class="nn">commands.command</span> <span class="kn">import</span> <span class="n">Command</span>
+
+<span class="k">class</span> <span class="nc">CmdTime</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Display the time.</span>
+
+<span class="sd">    Syntax:</span>
+<span class="sd">        time</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;time&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Execute the time command.&quot;&quot;&quot;</span>
+        <span class="c1"># Get the absolute game time</span>
+        <span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="nb">min</span><span class="p">,</span> <span class="n">sec</span> <span class="o">=</span> <span class="n">custom_gametime</span><span class="o">.</span><span class="n">custom_gametime</span><span class="p">(</span><span class="n">absolute</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;We are in year {year}, day {day}, month {month}.&quot;</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">It&#39;s {hour:02}:{min:02}:{sec:02}.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">,</span>
+                <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="nb">min</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">))</span>
+</pre></div>
+</td></tr></table></div>
+<p>Don’t forget to add it in your CharacterCmdSet to see this command:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/default_cmdset.py</span>
+
+<span class="kn">from</span> <span class="nn">commands.gametime</span> <span class="kn">import</span> <span class="n">CmdTime</span>   <span class="c1"># &lt;-- Add</span>
+
+<span class="c1"># ...</span>
+
+<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The `CharacterCmdSet` contains general in-game commands like `look`,</span>
+<span class="sd">    `get`, etc available on in-game Character objects. It is merged with</span>
+<span class="sd">    the `AccountCmdSet` when an Account puppets a Character.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultCharacter&quot;</span>
+
+    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Populates the cmdset</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_cmdset_creation</span><span class="p">()</span>
+        <span class="c1"># ...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdTime</span><span class="p">())</span>   <span class="c1"># &lt;- Add</span>
+</pre></div>
+</td></tr></table></div>
+<p>Reload your game with the <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> command.  You should now see the <code class="docutils literal notranslate"><span class="pre">time</span></code> command.  If you enter
+it, you might see something like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">We</span> <span class="n">are</span> <span class="ow">in</span> <span class="n">year</span> <span class="mi">0</span><span class="p">,</span> <span class="n">day</span> <span class="mi">0</span><span class="p">,</span> <span class="n">month</span> <span class="mf">0.</span>
+<span class="n">It</span><span class="s1">&#39;s 00:52:17.</span>
+</pre></div>
+</div>
+<p>You could display it a bit more prettily with names for months and perhaps even days, if you want.
+And if “months” are called “moons” in your game, this is where you’d add that.</p>
+</div>
+<div class="section" id="time-related-events-in-custom-gametime">
+<h3>Time-related events in custom gametime<a class="headerlink" href="#time-related-events-in-custom-gametime" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">custom_gametime</span></code> module also has a way to schedule game-related events, taking into account
+your game time (and your custom calendar).  It can be used to have a specific message every day at
+6:00 AM, to show the sun rises, for instance. The <code class="docutils literal notranslate"><span class="pre">custom_gametime.schedule</span></code> function works in the
+same way as described for the default one above.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Gametime Tutorial</a><ul>
+<li><a class="reference internal" href="#a-game-time-with-a-standard-calendar">A game time with a standard calendar</a><ul>
+<li><a class="reference internal" href="#setting-up-game-time-for-a-standard-calendar">Setting up game time for a standard calendar</a></li>
+<li><a class="reference internal" href="#time-related-events">Time-related events</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#a-game-time-with-a-custom-calendar">A game time with a custom calendar</a><ul>
+<li><a class="reference internal" href="#setting-up-the-custom-calendar">Setting up the custom calendar</a></li>
+<li><a class="reference internal" href="#a-command-to-display-the-current-game-time">A command to display the current game time</a></li>
+<li><a class="reference internal" href="#time-related-events-in-custom-gametime">Time-related events in custom gametime</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Gametime-Tutorial.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Gametime-Tutorial.html">0.9.5 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

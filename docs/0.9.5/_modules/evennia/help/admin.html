@@ -1,0 +1,145 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>evennia.help.admin &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.help.admin</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This defines how to edit help entries in Admin.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">django</span> <span class="k">import</span> <span class="n">forms</span>
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="k">import</span> <span class="n">admin</span>
+<span class="kn">from</span> <span class="nn">evennia.help.models</span> <span class="k">import</span> <span class="n">HelpEntry</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.admin</span> <span class="k">import</span> <span class="n">TagInline</span>
+
+
+<div class="viewcode-block" id="HelpTagInline"><a class="viewcode-back" href="../../../api/evennia.help.admin.html#evennia.help.admin.HelpTagInline">[docs]</a><span class="k">class</span> <span class="nc">HelpTagInline</span><span class="p">(</span><span class="n">TagInline</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">HelpEntry</span><span class="o">.</span><span class="n">db_tags</span><span class="o">.</span><span class="n">through</span>
+    <span class="n">related_field</span> <span class="o">=</span> <span class="s2">&quot;helpentry&quot;</span></div>
+
+
+<div class="viewcode-block" id="HelpEntryForm"><a class="viewcode-back" href="../../../api/evennia.help.admin.html#evennia.help.admin.HelpEntryForm">[docs]</a><span class="k">class</span> <span class="nc">HelpEntryForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
+    <span class="s2">&quot;Defines how to display the help entry&quot;</span>
+
+<div class="viewcode-block" id="HelpEntryForm.Meta"><a class="viewcode-back" href="../../../api/evennia.help.admin.html#evennia.help.admin.HelpEntryForm.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">HelpEntry</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="s2">&quot;__all__&quot;</span></div>
+
+    <span class="n">db_help_category</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Help category&quot;</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="s2">&quot;General&quot;</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;organizes help entries in lists&quot;</span>
+    <span class="p">)</span>
+    <span class="n">db_lock_storage</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Locks&quot;</span><span class="p">,</span>
+        <span class="n">initial</span><span class="o">=</span><span class="s2">&quot;view:all()&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">TextInput</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="s2">&quot;40&quot;</span><span class="p">}),</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="HelpEntryAdmin"><a class="viewcode-back" href="../../../api/evennia.help.admin.html#evennia.help.admin.HelpEntryAdmin">[docs]</a><span class="k">class</span> <span class="nc">HelpEntryAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="s2">&quot;Sets up the admin manaager for help entries&quot;</span>
+    <span class="n">inlines</span> <span class="o">=</span> <span class="p">[</span><span class="n">HelpTagInline</span><span class="p">]</span>
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;db_help_category&quot;</span><span class="p">,</span> <span class="s2">&quot;db_lock_storage&quot;</span><span class="p">)</span>
+    <span class="n">list_display_links</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;db_key&quot;</span><span class="p">)</span>
+    <span class="n">search_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;^db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;db_entrytext&quot;</span><span class="p">]</span>
+    <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;db_help_category&quot;</span><span class="p">,</span> <span class="s2">&quot;db_key&quot;</span><span class="p">]</span>
+    <span class="n">save_as</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">save_on_top</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">list_select_related</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">form</span> <span class="o">=</span> <span class="n">HelpEntryForm</span>
+    <span class="n">fieldsets</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span>
+            <span class="kc">None</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">((</span><span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;db_help_category&quot;</span><span class="p">),</span> <span class="s2">&quot;db_entrytext&quot;</span><span class="p">,</span> <span class="s2">&quot;db_lock_storage&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Sets a Help entry. Set lock to &lt;i&gt;view:all()&lt;/I&gt; unless you want to restrict it.&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">),</span>
+    <span class="p">)</span></div>
+
+
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">HelpEntry</span><span class="p">,</span> <span class="n">HelpEntryAdmin</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="admin.html">0.9.5 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

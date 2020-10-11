@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.prototypes.spawner &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -28,8 +27,7 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.prototypes.spawner</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -50,7 +48,7 @@
 <span class="sd">is a dictionary like this:</span>
 
 <span class="sd">```python</span>
-<span class="sd">from evennia.prototypes import prototypes</span>
+<span class="sd">from evennia.prototypes import prototypes, spawner</span>
 
 <span class="sd">prot = {</span>
 <span class="sd"> &quot;prototype_key&quot;: &quot;goblin&quot;,</span>
@@ -63,7 +61,10 @@
 <span class="sd"> &quot;tags&quot;: [&quot;mob&quot;, &quot;evil&quot;, (&#39;greenskin&#39;,&#39;mob&#39;)]</span>
 <span class="sd"> &quot;attrs&quot;: [(&quot;weapon&quot;, &quot;sword&quot;)]</span>
 <span class="sd">}</span>
+<span class="sd"># spawn something with the prototype</span>
+<span class="sd">goblin = spawner.spawn(prot)</span>
 
+<span class="sd"># make this into a db-saved prototype (optional)</span>
 <span class="sd">prot = prototypes.create_prototype(prot)</span>
 
 <span class="sd">```</span>
@@ -123,13 +124,13 @@
 
 <span class="sd">{</span>
 <span class="sd"> &quot;prototype_key&quot;: &quot;goblin_wizard&quot;,</span>
-<span class="sd"> &quot;prototype_parent&quot;: GOBLIN,</span>
+<span class="sd"> &quot;prototype_parent&quot;: &quot;GOBLIN&quot;,</span>
 <span class="sd"> &quot;key&quot;: &quot;goblin wizard&quot;,</span>
 <span class="sd"> &quot;spells&quot;: [&quot;fire ball&quot;, &quot;lighting bolt&quot;]</span>
 <span class="sd"> }</span>
 
 <span class="sd">GOBLIN_ARCHER = {</span>
-<span class="sd"> &quot;prototype_parent&quot;: GOBLIN,</span>
+<span class="sd"> &quot;prototype_parent&quot;: &quot;GOBLIN&quot;,</span>
 <span class="sd"> &quot;key&quot;: &quot;goblin archer&quot;,</span>
 <span class="sd"> &quot;attack_skill&quot;: (random, (5, 10))&quot;</span>
 <span class="sd"> &quot;attacks&quot;: [&quot;short bow&quot;]</span>
@@ -145,7 +146,7 @@
 
 <span class="sd">GOBLIN_ARCHWIZARD = {</span>
 <span class="sd"> &quot;key&quot; : &quot;goblin archwizard&quot;</span>
-<span class="sd"> &quot;prototype_parent&quot;: (GOBLIN_WIZARD, ARCHWIZARD),</span>
+<span class="sd"> &quot;prototype_parent&quot;: (&quot;GOBLIN_WIZARD&quot;, &quot;ARCHWIZARD&quot;),</span>
 <span class="sd">}</span>
 <span class="sd">```</span>
 
@@ -1030,7 +1031,6 @@
     <span class="k">return</span> <span class="n">batch_create_object</span><span class="p">(</span><span class="o">*</span><span class="n">objsparams</span><span class="p">)</span></div>
 </pre></div>
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -1052,7 +1052,7 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="spawner.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../0.9.1/index.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../../../0.9.5/index.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -1070,13 +1070,12 @@
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.prototypes.spawner</a></li> 
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

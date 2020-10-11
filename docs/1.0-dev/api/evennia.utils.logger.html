@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.utils.logger &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +25,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.utils.logger</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -46,9 +44,9 @@ interactive mode) or to $GAME_DIR/server/logs.</p>
 arbitrary files in $GAME_DIR/server/logs.</p>
 <p>Note: All logging functions have two aliases, log_type() and
 log_typemsg(). This is for historical, back-compatible reasons.</p>
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.utils.logger.timeformat">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">timeformat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">when</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#timeformat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.timeformat" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">timeformat</code><span class="sig-paren">(</span><em class="sig-param">when=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#timeformat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.timeformat" title="Permalink to this definition">¶</a></dt>
 <dd><p>This helper function will format the current time in the same
 way as the twisted logger does, including time zone info. Only
 difference from official logger is that we only use two digits
@@ -65,14 +63,14 @@ use the current time.</p>
 </dl>
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.utils.logger.WeeklyLogFile">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">WeeklyLogFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">directory</span></em>, <em class="sig-param"><span class="n">defaultMode</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">day_rotation</span><span class="o">=</span><span class="default_value">7</span></em>, <em class="sig-param"><span class="n">max_size</span><span class="o">=</span><span class="default_value">1000000</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#WeeklyLogFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.WeeklyLogFile" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">WeeklyLogFile</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">directory</em>, <em class="sig-param">defaultMode=None</em>, <em class="sig-param">day_rotation=7</em>, <em class="sig-param">max_size=1000000</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#WeeklyLogFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.WeeklyLogFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.python.logfile.DailyLogFile</span></code></p>
 <p>Log file that rotates once per week by default. Overrides key methods to change format.</p>
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.utils.logger.WeeklyLogFile.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">directory</span></em>, <em class="sig-param"><span class="n">defaultMode</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">day_rotation</span><span class="o">=</span><span class="default_value">7</span></em>, <em class="sig-param"><span class="n">max_size</span><span class="o">=</span><span class="default_value">1000000</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#WeeklyLogFile.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.WeeklyLogFile.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">directory</em>, <em class="sig-param">defaultMode=None</em>, <em class="sig-param">day_rotation=7</em>, <em class="sig-param">max_size=1000000</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#WeeklyLogFile.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.WeeklyLogFile.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -88,15 +86,15 @@ time). Defaults to 1M.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.utils.logger.WeeklyLogFile.shouldRotate">
 <code class="sig-name descname">shouldRotate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#WeeklyLogFile.shouldRotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.WeeklyLogFile.shouldRotate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Rotate when the date has changed since last write</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.utils.logger.WeeklyLogFile.suffix">
-<code class="sig-name descname">suffix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tupledate</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#WeeklyLogFile.suffix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.WeeklyLogFile.suffix" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">suffix</code><span class="sig-paren">(</span><em class="sig-param">tupledate</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#WeeklyLogFile.suffix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.WeeklyLogFile.suffix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the suffix given a (year, month, day) tuple or unixtime.
 Format changed to have 03 for march instead of 3 etc (retaining unix
 file order)</p>
@@ -108,51 +106,51 @@ server.log.2020_01_29__1
 server.log.2020_01_29__2</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.utils.logger.WeeklyLogFile.write">
-<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#WeeklyLogFile.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.WeeklyLogFile.write" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#WeeklyLogFile.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.WeeklyLogFile.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write data to log file</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.utils.logger.PortalLogObserver">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">PortalLogObserver</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#PortalLogObserver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.PortalLogObserver" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">PortalLogObserver</code><span class="sig-paren">(</span><em class="sig-param">f</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#PortalLogObserver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.PortalLogObserver" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.python.log.FileLogObserver</span></code></p>
 <p>Reformat logging</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.utils.logger.PortalLogObserver.timeFormat">
 <code class="sig-name descname">timeFormat</code><em class="property"> = None</em><a class="headerlink" href="#evennia.utils.logger.PortalLogObserver.timeFormat" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.utils.logger.PortalLogObserver.prefix">
 <code class="sig-name descname">prefix</code><em class="property"> = '  |Portal| '</em><a class="headerlink" href="#evennia.utils.logger.PortalLogObserver.prefix" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.utils.logger.PortalLogObserver.emit">
-<code class="sig-name descname">emit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">eventDict</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#PortalLogObserver.emit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.PortalLogObserver.emit" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">emit</code><span class="sig-paren">(</span><em class="sig-param">eventDict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#PortalLogObserver.emit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.PortalLogObserver.emit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copied from Twisted parent, to change logging output</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.utils.logger.ServerLogObserver">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">ServerLogObserver</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#ServerLogObserver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.ServerLogObserver" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">ServerLogObserver</code><span class="sig-paren">(</span><em class="sig-param">f</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#ServerLogObserver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.ServerLogObserver" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.utils.logger.PortalLogObserver" title="evennia.utils.logger.PortalLogObserver"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.logger.PortalLogObserver</span></code></a></p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.utils.logger.ServerLogObserver.prefix">
 <code class="sig-name descname">prefix</code><em class="property"> = ' '</em><a class="headerlink" href="#evennia.utils.logger.ServerLogObserver.prefix" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.utils.logger.log_msg">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_msg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_msg" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_msg</code><span class="sig-paren">(</span><em class="sig-param">msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_msg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper around log.msg call to catch any exceptions that might
 occur in logging. If an exception is raised, we’ll print to
 stdout instead.</p>
@@ -163,9 +161,9 @@ stdout instead.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.utils.logger.log_trace">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_trace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">errmsg</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_trace" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_trace</code><span class="sig-paren">(</span><em class="sig-param">errmsg=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_trace" title="Permalink to this definition">¶</a></dt>
 <dd><p>Log a traceback to the log. This should be called from within an
 exception.</p>
 <dl class="field-list simple">
@@ -176,9 +174,9 @@ at the end of the traceback in the log.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.utils.logger.log_tracemsg">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_tracemsg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">errmsg</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.log_tracemsg" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_tracemsg</code><span class="sig-paren">(</span><em class="sig-param">errmsg=None</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.log_tracemsg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Log a traceback to the log. This should be called from within an
 exception.</p>
 <dl class="field-list simple">
@@ -189,9 +187,9 @@ at the end of the traceback in the log.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.utils.logger.log_err">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_err</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">errmsg</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_err"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_err" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_err</code><span class="sig-paren">(</span><em class="sig-param">errmsg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_err"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_err" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prints/logs an error message to the server log.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -200,9 +198,9 @@ at the end of the traceback in the log.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.utils.logger.log_errmsg">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_errmsg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">errmsg</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.log_errmsg" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_errmsg</code><span class="sig-paren">(</span><em class="sig-param">errmsg</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.log_errmsg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prints/logs an error message to the server log.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -211,16 +209,16 @@ at the end of the traceback in the log.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.utils.logger.log_server">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_server</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">servermsg</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_server" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_server</code><span class="sig-paren">(</span><em class="sig-param">servermsg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_server" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is for the Portal to log captured Server stdout messages (it’s
 usually only used during startup, before Server log is open)</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.utils.logger.log_warn">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_warn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">warnmsg</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_warn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_warn" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_warn</code><span class="sig-paren">(</span><em class="sig-param">warnmsg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_warn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_warn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prints/logs any warnings that aren’t critical but should be noted.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -229,9 +227,9 @@ usually only used during startup, before Server log is open)</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.utils.logger.log_warnmsg">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_warnmsg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">warnmsg</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.log_warnmsg" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_warnmsg</code><span class="sig-paren">(</span><em class="sig-param">warnmsg</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.log_warnmsg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prints/logs any warnings that aren’t critical but should be noted.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -240,23 +238,23 @@ usually only used during startup, before Server log is open)</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.utils.logger.log_info">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">infomsg</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_info" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_info</code><span class="sig-paren">(</span><em class="sig-param">infomsg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prints any generic debugging/informative info that should appear in the log.</p>
 <p>infomsg: (string) The message to be logged.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.utils.logger.log_infomsg">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_infomsg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">infomsg</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.log_infomsg" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_infomsg</code><span class="sig-paren">(</span><em class="sig-param">infomsg</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.log_infomsg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prints any generic debugging/informative info that should appear in the log.</p>
 <p>infomsg: (string) The message to be logged.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.utils.logger.log_dep">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_dep</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">depmsg</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_dep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_dep" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_dep</code><span class="sig-paren">(</span><em class="sig-param">depmsg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_dep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_dep" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prints a deprecation message.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -265,9 +263,9 @@ usually only used during startup, before Server log is open)</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.utils.logger.log_depmsg">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_depmsg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">depmsg</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.log_depmsg" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_depmsg</code><span class="sig-paren">(</span><em class="sig-param">depmsg</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.log_depmsg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prints a deprecation message.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -276,9 +274,9 @@ usually only used during startup, before Server log is open)</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.utils.logger.log_sec">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_sec</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">secmsg</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_sec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_sec" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_sec</code><span class="sig-paren">(</span><em class="sig-param">secmsg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_sec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_sec" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prints a security-related message.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -287,9 +285,9 @@ usually only used during startup, before Server log is open)</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.utils.logger.log_secmsg">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_secmsg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">secmsg</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.log_secmsg" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_secmsg</code><span class="sig-paren">(</span><em class="sig-param">secmsg</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.log_secmsg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prints a security-related message.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -298,43 +296,43 @@ usually only used during startup, before Server log is open)</p>
 </dl>
 </dd></dl>
 
-<dl class="py class">
+<dl class="class">
 <dt id="evennia.utils.logger.EvenniaLogFile">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">EvenniaLogFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">directory</span></em>, <em class="sig-param"><span class="n">rotateLength</span><span class="o">=</span><span class="default_value">1000000</span></em>, <em class="sig-param"><span class="n">defaultMode</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">maxRotatedFiles</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#EvenniaLogFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.EvenniaLogFile" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">EvenniaLogFile</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">directory</em>, <em class="sig-param">rotateLength=1000000</em>, <em class="sig-param">defaultMode=None</em>, <em class="sig-param">maxRotatedFiles=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#EvenniaLogFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.EvenniaLogFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.python.logfile.LogFile</span></code></p>
 <p>A rotating logfile based off Twisted’s LogFile. It overrides
 the LogFile’s rotate method in order to append some of the last
 lines of the previous log to the start of the new log, in order
 to preserve a continuous chat history for channel log files.</p>
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.utils.logger.EvenniaLogFile.settings">
 <code class="sig-name descname">settings</code><em class="property"> = &lt;LazySettings &quot;server.conf.settings&quot;&gt;</em><a class="headerlink" href="#evennia.utils.logger.EvenniaLogFile.settings" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="attribute">
 <dt id="evennia.utils.logger.EvenniaLogFile.num_lines_to_append">
 <code class="sig-name descname">num_lines_to_append</code><em class="property"> = 20</em><a class="headerlink" href="#evennia.utils.logger.EvenniaLogFile.num_lines_to_append" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.utils.logger.EvenniaLogFile.rotate">
 <code class="sig-name descname">rotate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#EvenniaLogFile.rotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.EvenniaLogFile.rotate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Rotates our log file and appends some number of lines from
 the previous log to the start of the new one.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.utils.logger.EvenniaLogFile.seek">
-<code class="sig-name descname">seek</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#EvenniaLogFile.seek"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.EvenniaLogFile.seek" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">seek</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#EvenniaLogFile.seek"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.EvenniaLogFile.seek" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convenience method for accessing our _file attribute’s seek method,
 which is used in tail_log_function.
 :param *args: Same args as file.seek
 :param **kwargs: Same kwargs as file.seek</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="method">
 <dt id="evennia.utils.logger.EvenniaLogFile.readlines">
-<code class="sig-name descname">readlines</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#EvenniaLogFile.readlines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.EvenniaLogFile.readlines" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">readlines</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#EvenniaLogFile.readlines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.EvenniaLogFile.readlines" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convenience method for accessing our _file attribute’s readlines method,
 which is used in tail_log_function.
 :param *args: same args as file.readlines
@@ -348,9 +346,9 @@ which is used in tail_log_function.
 
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.utils.logger.log_file">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">'game.log'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_file" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_file</code><span class="sig-paren">(</span><em class="sig-param">msg</em>, <em class="sig-param">filename='game.log'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Arbitrary file logger using threads.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -364,9 +362,9 @@ on new lines following datetime info.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.utils.logger.tail_log_file">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">tail_log_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">offset</span></em>, <em class="sig-param"><span class="n">nlines</span></em>, <em class="sig-param"><span class="n">callback</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#tail_log_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.tail_log_file" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">tail_log_file</code><span class="sig-paren">(</span><em class="sig-param">filename</em>, <em class="sig-param">offset</em>, <em class="sig-param">nlines</em>, <em class="sig-param">callback=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#tail_log_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.tail_log_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the tail of the log file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -397,7 +395,6 @@ all if the file is shorter than nlines.</p>
 </div>
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -426,7 +423,7 @@ all if the file is shorter than nlines.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.utils.logger.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.1/api/evennia.utils.logger.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../0.9.5/api/evennia.utils.logger.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -442,13 +439,12 @@ all if the file is shorter than nlines.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.utils.logger</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

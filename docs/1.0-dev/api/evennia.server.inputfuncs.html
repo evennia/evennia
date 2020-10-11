@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.server.inputfuncs &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +25,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.server.inputfuncs</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -55,9 +53,9 @@ on a no-match. It has this callsign:</p>
 </div></blockquote>
 <p>Evennia knows which modules to use for inputfuncs by
 settings.INPUT_FUNC_MODULES.</p>
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.inputfuncs.text">
-<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">text</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.text" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">text</code><span class="sig-paren">(</span><em class="sig-param">session</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.text" title="Permalink to this definition">¶</a></dt>
 <dd><p>Main text input from the client. This will execute a command
 string on the server.</p>
 <dl class="field-list simple">
@@ -71,9 +69,9 @@ arguments are ignored.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.inputfuncs.bot_data_in">
-<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">bot_data_in</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#bot_data_in"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.bot_data_in" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">bot_data_in</code><span class="sig-paren">(</span><em class="sig-param">session</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#bot_data_in"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.bot_data_in" title="Permalink to this definition">¶</a></dt>
 <dd><p>Text input from the IRC and RSS bots.
 This will trigger the execute_cmd method on the bots in-game counterpart.</p>
 <dl class="field-list simple">
@@ -86,22 +84,22 @@ This will trigger the execute_cmd method on the bots in-game counterpart.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.inputfuncs.echo">
-<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">echo</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#echo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.echo" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">echo</code><span class="sig-paren">(</span><em class="sig-param">session</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#echo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.echo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Echo test function</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.inputfuncs.default">
-<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">default</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="n">cmdname</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.default" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">default</code><span class="sig-paren">(</span><em class="sig-param">session</em>, <em class="sig-param">cmdname</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.default" title="Permalink to this definition">¶</a></dt>
 <dd><p>Default catch-function. This is like all other input functions except
 it will get <strong>cmdname</strong> as the first argument.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.inputfuncs.client_options">
-<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">client_options</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#client_options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.client_options" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">client_options</code><span class="sig-paren">(</span><em class="sig-param">session</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#client_options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.client_options" title="Permalink to this definition">¶</a></dt>
 <dd><p>This allows the client an OOB way to inform us about its name and capabilities.
 This will be integrated into the session settings</p>
 <dl class="field-list simple">
@@ -127,23 +125,23 @@ This will be integrated into the session settings</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.inputfuncs.get_client_options">
-<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">get_client_options</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#get_client_options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.get_client_options" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">get_client_options</code><span class="sig-paren">(</span><em class="sig-param">session</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#get_client_options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.get_client_options" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias wrapper for getting options.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.inputfuncs.get_inputfuncs">
-<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">get_inputfuncs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#get_inputfuncs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.get_inputfuncs" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">get_inputfuncs</code><span class="sig-paren">(</span><em class="sig-param">session</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#get_inputfuncs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.get_inputfuncs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the keys of all available inputfuncs. Note that we don’t get
 it from this module alone since multiple modules could be added.
 So we get it from the sessionhandler.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.inputfuncs.login">
-<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">login</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.login" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">login</code><span class="sig-paren">(</span><em class="sig-param">session</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.login" title="Permalink to this definition">¶</a></dt>
 <dd><p>Peform a login. This only works if session is currently not logged
 in. This will also automatically throttle too quick attempts.</p>
 <dl class="field-list simple">
@@ -156,9 +154,9 @@ in. This will also automatically throttle too quick attempts.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.inputfuncs.get_value">
-<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">get_value</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#get_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.get_value" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">get_value</code><span class="sig-paren">(</span><em class="sig-param">session</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#get_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.get_value" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the value of a given attribute or db_property on the
 session’s current account or character.</p>
 <dl class="field-list simple">
@@ -170,9 +168,9 @@ are accepted.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.inputfuncs.repeat">
-<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">repeat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#repeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.repeat" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">repeat</code><span class="sig-paren">(</span><em class="sig-param">session</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#repeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.repeat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call a named function repeatedly. Note that
 this is meant as an example of limiting the number of
 possible call functions.</p>
@@ -195,15 +193,15 @@ the above settings.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.inputfuncs.unrepeat">
-<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">unrepeat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#unrepeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.unrepeat" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">unrepeat</code><span class="sig-paren">(</span><em class="sig-param">session</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#unrepeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.unrepeat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper for OOB use</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.inputfuncs.monitor">
-<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">monitor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#monitor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.monitor" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">monitor</code><span class="sig-paren">(</span><em class="sig-param">session</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#monitor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.monitor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds monitoring to a given property or Attribute.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
@@ -221,21 +219,21 @@ has its own specific output format.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.inputfuncs.unmonitor">
-<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">unmonitor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#unmonitor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.unmonitor" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">unmonitor</code><span class="sig-paren">(</span><em class="sig-param">session</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#unmonitor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.unmonitor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper for turning off monitoring</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.inputfuncs.monitored">
-<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">monitored</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#monitored"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.monitored" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">monitored</code><span class="sig-paren">(</span><em class="sig-param">session</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#monitored"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.monitored" title="Permalink to this definition">¶</a></dt>
 <dd><p>Report on what is being monitored</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.inputfuncs.webclient_options">
-<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">webclient_options</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#webclient_options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.webclient_options" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">webclient_options</code><span class="sig-paren">(</span><em class="sig-param">session</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#webclient_options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.webclient_options" title="Permalink to this definition">¶</a></dt>
 <dd><p>Handles retrieving and changing of options related to the webclient.</p>
 <p>If kwargs is empty (or contains just a “cmdid”), the saved options will be
 sent back to the session.
@@ -250,9 +248,9 @@ to the account object.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.inputfuncs.hello">
-<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">hello</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.server.inputfuncs.hello" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">hello</code><span class="sig-paren">(</span><em class="sig-param">session</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.server.inputfuncs.hello" title="Permalink to this definition">¶</a></dt>
 <dd><p>This allows the client an OOB way to inform us about its name and capabilities.
 This will be integrated into the session settings</p>
 <dl class="field-list simple">
@@ -278,9 +276,9 @@ This will be integrated into the session settings</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.inputfuncs.supports_set">
-<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">supports_set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.server.inputfuncs.supports_set" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">supports_set</code><span class="sig-paren">(</span><em class="sig-param">session</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.server.inputfuncs.supports_set" title="Permalink to this definition">¶</a></dt>
 <dd><p>This allows the client an OOB way to inform us about its name and capabilities.
 This will be integrated into the session settings</p>
 <dl class="field-list simple">
@@ -306,33 +304,33 @@ This will be integrated into the session settings</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.inputfuncs.msdp_list">
-<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">msdp_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#msdp_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.msdp_list" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">msdp_list</code><span class="sig-paren">(</span><em class="sig-param">session</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#msdp_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.msdp_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>MSDP LIST command</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.inputfuncs.msdp_report">
-<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">msdp_report</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#msdp_report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.msdp_report" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">msdp_report</code><span class="sig-paren">(</span><em class="sig-param">session</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#msdp_report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.msdp_report" title="Permalink to this definition">¶</a></dt>
 <dd><p>MSDP REPORT command</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.inputfuncs.msdp_unreport">
-<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">msdp_unreport</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#msdp_unreport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.msdp_unreport" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">msdp_unreport</code><span class="sig-paren">(</span><em class="sig-param">session</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#msdp_unreport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.msdp_unreport" title="Permalink to this definition">¶</a></dt>
 <dd><p>MSDP UNREPORT command</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.inputfuncs.msdp_send">
-<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">msdp_send</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#msdp_send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.msdp_send" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">msdp_send</code><span class="sig-paren">(</span><em class="sig-param">session</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#msdp_send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.msdp_send" title="Permalink to this definition">¶</a></dt>
 <dd><p>MSDP SEND command</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.server.inputfuncs.external_discord_hello">
-<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">external_discord_hello</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#external_discord_hello"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.external_discord_hello" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.inputfuncs.</code><code class="sig-name descname">external_discord_hello</code><span class="sig-paren">(</span><em class="sig-param">session</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/inputfuncs.html#external_discord_hello"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.inputfuncs.external_discord_hello" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sent by Mudlet as a greeting; added here to avoid
 logging a missing inputfunc for it.</p>
 </dd></dl>
@@ -340,7 +338,6 @@ logging a missing inputfunc for it.</p>
 </div>
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -369,7 +366,7 @@ logging a missing inputfunc for it.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.server.inputfuncs.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.1/api/evennia.server.inputfuncs.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../0.9.5/api/evennia.server.inputfuncs.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -385,13 +382,12 @@ logging a missing inputfunc for it.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.server.inputfuncs</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

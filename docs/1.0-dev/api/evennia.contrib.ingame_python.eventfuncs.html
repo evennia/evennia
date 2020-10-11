@@ -1,10 +1,9 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evennia.contrib.ingame_python.eventfuncs &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +25,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.ingame_python.eventfuncs</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -40,7 +38,7 @@
 <span id="evennia-contrib-ingame-python-eventfuncs"></span><h1>evennia.contrib.ingame_python.eventfuncs<a class="headerlink" href="#module-evennia.contrib.ingame_python.eventfuncs" title="Permalink to this headline">¶</a></h1>
 <p>Module defining basic eventfuncs for the event system.</p>
 <p>Eventfuncs are just Python functions that can be used inside of calllbacks.</p>
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.ingame_python.eventfuncs.deny">
 <code class="sig-prename descclassname">evennia.contrib.ingame_python.eventfuncs.</code><code class="sig-name descname">deny</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/eventfuncs.html#deny"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.eventfuncs.deny" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deny, that is stop, the callback here.</p>
@@ -52,9 +50,9 @@ situations to use the <strong>deny()</strong> function are in events that begins
 by <strong>can_</strong>, because they usually can be cancelled as easily as that.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.ingame_python.eventfuncs.get">
-<code class="sig-prename descclassname">evennia.contrib.ingame_python.eventfuncs.</code><code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/eventfuncs.html#get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.eventfuncs.get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.ingame_python.eventfuncs.</code><code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/eventfuncs.html#get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.eventfuncs.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return an object with the given search option or None if None is found.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
@@ -79,9 +77,9 @@ Looking for objects by key is possible (use <strong>db_key</strong> as an
 argument) but remember several objects can share the same key.</p>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="evennia.contrib.ingame_python.eventfuncs.call_event">
-<code class="sig-prename descclassname">evennia.contrib.ingame_python.eventfuncs.</code><code class="sig-name descname">call_event</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">event_name</span></em>, <em class="sig-param"><span class="n">seconds</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/eventfuncs.html#call_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.eventfuncs.call_event" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.ingame_python.eventfuncs.</code><code class="sig-name descname">call_event</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">event_name</em>, <em class="sig-param">seconds=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/eventfuncs.html#call_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.eventfuncs.call_event" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call the specified event in X seconds.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -108,7 +106,6 @@ to be called from inside another event.</p>
 </div>
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -137,7 +134,7 @@ to be called from inside another event.</p>
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.contrib.ingame_python.eventfuncs.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.1/api/evennia.contrib.ingame_python.eventfuncs.html">0.9.1 (master branch)</a></li>
+  <li><a href="../../0.9.5/api/evennia.contrib.ingame_python.eventfuncs.html">0.9.5 (master branch)</a></li>
 </ul>
 
         </div>
@@ -153,13 +150,12 @@ to be called from inside another event.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.ingame_python.eventfuncs</a></li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
     </div>
   </body>
 </html>

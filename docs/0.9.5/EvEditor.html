@@ -1,0 +1,342 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>EvEditor &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="eveditor">
+<h1>EvEditor<a class="headerlink" href="#eveditor" title="Permalink to this headline">¶</a></h1>
+<p>Evennia offers a powerful in-game line editor in <code class="docutils literal notranslate"><span class="pre">evennia.utils.eveditor.EvEditor</span></code>. This editor,
+mimicking the well-known VI line editor. It offers line-by-line editing, undo/redo, line deletes,
+search/replace, fill, dedent and more.</p>
+<div class="section" id="launching-the-editor">
+<h2>Launching the editor<a class="headerlink" href="#launching-the-editor" title="Permalink to this headline">¶</a></h2>
+<p>The editor is created as follows:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.eveditor</span> <span class="kn">import</span> <span class="n">EvEditor</span>
+
+<span class="n">EvEditor</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span>
+         <span class="n">loadfunc</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">savefunc</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">quitfunc</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+         <span class="n">key</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">caller</span></code> (Object or Account): The user of the editor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">loadfunc</span></code> (callable, optional): This is a function called when the editor is first started. It
+is called with <code class="docutils literal notranslate"><span class="pre">caller</span></code> as its only argument. The return value from this function is used as the
+starting text in the editor buffer.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">savefunc</span></code> (callable, optional): This is called when the user saves their buffer in the editor is
+called with two arguments, <code class="docutils literal notranslate"><span class="pre">caller</span></code> and <code class="docutils literal notranslate"><span class="pre">buffer</span></code>, where <code class="docutils literal notranslate"><span class="pre">buffer</span></code> is the current buffer.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">quitfunc</span></code> (callable, optional): This is called when the user quits the editor. If given, all
+cleanup and exit messages to the user must be handled by this function.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code> (str, optional): This text will be displayed as an identifier and reminder while editing.
+It has no other mechanical function.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">persistent</span></code> (default <code class="docutils literal notranslate"><span class="pre">False</span></code>): if set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the editor will survive a reboot.</p></li>
+</ul>
+</div>
+<div class="section" id="example-of-usage">
+<h2>Example of usage<a class="headerlink" href="#example-of-usage" title="Permalink to this headline">¶</a></h2>
+<p>This is an example command for setting a specific Attribute using the editor.</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">eveditor</span>
+
+<span class="k">class</span> <span class="nc">CmdSetTestAttr</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set the &quot;test&quot; Attribute using</span>
+<span class="sd">    the line editor.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">       settestattr</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;settestattr&quot;</span>
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Set up the callbacks and launch the editor&quot;</span>
+        <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+            <span class="s2">&quot;get the current value&quot;</span>
+            <span class="k">return</span> <span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="nb">buffer</span><span class="p">):</span>
+            <span class="s2">&quot;save the buffer&quot;</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="nb">buffer</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">quit</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+            <span class="s2">&quot;Since we define it, we must handle messages&quot;</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Editor exited&quot;</span><span class="p">)</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/test&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="c1"># launch the editor</span>
+        <span class="n">eveditor</span><span class="o">.</span><span class="n">EvEditor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span>
+                          <span class="n">loadfunc</span><span class="o">=</span><span class="n">load</span><span class="p">,</span> <span class="n">savefunc</span><span class="o">=</span><span class="n">save</span><span class="p">,</span> <span class="n">quitfunc</span><span class="o">=</span><span class="n">quit</span><span class="p">,</span>
+                          <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="persistent-editor">
+<h2>Persistent editor<a class="headerlink" href="#persistent-editor" title="Permalink to this headline">¶</a></h2>
+<p>If you set the <code class="docutils literal notranslate"><span class="pre">persistent</span></code> keyword to <code class="docutils literal notranslate"><span class="pre">True</span></code> when creating the editor, it will remain open even
+when reloading the game.  In order to be persistent, an editor needs to have its callback functions
+(<code class="docutils literal notranslate"><span class="pre">loadfunc</span></code>, <code class="docutils literal notranslate"><span class="pre">savefunc</span></code> and <code class="docutils literal notranslate"><span class="pre">quitfunc</span></code>) as top-level functions defined in the module.  Since these
+functions will be stored, Python will need to find them.</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">eveditor</span>
+
+<span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+    <span class="s2">&quot;get the current value&quot;</span>
+    <span class="k">return</span> <span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="nb">buffer</span><span class="p">):</span>
+    <span class="s2">&quot;save the buffer&quot;</span>
+    <span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="nb">buffer</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">quit</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+    <span class="s2">&quot;Since we define it, we must handle messages&quot;</span>
+    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Editor exited&quot;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">CmdSetTestAttr</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set the &quot;test&quot; Attribute using</span>
+<span class="sd">    the line editor.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">       settestattr</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;settestattr&quot;</span>
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Set up the callbacks and launch the editor&quot;</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/test&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="c1"># launch the editor</span>
+        <span class="n">eveditor</span><span class="o">.</span><span class="n">EvEditor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span>
+                          <span class="n">loadfunc</span><span class="o">=</span><span class="n">load</span><span class="p">,</span> <span class="n">savefunc</span><span class="o">=</span><span class="n">save</span><span class="p">,</span> <span class="n">quitfunc</span><span class="o">=</span><span class="n">quit</span><span class="p">,</span>
+                          <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="line-editor-usage">
+<h2>Line editor usage<a class="headerlink" href="#line-editor-usage" title="Permalink to this headline">¶</a></h2>
+<p>The editor mimics the <code class="docutils literal notranslate"><span class="pre">VIM</span></code> editor as best as possible. The below is an excerpt of the return from
+the in-editor help command (<code class="docutils literal notranslate"><span class="pre">:h</span></code>).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> &lt;txt&gt;  - any non-command is appended to the end of the buffer.
+ :  &lt;l&gt; - view buffer or only line &lt;l&gt;
+ :: &lt;l&gt; - view buffer without line numbers or other parsing
+ :::    - print a &#39;:&#39; as the only character on the line...
+ :h     - this help.
+
+ :w     - save the buffer (don&#39;t quit)
+ :wq    - save buffer and quit
+ :q     - quit (will be asked to save if buffer was changed)
+ :q!    - quit without saving, no questions asked
+
+ :u     - (undo) step backwards in undo history
+ :uu    - (redo) step forward in undo history
+ :UU    - reset all changes back to initial state
+
+ :dd &lt;l&gt;     - delete line &lt;n&gt;
+ :dw &lt;l&gt; &lt;w&gt; - delete word or regex &lt;w&gt; in entire buffer or on line &lt;l&gt;
+ :DD         - clear buffer
+
+ :y  &lt;l&gt;        - yank (copy) line &lt;l&gt; to the copy buffer
+ :x  &lt;l&gt;        - cut line &lt;l&gt; and store it in the copy buffer
+ :p  &lt;l&gt;        - put (paste) previously copied line directly after &lt;l&gt;
+ :i  &lt;l&gt; &lt;txt&gt;  - insert new text &lt;txt&gt; at line &lt;l&gt;. Old line will move down
+ :r  &lt;l&gt; &lt;txt&gt;  - replace line &lt;l&gt; with text &lt;txt&gt;
+ :I  &lt;l&gt; &lt;txt&gt;  - insert text at the beginning of line &lt;l&gt;
+ :A  &lt;l&gt; &lt;txt&gt;  - append text after the end of line &lt;l&gt;
+
+ :s &lt;l&gt; &lt;w&gt; &lt;txt&gt; - search/replace word or regex &lt;w&gt; in buffer or on line &lt;l&gt;
+
+ :f &lt;l&gt;    - flood-fill entire buffer or line &lt;l&gt;
+ :fi &lt;l&gt;   - indent entire buffer or line &lt;l&gt;
+ :fd &lt;l&gt;   - de-indent entire buffer or line &lt;l&gt;
+
+ :echo - turn echoing of the input on/off (helpful for some clients)
+
+    Legend:
+    &lt;l&gt; - line numbers, or range lstart:lend, e.g. &#39;3:7&#39;.
+    &lt;w&gt; - one word or several enclosed in quotes.
+    &lt;txt&gt; - longer string, usually not needed to be enclosed in quotes.
+</pre></div>
+</div>
+</div>
+<div class="section" id="the-eveditor-to-edit-code">
+<h2>The EvEditor to edit code<a class="headerlink" href="#the-eveditor-to-edit-code" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">EvEditor</span></code> is also used to edit some Python code in Evennia.  The <code class="docutils literal notranslate"><span class="pre">&#64;py</span></code> command supports an
+<code class="docutils literal notranslate"><span class="pre">/edit</span></code> switch that will open the EvEditor in code mode.  This mode isn’t significantly different
+from the standard one, except it handles automatic indentation of blocks and a few options to
+control this behavior.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">:&lt;</span></code> to remove a level of indentation for the future lines.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">:+</span></code> to add a level of indentation for the future lines.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">:=</span></code> to disable automatic indentation altogether.</p></li>
+</ul>
+<p>Automatic indentation is there to make code editing more simple.  Python needs correct indentation,
+not as an aesthetic addition, but as a requirement to determine beginning and ending of blocks.  The
+EvEditor will try to guess the next level of indentation.  If you type a block “if”, for instance,
+the EvEditor will propose you an additional level of indentation at the next line.  This feature
+cannot be perfect, however, and sometimes, you will have to use the above options to handle
+indentation.</p>
+<p><code class="docutils literal notranslate"><span class="pre">:=</span></code> can be used to turn automatic indentation off completely.  This can be very useful when trying
+to paste several lines of code that are already correctly indented, for instance.</p>
+<p>To see the EvEditor in code mode, you can use the <code class="docutils literal notranslate"><span class="pre">&#64;py/edit</span></code> command.  Type in your code (on one or
+several lines).  You can then use the <code class="docutils literal notranslate"><span class="pre">:w</span></code> option (save without quitting) and the code you have
+typed will be executed.  The <code class="docutils literal notranslate"><span class="pre">:!</span></code> will do the same thing.  Executing code while not closing the
+editor can be useful if you want to test the code you have typed but add new lines after your test.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">EvEditor</a><ul>
+<li><a class="reference internal" href="#launching-the-editor">Launching the editor</a></li>
+<li><a class="reference internal" href="#example-of-usage">Example of usage</a></li>
+<li><a class="reference internal" href="#persistent-editor">Persistent editor</a></li>
+<li><a class="reference internal" href="#line-editor-usage">Line editor usage</a></li>
+<li><a class="reference internal" href="#the-eveditor-to-edit-code">The EvEditor to edit code</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/EvEditor.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="EvEditor.html">0.9.5 (master branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>
