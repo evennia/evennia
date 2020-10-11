@@ -487,6 +487,7 @@ def webclient_options(session, *args, **kwargs):
 
     Keyword Args:
         <option name>: an option to save
+
     """
     account = session.account
 

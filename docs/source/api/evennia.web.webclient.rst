@@ -10,7 +10,6 @@ Submodules
 ----------
 
 .. toctree::
-   :maxdepth: 6
 
    evennia.web.webclient.urls
    evennia.web.webclient.views

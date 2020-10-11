@@ -66,7 +66,7 @@
 - [./Glossary](./Glossary)
 - [./Grapevine](./Grapevine)
 - [./Guest Logins](./Guest-Logins)
-- [./HAProxy Config (Optional)](./HAProxy-Config-(Optional))
+- [./HAProxy Config](./HAProxy-Config)
 - [./Help System](./Help-System)
 - [./Help System Tutorial](./Help-System-Tutorial)
 - [./How To Get And Give Help](./How-To-Get-And-Give-Help)

@@ -10,7 +10,6 @@ Submodules
 ----------
 
 .. toctree::
-   :maxdepth: 6
 
    evennia.comms.admin
    evennia.comms.channelhandler

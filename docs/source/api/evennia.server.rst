@@ -10,7 +10,6 @@ Subpackages
 -----------
 
 .. toctree::
-   :maxdepth: 6
 
    evennia.server.game_index_client
    evennia.server.portal
@@ -20,7 +19,6 @@ Submodules
 ----------
 
 .. toctree::
-   :maxdepth: 6
 
    evennia.server.admin
    evennia.server.amp_client

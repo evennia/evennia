@@ -10,6 +10,5 @@ Subpackages
 -----------
 
 .. toctree::
-   :maxdepth: 6
 
    evennia.contrib.security.auditing

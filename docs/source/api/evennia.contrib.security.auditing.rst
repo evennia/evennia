@@ -10,7 +10,6 @@ Submodules
 ----------
 
 .. toctree::
-   :maxdepth: 6
 
    evennia.contrib.security.auditing.outputs
    evennia.contrib.security.auditing.server

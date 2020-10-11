@@ -10,7 +10,6 @@ Subpackages
 -----------
 
 .. toctree::
-   :maxdepth: 6
 
    evennia.web.utils
    evennia.web.webclient
@@ -20,6 +19,5 @@ Submodules
 ----------
 
 .. toctree::
-   :maxdepth: 6
 
    evennia.web.urls

@@ -10,7 +10,6 @@ Submodules
 ----------
 
 .. toctree::
-   :maxdepth: 6
 
    evennia.server.profiling.dummyrunner
    evennia.server.profiling.dummyrunner_settings

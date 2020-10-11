@@ -10,7 +10,6 @@ Subpackages
 -----------
 
 .. toctree::
-   :maxdepth: 6
 
    evennia.utils.idmapper
 
@@ -18,7 +17,6 @@ Submodules
 ----------
 
 .. toctree::
-   :maxdepth: 6
 
    evennia.utils.ansi
    evennia.utils.batchprocessors

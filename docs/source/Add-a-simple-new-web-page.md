@@ -4,7 +4,7 @@
 Evennia leverages [Django](https://docs.djangoproject.com) which is a web development framework.
 Huge professional websites are made in Django and there is extensive documentation (and books) on it
 . You are encouraged to at least look at the Django basic tutorials. Here we will just give a brief
-introduction for how things hang together, to get you started. 
+introduction for how things hang together, to get you started.
 
 We assume you have installed and set up Evennia to run. A webserver and website comes out of the
 box. You can get to that by entering `http://localhost:4001` in your web browser - you should see a
@@ -37,7 +37,7 @@ template some information from the request, for instance, the game name, and the
 We need to find a place where Evennia (and Django) looks for html files (called *templates* in
 Django parlance). You can specify such places in your settings (see the `TEMPLATES` variable in
 `default_settings.py` for more info), but here we'll use an existing one. Go to
-`mygame/template/overrides/website/` and create a page `story.html` there. 
+`mygame/template/overrides/website/` and create a page `story.html` there.
 
 This is not a HTML tutorial, so we'll go simple:
 
@@ -75,8 +75,9 @@ If you'd rather not take advantage of Evennia's base styles, you can do somethin
 When you enter the address `http://localhost:4001/story` in your web browser, Django will parse that
 field to figure out which page you want to go to. You tell it which patterns are relevant in the
 file
-[mygame/web/urls.py](https://github.com/evennia/evennia/blob/master/evennia/game_template/web/urls.py).
-Open it now. 
+[mygame/web/urls.py](https://github.com/evennia/evennia/blob/master/evennia/game_template/web/urls.p
+y).
+Open it now.
 
 Django looks for the variable `urlpatterns` in this file. You want to add your new pattern to the
 `custom_patterns` list we have prepared - that is then merged with the default `urlpatterns`. Here's

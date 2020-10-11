@@ -283,7 +283,7 @@ def parse_language(speaker, emote):
             the markers and a tuple (langname, saytext), where
             langname can be None.
     Raises:
-        LanguageError: If an invalid language was specified.
+        rplanguage.LanguageError: If an invalid language was specified.
 
     Notes:
         Note that no errors are raised if the wrong language identifier

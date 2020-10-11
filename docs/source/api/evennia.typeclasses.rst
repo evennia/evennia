@@ -10,7 +10,6 @@ Submodules
 ----------
 
 .. toctree::
-   :maxdepth: 6
 
    evennia.typeclasses.admin
    evennia.typeclasses.attributes

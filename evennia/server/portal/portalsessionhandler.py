@@ -435,9 +435,9 @@ class PortalSessionHandler(SessionHandler):
 
         Keyword Args:
             kwargs (any): Each key is a command instruction to the
-            protocol on the form key = [[args],{kwargs}]. This will
-            call a method send_<key> on the protocol. If no such
-            method exixts, it sends the data to a method send_default.
+                protocol on the form key = [[args],{kwargs}]. This will
+                call a method send_<key> on the protocol. If no such
+                method exixts, it sends the data to a method send_default.
 
         """
         # from evennia.server.profiling.timetrace import timetrace  # DEBUG

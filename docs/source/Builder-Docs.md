@@ -1,6 +1,6 @@
 # Builder Docs
 
-This section contains information useful to world builders. 
+This section contains information useful to world builders.
 
 ### Building basics
 

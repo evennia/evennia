@@ -10,7 +10,6 @@ Submodules
 ----------
 
 .. toctree::
-   :maxdepth: 6
 
    evennia.server.game_index_client.client
    evennia.server.game_index_client.service
