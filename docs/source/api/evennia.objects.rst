@@ -10,7 +10,7 @@ Modules
 -------
 
 .. toctree::
-   :maxdepth: 6
+   :maxdepth: 
 
    evennia.objects.admin
    evennia.objects.manager

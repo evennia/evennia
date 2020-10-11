@@ -10,7 +10,7 @@ Modules
 -------
 
 .. toctree::
-   :maxdepth: 6
+   :maxdepth: 
 
    evennia.prototypes.menus
    evennia.prototypes.protfuncs

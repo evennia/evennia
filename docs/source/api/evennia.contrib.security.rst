@@ -10,6 +10,6 @@ Packages/folders
 ----------------
 
 .. toctree::
-   :maxdepth: 6
+   :maxdepth: 
 
    evennia.contrib.security.auditing

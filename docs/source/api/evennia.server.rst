@@ -10,7 +10,7 @@ Modules
 -------
 
 .. toctree::
-   :maxdepth: 6
+   :maxdepth: 
 
    evennia.server.admin
    evennia.server.amp_client
@@ -34,7 +34,7 @@ Packages/folders
 ----------------
 
 .. toctree::
-   :maxdepth: 6
+   :maxdepth: 
 
    evennia.server.game_index_client
    evennia.server.portal
