@@ -10,7 +10,6 @@ Subpackages
 -----------
 
 .. toctree::
-   :maxdepth: 6
 
    evennia.contrib.ingame_python
    evennia.contrib.security
@@ -22,7 +21,6 @@ Submodules
 ----------
 
 .. toctree::
-   :maxdepth: 6
 
    evennia.contrib.barter
    evennia.contrib.building_menu

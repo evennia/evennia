@@ -10,7 +10,6 @@ Subpackages
 -----------
 
 .. toctree::
-   :maxdepth: 6
 
    evennia.web.website.templatetags
 
@@ -18,7 +17,6 @@ Submodules
 ----------
 
 .. toctree::
-   :maxdepth: 6
 
    evennia.web.website.forms
    evennia.web.website.tests

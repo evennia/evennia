@@ -582,7 +582,7 @@ def initialize_nick_templates(in_template, out_template):
         standard `.format` method.
 
     Raises:
-        NickTemplateInvalid: If the in/out template does not have a matching
+        inlinefuncs.NickTemplateInvalid: If the in/out template does not have a matching
             number of $args.
 
     """

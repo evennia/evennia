@@ -10,7 +10,6 @@ Subpackages
 -----------
 
 .. toctree::
-   :maxdepth: 6
 
    evennia.accounts
    evennia.commands
@@ -30,6 +29,5 @@ Submodules
 ----------
 
 .. toctree::
-   :maxdepth: 6
 
    evennia.settings_default

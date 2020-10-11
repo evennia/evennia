@@ -344,7 +344,7 @@ class ServerSession(Session):
         Update the protocol_flags and sync them with Portal.
 
         Keyword Args:
-            key, value - A key:value pair to set in the
+            any: A key:value pair to set in the
                 protocol_flags dictionary.
 
         Notes:

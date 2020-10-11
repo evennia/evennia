@@ -10,7 +10,6 @@ Submodules
 ----------
 
 .. toctree::
-   :maxdepth: 6
 
    evennia.contrib.tutorial_examples.bodyfunctions
    evennia.contrib.tutorial_examples.cmdset_red_button
