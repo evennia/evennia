@@ -10,7 +10,7 @@ Modules
 -------
 
 .. toctree::
-   :maxdepth: 
+   :maxdepth: 6
 
    evennia.web.website.forms
    evennia.web.website.tests
@@ -21,6 +21,6 @@ Packages/folders
 ----------------
 
 .. toctree::
-   :maxdepth: 
+   :maxdepth: 6
 
    evennia.web.website.templatetags
