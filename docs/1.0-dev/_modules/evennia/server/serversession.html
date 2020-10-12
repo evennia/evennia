@@ -268,7 +268,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update the protocol_flags and sync them with Portal.</span>
 
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">            protocol_flag (any): A key and value to set in the</span>
 <span class="sd">                protocol_flags dictionary.</span>
 
@@ -286,7 +286,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sending data from Evennia-&gt;Client</span>
 
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">            text (str or tuple)</span>
 <span class="sd">            any (str or tuple): Send-commands identified</span>
 <span class="sd">                by their keys. Or &quot;options&quot;, carrying options</span>
@@ -300,7 +300,7 @@
 <span class="sd">        Receiving data from the client, sending it off to</span>
 <span class="sd">        the respective inputfuncs.</span>
 
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">            kwargs (any): Incoming data from protocol on</span>
 <span class="sd">                the form `{&quot;commandname&quot;: ((args), {kwargs}),...}`</span>
 <span class="sd">        Notes:</span>
@@ -318,7 +318,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            text (str): String input.</span>
 
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">            any (str or tuple): Send-commands identified</span>
 <span class="sd">                by their keys. Or &quot;options&quot;, carrying options</span>
 <span class="sd">                for the protocol(s).</span>
@@ -346,7 +346,7 @@
 <span class="sd">            session (Session): This is here to make API consistent with</span>
 <span class="sd">                Account/Object.execute_cmd. If given, data is passed to</span>
 <span class="sd">                that Session, otherwise use self.</span>
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">            Other keyword arguments will be added to the found command</span>
 <span class="sd">            object instace as variables before it executes.  This is</span>
 <span class="sd">            unused by default Evennia but may be used to set flags and</span>

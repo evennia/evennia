@@ -449,7 +449,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks if a given username or IP is banned.</span>
 
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">            ip (str, optional): IP address.</span>
 <span class="sd">            username (str, optional): Username.</span>
 
@@ -520,7 +520,7 @@
 <span class="sd">            password (str): Password of account</span>
 <span class="sd">            ip (str, optional): IP address of client</span>
 
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">            session (Session, optional): Session requesting authentication</span>
 
 <span class="sd">        Returns:</span>
@@ -650,7 +650,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            password (str): Password to validate</span>
 
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">            account (DefaultAccount, optional): Account object to validate the</span>
 <span class="sd">                password for. Optional, but Django includes some validators to</span>
 <span class="sd">                do things like making sure users aren&#39;t setting passwords to the</span>
@@ -744,7 +744,7 @@
 <span class="sd">        with default (or overridden) permissions and having joined them to the</span>
 <span class="sd">        appropriate default channels.</span>
 
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">            username (str): Username of Account owner</span>
 <span class="sd">            password (str): Password of Account owner</span>
 <span class="sd">            email (str, optional): Email address of Account owner</span>
@@ -911,7 +911,7 @@
 <span class="sd">                default send behavior for the current</span>
 <span class="sd">                MULTISESSION_MODE.</span>
 <span class="sd">            options (list): Protocol-specific options. Passed on to the protocol.</span>
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">            any (dict): All other keywords are passed on to the protocol.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -959,7 +959,7 @@
 <span class="sd">            session (Session, optional): The session to be responsible</span>
 <span class="sd">                for the command-send</span>
 
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">            kwargs (any): Other keyword arguments will be added to the</span>
 <span class="sd">                found command object instance as variables before it</span>
 <span class="sd">                executes. This is unused by default Evennia but may be</span>
@@ -1075,7 +1075,7 @@
 <span class="sd">          no_superuser_bypass (bool, optional): Turn off superuser</span>
 <span class="sd">            lock bypassing. Be careful with this one.</span>
 
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">          kwargs (any): Passed to the at_access hook along with the result.</span>
 
 <span class="sd">        Returns:</span>
@@ -1219,7 +1219,7 @@
 <span class="sd">                check.</span>
 <span class="sd">            access_type (str): The type of access checked.</span>
 
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">            kwargs (any): These are passed on from the access check</span>
 <span class="sd">                and can be used to relay custom instructions from the</span>
 <span class="sd">                check mechanism.</span>
@@ -1424,7 +1424,7 @@
 <span class="sd">            text (str, optional): The message received.</span>
 <span class="sd">            from_obj (any, optional): The object sending the message.</span>
 
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">            This includes any keywords sent to the `msg` method.</span>
 
 <span class="sd">        Returns:</span>
@@ -1446,7 +1446,7 @@
 <span class="sd">            text (str, optional): Text to send.</span>
 <span class="sd">            to_obj (any, optional): The object to send to.</span>
 
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">            Keywords passed from msg()</span>
 
 <span class="sd">        Notes:</span>
@@ -1605,7 +1605,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets or creates a Guest account object.</span>
 
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">            ip (str, optional): IP address of requestor; used for ban checking,</span>
 <span class="sd">                throttling and logging</span>
 

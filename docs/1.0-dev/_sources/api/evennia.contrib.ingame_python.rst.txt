@@ -10,7 +10,7 @@ Modules
 -------
 
 .. toctree::
-   :maxdepth: 
+   :maxdepth: 6
 
    evennia.contrib.ingame_python.callbackhandler
    evennia.contrib.ingame_python.commands

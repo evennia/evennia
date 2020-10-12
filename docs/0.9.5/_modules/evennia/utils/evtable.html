@@ -324,7 +324,7 @@
 <span class="sd">        text (str): Text to wrap.</span>
 <span class="sd">        width (int, optional): Width to wrap `text` to.</span>
 
-<span class="sd">    Keyword args:</span>
+<span class="sd">    Keyword Args:</span>
 <span class="sd">        See TextWrapper class for available keyword args to customize</span>
 <span class="sd">        wrapping behaviour.</span>
 
@@ -345,7 +345,7 @@
 <span class="sd">        text (str): Text to fill.</span>
 <span class="sd">        width (int, optional): Width of fill area.</span>
 
-<span class="sd">    Keyword args:</span>
+<span class="sd">    Keyword Args:</span>
 <span class="sd">        See TextWrapper class for available keyword args to customize</span>
 <span class="sd">        filling behaviour.</span>
 
@@ -370,7 +370,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            data (str): The un-padded data of the entry.</span>
 
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">            width (int): Desired width of cell. It will pad</span>
 <span class="sd">                to this size.</span>
 <span class="sd">            height (int): Desired height of cell. it will pad</span>
@@ -815,7 +815,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reformat the EvCell with new options</span>
 
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">            The available keyword arguments are the same as for `EvCell.__init__`.</span>
 
 <span class="sd">        Raises:</span>
@@ -974,7 +974,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            Text for each row in the column</span>
 
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">            All `EvCell.__init_` keywords are available, these</span>
 <span class="sd">            settings will be persistently applied to every Cell in the</span>
 <span class="sd">            column.</span>
@@ -989,7 +989,7 @@
 <span class="sd">        coherent and lined-up column. Will enforce column-specific</span>
 <span class="sd">        options to cells.</span>
 
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">            Extra keywords to modify the column setting. Same keywords</span>
 <span class="sd">            as in `EvCell.__init__`.</span>
 
@@ -1021,7 +1021,7 @@
 <span class="sd">                use `ypos=0`. If not given, data will be inserted at the end</span>
 <span class="sd">                of the column.</span>
 
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">            Available keywods as per `EvCell.__init__`.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1040,7 +1040,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Change the options for the column.</span>
 
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">            Keywords as per `EvCell.__init__`.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1055,7 +1055,7 @@
 <span class="sd">            index (int): Index location of the cell in the column,</span>
 <span class="sd">                starting from 0 for the first row to Nrows-1.</span>
 
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">            Keywords as per `EvCell.__init__`.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1095,7 +1095,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            Header texts for the table.</span>
 
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">            table (list of lists or list of `EvColumns`, optional):</span>
 <span class="sd">                This is used to build the table in a quick way.  If not</span>
 <span class="sd">                given, the table will start out empty and `add_` methods</span>
@@ -1249,7 +1249,7 @@
 <span class="sd">            nx (int): x size of table.</span>
 <span class="sd">            ny (int): y size of table.</span>
 
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">            Keywords as per `EvTable.__init__`.</span>
 
 <span class="sd">        Returns:</span>
@@ -1576,7 +1576,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            args (str): These strings will be used as the header texts.</span>
 
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">            Same keywords as per `EvTable.__init__`. Will be applied</span>
 <span class="sd">            to the new header&#39;s cells.</span>
 
@@ -1600,7 +1600,7 @@
 <span class="sd">               to input new column. If not given, column will be added to the end</span>
 <span class="sd">               of the table. Uses Python indexing (so first column is `xpos=0`)</span>
 
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">            Other keywords as per `Cell.__init__`.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1664,7 +1664,7 @@
 <span class="sd">                 input new row. If not given, will be added to the end of the table.</span>
 <span class="sd">                 Uses Python indexing (so first row is `ypos=0`)</span>
 
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">            Other keywords are as per `EvCell.__init__`.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1703,7 +1703,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Force a re-shape of the entire table.</span>
 
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">            Table options as per `EvTable.__init__`.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1739,7 +1739,7 @@
 <span class="sd">            index (int): Which column to reformat. The column index is</span>
 <span class="sd">                given from 0 to Ncolumns-1.</span>
 
-<span class="sd">        Keyword args:</span>
+<span class="sd">        Keyword Args:</span>
 <span class="sd">            Column options as per `EvCell.__init__`.</span>
 
 <span class="sd">        Raises:</span>

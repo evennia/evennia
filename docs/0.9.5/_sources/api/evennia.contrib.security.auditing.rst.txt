@@ -6,10 +6,11 @@ evennia.contrib.security.auditing
    :undoc-members:
    :show-inheritance:
 
-Submodules
-----------
+Modules
+-------
 
 .. toctree::
+   :maxdepth: 6
 
    evennia.contrib.security.auditing.outputs
    evennia.contrib.security.auditing.server
