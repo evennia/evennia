@@ -21,6 +21,8 @@ let font_plugin = (function () {
     //
     //
     var onOptionsUI = function (parentdiv) {
+        var fontfamily = localStorage.getItem('evenniaFontFamily');
+        var fontsize   = localStorage.getItem('evenniaFontSize');
         var fontselect = $('<select>');
         var sizeselect = $('<select>');
 
@@ -36,17 +38,27 @@ let font_plugin = (function () {
             sizeselect.append(option);
         }
 
-        fontselect.val('DejaVu Sans Mono'); // default value
-        sizeselect.val('0.9'); // default scaling factor
+        if( fontfamily != null ) {
+            fontselect.val( fontfamily );
+        } else {
+            fontselect.val('DejaVu Sans Mono'); // default value
+        }
 
-        // font-family change callback
+        if( fontsize != null ) {
+            sizeselect.val( fontsize );
+        } else {
+            sizeselect.val('0.9'); // default scaling factor
+        }
+
+        // font change callbacks
         fontselect.on('change', function () {
             $(document.body).css('font-family', $(this).val());
+            localStorage.setItem('evenniaFontFamily', $(this).val() );
         });
-
-        // font size change callback
+ 
         sizeselect.on('change', function () {
             $(document.body).css('font-size', $(this).val()+"em");
+            localStorage.setItem('evenniaFontSize', $(this).val() );
         });
 
         // add the font selection dialog control to our parentdiv
@@ -59,6 +71,8 @@ let font_plugin = (function () {
     // Font plugin init function (adds the urls for the webfonts to the page)
     // 
     var init = function () {
+        var fontfamily = localStorage.getItem('evenniaFontFamily');
+        var fontsize   = localStorage.getItem('evenniaFontSize');
         var head = $(document.head);
 
         var fonts = Object.keys(font_urls);
@@ -68,6 +82,14 @@ let font_plugin = (function () {
                 var link = $('<link href="'+url+'" rel="stylesheet">');
                 head.append( link );
             }
+        }
+
+        if( !fontfamily ) {
+            $(document.body).css('font-family', fontfamily);
+        }
+
+        if( !fontsize ) {
+            $(document.body).css('font-size', fontsize+"em");
         }
     }
 
