@@ -73,7 +73,6 @@ let defaultInPlugin = (function () {
     //
     // allow other UI elements to toggle this focus behavior on/off
     var setKeydownFocus = function (bool) {
-        console.log("Focus = " + bool);
         focusOnKeydown = bool;
     }
 
