@@ -96,7 +96,7 @@ install:
 
 clean:
 	@rm -Rf $(BUILDDIR)
-	# @git clean -f -d docs/
+	@git clean -f -d docs/
 	@echo "Cleaned old build dir and leftover files."
 
 # not fully working at this time
