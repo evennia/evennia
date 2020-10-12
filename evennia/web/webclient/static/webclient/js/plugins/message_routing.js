@@ -4,8 +4,6 @@
  */
 let spawns = (function () {
 
-    var ignoreDefaultKeydown = false;
-
     var spawnmap = {};	// { id1: { r:regex, t:tag } } pseudo-array of regex-tag pairs
 
     //
@@ -42,12 +40,12 @@ let spawns = (function () {
 
     //
     var onFocusIn = function (evnt) {
-        ignoreDefaultKeydown = true;
+        window.plugins["default_in"].setKeydownFocus(false);
     }
 
     //
     var onFocusOut = function (evnt) {
-        ignoreDefaultKeydown = false;
+        window.plugins["default_in"].setKeydownFocus(true);
         onAlterTag(evnt); // percolate event so closing the pane, etc saves any last changes.
     }
 
@@ -122,14 +120,6 @@ let spawns = (function () {
 
 
     //
-    // OnKeydown -- if the Options window is open, capture focus
-    //
-    var onKeydown = function(evnt) {
-        return ignoreDefaultKeydown;
-    }
-
-
-    //
     // init
     //
     var init = function () {
@@ -148,7 +138,6 @@ let spawns = (function () {
         init: init,
 	onOptionsUI: onOptionsUI,
         onText: onText,
-        onKeydown: onKeydown,
     }
 })();
 window.plugin_handler.add("spawns", spawns);
