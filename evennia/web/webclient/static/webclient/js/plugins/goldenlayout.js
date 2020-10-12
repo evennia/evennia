@@ -8,7 +8,7 @@ let goldenlayout = (function () {
     var myLayout; // The actively used GoldenLayout API object.
 
     var evenniaGoldenLayouts = {}; // key/value storage Object for each selectable layout.
-    var activeLayoutName = "default"; // The object key of the active evenniaGoldenLayout
+    var activeLayoutName = "default-modified"; // The object key of the active evenniaGoldenLayout
 
     var knownTypes = ["all", "untagged", "testing"];
     var untagged = [];
@@ -689,6 +689,7 @@ let goldenlayout = (function () {
 
         // pre-load the evenniaGoldenLayouts with the hard-coded default
         Object.assign( evenniaGoldenLayouts, { "default" : window.goldenlayout_config } );
+        Object.assign( evenniaGoldenLayouts, { "default-modified" : window.goldenlayout_config } );
 
         if( activeName !== null ) {
             activeLayoutName = activeName;
