@@ -144,7 +144,7 @@ let hotbuttons = (function () {
     }
 
     return {
-    	init: function() {},
+        init: function() {},
         postInit: postInit,
         onGotOptions: onGotOptions,
         onLayoutChanged: onLayoutChanged,

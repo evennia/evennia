@@ -267,56 +267,14 @@ let goldenlayout = (function () {
         }
     }
 
-
-    //
-    //
-    var resetUI = function (newLayout) {
-        var mainsub = document.getElementById("main-sub");
-
-        // rebuild the original HTML stacking
-        var messageDiv = $("#messagewindow").detach();
-        messageDiv.prependTo( mainsub );
-
-        // out with the old
-        myLayout.destroy();
-
-        // in with the new
-        myLayout = new GoldenLayout( newLayout, mainsub );
-
-        // re-register our main, input and generic evennia components.
-        registerComponents( myLayout );
-
-        // call all other plugins to give them a chance to registerComponents.
-        for( let plugin in window.plugins ) {
-            if( "onLayoutChanged" in window.plugins[plugin] ) {
-                window.plugins[plugin].onLayoutChanged();
-            }
-        }
-
-        // finish the setup and actually start GoldenLayout
-        myLayout.init();
-
-        // work out which types are untagged based on our pre-configured layout
-        calculateUntaggedTypes();
-
-        // Set the Event handler for when the client window changes size
-        $(window).bind("resize", scrollAll);
-
-        // Set Save State callback
-        myLayout.on( "stateChanged", onStateChanged );
-    }
-
-
     //
     //
     var onSwitchLayout = function (evnt) {
         // get the new layout name from the select box
-        var name = $('#layoutInput').val();
+        var name = $("#layoutInput").val();
 
         // check to see if the layout is in the list of known layouts
         if( name in evenniaGoldenLayouts ) {
-            console.log( evenniaGoldenLayouts );
-
             var newLayout = evenniaGoldenLayouts[name];
             activeLayoutName = name;
 
@@ -330,28 +288,27 @@ let goldenlayout = (function () {
     //
     var onSaveLayout = function (evnt) {
         // get the name from the select box
-        var name = $('#layoutName').val();
-        var input = $('#layoutInput');
+        var name = $("#layoutName").val();
+        var input = $("#layoutInput");
 
         if( name === "" ) { return; } // Can't save without a valid name
 
         // Is this name new or pre-existing?
         if( !(name in evenniaGoldenLayouts) ) {
             // add the new evenniaGoldenLayout to the listed dropdown options
-            var option = $('<option value="'+name+'">'+name+'</option>');
+            var option = $("<option value='"+name+"'>"+name+"</option>");
             input.append(option);
         }
 
         // store the current layout to the local list of layouts
-        evenniaGoldenLayouts[ name ] = myLayout.toConfig();
+        Object.assign( evenniaGoldenLayouts, { [name] : myLayout.toConfig() });
         activeLayoutName = name;
 
         // upload it to the server
-        if( Evennia.isConnected() && myLayout.isInitialised ) {
+        if( window.Evennia.isConnected() && myLayout.isInitialised ) {
             window.options["webclientActiveLayout"] = name;
             window.options["webclientLayouts"] = JSON.stringify( evenniaGoldenLayouts );
-            console.log("Saving layout to server...");
-            Evennia.msg("webclient_options", [], window.options);
+            window.Evennia.msg("webclient_options", [], window.options);
         }
     }
 
@@ -428,22 +385,6 @@ let goldenlayout = (function () {
 
     //
     //
-    var scrollAll = function () {
-        let components = myLayout.root.getItemsByType("component");
-        components.forEach( function (component) {
-            if( component.hasId("inputComponent") ) { return; } // ignore input components
-
-            let textDiv = component.container.getElement().children(".content");
-            let scrollHeight = textDiv.prop("scrollHeight");
-            let clientHeight = textDiv.prop("clientHeight");
-            textDiv.scrollTop( scrollHeight - clientHeight );
-        });
-        myLayout.updateSize();
-    }
-
-
-    //
-    //
     var initComponent = function (div, container, state, defaultTypes, updateMethod) {
         // set this container"s content div types attribute
         if( state ) {
@@ -501,6 +442,61 @@ let goldenlayout = (function () {
             initComponent(div, container, componentState, "all", "newlines");
             container.on("destroy", calculateUntaggedTypes);
         });
+    }
+
+
+    //
+    //
+    var scrollAll = function () {
+        let components = myLayout.root.getItemsByType("component");
+        components.forEach( function (component) {
+            if( component.hasId("inputComponent") ) { return; } // ignore input components
+
+            let textDiv = component.container.getElement().children(".content");
+            let scrollHeight = textDiv.prop("scrollHeight");
+            let clientHeight = textDiv.prop("clientHeight");
+            textDiv.scrollTop( scrollHeight - clientHeight );
+        });
+        myLayout.updateSize();
+    }
+
+
+    //
+    //
+    var resetUI = function (newLayout) {
+        var mainsub = document.getElementById("main-sub");
+
+        // rebuild the original HTML stacking
+        var messageDiv = $("#messagewindow").detach();
+        messageDiv.prependTo( mainsub );
+
+        // out with the old
+        myLayout.destroy();
+
+        // in with the new
+        myLayout = new window.GoldenLayout( newLayout, mainsub );
+
+        // re-register our main, input and generic evennia components.
+        registerComponents( myLayout );
+
+        // call all other plugins to give them a chance to registerComponents.
+        for( let plugin in window.plugins ) {
+            if( "onLayoutChanged" in window.plugins[plugin] ) {
+                window.plugins[plugin].onLayoutChanged();
+            }
+        }
+
+        // finish the setup and actually start GoldenLayout
+        myLayout.init();
+
+        // work out which types are untagged based on our pre-configured layout
+        calculateUntaggedTypes();
+
+        // Set the Event handler for when the client window changes size
+        $(window).bind("resize", scrollAll);
+
+        // Set Save State callback
+        myLayout.on( "stateChanged", onStateChanged );
     }
 
 
@@ -600,8 +596,6 @@ let goldenlayout = (function () {
     var onGotOptions = function (args, kwargs) {
         // Reset the UI if the JSON layout sent from the server doesn't match the client's current JSON
         if( "webclientLayouts" in kwargs ) {
-            console.log("Got evennia GoldenLayouts");
-
             evenniaGoldenLayouts = JSON.parse( kwargs["webclientLayouts"] );
         }
     }
@@ -610,13 +604,13 @@ let goldenlayout = (function () {
     //
     //
     var onOptionsUI = function (parentdiv) {
-        var layoutInput = $('<select id="layoutInput" class="layoutInput">');
-        var layoutName  = $('<input id="layoutName" type="text" class="layoutName">');
-        var saveButton  = $('<input type="button" class="savelayout" value="Save UI Layout">');
+        var layoutInput = $("<select id='layoutInput' class='layoutInput'>");
+        var layoutName  = $("<input id='layoutName' type='text' class='layoutName'>");
+        var saveButton  = $("<input type='button' class='savelayout' value='Save UI Layout'>");
 
         var layouts = Object.keys( evenniaGoldenLayouts );
         for (var x = 0; x < layouts.length; x++) {
-            var option = $('<option value="'+layouts[x]+'">'+layouts[x]+'</option>');
+            var option = $("<option value='"+layouts[x]+"'>"+layouts[x]+"</option>");
             layoutInput.append(option);
         }
 
@@ -628,7 +622,7 @@ let goldenlayout = (function () {
         saveButton.on('click',  onSaveLayout);
 
         // add the selection dialog control to our parentdiv
-        parentdiv.append('<div style="font-weight: bold">UI Layout Selection (This list may be longer after login):</div>');
+        parentdiv.append("<div style='font-weight: bold'>UI Layout Selection (This list may be longer after login):</div>");
         parentdiv.append(layoutInput);
         parentdiv.append(layoutName);
         parentdiv.append(saveButton);
@@ -679,7 +673,7 @@ let goldenlayout = (function () {
         var mainsub = document.getElementById("main-sub");
 
         // pre-load the evenniaGoldenLayouts with the hard-coded default
-        evenniaGoldenLayouts[ "default" ] = window.goldenlayout_config;
+        Object.assign( evenniaGoldenLayouts, { "default" : window.goldenlayout_config } );
 
         if( activeName !== null ) {
             activeLayoutName = activeName;
@@ -689,10 +683,10 @@ let goldenlayout = (function () {
             // Overwrite the global-variable configuration from 
             //     webclient/js/plugins/goldenlayout_default_config.js
             //         with the version from localstorage
-            evenniaGoldenLayouts[ activeLayoutName ] = JSON.parse( savedState );
+            Object.assign( evenniaGoldenLayouts, { activeLayoutName : JSON.parse(savedState) } );
         }
 
-        myLayout = new GoldenLayout( evenniaGoldenLayouts[activeLayoutName], mainsub );
+        myLayout = new window.GoldenLayout( evenniaGoldenLayouts[activeLayoutName], mainsub );
 
         $("#prompt").remove();       // remove the HTML-defined prompt div
         $("#inputcontrol").remove(); // remove the cluttered, HTML-defined input divs
