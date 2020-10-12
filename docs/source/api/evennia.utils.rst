@@ -10,7 +10,7 @@ Modules
 -------
 
 .. toctree::
-   :maxdepth: 
+   :maxdepth: 6
 
    evennia.utils.ansi
    evennia.utils.batchprocessors
@@ -38,6 +38,6 @@ Packages/folders
 ----------------
 
 .. toctree::
-   :maxdepth: 
+   :maxdepth: 6
 
    evennia.utils.idmapper

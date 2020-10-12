@@ -10,6 +10,6 @@ Modules
 -------
 
 .. toctree::
-   :maxdepth: 
+   :maxdepth: 6
 
    evennia.web.website.templatetags.addclass
