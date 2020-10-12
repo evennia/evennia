@@ -258,7 +258,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
                 this is either `None` (a normal Tag), `alias` or
                 `permission`. This always apply to all queried tags.
 
-        Keyword args:
+        Keyword Args:
             match (str): "all" (default) or "any"; determines whether the
                 target object must be tagged with ALL of the provided
                 tags/categories or ANY single one. ANY will perform a weighted
@@ -649,7 +649,7 @@ class TypeclassManager(TypedObjectManager):
         Args:
             args (any): These are passed on as arguments to the default
                 django get method.
-        Keyword args:
+        Keyword Args:
             kwargs (any): These are passed on as normal arguments
                 to the default django get method
         Returns:
@@ -671,7 +671,7 @@ class TypeclassManager(TypedObjectManager):
         Args:
             args (any): These are passed on as arguments to the default
                 django filter method.
-        Keyword args:
+        Keyword Args:
             kwargs (any): These are passed on as normal arguments
                 to the default django filter method.
         Returns:
@@ -794,7 +794,7 @@ class TypeclassManager(TypedObjectManager):
         Variation of get that not only returns the current typeclass
         but also all subclasses of that typeclass.
 
-        Keyword args:
+        Keyword Args:
             kwargs (any): These are passed on as normal arguments
                 to the default django get method.
         Returns:
@@ -819,7 +819,7 @@ class TypeclassManager(TypedObjectManager):
         Args:
             args (any): These are passed on as arguments to the default
                 django filter method.
-        Keyword args:
+        Keyword Args:
             kwargs (any): These are passed on as normal arguments
                 to the default django filter method.
         Returns:

@@ -157,7 +157,7 @@ class Session(object):
         protocols can use this right away. Portal sessions
         should overload this to format/handle the outgoing data as needed.
 
-        Keyword args:
+        Keyword Args:
             kwargs (any): Other data to the protocol.
 
         """
@@ -167,7 +167,7 @@ class Session(object):
         """
         Hook for protocols to send incoming data to the engine.
 
-        Keyword args:
+        Keyword Args:
             kwargs (any): Other data from the protocol.
 
         """

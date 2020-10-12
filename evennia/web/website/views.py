@@ -145,7 +145,7 @@ class EvenniaIndexView(TemplateView):
         You can do whatever you want to it, but it must be returned at the end
         of this method.
 
-        Keyword args:
+        Keyword Args:
             any (any): Passed through.
 
         Returns:

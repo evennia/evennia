@@ -175,7 +175,7 @@ def _call_or_get(value, menu=None, choice=None, string=None, obj=None, caller=No
     Args:
         value (any): the value to obtain.  It might be a callable (see note).
 
-    Keyword args:
+    Keyword Args:
         menu (BuildingMenu, optional): the building menu to pass to value
                 if it is a callable.
         choice (Choice, optional): the choice to pass to value if a callable.

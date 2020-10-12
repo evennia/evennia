@@ -229,7 +229,7 @@ class ServerSession(Session):
         """
         Update the protocol_flags and sync them with Portal.
 
-        Keyword args:
+        Keyword Args:
             protocol_flag (any): A key and value to set in the
                 protocol_flags dictionary.
 
@@ -247,7 +247,7 @@ class ServerSession(Session):
         """
         Sending data from Evennia->Client
 
-        Keyword args:
+        Keyword Args:
             text (str or tuple)
             any (str or tuple): Send-commands identified
                 by their keys. Or "options", carrying options
@@ -261,7 +261,7 @@ class ServerSession(Session):
         Receiving data from the client, sending it off to
         the respective inputfuncs.
 
-        Keyword args:
+        Keyword Args:
             kwargs (any): Incoming data from protocol on
                 the form `{"commandname": ((args), {kwargs}),...}`
         Notes:
@@ -279,7 +279,7 @@ class ServerSession(Session):
         Args:
             text (str): String input.
 
-        Keyword args:
+        Keyword Args:
             any (str or tuple): Send-commands identified
                 by their keys. Or "options", carrying options
                 for the protocol(s).
@@ -307,7 +307,7 @@ class ServerSession(Session):
             session (Session): This is here to make API consistent with
                 Account/Object.execute_cmd. If given, data is passed to
                 that Session, otherwise use self.
-        Keyword args:
+        Keyword Args:
             Other keyword arguments will be added to the found command
             object instace as variables before it executes.  This is
             unused by default Evennia but may be used to set flags and

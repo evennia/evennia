@@ -291,7 +291,7 @@ class TypedObject(SharedMemoryModel):
         Args:
             Passed through to parent.
 
-        Keyword args:
+        Keyword Args:
             Passed through to parent.
 
         Notes:
@@ -615,7 +615,7 @@ class TypedObject(SharedMemoryModel):
             no_superuser_bypass (bool, optional): Turn off the
                 superuser lock bypass (be careful with this one).
 
-        Keyword args:
+        Keyword Args:
             kwar (any): Ignored, but is there to make the api
                 consistent with the object-typeclass method access, which
                 use it to feed to its hook methods.

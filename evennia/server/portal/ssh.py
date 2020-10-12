@@ -264,7 +264,7 @@ class SshProtocol(Manhole, _BASE_SESSION_CLASS):
         """
         Data Evennia -> User
 
-        Keyword args:
+        Keyword Args:
             kwargs (any): Options to the protocol.
 
         """
@@ -277,7 +277,7 @@ class SshProtocol(Manhole, _BASE_SESSION_CLASS):
         Args:
             text (str): The first argument is always the text string to send. No other arguments
                 are considered.
-        Keyword args:
+        Keyword Args:
             options (dict): Send-option flags (booleans)
 
                 - mxp: enforce mxp link support.
