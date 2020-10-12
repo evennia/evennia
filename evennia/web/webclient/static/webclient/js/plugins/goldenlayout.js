@@ -267,6 +267,17 @@ let goldenlayout = (function () {
         }
     }
 
+
+    //
+    //
+    var onClearLocalstorage = function (evnt) {
+        myLayout.off( "stateChanged", onStateChanged );
+        localStorage.removeItem( "evenniaGoldenLayoutSavedState" );
+        localStorage.removeItem( "evenniaGoldenLayoutSavedStateName" );
+        location.reload();
+    }
+
+
     //
     //
     var onSwitchLayout = function (evnt) {
@@ -328,7 +339,7 @@ let goldenlayout = (function () {
 
         // update localstorage
         localStorage.setItem( "evenniaGoldenLayoutSavedState", JSON.stringify(myLayout.toConfig()) );
-        localStorage.getItem( "evenniaGoldenLayoutSavedStateName", JSON.stringify( activeLayoutName ) );
+        localStorage.setItem( "evenniaGoldenLayoutSavedStateName", JSON.stringify( activeLayoutName ) );
     }
 
 
@@ -607,6 +618,7 @@ let goldenlayout = (function () {
         var layoutInput = $("<select id='layoutInput' class='layoutInput'>");
         var layoutName  = $("<input id='layoutName' type='text' class='layoutName'>");
         var saveButton  = $("<input type='button' class='savelayout' value='Save UI Layout'>");
+        var clearButton = $("<input type='button' class='clearstore' value='Clear Layout'>");
 
         var layouts = Object.keys( evenniaGoldenLayouts );
         for (var x = 0; x < layouts.length; x++) {
@@ -620,12 +632,15 @@ let goldenlayout = (function () {
         // Layout selection on-change callback
         layoutInput.on('change', onSwitchLayout);
         saveButton.on('click',  onSaveLayout);
+        clearButton.on('click',  onClearLocalstorage);
 
         // add the selection dialog control to our parentdiv
+        parentdiv.addClass("goldenlayout-ui");
         parentdiv.append("<div style='font-weight: bold'>UI Layout Selection (This list may be longer after login):</div>");
         parentdiv.append(layoutInput);
         parentdiv.append(layoutName);
         parentdiv.append(saveButton);
+        parentdiv.append(clearButton);
     }
 
 
