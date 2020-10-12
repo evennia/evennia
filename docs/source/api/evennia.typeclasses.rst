@@ -6,10 +6,11 @@ evennia.typeclasses
    :undoc-members:
    :show-inheritance:
 
-Submodules
-----------
+Modules
+-------
 
 .. toctree::
+   :maxdepth: 
 
    evennia.typeclasses.admin
    evennia.typeclasses.attributes

@@ -6,10 +6,19 @@ evennia
    :undoc-members:
    :show-inheritance:
 
-Subpackages
------------
+Modules
+-------
 
 .. toctree::
+   :maxdepth: 
+
+   evennia.settings_default
+
+Packages/folders
+----------------
+
+.. toctree::
+   :maxdepth: 
 
    evennia.accounts
    evennia.commands
@@ -24,10 +33,3 @@ Subpackages
    evennia.typeclasses
    evennia.utils
    evennia.web
-
-Submodules
-----------
-
-.. toctree::
-
-   evennia.settings_default

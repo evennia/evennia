@@ -6,9 +6,10 @@ evennia.contrib.security
    :undoc-members:
    :show-inheritance:
 
-Subpackages
------------
+Packages/folders
+----------------
 
 .. toctree::
+   :maxdepth: 
 
    evennia.contrib.security.auditing

@@ -6,10 +6,11 @@ evennia.web.webclient
    :undoc-members:
    :show-inheritance:
 
-Submodules
-----------
+Modules
+-------
 
 .. toctree::
+   :maxdepth: 
 
    evennia.web.webclient.urls
    evennia.web.webclient.views

@@ -6,10 +6,11 @@ evennia.prototypes
    :undoc-members:
    :show-inheritance:
 
-Submodules
-----------
+Modules
+-------
 
 .. toctree::
+   :maxdepth: 
 
    evennia.prototypes.menus
    evennia.prototypes.protfuncs

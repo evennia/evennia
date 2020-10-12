@@ -6,10 +6,11 @@ evennia.utils.idmapper
    :undoc-members:
    :show-inheritance:
 
-Submodules
-----------
+Modules
+-------
 
 .. toctree::
+   :maxdepth: 
 
    evennia.utils.idmapper.manager
    evennia.utils.idmapper.models

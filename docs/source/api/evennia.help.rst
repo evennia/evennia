@@ -6,10 +6,11 @@ evennia.help
    :undoc-members:
    :show-inheritance:
 
-Submodules
-----------
+Modules
+-------
 
 .. toctree::
+   :maxdepth: 
 
    evennia.help.admin
    evennia.help.manager

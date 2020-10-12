@@ -6,21 +6,11 @@ evennia.contrib
    :undoc-members:
    :show-inheritance:
 
-Subpackages
------------
+Modules
+-------
 
 .. toctree::
-
-   evennia.contrib.ingame_python
-   evennia.contrib.security
-   evennia.contrib.turnbattle
-   evennia.contrib.tutorial_examples
-   evennia.contrib.tutorial_world
-
-Submodules
-----------
-
-.. toctree::
+   :maxdepth: 
 
    evennia.contrib.barter
    evennia.contrib.building_menu
@@ -48,3 +38,15 @@ Submodules
    evennia.contrib.tree_select
    evennia.contrib.unixcommand
    evennia.contrib.wilderness
+
+Packages/folders
+----------------
+
+.. toctree::
+   :maxdepth: 
+
+   evennia.contrib.ingame_python
+   evennia.contrib.security
+   evennia.contrib.turnbattle
+   evennia.contrib.tutorial_examples
+   evennia.contrib.tutorial_world

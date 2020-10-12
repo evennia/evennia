@@ -6,20 +6,22 @@ evennia.commands
    :undoc-members:
    :show-inheritance:
 
-Subpackages
------------
+Modules
+-------
 
 .. toctree::
-
-   evennia.commands.default
-
-Submodules
-----------
-
-.. toctree::
+   :maxdepth: 
 
    evennia.commands.cmdhandler
    evennia.commands.cmdparser
    evennia.commands.cmdset
    evennia.commands.cmdsethandler
    evennia.commands.command
+
+Packages/folders
+----------------
+
+.. toctree::
+   :maxdepth: 
+
+   evennia.commands.default

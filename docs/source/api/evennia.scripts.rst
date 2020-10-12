@@ -6,10 +6,11 @@ evennia.scripts
    :undoc-members:
    :show-inheritance:
 
-Submodules
-----------
+Modules
+-------
 
 .. toctree::
+   :maxdepth: 
 
    evennia.scripts.admin
    evennia.scripts.manager

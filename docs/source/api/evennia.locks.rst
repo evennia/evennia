@@ -6,10 +6,11 @@ evennia.locks
    :undoc-members:
    :show-inheritance:
 
-Submodules
-----------
+Modules
+-------
 
 .. toctree::
+   :maxdepth: 
 
    evennia.locks.lockfuncs
    evennia.locks.lockhandler
