@@ -10,7 +10,7 @@ Modules
 -------
 
 .. toctree::
-   :maxdepth: 
+   :maxdepth: 6
 
    evennia.web.urls
 
@@ -18,7 +18,7 @@ Packages/folders
 ----------------
 
 .. toctree::
-   :maxdepth: 
+   :maxdepth: 6
 
    evennia.web.utils
    evennia.web.webclient

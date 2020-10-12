@@ -10,7 +10,7 @@ SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
 SPHINXMULTIVERSION ?= sphinx-multiversion
 SPHINXAPIDOC ?= sphinx-apidoc
-SPHINXAPIDOCOPTS = --tocfile evennia-api  --module-first --force -d 6 --separate --templatedir=$(SOURCEDIR)/_templates/
+SPHINXAPIDOCOPTS = --tocfile evennia-api --module-first --force --maxdepth 6 --separate --templatedir=$(SOURCEDIR)/_templates/
 SPHINXAPIDOCENV = members,undoc-members,show-inheritance
 SPHINXAPIDOCEXCLUDE = ../*/migrations/* ../evennia/game_template/* ../evennia/*/tests/* ../evennia/*/tests.py
 
