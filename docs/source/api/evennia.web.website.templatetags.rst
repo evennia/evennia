@@ -6,9 +6,10 @@ evennia.web.website.templatetags
    :undoc-members:
    :show-inheritance:
 
-Submodules
-----------
+Modules
+-------
 
 .. toctree::
+   :maxdepth: 
 
    evennia.web.website.templatetags.addclass

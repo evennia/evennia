@@ -6,10 +6,11 @@ evennia.server.portal
    :undoc-members:
    :show-inheritance:
 
-Submodules
-----------
+Modules
+-------
 
 .. toctree::
+   :maxdepth: 
 
    evennia.server.portal.amp
    evennia.server.portal.amp_server

@@ -6,19 +6,11 @@ evennia.server
    :undoc-members:
    :show-inheritance:
 
-Subpackages
------------
+Modules
+-------
 
 .. toctree::
-
-   evennia.server.game_index_client
-   evennia.server.portal
-   evennia.server.profiling
-
-Submodules
-----------
-
-.. toctree::
+   :maxdepth: 
 
    evennia.server.admin
    evennia.server.amp_client
@@ -37,3 +29,13 @@ Submodules
    evennia.server.throttle
    evennia.server.validators
    evennia.server.webserver
+
+Packages/folders
+----------------
+
+.. toctree::
+   :maxdepth: 
+
+   evennia.server.game_index_client
+   evennia.server.portal
+   evennia.server.profiling

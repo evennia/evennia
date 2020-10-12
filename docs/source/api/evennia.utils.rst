@@ -6,17 +6,11 @@ evennia.utils
    :undoc-members:
    :show-inheritance:
 
-Subpackages
------------
+Modules
+-------
 
 .. toctree::
-
-   evennia.utils.idmapper
-
-Submodules
-----------
-
-.. toctree::
+   :maxdepth: 
 
    evennia.utils.ansi
    evennia.utils.batchprocessors
@@ -39,3 +33,11 @@ Submodules
    evennia.utils.text2html
    evennia.utils.utils
    evennia.utils.validatorfuncs
+
+Packages/folders
+----------------
+
+.. toctree::
+   :maxdepth: 
+
+   evennia.utils.idmapper

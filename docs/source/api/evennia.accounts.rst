@@ -6,10 +6,11 @@ evennia.accounts
    :undoc-members:
    :show-inheritance:
 
-Submodules
-----------
+Modules
+-------
 
 .. toctree::
+   :maxdepth: 
 
    evennia.accounts.accounts
    evennia.accounts.admin

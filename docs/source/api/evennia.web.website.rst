@@ -6,19 +6,21 @@ evennia.web.website
    :undoc-members:
    :show-inheritance:
 
-Subpackages
------------
+Modules
+-------
 
 .. toctree::
-
-   evennia.web.website.templatetags
-
-Submodules
-----------
-
-.. toctree::
+   :maxdepth: 
 
    evennia.web.website.forms
    evennia.web.website.tests
    evennia.web.website.urls
    evennia.web.website.views
+
+Packages/folders
+----------------
+
+.. toctree::
+   :maxdepth: 
+
+   evennia.web.website.templatetags
