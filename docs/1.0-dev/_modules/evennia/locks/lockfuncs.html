@@ -594,6 +594,8 @@
 <span class="sd">    want also nested objects to pass the lock, use the `insiderecursive`</span>
 <span class="sd">    lockfunc.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">accessed_obj</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">):</span>
+        <span class="n">accessed_obj</span> <span class="o">=</span> <span class="n">accessed_obj</span><span class="o">.</span><span class="n">obj</span>
     <span class="k">return</span> <span class="n">accessing_obj</span><span class="o">.</span><span class="n">location</span> <span class="o">==</span> <span class="n">accessed_obj</span></div>
 
 

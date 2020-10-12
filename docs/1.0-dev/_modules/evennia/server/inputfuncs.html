@@ -203,7 +203,7 @@
 <span class="sd">    This allows the client an OOB way to inform us about its name and capabilities.</span>
 <span class="sd">    This will be integrated into the session settings</span>
 
-<span class="sd">    Keyword args:</span>
+<span class="sd">    Keyword Args:</span>
 <span class="sd">        get (bool): If this is true, return the settings as a dict</span>
 <span class="sd">            (ignore all other kwargs).</span>
 <span class="sd">        client (str): A client identifier, like &quot;mushclient&quot;.</span>
@@ -321,7 +321,7 @@
 <span class="sd">    Peform a login. This only works if session is currently not logged</span>
 <span class="sd">    in. This will also automatically throttle too quick attempts.</span>
 
-<span class="sd">    Keyword args:</span>
+<span class="sd">    Keyword Args:</span>
 <span class="sd">        name (str): Account name</span>
 <span class="sd">        password (str): Plain-text password</span>
 
@@ -347,7 +347,7 @@
 <span class="sd">    Return the value of a given attribute or db_property on the</span>
 <span class="sd">    session&#39;s current account or character.</span>
 
-<span class="sd">    Keyword args:</span>
+<span class="sd">    Keyword Args:</span>
 <span class="sd">      name (str): Name of info value to return. Only names</span>
 <span class="sd">        in the _gettable dictionary earlier in this module</span>
 <span class="sd">        are accepted.</span>
@@ -364,7 +364,7 @@
 <span class="sd">    This is a test function for using with the repeat</span>
 <span class="sd">    inputfunc.</span>
 
-<span class="sd">    Keyword args:</span>
+<span class="sd">    Keyword Args:</span>
 <span class="sd">        session (Session): Session to return to.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">time</span>
@@ -381,7 +381,7 @@
 <span class="sd">    this is meant as an example of limiting the number of</span>
 <span class="sd">    possible call functions.</span>
 
-<span class="sd">    Keyword args:</span>
+<span class="sd">    Keyword Args:</span>
 <span class="sd">        callback (str): The function to call. Only functions</span>
 <span class="sd">            from the _repeatable dictionary earlier in this</span>
 <span class="sd">            module are available.</span>
@@ -442,7 +442,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Adds monitoring to a given property or Attribute.</span>
 
-<span class="sd">    Keyword args:</span>
+<span class="sd">    Keyword Args:</span>
 <span class="sd">      name (str): The name of the property or Attribute</span>
 <span class="sd">        to report. No db_* prefix is needed. Only names</span>
 <span class="sd">        in the _monitorable dict earlier in this module</span>
@@ -524,7 +524,7 @@
 <span class="sd">    If kwargs is not empty, the key/values stored in there will be persisted</span>
 <span class="sd">    to the account object.</span>
 
-<span class="sd">    Keyword args:</span>
+<span class="sd">    Keyword Args:</span>
 <span class="sd">        &lt;option name&gt;: an option to save</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">account</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">account</span>

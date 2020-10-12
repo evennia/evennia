@@ -6,10 +6,11 @@ evennia.contrib.ingame\_python
    :undoc-members:
    :show-inheritance:
 
-Submodules
-----------
+Modules
+-------
 
 .. toctree::
+   :maxdepth: 6
 
    evennia.contrib.ingame_python.callbackhandler
    evennia.contrib.ingame_python.commands

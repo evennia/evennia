@@ -10,7 +10,7 @@ Modules
 -------
 
 .. toctree::
-   :maxdepth: 
+   :maxdepth: 6
 
    evennia.contrib.barter
    evennia.contrib.building_menu
@@ -45,7 +45,7 @@ Packages/folders
 ----------------
 
 .. toctree::
-   :maxdepth: 
+   :maxdepth: 6
 
    evennia.contrib.awsstorage
    evennia.contrib.ingame_python
