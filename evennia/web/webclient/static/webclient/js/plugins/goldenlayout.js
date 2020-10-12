@@ -284,10 +284,18 @@ let goldenlayout = (function () {
         // get the new layout name from the select box
         var name = $("#layoutInput").val();
 
+        var saveButton  = $(".savelayout");
+
         // check to see if the layout is in the list of known layouts
         if( name in evenniaGoldenLayouts ) {
             var newLayout = evenniaGoldenLayouts[name];
             activeLayoutName = name;
+
+            if( activeLayoutName === "default" ) {
+                saveButton.prop( "disabled", true );
+            } else {
+                saveButton.prop( "disabled", false );
+            }
 
             // pull the trigger
             resetUI( newLayout );
@@ -618,7 +626,10 @@ let goldenlayout = (function () {
         var layoutInput = $("<select id='layoutInput' class='layoutInput'>");
         var layoutName  = $("<input id='layoutName' type='text' class='layoutName'>");
         var saveButton  = $("<input type='button' class='savelayout' value='Save UI Layout'>");
-        var clearButton = $("<input type='button' class='clearstore' value='Clear Layout'>");
+
+        if( activeLayoutName === "default" ) {
+            saveButton.prop( "disabled", true );
+        }
 
         var layouts = Object.keys( evenniaGoldenLayouts );
         for (var x = 0; x < layouts.length; x++) {
@@ -632,7 +643,6 @@ let goldenlayout = (function () {
         // Layout selection on-change callback
         layoutInput.on('change', onSwitchLayout);
         saveButton.on('click',  onSaveLayout);
-        clearButton.on('click',  onClearLocalstorage);
 
         // add the selection dialog control to our parentdiv
         parentdiv.addClass("goldenlayout-ui");
@@ -640,7 +650,6 @@ let goldenlayout = (function () {
         parentdiv.append(layoutInput);
         parentdiv.append(layoutName);
         parentdiv.append(saveButton);
-        parentdiv.append(clearButton);
     }
 
 
