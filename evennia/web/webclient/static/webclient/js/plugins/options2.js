@@ -75,11 +75,14 @@ let options2 = (function () {
                     .click( function () {
                         optionsContainer = null;
                         tab.contentItem.remove();
+                        window.plugins["default_in"].setKeydownFocus(true);
                     });
                     optionsContainer = tab.contentItem;
                 }
             });
             main.parent.addChild( optionsComponent );
+
+            window.plugins["default_in"].setKeydownFocus(false);
         } else {
             optionsContainer.remove();
             optionsContainer = null;
