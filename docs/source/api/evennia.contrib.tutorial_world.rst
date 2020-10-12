@@ -10,7 +10,7 @@ Modules
 -------
 
 .. toctree::
-   :maxdepth: 
+   :maxdepth: 6
 
    evennia.contrib.tutorial_world.intro_menu
    evennia.contrib.tutorial_world.mob

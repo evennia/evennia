@@ -10,7 +10,7 @@ Modules
 -------
 
 .. toctree::
-   :maxdepth: 
+   :maxdepth: 6
 
    evennia.commands.cmdhandler
    evennia.commands.cmdparser
@@ -22,6 +22,6 @@ Packages/folders
 ----------------
 
 .. toctree::
-   :maxdepth: 
+   :maxdepth: 6
 
    evennia.commands.default
