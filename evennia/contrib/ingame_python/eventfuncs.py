@@ -28,7 +28,7 @@ def get(**kwargs):
     """
     Return an object with the given search option or None if None is found.
 
-    Keyword args:
+    Keyword Args:
         Any searchable data or property (id, db_key, db_location...).
 
     Returns:

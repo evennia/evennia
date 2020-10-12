@@ -22,7 +22,7 @@ class Throttle(object):
         """
         Allows setting of throttle parameters.
 
-        Keyword args:
+        Keyword Args:
             limit (int): Max number of failures before imposing limiter
             timeout (int): number of timeout seconds after
                 max number of tries has been reached.

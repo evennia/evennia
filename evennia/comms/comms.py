@@ -255,7 +255,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
             key (str): This must be unique.
             account (Account): Account to attribute this object to.
 
-        Keyword args:
+        Keyword Args:
             aliases (list of str): List of alternative (likely shorter) keynames.
             description (str): A description of the channel, for use in listings.
             locks (str): Lockstring.

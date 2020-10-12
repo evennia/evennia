@@ -337,7 +337,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         Args:
             count (int): Number of objects of this type
             looker (Object): Onlooker. Not used by default.
-        Keyword args:
+        Keyword Args:
             key (str): Optional key to pluralize, if given, use this instead of the object's key.
         Returns:
             singular (str): The singular form to display.
@@ -590,7 +590,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             session (Session, optional): Session to
                 return results to
 
-        Keyword args:
+        Keyword Args:
             Other keyword arguments will be added to the found command
             object instace as variables before it executes.  This is
             unused by default Evennia but may be used to set flags and
@@ -636,7 +636,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 depends on the MULTISESSION_MODE.
             options (dict, optional): Message-specific option-value
                 pairs. These will be applied at the protocol level.
-        Keyword args:
+        Keyword Args:
             any (string or tuples): All kwarg keys not listed above
                 will be treated as send-command names and their arguments
                 (which can be a string or a tuple).
@@ -687,7 +687,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             exclude (list, optional): A list of object not to call the
                 function on.
 
-        Keyword args:
+        Keyword Args:
             Keyword arguments will be passed to the function for all objects.
         """
         contents = self.contents
@@ -719,7 +719,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 for every looker in contents that receives the
                 message. This allows for every object to potentially
                 get its own customized string.
-        Keyword args:
+        Keyword Args:
             Keyword arguments will be passed on to `obj.msg()` for all
             messaged objects.
 
@@ -794,7 +794,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 (at_before/after_move etc) with quiet=True, this is as quiet a move
                 as can be done.
 
-        Keyword args:
+        Keyword Args:
           Passed on to announce_move_to and announce_move_from hooks.
 
         Returns:
@@ -968,7 +968,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             key (str): Name of the new object.
             account (Account): Account to attribute this object to.
 
-        Keyword args:
+        Keyword Args:
             description (str): Brief description for this object.
             ip (str): IP address of creator (for object auditing).
 
@@ -1134,7 +1134,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
           no_superuser_bypass (bool, optional): If `True`, don't skip
             lock check for superuser (be careful with this one).
 
-        Keyword args:
+        Keyword Args:
           Passed on to the at_access hook along with the result of the access check.
 
         """
@@ -1293,7 +1293,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         place to do it. This is called also if the object currently
         have no cmdsets.
 
-        Keyword args:
+        Keyword Args:
             caller (Session, Object or Account): The caller requesting
                 this cmdset.
 
@@ -1395,7 +1395,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             accessing_obj (Object or Account): The entity trying to gain access.
             access_type (str): The type of access that was requested.
 
-        Keyword args:
+        Keyword Args:
             Not used by default, added for possible expandability in a
             game.
 
@@ -1646,7 +1646,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             text (str, optional): The message received.
             from_obj (any, optional): The object sending the message.
 
-        Keyword args:
+        Keyword Args:
             This includes any keywords sent to the `msg` method.
 
         Returns:
@@ -1668,7 +1668,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             text (str, optional): Text to send.
             to_obj (any, optional): The object to send to.
 
-        Keyword args:
+        Keyword Args:
             Keywords passed from msg()
 
         Notes:
@@ -1910,7 +1910,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         Args:
             message (str): The suggested say/whisper text spoken by self.
-        Keyword args:
+        Keyword Args:
             whisper (bool): If True, this is a whisper rather than
                 a say. This is sent by the whisper command by default.
                 Other verbal commands could use this hook in similar
@@ -1950,7 +1950,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 (by default only used by whispers).
             msg_receivers(str): Specific message to pass to the receiver(s). This will parsed
                 with the {receiver} placeholder replaced with the given receiver.
-        Keyword args:
+        Keyword Args:
             whisper (bool): If this is a whisper rather than a say. Kwargs
                 can be used by other verbal commands in a similar way.
             mapping (dict): Pass an additional mapping to the message.
@@ -2092,7 +2092,7 @@ class DefaultCharacter(DefaultObject):
                 If unset supplying None-- it will
                 change the default lockset and skip creator attribution.
 
-        Keyword args:
+        Keyword Args:
             description (str): Brief description for this object.
             ip (str): IP address of creator (for object auditing).
             All other kwargs will be passed into the create_object call.
@@ -2352,7 +2352,7 @@ class DefaultRoom(DefaultObject):
                 given, it will be given specific control/edit permissions to this
                 object (along with normal Admin perms). If not given, default
 
-        Keyword args:
+        Keyword Args:
             description (str): Brief description for this object.
             ip (str): IP address of creator (for object auditing).
 
@@ -2556,7 +2556,7 @@ class DefaultExit(DefaultObject):
             source (Room): The room to create this exit in.
             dest (Room): The room to which this exit should go.
 
-        Keyword args:
+        Keyword Args:
             description (str): Brief description for this object.
             ip (str): IP address of creator (for object auditing).
 
@@ -2648,7 +2648,7 @@ class DefaultExit(DefaultObject):
         place to do it. This is called also if the object currently
         has no cmdsets.
 
-        Keyword args:
+        Keyword Args:
           force_init (bool): If `True`, force a re-build of the cmdset
             (for example to update aliases).
 

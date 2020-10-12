@@ -155,7 +155,7 @@ class CallbackHandler(object):
             callback_name (str): the callback name to call.
             *args: additional variables for this callback.
 
-        Keyword args:
+        Keyword Args:
             number (int, optional): call just a specific callback.
             parameters (str, optional): call a callback with parameters.
             locals (dict, optional): a locals replacement.

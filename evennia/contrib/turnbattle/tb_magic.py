@@ -304,7 +304,7 @@ def spend_action(character, actions, action_name=None):
         character (obj): Character spending the action
         actions (int) or 'all': Number of actions to spend, or 'all' to spend all actions
 
-    Keyword args:
+    Keyword Args:
         action_name (str or None): If a string is given, sets character's last action in
         combat to provided string
     """

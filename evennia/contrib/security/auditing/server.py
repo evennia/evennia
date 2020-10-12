@@ -70,7 +70,7 @@ class AuditedServerSession(ServerSession):
         Extracts messages and system data from a Session object upon message
         send or receive.
 
-        Keyword args:
+        Keyword Args:
             src (str): Source of data; 'client' or 'server'. Indicates direction.
             text (str or list): Client sends messages to server in the form of
                 lists. Server sends messages to client as string.
@@ -216,7 +216,7 @@ class AuditedServerSession(ServerSession):
         """
         Generic hook for sending data out through the protocol.
 
-        Keyword args:
+        Keyword Args:
             kwargs (any): Other data to the protocol.
 
         """
@@ -234,7 +234,7 @@ class AuditedServerSession(ServerSession):
         """
         Hook for protocols to send incoming data to the engine.
 
-        Keyword args:
+        Keyword Args:
             kwargs (any): Other data from the protocol.
 
         """

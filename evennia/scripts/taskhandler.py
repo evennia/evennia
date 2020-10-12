@@ -100,7 +100,7 @@ class TaskHandler(object):
             callback (function or instance method): the callback itself
             any (any): any additional positional arguments to send to the callback
 
-        Keyword args:
+        Keyword Args:
             persistent (bool, optional): persist the task (store it).
             any (any): additional keyword arguments to send to the callback
 

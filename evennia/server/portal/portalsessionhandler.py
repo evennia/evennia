@@ -389,7 +389,7 @@ class PortalSessionHandler(SessionHandler):
         Args:
             session (PortalSession): Session receiving data.
 
-        Keyword args:
+        Keyword Args:
             kwargs (any): Other data from protocol.
 
         Notes:
@@ -447,7 +447,7 @@ class PortalSessionHandler(SessionHandler):
         Args:
             session (Session): Session sending data.
 
-        Keyword args:
+        Keyword Args:
             kwargs (any): Each key is a command instruction to the
                 protocol on the form key = [[args],{kwargs}]. This will
                 call a method send_<key> on the protocol. If no such

@@ -113,7 +113,7 @@ class BaseOption(object):
         where `kwargs` are a combination of those passed into this function and
         the ones specified by the `OptionHandler`.
 
-        Keyword args:
+        Keyword Args:
             any (any): Not used by default. These are passed in from self.set
                 and allows the option to let the caller customize saving by
                 overriding or extend the default save kwargs
@@ -173,7 +173,7 @@ class BaseOption(object):
         """
         Renders the Option's value as something pretty to look at.
 
-        Keyword args:
+        Keyword Args:
             any (any): These are options passed by the caller to potentially
                 customize display dynamically.
 
