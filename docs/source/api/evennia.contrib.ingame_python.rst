@@ -6,8 +6,7 @@ evennia.contrib.ingame\_python
    :undoc-members:
    :show-inheritance:
 
-Modules
--------
+
 
 .. toctree::
    :maxdepth: 6

@@ -6,8 +6,7 @@ evennia.web.utils
    :undoc-members:
    :show-inheritance:
 
-Modules
--------
+
 
 .. toctree::
    :maxdepth: 6

@@ -6,8 +6,7 @@ evennia.web.website
    :undoc-members:
    :show-inheritance:
 
-Modules
--------
+
 
 .. toctree::
    :maxdepth: 6
@@ -17,8 +16,6 @@ Modules
    evennia.web.website.urls
    evennia.web.website.views
 
-Packages/folders
-----------------
 
 .. toctree::
    :maxdepth: 6
