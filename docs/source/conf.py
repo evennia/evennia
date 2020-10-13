@@ -317,7 +317,8 @@ def setup(app):
     sys.path.insert(1, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
     from docs.pylib import auto_link_remapper
 
-    auto_link_remapper.auto_link_remapper()
+    _no_autodoc = os.environ.get("NOAUTODOC")
+    auto_link_remapper.auto_link_remapper(no_autodoc=_no_autodoc)
     print("Updated source/toc.md file")
 
     # custom lunr-based search
