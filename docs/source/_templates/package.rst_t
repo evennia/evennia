@@ -7,7 +7,7 @@
 
 {%- macro toctree(docnames) -%}
 .. toctree::
-   :maxdepth: 6
+   :maxdepth: {{ maxdepth }}
 {% for docname in docnames %}
    {{ docname }}
 {%- endfor %}
