@@ -81,7 +81,7 @@ class Throttle(object):
         """
         if ip:
             cache_key = self.get_cache_key(str(ip))
-            return self.storage.get(cache_key, deque(maxlen=self.limit))
+            return self.storage.get(cache_key, deque(maxlen=self.cache_size))
         else:
             keys_key = self.get_cache_key('keys')
             keys = self.storage.get_or_set(keys_key, set(), self.timeout)
@@ -116,7 +116,7 @@ class Throttle(object):
         entries.append(time.time())
         
         # Store updated record
-        self.storage.set(cache_key, deque(entries, maxlen=self.limit), self.timeout)
+        self.storage.set(cache_key, deque(entries, maxlen=self.cache_size), self.timeout)
 
         # See if this update caused a change in status
         currently_throttled = self.check(ip)
