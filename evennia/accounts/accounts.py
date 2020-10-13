@@ -52,10 +52,10 @@ _MUDINFO_CHANNEL = None
 
 # Create throttles for too many account-creations and login attempts
 CREATION_THROTTLE = Throttle(
-    limit=settings.CREATION_THROTTLE_LIMIT, timeout=settings.CREATION_THROTTLE_TIMEOUT
+    name='creation', limit=settings.CREATION_THROTTLE_LIMIT, timeout=settings.CREATION_THROTTLE_TIMEOUT
 )
 LOGIN_THROTTLE = Throttle(
-    limit=settings.LOGIN_THROTTLE_LIMIT, timeout=settings.LOGIN_THROTTLE_TIMEOUT
+    name='authentication', limit=settings.LOGIN_THROTTLE_LIMIT, timeout=settings.LOGIN_THROTTLE_TIMEOUT
 )
 
 
