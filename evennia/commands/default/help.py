@@ -175,7 +175,7 @@ class CmdHelp(Command):
             False: the command shouldn't appear in the table.
 
         """
-        return True
+        return cmd.access(caller, "view", default=True)
 
     def parse(self):
         """
