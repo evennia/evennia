@@ -76,7 +76,7 @@ html_sidebars = {
 }
 html_favicon = "_static/images/favicon.ico"
 html_logo = "_static/images/evennia_logo.png"
-html_short_title = f"Evennia {release}"
+html_short_title = "Evennia"
 
 # HTML syntax highlighting style
 pygments_style = "sphinx"
