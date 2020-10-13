@@ -7,7 +7,6 @@
 import os
 import sys
 import re
-import sphinx_theme
 from recommonmark.transform import AutoStructify
 from sphinx.util.osutil import cd
 
