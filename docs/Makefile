@@ -71,7 +71,7 @@ _multiversion-autodoc-index:
 	make _clean_api_index
 	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) SPHINX_APIDOC_OPTIONS=$(SPHINXAPIDOCENV) $(SPHINXAPIDOC) $(SPHINXAPIDOCOPTS) -o $(SOURCEDIR)/api/ $(EVDIR) $(SPHINXAPIDOCEXCLUDE)
 	make _reformat_apidoc_headers
-	git diff-index --quiet HEAD || git commit -a -m "Updated API autodoc index."
+	git diff-index --quiet HEAD || git commit -a -m "Updated API autodoc index." || :
 
 _html-build:
 	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXBUILD) $(SPHINXOPTS) "$(SOURCEDIR)" "$(BUILDDIR)/html"
