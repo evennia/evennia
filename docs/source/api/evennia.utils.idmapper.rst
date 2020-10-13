@@ -6,8 +6,7 @@ evennia.utils.idmapper
    :undoc-members:
    :show-inheritance:
 
-Modules
--------
+
 
 .. toctree::
    :maxdepth: 6

@@ -6,8 +6,7 @@ evennia.commands
    :undoc-members:
    :show-inheritance:
 
-Modules
--------
+
 
 .. toctree::
    :maxdepth: 6
@@ -18,8 +17,6 @@ Modules
    evennia.commands.cmdsethandler
    evennia.commands.command
 
-Packages/folders
-----------------
 
 .. toctree::
    :maxdepth: 6
