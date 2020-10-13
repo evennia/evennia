@@ -1,10 +1,10 @@
 # VERSION WARNING
 
-> This is the static v0.95 documentation of Evennia, originally converted from the old
+> This is the v0.95 documentation of Evennia, originally converted from the old
 > [evennia wiki](https://github.com/evennia/evennia/wiki/) at 2020-10-11 18:06:03.062022.
 > While we will fix outright mistakes, minor typos and visual conversion issues will _not_ be 
 > addressed in this version.
-> A new new refactored version of the docs are being prepared for the v3.0 of the documentation. 
+> A new and refactored version of the docs is being prepared for version 1.0 of Evennia.
 
 # Evennia Documentation
 
@@ -22,7 +22,7 @@ time.
 - The [Builder Docs](./Builder-Docs) helps for starting to build a game world using Evennia.
 - The [Developer Central](./Developer-Central) describes how Evennia works and is used by coders.
 - The [Tutorials & Examples](./Tutorials) contains help pages on a step-by-step or tutorial format.
-- The [API](api:evennia) documentation is created from the latest source code.
+- The [API](./Evennia-API) documentation is created from the latest source code.
 - The [TOC](./toc) lists all regular documentation pages.
 
 [group]: https://groups.google.com/forum/#%21forum/evennia

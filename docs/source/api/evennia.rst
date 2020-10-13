@@ -6,16 +6,13 @@ evennia
    :undoc-members:
    :show-inheritance:
 
-Modules
--------
+
 
 .. toctree::
    :maxdepth: 6
 
    evennia.settings_default
 
-Packages/folders
-----------------
 
 .. toctree::
    :maxdepth: 6
