@@ -38,6 +38,7 @@
 - [./Connection Screen](./Connection-Screen)
 - [./Continuous Integration](./Continuous-Integration)
 - [./Contributing](./Contributing)
+- [./Contributing Docs](./Contributing-Docs)
 - [./Coordinates](./Coordinates)
 - [./Custom Protocols](./Custom-Protocols)
 - [./Customize channels](./Customize-channels)
