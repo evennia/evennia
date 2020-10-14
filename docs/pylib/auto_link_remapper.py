@@ -61,7 +61,7 @@ _USED_REFS = {}
 _CURRFILE = None
 
 
-def auto_link_remapper():
+def auto_link_remapper(no_autodoc=False):
     """
     - Auto-Remaps links to fit with the actual document file structure. Requires
       all doc files to have a unique name.
@@ -224,7 +224,8 @@ def auto_link_remapper():
     with open(_TOC_FILE, "w") as fil:
         fil.write("# Toc\n")
 
-        fil.write("- [API root](api/evennia-api.rst)")
+        if not no_autodoc:
+            fil.write("- [API root](api/evennia-api.rst)")
 
         for ref in sorted(toc_map.values()):
 
