@@ -539,6 +539,8 @@ def objtag(accessing_obj, accessed_obj, *args, **kwargs):
     Only true if accessed_obj has the specified tag and optional
     category.
     """
+    if hasattr(accessed_obj, "obj"):
+        accessed_obj = accessed_obj.obj
     tagkey = args[0] if args else None
     category = args[1] if len(args) > 1 else None
     return bool(accessed_obj.tags.get(tagkey, category=category))
