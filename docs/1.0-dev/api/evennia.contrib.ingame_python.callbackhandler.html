@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.contrib.ingame_python.callbackhandler &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.ingame_python.callbackhandler</a></li> 
       </ul>
     </div>  
 
@@ -37,9 +39,9 @@
   <div class="section" id="module-evennia.contrib.ingame_python.callbackhandler">
 <span id="evennia-contrib-ingame-python-callbackhandler"></span><h1>evennia.contrib.ingame_python.callbackhandler<a class="headerlink" href="#module-evennia.contrib.ingame_python.callbackhandler" title="Permalink to this headline">¶</a></h1>
 <p>Module containing the CallbackHandler for individual objects.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.ingame_python.callbackhandler.CallbackHandler">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.ingame_python.callbackhandler.</code><code class="sig-name descname">CallbackHandler</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/callbackhandler.html#CallbackHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.CallbackHandler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.ingame_python.callbackhandler.</code><code class="sig-name descname">CallbackHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/callbackhandler.html#CallbackHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.CallbackHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>The callback handler for a specific object.</p>
 <p>The script that contains all callbacks will be reached through this
@@ -47,18 +49,18 @@ handler.  This handler is therefore a shortcut to be used by
 developers.  This handler (accessible through <strong>obj.callbacks</strong>) is a
 shortcut to manipulating callbacks within this object, getting,
 adding, editing, deleting and calling them.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.ingame_python.callbackhandler.CallbackHandler.script">
 <code class="sig-name descname">script</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.script" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.callbackhandler.CallbackHandler.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/callbackhandler.html#CallbackHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/callbackhandler.html#CallbackHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.callbackhandler.CallbackHandler.all">
 <code class="sig-name descname">all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/callbackhandler.html#CallbackHandler.all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return all callbacks linked to this object.</p>
@@ -70,9 +72,9 @@ is returned as a namedtuple to simplify manipulation.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.callbackhandler.CallbackHandler.get">
-<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param">callback_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/callbackhandler.html#CallbackHandler.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">callback_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/callbackhandler.html#CallbackHandler.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the callbacks associated with this name.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -90,9 +92,9 @@ object’s callbacks, return an empty list.</p>
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.callbackhandler.CallbackHandler.get_variable">
-<code class="sig-name descname">get_variable</code><span class="sig-paren">(</span><em class="sig-param">variable_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/callbackhandler.html#CallbackHandler.get_variable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.get_variable" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_variable</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">variable_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/callbackhandler.html#CallbackHandler.get_variable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.get_variable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the variable value or None.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -104,9 +106,9 @@ object’s callbacks, return an empty list.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.callbackhandler.CallbackHandler.add">
-<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param">callback_name</em>, <em class="sig-param">code</em>, <em class="sig-param">author=None</em>, <em class="sig-param">valid=False</em>, <em class="sig-param">parameters=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/callbackhandler.html#CallbackHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.add" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">callback_name</span></em>, <em class="sig-param"><span class="n">code</span></em>, <em class="sig-param"><span class="n">author</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">valid</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">parameters</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/callbackhandler.html#CallbackHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a new callback for this object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -124,9 +126,9 @@ object’s callbacks, return an empty list.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.callbackhandler.CallbackHandler.edit">
-<code class="sig-name descname">edit</code><span class="sig-paren">(</span><em class="sig-param">callback_name</em>, <em class="sig-param">number</em>, <em class="sig-param">code</em>, <em class="sig-param">author=None</em>, <em class="sig-param">valid=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/callbackhandler.html#CallbackHandler.edit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.edit" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">edit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">callback_name</span></em>, <em class="sig-param"><span class="n">number</span></em>, <em class="sig-param"><span class="n">code</span></em>, <em class="sig-param"><span class="n">author</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">valid</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/callbackhandler.html#CallbackHandler.edit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.edit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Edit an existing callback bound to this object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -147,9 +149,9 @@ object’s callbacks, return an empty list.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.callbackhandler.CallbackHandler.remove">
-<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param">callback_name</em>, <em class="sig-param">number</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/callbackhandler.html#CallbackHandler.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.remove" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">callback_name</span></em>, <em class="sig-param"><span class="n">number</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/callbackhandler.html#CallbackHandler.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.remove" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete the specified callback bound to this object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -164,9 +166,9 @@ object’s callbacks, return an empty list.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.callbackhandler.CallbackHandler.call">
-<code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param">callback_name</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/callbackhandler.html#CallbackHandler.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.call" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">callback_name</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/callbackhandler.html#CallbackHandler.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.call" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call the specified callback(s) bound to this object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -190,9 +192,9 @@ None.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.callbackhandler.CallbackHandler.format_callback">
-<em class="property">static </em><code class="sig-name descname">format_callback</code><span class="sig-paren">(</span><em class="sig-param">callback</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/callbackhandler.html#CallbackHandler.format_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.format_callback" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">format_callback</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">callback</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/callbackhandler.html#CallbackHandler.format_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.CallbackHandler.format_callback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the callback namedtuple to represent the specified callback.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -205,65 +207,65 @@ the expected fields for a callback (code, author, valid…).</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.ingame_python.callbackhandler.Callback">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.ingame_python.callbackhandler.</code><code class="sig-name descname">Callback</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">name</em>, <em class="sig-param">number</em>, <em class="sig-param">code</em>, <em class="sig-param">author</em>, <em class="sig-param">valid</em>, <em class="sig-param">parameters</em>, <em class="sig-param">created_on</em>, <em class="sig-param">updated_by</em>, <em class="sig-param">updated_on</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.Callback" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.ingame_python.callbackhandler.</code><code class="sig-name descname">Callback</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">number</span></em>, <em class="sig-param"><span class="n">code</span></em>, <em class="sig-param"><span class="n">author</span></em>, <em class="sig-param"><span class="n">valid</span></em>, <em class="sig-param"><span class="n">parameters</span></em>, <em class="sig-param"><span class="n">created_on</span></em>, <em class="sig-param"><span class="n">updated_by</span></em>, <em class="sig-param"><span class="n">updated_on</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.Callback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.callbackhandler.Callback.author">
 <em class="property">property </em><code class="sig-name descname">author</code><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.Callback.author" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 4</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.callbackhandler.Callback.code">
 <em class="property">property </em><code class="sig-name descname">code</code><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.Callback.code" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 3</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.callbackhandler.Callback.created_on">
 <em class="property">property </em><code class="sig-name descname">created_on</code><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.Callback.created_on" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 7</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.callbackhandler.Callback.name">
 <em class="property">property </em><code class="sig-name descname">name</code><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.Callback.name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 1</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.callbackhandler.Callback.number">
 <em class="property">property </em><code class="sig-name descname">number</code><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.Callback.number" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 2</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.callbackhandler.Callback.obj">
 <em class="property">property </em><code class="sig-name descname">obj</code><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.Callback.obj" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 0</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.callbackhandler.Callback.parameters">
 <em class="property">property </em><code class="sig-name descname">parameters</code><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.Callback.parameters" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 6</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.callbackhandler.Callback.updated_by">
 <em class="property">property </em><code class="sig-name descname">updated_by</code><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.Callback.updated_by" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 8</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.callbackhandler.Callback.updated_on">
 <em class="property">property </em><code class="sig-name descname">updated_on</code><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.Callback.updated_on" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 9</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.callbackhandler.Callback.valid">
 <em class="property">property </em><code class="sig-name descname">valid</code><a class="headerlink" href="#evennia.contrib.ingame_python.callbackhandler.Callback.valid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 5</p>
@@ -274,6 +276,7 @@ the expected fields for a callback (code, author, valid…).</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -318,12 +321,13 @@ the expected fields for a callback (code, author, valid…).</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.ingame_python.callbackhandler</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

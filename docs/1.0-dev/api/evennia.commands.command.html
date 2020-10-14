@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.commands.command &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.command</a></li> 
       </ul>
     </div>  
 
@@ -38,22 +40,22 @@
 <span id="evennia-commands-command"></span><h1>evennia.commands.command<a class="headerlink" href="#module-evennia.commands.command" title="Permalink to this headline">¶</a></h1>
 <p>The base Command class.</p>
 <p>All commands in Evennia inherit from the ‘Command’ class in this module.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.commands.command.CommandMeta">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.command.</code><code class="sig-name descname">CommandMeta</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#CommandMeta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.CommandMeta" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.command.</code><code class="sig-name descname">CommandMeta</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#CommandMeta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.CommandMeta" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></p>
 <p>The metaclass cleans up all properties on the class</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.command.CommandMeta.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#CommandMeta.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.CommandMeta.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#CommandMeta.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.CommandMeta.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.commands.command.Command">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.command.</code><code class="sig-name descname">Command</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.command.</code><code class="sig-name descname">Command</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Base command</p>
 <dl class="simple">
@@ -105,62 +107,62 @@ overriding the method ‘get_help’ of a command: by default, this
 method returns cmd.__doc__ (that is, this very docstring, or
 the docstring of your command).  You can, however, extend or
 replace this without disabling auto_help.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.command.Command.key">
 <code class="sig-name descname">key</code><em class="property"> = 'command'</em><a class="headerlink" href="#evennia.commands.command.Command.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.command.Command.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.command.Command.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.command.Command.locks">
 <code class="sig-name descname">locks</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.commands.command.Command.locks" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.command.Command.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.commands.command.Command.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.command.Command.auto_help">
 <code class="sig-name descname">auto_help</code><em class="property"> = True</em><a class="headerlink" href="#evennia.commands.command.Command.auto_help" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.command.Command.is_exit">
 <code class="sig-name descname">is_exit</code><em class="property"> = False</em><a class="headerlink" href="#evennia.commands.command.Command.is_exit" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.command.Command.arg_regex">
 <code class="sig-name descname">arg_regex</code><em class="property"> = None</em><a class="headerlink" href="#evennia.commands.command.Command.arg_regex" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.command.Command.msg_all_sessions">
 <code class="sig-name descname">msg_all_sessions</code><em class="property"> = False</em><a class="headerlink" href="#evennia.commands.command.Command.msg_all_sessions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.command.Command.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>The lockhandler works the same as for objects.
 optional kwargs will be set as properties on the Command at runtime,
 overloading evential same-named class properties.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.command.Command.lockhandler">
 <code class="sig-name descname">lockhandler</code><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.lockhandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.lockhandler" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.command.Command.set_key">
-<code class="sig-name descname">set_key</code><span class="sig-paren">(</span><em class="sig-param">new_key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.set_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.set_key" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_key</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.set_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.set_key" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update key.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -172,9 +174,9 @@ overloading evential same-named class properties.</p>
 caches are properly updated as well.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.command.Command.set_aliases">
-<code class="sig-name descname">set_aliases</code><span class="sig-paren">(</span><em class="sig-param">new_aliases</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.set_aliases"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.set_aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_aliases</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_aliases</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.set_aliases"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.set_aliases" title="Permalink to this definition">¶</a></dt>
 <dd><p>Replace aliases with new ones.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -188,9 +190,9 @@ existing ones, if any.</p>
 caches are properly updated as well.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.command.Command.match">
-<code class="sig-name descname">match</code><span class="sig-paren">(</span><em class="sig-param">cmdname</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.match" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">match</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdname</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.match" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is called by the system when searching the available commands,
 in order to determine if this is the one we wanted. cmdname was
 previously extracted from the raw string by the system.</p>
@@ -204,9 +206,9 @@ previously extracted from the raw string by the system.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.command.Command.access">
-<code class="sig-name descname">access</code><span class="sig-paren">(</span><em class="sig-param">srcobj</em>, <em class="sig-param">access_type='cmd'</em>, <em class="sig-param">default=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.access"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.access" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">access</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">srcobj</span></em>, <em class="sig-param"><span class="n">access_type</span><span class="o">=</span><span class="default_value">'cmd'</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.access"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.access" title="Permalink to this definition">¶</a></dt>
 <dd><p>This hook is called by the cmdhandler to determine if srcobj
 is allowed to execute this command. It should return a boolean
 value and is not normally something that need to be changed since
@@ -223,9 +225,9 @@ of matching <strong>access_type</strong> is found on this Command.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.command.Command.msg">
-<code class="sig-name descname">msg</code><span class="sig-paren">(</span><em class="sig-param">text=None</em>, <em class="sig-param">to_obj=None</em>, <em class="sig-param">from_obj=None</em>, <em class="sig-param">session=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.msg" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">msg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">to_obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">from_obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.msg" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is a shortcut instead of calling msg() directly on an
 object - it will detect if caller is an Object or an Account and
 also appends self.session automatically if self.msg_all_sessions is False.</p>
@@ -249,9 +251,9 @@ name of send-instructions.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.command.Command.execute_cmd">
-<code class="sig-name descname">execute_cmd</code><span class="sig-paren">(</span><em class="sig-param">raw_string</em>, <em class="sig-param">session=None</em>, <em class="sig-param">obj=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.execute_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.execute_cmd" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">execute_cmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raw_string</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.execute_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.execute_cmd" title="Permalink to this definition">¶</a></dt>
 <dd><p>A shortcut of execute_cmd on the caller. It appends the
 session automatically.</p>
 <dl class="field-list simple">
@@ -274,7 +276,7 @@ If not given, self.caller will be used.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.command.Command.at_pre_cmd">
 <code class="sig-name descname">at_pre_cmd</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.at_pre_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.at_pre_cmd" title="Permalink to this definition">¶</a></dt>
 <dd><p>This hook is called before self.parse() on all commands.  If
@@ -282,14 +284,14 @@ this hook returns anything but False/None, the command
 sequence is aborted.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.command.Command.at_post_cmd">
 <code class="sig-name descname">at_post_cmd</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.at_post_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.at_post_cmd" title="Permalink to this definition">¶</a></dt>
 <dd><p>This hook is called after the command has finished executing
 (after self.func()).</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.command.Command.parse">
 <code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.parse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Once the cmdhandler has identified this as the command we
@@ -301,7 +303,7 @@ for which object properties are available to use (notably
 self.args).</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.command.Command.get_command_info">
 <code class="sig-name descname">get_command_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.get_command_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.get_command_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is the default output of func() if no func() overload is done.
@@ -309,7 +311,7 @@ Provided here as a separate method so that it can be called for debugging
 purposes when making commands.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.command.Command.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is the actual executing part of the command.  It is
@@ -318,9 +320,9 @@ module for which object properties are available (beyond those
 set in self.parse())</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.command.Command.get_extra_info">
-<code class="sig-name descname">get_extra_info</code><span class="sig-paren">(</span><em class="sig-param">caller</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.get_extra_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.get_extra_info" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_extra_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.get_extra_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.get_extra_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display some extra information that may help distinguish this
 command from others, for instance, in a disambiguity prompt.</p>
 <p>If this command is a potential match in an ambiguous
@@ -340,9 +342,9 @@ object, conventionally with a preceding space.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.command.Command.get_help">
-<code class="sig-name descname">get_help</code><span class="sig-paren">(</span><em class="sig-param">caller</em>, <em class="sig-param">cmdset</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.get_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.get_help" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_help</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">cmdset</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.get_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.get_help" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the help message for this command and this caller.</p>
 <p>By default, return self.__doc__ (the docstring just under
 the class definition).  You can override this behavior,
@@ -361,7 +363,7 @@ commands the caller can use.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.command.Command.client_width">
 <code class="sig-name descname">client_width</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.client_width"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.client_width" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the client screenwidth for the session using this command.</p>
@@ -372,9 +374,9 @@ commands the caller can use.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.command.Command.styled_table">
-<code class="sig-name descname">styled_table</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.styled_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.styled_table" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">styled_table</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.styled_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.styled_table" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an EvTable styled by on user preferences.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -396,42 +398,42 @@ detailing the contents of the table.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.command.Command.styled_header">
-<code class="sig-name descname">styled_header</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.styled_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.styled_header" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">styled_header</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.styled_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.styled_header" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a pretty header.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.command.Command.styled_separator">
-<code class="sig-name descname">styled_separator</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.styled_separator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.styled_separator" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">styled_separator</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.styled_separator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.styled_separator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a separator.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.command.Command.styled_footer">
-<code class="sig-name descname">styled_footer</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.styled_footer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.styled_footer" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">styled_footer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.styled_footer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.styled_footer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a pretty footer.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.command.Command.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.commands.command.Command.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.command.Command.save_for_next">
 <code class="sig-name descname">save_for_next</code><em class="property"> = False</em><a class="headerlink" href="#evennia.commands.command.Command.save_for_next" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.command.Command.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'command', 'tags': '', 'text': '\n    Base command\n\n    Usage:\n      command [args]\n\n    This is the base command class. Inherit from this\n    to create new commands.\n\n    The cmdhandler makes the following variables available to the\n    command methods (so you can always assume them to be there):\n    self.caller - the game object calling the command\n    self.cmdstring - the command name used to trigger this command (allows\n                     you to know which alias was used, for example)\n    cmd.args - everything supplied to the command following the cmdstring\n               (this is usually what is parsed in self.parse())\n    cmd.cmdset - the cmdset from which this command was matched (useful only\n                seldomly, notably for help-type commands, to create dynamic\n                help entries and lists)\n    cmd.obj - the object on which this command is defined. If a default command,\n                 this is usually the same as caller.\n    cmd.rawstring - the full raw string input, including any args and no parsing.\n\n    The following class properties can/should be defined on your child class:\n\n    key - identifier for command (e.g. &quot;look&quot;)\n    aliases - (optional) list of aliases (e.g. [&quot;l&quot;, &quot;loo&quot;])\n    locks - lock string (default is &quot;cmd:all()&quot;)\n    help_category - how to organize this help entry in help system\n                    (default is &quot;General&quot;)\n    auto_help - defaults to True. Allows for turning off auto-help generation\n    arg_regex - (optional) raw string regex defining how the argument part of\n                the command should look in order to match for this command\n                (e.g. must it be a space between cmdname and arg?)\n    auto_help_display_key - (optional) if given, this replaces the string shown\n        in the auto-help listing. This is particularly useful for system-commands\n        whose actual key is not really meaningful.\n\n    (Note that if auto_help is on, this initial string is also used by the\n    system to create the help entry for the command, so it\'s a good idea to\n    format it similar to this one).  This behavior can be changed by\n    overriding the method \'get_help\' of a command: by default, this\n    method returns cmd.__doc__ (that is, this very docstring, or\n    the docstring of your command).  You can, however, extend or\n    replace this without disabling auto_help.\n    '}</em><a class="headerlink" href="#evennia.commands.command.Command.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.commands.command.InterruptCommand">
 <em class="property">exception </em><code class="sig-prename descclassname">evennia.commands.command.</code><code class="sig-name descname">InterruptCommand</code><a class="reference internal" href="../_modules/evennia/commands/command.html#InterruptCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.InterruptCommand" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
@@ -441,6 +443,7 @@ detailing the contents of the table.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -485,12 +488,13 @@ detailing the contents of the table.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.command</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

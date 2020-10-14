@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.help.manager &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.help.manager</a></li> 
       </ul>
     </div>  
 
@@ -37,9 +39,9 @@
   <div class="section" id="module-evennia.help.manager">
 <span id="evennia-help-manager"></span><h1>evennia.help.manager<a class="headerlink" href="#module-evennia.help.manager" title="Permalink to this headline">¶</a></h1>
 <p>Custom manager for HelpEntry objects.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.help.manager.HelpEntryManager">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.help.manager.</code><code class="sig-name descname">HelpEntryManager</code><a class="reference internal" href="../_modules/evennia/help/manager.html#HelpEntryManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.manager.HelpEntryManager" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.help.manager.</code><code class="sig-name descname">HelpEntryManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/manager.html#HelpEntryManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.manager.HelpEntryManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.typeclasses.managers.html#evennia.typeclasses.managers.TypedObjectManager" title="evennia.typeclasses.managers.TypedObjectManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.typeclasses.managers.TypedObjectManager</span></code></a></p>
 <p>This HelpEntryManager implements methods for searching
 and manipulating HelpEntries directly from the database.</p>
@@ -52,9 +54,9 @@ find_topicsuggestions
 find_topics_with_category
 all_to_category
 search_help (equivalent to evennia.search_helpentry)</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.help.manager.HelpEntryManager.find_topicmatch">
-<code class="sig-name descname">find_topicmatch</code><span class="sig-paren">(</span><em class="sig-param">topicstr</em>, <em class="sig-param">exact=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/manager.html#HelpEntryManager.find_topicmatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.manager.HelpEntryManager.find_topicmatch" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">find_topicmatch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">topicstr</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/manager.html#HelpEntryManager.find_topicmatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.manager.HelpEntryManager.find_topicmatch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Searches for matching topics or aliases based on player’s
 input.</p>
 <dl class="field-list simple">
@@ -72,9 +74,9 @@ sub-parts of the string.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.help.manager.HelpEntryManager.find_apropos">
-<code class="sig-name descname">find_apropos</code><span class="sig-paren">(</span><em class="sig-param">topicstr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/manager.html#HelpEntryManager.find_apropos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.manager.HelpEntryManager.find_apropos" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">find_apropos</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">topicstr</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/manager.html#HelpEntryManager.find_apropos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.manager.HelpEntryManager.find_apropos" title="Permalink to this definition">¶</a></dt>
 <dd><p>Do a very loose search, returning all help entries containing
 the search criterion in their titles.</p>
 <dl class="field-list simple">
@@ -87,9 +89,9 @@ the search criterion in their titles.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.help.manager.HelpEntryManager.find_topicsuggestions">
-<code class="sig-name descname">find_topicsuggestions</code><span class="sig-paren">(</span><em class="sig-param">topicstr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/manager.html#HelpEntryManager.find_topicsuggestions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.manager.HelpEntryManager.find_topicsuggestions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">find_topicsuggestions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">topicstr</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/manager.html#HelpEntryManager.find_topicsuggestions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.manager.HelpEntryManager.find_topicsuggestions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Do a fuzzy match, preferably within the category of the
 current topic.</p>
 <dl class="field-list simple">
@@ -102,9 +104,9 @@ current topic.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.help.manager.HelpEntryManager.find_topics_with_category">
-<code class="sig-name descname">find_topics_with_category</code><span class="sig-paren">(</span><em class="sig-param">help_category</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/manager.html#HelpEntryManager.find_topics_with_category"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.manager.HelpEntryManager.find_topics_with_category" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">find_topics_with_category</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">help_category</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/manager.html#HelpEntryManager.find_topics_with_category"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.manager.HelpEntryManager.find_topics_with_category" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search topics having a particular category.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -116,7 +118,7 @@ current topic.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.help.manager.HelpEntryManager.get_all_topics">
 <code class="sig-name descname">get_all_topics</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/manager.html#HelpEntryManager.get_all_topics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.manager.HelpEntryManager.get_all_topics" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all topics.</p>
@@ -127,7 +129,7 @@ current topic.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.help.manager.HelpEntryManager.get_all_categories">
 <code class="sig-name descname">get_all_categories</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/manager.html#HelpEntryManager.get_all_categories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.manager.HelpEntryManager.get_all_categories" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return all defined category names with at least one topic in
@@ -144,9 +146,9 @@ them.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.help.manager.HelpEntryManager.all_to_category">
-<code class="sig-name descname">all_to_category</code><span class="sig-paren">(</span><em class="sig-param">default_category</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/manager.html#HelpEntryManager.all_to_category"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.manager.HelpEntryManager.all_to_category" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">all_to_category</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default_category</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/manager.html#HelpEntryManager.all_to_category"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.manager.HelpEntryManager.all_to_category" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shifts all help entries in database to default_category.  This
 action cannot be reverted. It is used primarily by the engine
 when importing a default help database, making sure this ends
@@ -158,9 +160,9 @@ up in one easily separated category.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.help.manager.HelpEntryManager.search_help">
-<code class="sig-name descname">search_help</code><span class="sig-paren">(</span><em class="sig-param">ostring</em>, <em class="sig-param">help_category=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/manager.html#HelpEntryManager.search_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.manager.HelpEntryManager.search_help" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_help</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ostring</span></em>, <em class="sig-param"><span class="n">help_category</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/manager.html#HelpEntryManager.search_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.manager.HelpEntryManager.search_help" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve a search entry object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -177,6 +179,7 @@ up in one easily separated category.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -221,12 +224,13 @@ up in one easily separated category.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.help.manager</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

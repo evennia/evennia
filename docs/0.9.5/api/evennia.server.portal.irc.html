@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.server.portal.irc &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.irc</a></li> 
       </ul>
     </div>  
 
@@ -39,9 +41,9 @@
 <p>This connects to an IRC network/channel and launches an ‘bot’ onto it.
 The bot then pipes what is being said between the IRC channel and one or
 more Evennia channels.</p>
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.server.portal.irc.parse_ansi_to_irc">
-<code class="sig-prename descclassname">evennia.server.portal.irc.</code><code class="sig-name descname">parse_ansi_to_irc</code><span class="sig-paren">(</span><em class="sig-param">string</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#parse_ansi_to_irc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.parse_ansi_to_irc" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.portal.irc.</code><code class="sig-name descname">parse_ansi_to_irc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#parse_ansi_to_irc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.parse_ansi_to_irc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse <a href="#id1"><span class="problematic" id="id2">|</span></a>-type syntax and replace with IRC color markers</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -53,9 +55,9 @@ more Evennia channels.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.server.portal.irc.parse_irc_to_ansi">
-<code class="sig-prename descclassname">evennia.server.portal.irc.</code><code class="sig-name descname">parse_irc_to_ansi</code><span class="sig-paren">(</span><em class="sig-param">string</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#parse_irc_to_ansi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.parse_irc_to_ansi" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.portal.irc.</code><code class="sig-name descname">parse_irc_to_ansi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#parse_irc_to_ansi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.parse_irc_to_ansi" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse IRC mIRC color syntax and replace with Evennia ANSI color markers</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -67,52 +69,52 @@ more Evennia channels.</p>
 </dl>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.server.portal.irc.IRCBot">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.irc.</code><code class="sig-name descname">IRCBot</code><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.words.protocols.irc.IRCClient</span></code>, <a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.server.session.Session</span></code></a></p>
 <p>An IRC bot that tracks activity in a channel as well
 as sends text to it when prompted</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.server.portal.irc.IRCBot.lineRate">
 <code class="sig-name descname">lineRate</code><em class="property"> = 1</em><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.lineRate" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.server.portal.irc.IRCBot.nickname">
 <code class="sig-name descname">nickname</code><em class="property"> = None</em><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.nickname" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.server.portal.irc.IRCBot.logger">
 <code class="sig-name descname">logger</code><em class="property"> = None</em><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.logger" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.server.portal.irc.IRCBot.factory">
 <code class="sig-name descname">factory</code><em class="property"> = None</em><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.factory" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.server.portal.irc.IRCBot.channel">
 <code class="sig-name descname">channel</code><em class="property"> = None</em><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.channel" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.server.portal.irc.IRCBot.sourceURL">
 <code class="sig-name descname">sourceURL</code><em class="property"> = 'http://code.evennia.com'</em><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.sourceURL" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.irc.IRCBot.signedOn">
 <code class="sig-name descname">signedOn</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot.signedOn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.signedOn" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is called when we successfully connect to the network. We
 make sure to now register with the game as a full session.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.irc.IRCBot.disconnect">
-<code class="sig-name descname">disconnect</code><span class="sig-paren">(</span><em class="sig-param">reason=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.disconnect" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">disconnect</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reason</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.disconnect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called by sessionhandler to disconnect this protocol.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -121,14 +123,14 @@ make sure to now register with the game as a full session.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.irc.IRCBot.at_login">
 <code class="sig-name descname">at_login</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot.at_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.at_login" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.irc.IRCBot.privmsg">
-<code class="sig-name descname">privmsg</code><span class="sig-paren">(</span><em class="sig-param">user</em>, <em class="sig-param">channel</em>, <em class="sig-param">msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot.privmsg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.privmsg" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">privmsg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em>, <em class="sig-param"><span class="n">channel</span></em>, <em class="sig-param"><span class="n">msg</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot.privmsg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.privmsg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when the connected channel receives a message.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -141,9 +143,9 @@ make sure to now register with the game as a full session.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.irc.IRCBot.action">
-<code class="sig-name descname">action</code><span class="sig-paren">(</span><em class="sig-param">user</em>, <em class="sig-param">channel</em>, <em class="sig-param">msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot.action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.action" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">action</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em>, <em class="sig-param"><span class="n">channel</span></em>, <em class="sig-param"><span class="n">msg</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot.action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.action" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when an action is detected in channel.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -156,28 +158,28 @@ make sure to now register with the game as a full session.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.irc.IRCBot.get_nicklist">
 <code class="sig-name descname">get_nicklist</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot.get_nicklist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.get_nicklist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve name list from the channel. The return
 is handled by the catch methods below.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.irc.IRCBot.irc_RPL_NAMREPLY">
-<code class="sig-name descname">irc_RPL_NAMREPLY</code><span class="sig-paren">(</span><em class="sig-param">prefix</em>, <em class="sig-param">params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot.irc_RPL_NAMREPLY"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.irc_RPL_NAMREPLY" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">irc_RPL_NAMREPLY</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prefix</span></em>, <em class="sig-param"><span class="n">params</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot.irc_RPL_NAMREPLY"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.irc_RPL_NAMREPLY" title="Permalink to this definition">¶</a></dt>
 <dd><p>“Handles IRC NAME request returns (nicklist)</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.irc.IRCBot.irc_RPL_ENDOFNAMES">
-<code class="sig-name descname">irc_RPL_ENDOFNAMES</code><span class="sig-paren">(</span><em class="sig-param">prefix</em>, <em class="sig-param">params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot.irc_RPL_ENDOFNAMES"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.irc_RPL_ENDOFNAMES" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">irc_RPL_ENDOFNAMES</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prefix</span></em>, <em class="sig-param"><span class="n">params</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot.irc_RPL_ENDOFNAMES"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.irc_RPL_ENDOFNAMES" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when the nicklist has finished being returned.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.irc.IRCBot.pong">
-<code class="sig-name descname">pong</code><span class="sig-paren">(</span><em class="sig-param">user</em>, <em class="sig-param">time</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot.pong"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.pong" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">pong</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em>, <em class="sig-param"><span class="n">time</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot.pong"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.pong" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called with the return timing from a PING.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -189,9 +191,9 @@ is handled by the catch methods below.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.irc.IRCBot.data_in">
-<code class="sig-name descname">data_in</code><span class="sig-paren">(</span><em class="sig-param">text=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot.data_in"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.data_in" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">data_in</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot.data_in"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.data_in" title="Permalink to this definition">¶</a></dt>
 <dd><p>Data IRC -&gt; Server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
@@ -203,9 +205,9 @@ is handled by the catch methods below.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.irc.IRCBot.send_channel">
-<code class="sig-name descname">send_channel</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot.send_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.send_channel" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">send_channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot.send_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.send_channel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send channel text to IRC channel (visible to all). Note that
 we don’t handle the “text” send (it’s rerouted to send_default
 which does nothing) - this is because the IRC bot is a normal
@@ -218,9 +220,9 @@ to the IRC channel (such as it seeing server reload messages).</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.irc.IRCBot.send_privmsg">
-<code class="sig-name descname">send_privmsg</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot.send_privmsg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.send_privmsg" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">send_privmsg</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot.send_privmsg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.send_privmsg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send message only to specific user.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -233,60 +235,60 @@ privately to.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.irc.IRCBot.send_request_nicklist">
-<code class="sig-name descname">send_request_nicklist</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot.send_request_nicklist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.send_request_nicklist" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">send_request_nicklist</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot.send_request_nicklist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.send_request_nicklist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send a request for the channel nicklist. The return (handled
 by <strong>self.irc_RPL_ENDOFNAMES</strong>) will be sent back as a message
 with type <a href="#id3"><span class="problematic" id="id4">**</span></a>nicklist’.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.irc.IRCBot.send_ping">
-<code class="sig-name descname">send_ping</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot.send_ping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.send_ping" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">send_ping</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot.send_ping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.send_ping" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send a ping. The return (handled by <strong>self.pong</strong>) will be sent
 back as a message of type ‘ping’.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.irc.IRCBot.send_reconnect">
-<code class="sig-name descname">send_reconnect</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot.send_reconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.send_reconnect" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">send_reconnect</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot.send_reconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.send_reconnect" title="Permalink to this definition">¶</a></dt>
 <dd><p>The server instructs us to rebuild the connection by force,
 probably because the client silently lost connection.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.irc.IRCBot.send_default">
-<code class="sig-name descname">send_default</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot.send_default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.send_default" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">send_default</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBot.send_default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBot.send_default" title="Permalink to this definition">¶</a></dt>
 <dd><p>Ignore other types of sends.</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.server.portal.irc.IRCBotFactory">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.irc.</code><code class="sig-name descname">IRCBotFactory</code><span class="sig-paren">(</span><em class="sig-param">sessionhandler</em>, <em class="sig-param">uid=None</em>, <em class="sig-param">botname=None</em>, <em class="sig-param">channel=None</em>, <em class="sig-param">network=None</em>, <em class="sig-param">port=None</em>, <em class="sig-param">ssl=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBotFactory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBotFactory" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.irc.</code><code class="sig-name descname">IRCBotFactory</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sessionhandler</span></em>, <em class="sig-param"><span class="n">uid</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">botname</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">channel</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">network</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">port</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ssl</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBotFactory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBotFactory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.internet.protocol.ReconnectingClientFactory</span></code></p>
 <p>Creates instances of IRCBot, connecting with a staggered
 increase in delay</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.server.portal.irc.IRCBotFactory.initialDelay">
 <code class="sig-name descname">initialDelay</code><em class="property"> = 1</em><a class="headerlink" href="#evennia.server.portal.irc.IRCBotFactory.initialDelay" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.server.portal.irc.IRCBotFactory.factor">
 <code class="sig-name descname">factor</code><em class="property"> = 1.5</em><a class="headerlink" href="#evennia.server.portal.irc.IRCBotFactory.factor" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.server.portal.irc.IRCBotFactory.maxDelay">
 <code class="sig-name descname">maxDelay</code><em class="property"> = 60</em><a class="headerlink" href="#evennia.server.portal.irc.IRCBotFactory.maxDelay" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.irc.IRCBotFactory.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">sessionhandler</em>, <em class="sig-param">uid=None</em>, <em class="sig-param">botname=None</em>, <em class="sig-param">channel=None</em>, <em class="sig-param">network=None</em>, <em class="sig-param">port=None</em>, <em class="sig-param">ssl=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBotFactory.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBotFactory.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sessionhandler</span></em>, <em class="sig-param"><span class="n">uid</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">botname</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">channel</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">network</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">port</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ssl</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBotFactory.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBotFactory.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Storing some important protocol properties.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -305,9 +307,9 @@ increase in delay</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.irc.IRCBotFactory.buildProtocol">
-<code class="sig-name descname">buildProtocol</code><span class="sig-paren">(</span><em class="sig-param">addr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBotFactory.buildProtocol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBotFactory.buildProtocol" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">buildProtocol</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">addr</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBotFactory.buildProtocol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBotFactory.buildProtocol" title="Permalink to this definition">¶</a></dt>
 <dd><p>Build the protocol and assign it some properties.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -316,9 +318,9 @@ increase in delay</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.irc.IRCBotFactory.startedConnecting">
-<code class="sig-name descname">startedConnecting</code><span class="sig-paren">(</span><em class="sig-param">connector</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBotFactory.startedConnecting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBotFactory.startedConnecting" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">startedConnecting</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">connector</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBotFactory.startedConnecting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBotFactory.startedConnecting" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tracks reconnections for debugging.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -327,9 +329,9 @@ increase in delay</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.irc.IRCBotFactory.clientConnectionFailed">
-<code class="sig-name descname">clientConnectionFailed</code><span class="sig-paren">(</span><em class="sig-param">connector</em>, <em class="sig-param">reason</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBotFactory.clientConnectionFailed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBotFactory.clientConnectionFailed" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">clientConnectionFailed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">connector</span></em>, <em class="sig-param"><span class="n">reason</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBotFactory.clientConnectionFailed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBotFactory.clientConnectionFailed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when Client failed to connect.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -341,9 +343,9 @@ increase in delay</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.irc.IRCBotFactory.clientConnectionLost">
-<code class="sig-name descname">clientConnectionLost</code><span class="sig-paren">(</span><em class="sig-param">connector</em>, <em class="sig-param">reason</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBotFactory.clientConnectionLost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBotFactory.clientConnectionLost" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">clientConnectionLost</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">connector</span></em>, <em class="sig-param"><span class="n">reason</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBotFactory.clientConnectionLost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBotFactory.clientConnectionLost" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when Client loses connection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -355,7 +357,7 @@ increase in delay</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.irc.IRCBotFactory.reconnect">
 <code class="sig-name descname">reconnect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBotFactory.reconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBotFactory.reconnect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Force a reconnection of the bot protocol. This requires
@@ -364,7 +366,7 @@ otherwise you end up with an ever growing number of bot
 sessions.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.irc.IRCBotFactory.start">
 <code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/irc.html#IRCBotFactory.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.irc.IRCBotFactory.start" title="Permalink to this definition">¶</a></dt>
 <dd><p>Connect session to sessionhandler.</p>
@@ -375,6 +377,7 @@ sessions.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -419,12 +422,13 @@ sessions.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.irc</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

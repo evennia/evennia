@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.help.models &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.help.models</a></li> 
       </ul>
     </div>  
 
@@ -43,9 +45,9 @@ that is created on the fly from each command’s <strong>__doc__</strong> string
 persistent database system defined here is intended for all other
 forms of help that do not concern commands, like information about the
 game world, policy info, rules and similar.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.help.models.HelpEntry">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.help.models.</code><code class="sig-name descname">HelpEntry</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/models.html#HelpEntry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.models.HelpEntry" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.help.models.</code><code class="sig-name descname">HelpEntry</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/models.html#HelpEntry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.models.HelpEntry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.utils.idmapper.models.html#evennia.utils.idmapper.models.SharedMemoryModel" title="evennia.utils.idmapper.models.SharedMemoryModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.idmapper.models.SharedMemoryModel</span></code></a></p>
 <p>A generic help entry.</p>
 <dl class="simple">
@@ -57,35 +59,35 @@ permissions - perm strings</p>
 <dt>Method:</dt><dd><p>access</p>
 </dd>
 </dl>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.help.models.HelpEntry.db_key">
 <code class="sig-name descname">db_key</code><a class="headerlink" href="#evennia.help.models.HelpEntry.db_key" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.help.models.HelpEntry.db_help_category">
 <code class="sig-name descname">db_help_category</code><a class="headerlink" href="#evennia.help.models.HelpEntry.db_help_category" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.help.models.HelpEntry.db_entrytext">
 <code class="sig-name descname">db_entrytext</code><a class="headerlink" href="#evennia.help.models.HelpEntry.db_entrytext" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.help.models.HelpEntry.db_lock_storage">
 <code class="sig-name descname">db_lock_storage</code><a class="headerlink" href="#evennia.help.models.HelpEntry.db_lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.help.models.HelpEntry.db_tags">
 <code class="sig-name descname">db_tags</code><a class="headerlink" href="#evennia.help.models.HelpEntry.db_tags" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related objects manager on the forward and reverse sides of
@@ -101,49 +103,49 @@ instances.</p>
 class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.help.models.HelpEntry.db_staff_only">
 <code class="sig-name descname">db_staff_only</code><a class="headerlink" href="#evennia.help.models.HelpEntry.db_staff_only" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.help.models.HelpEntry.objects">
 <code class="sig-name descname">objects</code><em class="property"> = &lt;evennia.help.manager.HelpEntryManager object&gt;</em><a class="headerlink" href="#evennia.help.models.HelpEntry.objects" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.help.models.HelpEntry.locks">
 <code class="sig-name descname">locks</code><a class="reference internal" href="../_modules/evennia/help/models.html#HelpEntry.locks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.models.HelpEntry.locks" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.help.models.HelpEntry.tags">
 <code class="sig-name descname">tags</code><a class="reference internal" href="../_modules/evennia/help/models.html#HelpEntry.tags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.models.HelpEntry.tags" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.help.models.HelpEntry.aliases">
 <code class="sig-name descname">aliases</code><a class="reference internal" href="../_modules/evennia/help/models.html#HelpEntry.aliases"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.models.HelpEntry.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.help.models.HelpEntry.access">
-<code class="sig-name descname">access</code><span class="sig-paren">(</span><em class="sig-param">accessing_obj</em>, <em class="sig-param">access_type='read'</em>, <em class="sig-param">default=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/models.html#HelpEntry.access"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.models.HelpEntry.access" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">access</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">accessing_obj</span></em>, <em class="sig-param"><span class="n">access_type</span><span class="o">=</span><span class="default_value">'read'</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/models.html#HelpEntry.access"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.models.HelpEntry.access" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determines if another object has permission to access.
 accessing_obj - object trying to access this one
 access_type - type of access sought
 default - what to return if no lock of access_type was found</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.help.models.HelpEntry.search_index_entry">
 <em class="property">property </em><code class="sig-name descname">search_index_entry</code><a class="headerlink" href="#evennia.help.models.HelpEntry.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Property for easily retaining a search index entry for this object.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.help.models.HelpEntry.web_get_admin_url">
 <code class="sig-name descname">web_get_admin_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/models.html#HelpEntry.web_get_admin_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.models.HelpEntry.web_get_admin_url" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the URI path for the Django Admin page for this object.</p>
@@ -155,7 +157,7 @@ default - what to return if no lock of access_type was found</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.help.models.HelpEntry.web_get_create_url">
 <em class="property">classmethod </em><code class="sig-name descname">web_get_create_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/models.html#HelpEntry.web_get_create_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.models.HelpEntry.web_get_create_url" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the URI path for a View that allows users to create new
@@ -178,7 +180,7 @@ developer’s responsibility.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.help.models.HelpEntry.web_get_detail_url">
 <code class="sig-name descname">web_get_detail_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/models.html#HelpEntry.web_get_detail_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.models.HelpEntry.web_get_detail_url" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the URI path for a View that allows users to view details for
@@ -204,7 +206,7 @@ responsibility.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.help.models.HelpEntry.web_get_update_url">
 <code class="sig-name descname">web_get_update_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/models.html#HelpEntry.web_get_update_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.models.HelpEntry.web_get_update_url" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the URI path for a View that allows users to update this
@@ -230,7 +232,7 @@ responsibility.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.help.models.HelpEntry.web_get_delete_url">
 <code class="sig-name descname">web_get_delete_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/models.html#HelpEntry.web_get_delete_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.help.models.HelpEntry.web_get_delete_url" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the URI path for a View that allows users to delete this object.</p>
@@ -255,7 +257,7 @@ responsibility.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.help.models.HelpEntry.get_absolute_url">
 <code class="sig-name descname">get_absolute_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#evennia.help.models.HelpEntry.get_absolute_url" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the URI path for a View that allows users to view details for
@@ -281,61 +283,61 @@ responsibility.</p>
 </dl>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.help.models.HelpEntry.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.help.models.HelpEntry.DoesNotExist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.help.models.HelpEntry.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.help.models.HelpEntry.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.help.models.HelpEntry.entrytext">
 <em class="property">property </em><code class="sig-name descname">entrytext</code><a class="headerlink" href="#evennia.help.models.HelpEntry.entrytext" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for getting database field <strong>db_entrytext</strong>.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.help.models.HelpEntry.help_category">
 <em class="property">property </em><code class="sig-name descname">help_category</code><a class="headerlink" href="#evennia.help.models.HelpEntry.help_category" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for getting database field <strong>db_help_category</strong>.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.help.models.HelpEntry.id">
 <code class="sig-name descname">id</code><a class="headerlink" href="#evennia.help.models.HelpEntry.id" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.help.models.HelpEntry.key">
 <em class="property">property </em><code class="sig-name descname">key</code><a class="headerlink" href="#evennia.help.models.HelpEntry.key" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for getting database field <strong>db_key</strong>.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.help.models.HelpEntry.lock_storage">
 <em class="property">property </em><code class="sig-name descname">lock_storage</code><a class="headerlink" href="#evennia.help.models.HelpEntry.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for getting database field <strong>db_lock_storage</strong>.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.help.models.HelpEntry.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.help.models.HelpEntry'</em><a class="headerlink" href="#evennia.help.models.HelpEntry.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.help.models.HelpEntry.staff_only">
 <em class="property">property </em><code class="sig-name descname">staff_only</code><a class="headerlink" href="#evennia.help.models.HelpEntry.staff_only" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for getting database field <strong>db_staff_only</strong>.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.help.models.HelpEntry.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'SharedMemoryModelBase'</em><a class="headerlink" href="#evennia.help.models.HelpEntry.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -345,6 +347,7 @@ object the first time, the query is executed.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -389,12 +392,13 @@ object the first time, the query is executed.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.help.models</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

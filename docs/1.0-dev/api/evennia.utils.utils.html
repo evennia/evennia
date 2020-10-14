@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.utils.utils &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.utils</a></li> 
       </ul>
     </div>  
 
@@ -39,9 +41,9 @@
 <p>General helper functions that don’t fit neatly under any given category.</p>
 <p>They provide some useful string and conversion methods that might
 be of use when designing your own game.</p>
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.is_iter">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">is_iter</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#is_iter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.is_iter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">is_iter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#is_iter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.is_iter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks if an object behaves iterably.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -57,9 +59,9 @@ actually iterable), since string iterations are usually not
 what we want to do with a string.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.make_iter">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">make_iter</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#make_iter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.make_iter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">make_iter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#make_iter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.make_iter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Makes sure that the object is always iterable.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -76,9 +78,9 @@ what we want to do with a string.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.wrap">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">wrap</code><span class="sig-paren">(</span><em class="sig-param">text</em>, <em class="sig-param">width=None</em>, <em class="sig-param">indent=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#wrap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.wrap" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">wrap</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">indent</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#wrap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.wrap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Safely wrap text to a certain number of characters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -94,9 +96,9 @@ what we want to do with a string.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.fill">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">fill</code><span class="sig-paren">(</span><em class="sig-param">text</em>, <em class="sig-param">width=None</em>, <em class="sig-param">indent=0</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.utils.fill" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">fill</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">indent</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.utils.fill" title="Permalink to this definition">¶</a></dt>
 <dd><p>Safely wrap text to a certain number of characters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -112,9 +114,9 @@ what we want to do with a string.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.pad">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">pad</code><span class="sig-paren">(</span><em class="sig-param">text</em>, <em class="sig-param">width=None</em>, <em class="sig-param">align='c'</em>, <em class="sig-param">fillchar=' '</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#pad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.pad" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">pad</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">align</span><span class="o">=</span><span class="default_value">'c'</span></em>, <em class="sig-param"><span class="n">fillchar</span><span class="o">=</span><span class="default_value">' '</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#pad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.pad" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pads to a given width.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -132,9 +134,9 @@ left or right).</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.crop">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">crop</code><span class="sig-paren">(</span><em class="sig-param">text</em>, <em class="sig-param">width=None</em>, <em class="sig-param">suffix='[...]'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#crop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.crop" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">crop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">suffix</span><span class="o">=</span><span class="default_value">'[...]'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#crop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.crop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Crop text to a certain width, throwing away text from too-long
 lines.</p>
 <dl class="field-list simple">
@@ -155,9 +157,9 @@ suffix, the suffix will be dropped.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.dedent">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">dedent</code><span class="sig-paren">(</span><em class="sig-param">text</em>, <em class="sig-param">baseline_index=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#dedent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.dedent" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">dedent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em>, <em class="sig-param"><span class="n">baseline_index</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#dedent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.dedent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Safely clean all whitespace at the left of a paragraph.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -179,9 +181,9 @@ while still shifting it all to be next to the left edge of the
 display.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.justify">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">justify</code><span class="sig-paren">(</span><em class="sig-param">text</em>, <em class="sig-param">width=None</em>, <em class="sig-param">align='f'</em>, <em class="sig-param">indent=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#justify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.justify" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">justify</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">align</span><span class="o">=</span><span class="default_value">'f'</span></em>, <em class="sig-param"><span class="n">indent</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#justify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.justify" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fully justify a text so that it fits inside <strong>width</strong>. When using
 full justification (default) this will be done by padding between
 words with extra whitespace where necessary. Paragraphs will
@@ -203,9 +205,9 @@ entire justified text block.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.columnize">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">columnize</code><span class="sig-paren">(</span><em class="sig-param">string</em>, <em class="sig-param">columns=2</em>, <em class="sig-param">spacing=4</em>, <em class="sig-param">align='l'</em>, <em class="sig-param">width=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#columnize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.columnize" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">columnize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">spacing</span><span class="o">=</span><span class="default_value">4</span></em>, <em class="sig-param"><span class="n">align</span><span class="o">=</span><span class="default_value">'l'</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#columnize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.columnize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Break a string into a number of columns, using as little
 vertical space as possible.</p>
 <dl class="field-list simple">
@@ -227,9 +229,9 @@ Defaults to client’s default width.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.iter_to_string">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">iter_to_string</code><span class="sig-paren">(</span><em class="sig-param">initer</em>, <em class="sig-param">endsep='and'</em>, <em class="sig-param">addquote=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#iter_to_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.iter_to_string" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">iter_to_string</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">initer</span></em>, <em class="sig-param"><span class="n">endsep</span><span class="o">=</span><span class="default_value">'and'</span></em>, <em class="sig-param"><span class="n">addquote</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#iter_to_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.iter_to_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>This pretty-formats an iterable list as string output, adding an optional
 alternative separator to the second to last entry.  If <strong>addquote</strong>
 is <strong>True</strong>, the outgoing strings will be surrounded by quotes.</p>
@@ -260,9 +262,9 @@ values with double quotes.</p></li>
 </div>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.list_to_string">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">list_to_string</code><span class="sig-paren">(</span><em class="sig-param">initer</em>, <em class="sig-param">endsep='and'</em>, <em class="sig-param">addquote=False</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.utils.list_to_string" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">list_to_string</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">initer</span></em>, <em class="sig-param"><span class="n">endsep</span><span class="o">=</span><span class="default_value">'and'</span></em>, <em class="sig-param"><span class="n">addquote</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.utils.list_to_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>This pretty-formats an iterable list as string output, adding an optional
 alternative separator to the second to last entry.  If <strong>addquote</strong>
 is <strong>True</strong>, the outgoing strings will be surrounded by quotes.</p>
@@ -293,9 +295,9 @@ values with double quotes.</p></li>
 </div>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.wildcard_to_regexp">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">wildcard_to_regexp</code><span class="sig-paren">(</span><em class="sig-param">instring</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#wildcard_to_regexp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.wildcard_to_regexp" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">wildcard_to_regexp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">instring</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#wildcard_to_regexp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.wildcard_to_regexp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts a player-supplied string that may have wildcards in it to
 regular expressions. This is useful for name matching.</p>
 <dl class="field-list simple">
@@ -314,9 +316,9 @@ wildcards (<strong>*</strong> or <strong>?</strong>).</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.time_format">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">time_format</code><span class="sig-paren">(</span><em class="sig-param">seconds</em>, <em class="sig-param">style=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#time_format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.time_format" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">time_format</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seconds</span></em>, <em class="sig-param"><span class="n">style</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#time_format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.time_format" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function to return a ‘prettified’ version of a value in seconds.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -336,9 +338,9 @@ wildcards (<strong>*</strong> or <strong>?</strong>).</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.datetime_format">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">datetime_format</code><span class="sig-paren">(</span><em class="sig-param">dtobj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#datetime_format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.datetime_format" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">datetime_format</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dtobj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#datetime_format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.datetime_format" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pretty-prints the time since a given time.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -356,9 +358,9 @@ wildcards (<strong>*</strong> or <strong>?</strong>).</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.host_os_is">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">host_os_is</code><span class="sig-paren">(</span><em class="sig-param">osname</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#host_os_is"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.host_os_is" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">host_os_is</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">osname</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#host_os_is"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.host_os_is" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check to see if the host OS matches the query.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -371,9 +373,9 @@ wildcards (<strong>*</strong> or <strong>?</strong>).</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.get_evennia_version">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">get_evennia_version</code><span class="sig-paren">(</span><em class="sig-param">mode='long'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#get_evennia_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.get_evennia_version" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">get_evennia_version</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'long'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#get_evennia_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.get_evennia_version" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper method for getting the current evennia version.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -388,9 +390,9 @@ wildcards (<strong>*</strong> or <strong>?</strong>).</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.pypath_to_realpath">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">pypath_to_realpath</code><span class="sig-paren">(</span><em class="sig-param">python_path</em>, <em class="sig-param">file_ending='.py'</em>, <em class="sig-param">pypath_prefixes=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#pypath_to_realpath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.pypath_to_realpath" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">pypath_to_realpath</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">python_path</span></em>, <em class="sig-param"><span class="n">file_ending</span><span class="o">=</span><span class="default_value">'.py'</span></em>, <em class="sig-param"><span class="n">pypath_prefixes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#pypath_to_realpath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.pypath_to_realpath" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts a dotted Python path to an absolute path under the
 Evennia library directory or under the current game directory.</p>
 <dl class="field-list simple">
@@ -420,9 +422,9 @@ where pypath is given including the “evennia.” or “mygame.”
 prefixes.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.dbref">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">dbref</code><span class="sig-paren">(</span><em class="sig-param">inp</em>, <em class="sig-param">reqhash=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#dbref"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.dbref" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">dbref</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inp</span></em>, <em class="sig-param"><span class="n">reqhash</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#dbref"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.dbref" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts/checks if input is a valid dbref.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -443,9 +445,9 @@ input as a valid dbref.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.dbref_to_obj">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">dbref_to_obj</code><span class="sig-paren">(</span><em class="sig-param">inp</em>, <em class="sig-param">objclass</em>, <em class="sig-param">raise_errors=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#dbref_to_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.dbref_to_obj" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">dbref_to_obj</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inp</span></em>, <em class="sig-param"><span class="n">objclass</span></em>, <em class="sig-param"><span class="n">raise_errors</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#dbref_to_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.dbref_to_obj" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert a #dbref to a valid object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -467,9 +469,9 @@ object.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.dbid_to_obj">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">dbid_to_obj</code><span class="sig-paren">(</span><em class="sig-param">inp</em>, <em class="sig-param">objclass</em>, <em class="sig-param">raise_errors=True</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.utils.dbid_to_obj" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">dbid_to_obj</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inp</span></em>, <em class="sig-param"><span class="n">objclass</span></em>, <em class="sig-param"><span class="n">raise_errors</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.utils.dbid_to_obj" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert a #dbref to a valid object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -491,9 +493,9 @@ object.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.latinify">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">latinify</code><span class="sig-paren">(</span><em class="sig-param">string</em>, <em class="sig-param">default='?'</em>, <em class="sig-param">pure_ascii=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#latinify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.latinify" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">latinify</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">'?'</span></em>, <em class="sig-param"><span class="n">pure_ascii</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#latinify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.latinify" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert a unicode string to “safe” ascii/latin-1 characters.
 This is used as a last resort when normal encoding does not work.</p>
 <dl class="field-list simple">
@@ -522,9 +524,9 @@ on the string soon after.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.to_bytes">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">to_bytes</code><span class="sig-paren">(</span><em class="sig-param">text</em>, <em class="sig-param">session=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#to_bytes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.to_bytes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">to_bytes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#to_bytes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.to_bytes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Try to encode the given text to bytes, using encodings from settings or from Session. Will
 always return a bytes, even if given something that is not str or bytes.</p>
 <dl class="field-list simple">
@@ -551,9 +553,9 @@ be found, the protocol flag is reset to utf-8.  In any case, returns bytes.</p>
 <p>If <strong>text</strong> is already bytes, return it as is.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.to_str">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">to_str</code><span class="sig-paren">(</span><em class="sig-param">text</em>, <em class="sig-param">session=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#to_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.to_str" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">to_str</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#to_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.to_str" title="Permalink to this definition">¶</a></dt>
 <dd><p>Try to decode a bytestream to a python str, using encoding schemas from settings
 or from Session. Will always return a str(), also if not given a str/bytes.</p>
 <dl class="field-list simple">
@@ -573,9 +575,9 @@ falling back to settings.ENCODINGS.</p></li>
 <p>If <strong>text</strong> is already str, return it as is.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.validate_email_address">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">validate_email_address</code><span class="sig-paren">(</span><em class="sig-param">emailaddress</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#validate_email_address"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.validate_email_address" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">validate_email_address</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">emailaddress</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#validate_email_address"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.validate_email_address" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks if an email address is syntactically correct. Makes use
 of the django email-validator for consistency.</p>
 <dl class="field-list simple">
@@ -588,9 +590,9 @@ of the django email-validator for consistency.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.inherits_from">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">inherits_from</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">parent</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#inherits_from"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.inherits_from" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">inherits_from</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">parent</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#inherits_from"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.inherits_from" title="Permalink to this definition">¶</a></dt>
 <dd><p>Takes an object and tries to determine if it inherits at <em>any</em>
 distance from parent.</p>
 <dl class="field-list simple">
@@ -611,7 +613,7 @@ path to the class.</p></li>
 flexibility in the types allowed for the object and parent being compared.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.server_services">
 <code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">server_services</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#server_services"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.server_services" title="Permalink to this definition">¶</a></dt>
 <dd><p>Lists all services active on the Server. Observe that since
@@ -624,9 +626,9 @@ any results if called from inside the game.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.uses_database">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">uses_database</code><span class="sig-paren">(</span><em class="sig-param">name='sqlite3'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#uses_database"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.uses_database" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">uses_database</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'sqlite3'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#uses_database"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.uses_database" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks if the game is currently using a given database. This is a
 shortcut to having to use the full backend name.</p>
 <dl class="field-list simple">
@@ -639,9 +641,9 @@ shortcut to having to use the full backend name.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.delay">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">delay</code><span class="sig-paren">(</span><em class="sig-param">timedelay</em>, <em class="sig-param">callback</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#delay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.delay" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">delay</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">timedelay</span></em>, <em class="sig-param"><span class="n">callback</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#delay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.delay" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delay the return of a value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -676,9 +678,9 @@ a server restart/reload, taking into account the specified delay
 (and server down time).</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.run_async">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">run_async</code><span class="sig-paren">(</span><em class="sig-param">to_execute</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#run_async"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.run_async" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">run_async</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">to_execute</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#run_async"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.run_async" title="Permalink to this definition">¶</a></dt>
 <dd><p>Runs a function or executes a code snippet asynchronously.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -717,7 +719,7 @@ your <strong>to_execute</strong> under sqlite3 you will probably run very slow o
 tracebacks.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.check_evennia_dependencies">
 <code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">check_evennia_dependencies</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#check_evennia_dependencies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.check_evennia_dependencies" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks the versions of Evennia’s dependencies including making
@@ -734,9 +736,9 @@ some checks for runtime libraries.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.has_parent">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">has_parent</code><span class="sig-paren">(</span><em class="sig-param">basepath</em>, <em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#has_parent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.has_parent" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">has_parent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">basepath</span></em>, <em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#has_parent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.has_parent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks if <strong>basepath</strong> is somewhere in obj’s parent tree.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -751,9 +753,9 @@ some checks for runtime libraries.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.mod_import_from_path">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">mod_import_from_path</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#mod_import_from_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.mod_import_from_path" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">mod_import_from_path</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#mod_import_from_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.mod_import_from_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load a Python module at the specified path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -766,9 +768,9 @@ Python module. Returns <strong>None</strong> if the import failed.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.mod_import">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">mod_import</code><span class="sig-paren">(</span><em class="sig-param">module</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#mod_import"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.mod_import" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">mod_import</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">module</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#mod_import"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.mod_import" title="Permalink to this definition">¶</a></dt>
 <dd><p>A generic Python module loader.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -785,9 +787,9 @@ parsed and imported. Returns <strong>None</strong> and logs error if import fail
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.all_from_module">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">all_from_module</code><span class="sig-paren">(</span><em class="sig-param">module</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#all_from_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.all_from_module" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">all_from_module</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">module</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#all_from_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.all_from_module" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return all global-level variables defined in a module.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -809,9 +811,9 @@ already imported module object (e.g. <strong>models</strong>)</p>
 <p>Ignores modules and variable names starting with an underscore.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.callables_from_module">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">callables_from_module</code><span class="sig-paren">(</span><em class="sig-param">module</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#callables_from_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.callables_from_module" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">callables_from_module</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">module</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#callables_from_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.callables_from_module" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return all global-level callables defined in a module.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -826,9 +828,9 @@ module object.</p>
 <p>Will ignore callables whose names start with underscore “_”.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.variable_from_module">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">variable_from_module</code><span class="sig-paren">(</span><em class="sig-param">module</em>, <em class="sig-param">variable=None</em>, <em class="sig-param">default=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#variable_from_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.variable_from_module" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">variable_from_module</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">module</span></em>, <em class="sig-param"><span class="n">variable</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#variable_from_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.variable_from_module" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve a variable or list of variables from a module. The
 variable(s) must be defined globally in the module. If no variable
 is given (or a list entry is <strong>None</strong>), all global variables are
@@ -852,9 +854,9 @@ are replaced by the <strong>default</strong> argument.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.string_from_module">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">string_from_module</code><span class="sig-paren">(</span><em class="sig-param">module</em>, <em class="sig-param">variable=None</em>, <em class="sig-param">default=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#string_from_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.string_from_module" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">string_from_module</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">module</span></em>, <em class="sig-param"><span class="n">variable</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#string_from_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.string_from_module" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is a wrapper for <strong>variable_from_module</strong> that requires return
 value to be a string to pass. It’s primarily used by login screen.</p>
 <dl class="field-list simple">
@@ -876,9 +878,9 @@ as the value not being a string) are replaced by the <strong>default</strong> ar
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.random_string_from_module">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">random_string_from_module</code><span class="sig-paren">(</span><em class="sig-param">module</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#random_string_from_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.random_string_from_module" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">random_string_from_module</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">module</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#random_string_from_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.random_string_from_module" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a random global string from a module.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -890,9 +892,9 @@ as the value not being a string) are replaced by the <strong>default</strong> ar
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.fuzzy_import_from_module">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">fuzzy_import_from_module</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">variable</em>, <em class="sig-param">default=None</em>, <em class="sig-param">defaultpaths=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#fuzzy_import_from_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.fuzzy_import_from_module" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">fuzzy_import_from_module</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">variable</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">defaultpaths</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#fuzzy_import_from_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.fuzzy_import_from_module" title="Permalink to this definition">¶</a></dt>
 <dd><p>Import a variable based on a fuzzy path. First the literal
 <strong>path</strong> will be tried, then all given <strong>defaultpaths</strong> will be
 prepended to see a match is found.</p>
@@ -918,9 +920,9 @@ importing directly from <strong>path</strong> doesn’t work.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.class_from_module">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">class_from_module</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">defaultpaths=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#class_from_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.class_from_module" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">class_from_module</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">defaultpaths</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#class_from_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.class_from_module" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a class from a module, given the module’s path. This is
 primarily used to convert db_typeclass_path:s to classes.</p>
 <dl class="field-list simple">
@@ -940,9 +942,9 @@ try subsequent imports by prepending those paths to <strong>path</strong>.</p></
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.object_from_module">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">object_from_module</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">defaultpaths=None</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.utils.object_from_module" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">object_from_module</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">defaultpaths</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.utils.object_from_module" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a class from a module, given the module’s path. This is
 primarily used to convert db_typeclass_path:s to classes.</p>
 <dl class="field-list simple">
@@ -962,15 +964,15 @@ try subsequent imports by prepending those paths to <strong>path</strong>.</p></
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.init_new_account">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">init_new_account</code><span class="sig-paren">(</span><em class="sig-param">account</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#init_new_account"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.init_new_account" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">init_new_account</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">account</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#init_new_account"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.init_new_account" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deprecated.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.string_similarity">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">string_similarity</code><span class="sig-paren">(</span><em class="sig-param">string1</em>, <em class="sig-param">string2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#string_similarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.string_similarity" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">string_similarity</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string1</span></em>, <em class="sig-param"><span class="n">string2</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#string_similarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.string_similarity" title="Permalink to this definition">¶</a></dt>
 <dd><p>This implements a “cosine-similarity” algorithm as described for example in
 <em>Proceedings of the 22nd International Conference on Computation
 Linguistics</em> (Coling 2008), pages 593-600, Manchester, August 2008.
@@ -994,9 +996,9 @@ The measure-vectors used is simply a “bag of words” type histogram
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.string_suggestions">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">string_suggestions</code><span class="sig-paren">(</span><em class="sig-param">string</em>, <em class="sig-param">vocabulary</em>, <em class="sig-param">cutoff=0.6</em>, <em class="sig-param">maxnum=3</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#string_suggestions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.string_suggestions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">string_suggestions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em>, <em class="sig-param"><span class="n">vocabulary</span></em>, <em class="sig-param"><span class="n">cutoff</span><span class="o">=</span><span class="default_value">0.6</span></em>, <em class="sig-param"><span class="n">maxnum</span><span class="o">=</span><span class="default_value">3</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#string_suggestions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.string_suggestions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a <strong>string</strong> and a <strong>vocabulary</strong>, return a match or a list of
 suggestions based on string similarity.</p>
 <dl class="field-list simple">
@@ -1017,9 +1019,9 @@ Could be empty if there are no matches.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.string_partial_matching">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">string_partial_matching</code><span class="sig-paren">(</span><em class="sig-param">alternatives</em>, <em class="sig-param">inp</em>, <em class="sig-param">ret_index=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#string_partial_matching"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.string_partial_matching" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">string_partial_matching</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">alternatives</span></em>, <em class="sig-param"><span class="n">inp</span></em>, <em class="sig-param"><span class="n">ret_index</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#string_partial_matching"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.string_partial_matching" title="Permalink to this definition">¶</a></dt>
 <dd><p>Partially matches a string based on a list of <strong>alternatives</strong>.
 Matching is made from the start of each subword in each
 alternative. Case is not important. So e.g. “bi sh sw” or just
@@ -1042,9 +1044,9 @@ array) instead of strings.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.format_table">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">format_table</code><span class="sig-paren">(</span><em class="sig-param">table</em>, <em class="sig-param">extra_space=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#format_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.format_table" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">format_table</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">table</span></em>, <em class="sig-param"><span class="n">extra_space</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#format_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.format_table" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format a 2D array of strings into a multi-column table.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1082,9 +1084,9 @@ unknown and must be calculated on the fly.</p>
 </div>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.percent">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">percent</code><span class="sig-paren">(</span><em class="sig-param">value</em>, <em class="sig-param">minval</em>, <em class="sig-param">maxval</em>, <em class="sig-param">formatting='{:3.1f}%'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#percent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.percent" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">percent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">minval</span></em>, <em class="sig-param"><span class="n">maxval</span></em>, <em class="sig-param"><span class="n">formatting</span><span class="o">=</span><span class="default_value">'{:3.1f}%'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#percent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.percent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a value in an interval as a percentage of its position
 in that interval. This also understands negative numbers.</p>
 <dl class="field-list simple">
@@ -1117,7 +1119,7 @@ boundary, so the result will be 0% or 100%, respectively.</p></li>
 </ul>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.percentile">
 <code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">percentile</code><span class="sig-paren">(</span><em class="sig-param">iterable</em>, <em class="sig-param">percent</em>, <em class="sig-param">key=&lt;function &lt;lambda&gt;&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#percentile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.percentile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the percentile of a list of values.</p>
@@ -1135,9 +1137,9 @@ boundary, so the result will be 0% or 100%, respectively.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.format_grid">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">format_grid</code><span class="sig-paren">(</span><em class="sig-param">elements</em>, <em class="sig-param">width=78</em>, <em class="sig-param">sep=' '</em>, <em class="sig-param">verbatim_elements=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#format_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.format_grid" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">format_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">elements</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">78</span></em>, <em class="sig-param"><span class="n">sep</span><span class="o">=</span><span class="default_value">' '</span></em>, <em class="sig-param"><span class="n">verbatim_elements</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#format_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.format_grid" title="Permalink to this definition">¶</a></dt>
 <dd><p>This helper function makes a ‘grid’ output, where it distributes the given
 string-elements as evenly as possible to fill out the given width.
 will not work well if the variation of length is very big!</p>
@@ -1164,7 +1166,7 @@ as horizontal bars.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.get_evennia_pids">
 <code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">get_evennia_pids</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#get_evennia_pids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.get_evennia_pids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the currently valid PIDs (Process IDs) of the Portal and
@@ -1188,9 +1190,9 @@ Server by trying to access a PID file.</p>
 </div>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.deepsize">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">deepsize</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">max_depth=4</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#deepsize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.deepsize" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">deepsize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">max_depth</span><span class="o">=</span><span class="default_value">4</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#deepsize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.deepsize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get not only size of the given object, but also the size of
 objects referenced by the object, down to <strong>max_depth</strong> distance
 from the object.</p>
@@ -1214,9 +1216,9 @@ tested to give reasonable size information about database models
 and their handlers.</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.utils.utils.lazy_property">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">lazy_property</code><span class="sig-paren">(</span><em class="sig-param">func</em>, <em class="sig-param">name=None</em>, <em class="sig-param">doc=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#lazy_property"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.lazy_property" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">lazy_property</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">doc</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#lazy_property"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.lazy_property" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Delays loading of property until first access. Credit goes to the
 Implementation in the werkzeug suite:
@@ -1232,17 +1234,17 @@ mainly used to lazy-load handlers:</p>
 </div></blockquote>
 <p>Once initialized, the <strong>AttributeHandler</strong> will be available as a
 property “attributes” on the object.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.utils.lazy_property.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">func</em>, <em class="sig-param">name=None</em>, <em class="sig-param">doc=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#lazy_property.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.lazy_property.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">doc</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#lazy_property.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.lazy_property.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Store all properties for now</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.strip_control_sequences">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">strip_control_sequences</code><span class="sig-paren">(</span><em class="sig-param">string</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#strip_control_sequences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.strip_control_sequences" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">strip_control_sequences</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#strip_control_sequences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.strip_control_sequences" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove non-print text sequences.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1255,9 +1257,9 @@ property “attributes” on the object.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.calledby">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">calledby</code><span class="sig-paren">(</span><em class="sig-param">callerdepth=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#calledby"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.calledby" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">calledby</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">callerdepth</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#calledby"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.calledby" title="Permalink to this definition">¶</a></dt>
 <dd><p>Only to be used for debug purposes. Insert this debug function in
 another function; it will print which function called it.</p>
 <dl class="field-list simple">
@@ -1276,9 +1278,9 @@ print the caller of the caller etc.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.m_len">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">m_len</code><span class="sig-paren">(</span><em class="sig-param">target</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#m_len"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.m_len" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">m_len</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#m_len"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.m_len" title="Permalink to this definition">¶</a></dt>
 <dd><p>Provides length checking for strings with MXP patterns, and falls
 back to normal len for other objects.</p>
 <dl class="field-list simple">
@@ -1292,9 +1294,9 @@ to search.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.display_len">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">display_len</code><span class="sig-paren">(</span><em class="sig-param">target</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#display_len"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.display_len" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">display_len</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#display_len"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.display_len" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the ‘visible width’ of text. This is not necessarily the same as the
 number of characters in the case of certain asian characters. This will also
 strip MXP patterns.</p>
@@ -1309,9 +1311,9 @@ measured keeping asian-character and MXP links in mind.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.at_search_result">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">at_search_result</code><span class="sig-paren">(</span><em class="sig-param">matches</em>, <em class="sig-param">caller</em>, <em class="sig-param">query=''</em>, <em class="sig-param">quiet=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#at_search_result"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.at_search_result" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">at_search_result</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">matches</span></em>, <em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">query</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">quiet</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#at_search_result"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.at_search_result" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is a generic hook for handling all processing of a search
 result, including error reporting. This is also called by the cmdhandler
 to manage errors in command lookup.</p>
@@ -1345,16 +1347,16 @@ checking multimatches for (e.g. Objects or Commands)</p>
 </dl>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.utils.utils.LimitedSizeOrderedDict">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">LimitedSizeOrderedDict</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#LimitedSizeOrderedDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.LimitedSizeOrderedDict" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">LimitedSizeOrderedDict</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#LimitedSizeOrderedDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.LimitedSizeOrderedDict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.OrderedDict</span></code></p>
 <p>This dictionary subclass is both ordered and limited to a maximum
 number of elements. Its main use is to hold a cache that can never
 grow out of bounds.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.utils.LimitedSizeOrderedDict.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#LimitedSizeOrderedDict.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.LimitedSizeOrderedDict.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#LimitedSizeOrderedDict.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.LimitedSizeOrderedDict.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Limited-size ordered dict.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
@@ -1369,7 +1371,7 @@ in FIFO order. If <strong>False</strong>, remove in FILO order.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.utils.LimitedSizeOrderedDict.update">
 <code class="sig-name descname">update</code><span class="sig-paren">(</span><span class="optional">[</span><em class="sig-param">E</em>, <span class="optional">]</span><em class="sig-param">**F</em><span class="sig-paren">)</span> &#x2192; None.  Update D from dict/iterable E and F.<a class="reference internal" href="../_modules/evennia/utils/utils.html#LimitedSizeOrderedDict.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.LimitedSizeOrderedDict.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>If E is present and has a .keys() method, then does:  for k in E: D[k] = E[k]
@@ -1379,7 +1381,7 @@ In either case, this is followed by: for k in F:  D[k] = F[k]</p>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.get_game_dir_path">
 <code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">get_game_dir_path</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#get_game_dir_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.get_game_dir_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is called by settings_default in order to determine the path
@@ -1391,9 +1393,9 @@ of the game directory.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.get_all_typeclasses">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">get_all_typeclasses</code><span class="sig-paren">(</span><em class="sig-param">parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#get_all_typeclasses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.get_all_typeclasses" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">get_all_typeclasses</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#get_all_typeclasses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.get_all_typeclasses" title="Permalink to this definition">¶</a></dt>
 <dd><p>List available typeclasses from all available modules.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1410,9 +1412,9 @@ from the TypedObject base (aka a Typeclass) so it will work fine with any custom
 classes being added.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.utils.interactive">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">interactive</code><span class="sig-paren">(</span><em class="sig-param">func</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#interactive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.interactive" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">interactive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#interactive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.interactive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decorator to make a method pausable with <strong>yield(seconds)</strong>
 and able to ask for user-input with <strong>response=yield(question)</strong>.
 For the question-asking to work, one of the args or kwargs to the
@@ -1447,6 +1449,7 @@ function has no arg or kwarg named ‘caller’.</p></li>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -1491,12 +1494,13 @@ function has no arg or kwarg named ‘caller’.</p></li>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.utils</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

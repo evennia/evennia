@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.commands.default.batchprocess &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.batchprocess</a></li> 
       </ul>
     </div>  
 
@@ -49,9 +51,9 @@ of python code (<a href="#id3"><span class="problematic" id="id4">*</span></a>.p
 much more power than Batch-command, but requires knowing Python and
 the Evennia API.  It is also a severe security risk and should
 therefore always be limited to superusers only.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.commands.default.batchprocess.CmdBatchCommands">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.batchprocess.</code><code class="sig-name descname">CmdBatchCommands</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdBatchCommands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCommands" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.batchprocess.</code><code class="sig-name descname">CmdBatchCommands</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdBatchCommands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCommands" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
 <p>build from batch-command file</p>
 <dl class="simple">
@@ -65,52 +67,52 @@ skipping, reloading etc.</p>
 </dd>
 </dl>
 <p>Runs batches of commands from a batch-cmd text file (<a href="#id5"><span class="problematic" id="id6">*</span></a>.ev).</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.default.batchprocess.CmdBatchCommands.key">
 <code class="sig-name descname">key</code><em class="property"> = 'batchcommands'</em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCommands.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.default.batchprocess.CmdBatchCommands.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = ['batchcommand', 'batchcmd']</em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCommands.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.default.batchprocess.CmdBatchCommands.switch_options">
 <code class="sig-name descname">switch_options</code><em class="property"> = ('interactive',)</em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCommands.switch_options" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.default.batchprocess.CmdBatchCommands.locks">
 <code class="sig-name descname">locks</code><em class="property"> = 'cmd:perm(batchcommands) or perm(Developer)'</em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCommands.locks" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.default.batchprocess.CmdBatchCommands.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCommands.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.batchprocess.CmdBatchCommands.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdBatchCommands.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCommands.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Starts the processor.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.default.batchprocess.CmdBatchCommands.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:perm(batchcommands) or perm(Developer)'</em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCommands.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.default.batchprocess.CmdBatchCommands.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'batchcommand batchcmd', 'category': 'building', 'key': 'batchcommands', 'tags': '', 'text': '\n    build from batch-command file\n\n    Usage:\n     batchcommands[/interactive] &lt;python.path.to.file&gt;\n\n    Switch:\n       interactive - this mode will offer more control when\n                     executing the batch file, like stepping,\n                     skipping, reloading etc.\n\n    Runs batches of commands from a batch-cmd text file (*.ev).\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCommands.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.commands.default.batchprocess.CmdBatchCode">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.batchprocess.</code><code class="sig-name descname">CmdBatchCode</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdBatchCode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCode" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.batchprocess.</code><code class="sig-name descname">CmdBatchCode</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdBatchCode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
 <p>build from batch-code file</p>
 <dl class="simple">
@@ -128,43 +130,43 @@ object copies behind when testing out the script.</p>
 </dd>
 </dl>
 <p>Runs batches of commands from a batch-code text file (<a href="#id7"><span class="problematic" id="id8">*</span></a>.py).</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.default.batchprocess.CmdBatchCode.key">
 <code class="sig-name descname">key</code><em class="property"> = 'batchcode'</em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCode.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.default.batchprocess.CmdBatchCode.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = ['batchcodes']</em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCode.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.default.batchprocess.CmdBatchCode.switch_options">
 <code class="sig-name descname">switch_options</code><em class="property"> = ('interactive', 'debug')</em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCode.switch_options" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.default.batchprocess.CmdBatchCode.locks">
 <code class="sig-name descname">locks</code><em class="property"> = 'cmd:superuser()'</em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCode.locks" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.default.batchprocess.CmdBatchCode.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'building'</em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCode.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.batchprocess.CmdBatchCode.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdBatchCode.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCode.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Starts the processor.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.default.batchprocess.CmdBatchCode.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:superuser()'</em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCode.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.default.batchprocess.CmdBatchCode.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'batchcodes', 'category': 'building', 'key': 'batchcode', 'tags': '', 'text': '\n    build from batch-code file\n\n    Usage:\n     batchcode[/interactive] &lt;python path to file&gt;\n\n    Switch:\n       interactive - this mode will offer more control when\n                     executing the batch file, like stepping,\n                     skipping, reloading etc.\n       debug - auto-delete all objects that has been marked as\n               deletable in the script file (see example files for\n               syntax). This is useful so as to to not leave multiple\n               object copies behind when testing out the script.\n\n    Runs batches of commands from a batch-code text file (*.py).\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCode.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -174,6 +176,7 @@ object copies behind when testing out the script.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -218,12 +221,13 @@ object copies behind when testing out the script.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.batchprocess</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

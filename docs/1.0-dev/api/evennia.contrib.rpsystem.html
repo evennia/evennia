@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.contrib.rpsystem &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.rpsystem</a></li> 
       </ul>
     </div>  
 
@@ -158,33 +160,33 @@ Import the <strong>ContribRPCharacter</strong> class:</p>
 </li>
 </ol>
 </div></blockquote>
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.contrib.rpsystem.EmoteError">
 <em class="property">exception </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">EmoteError</code><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#EmoteError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.EmoteError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.contrib.rpsystem.SdescError">
 <em class="property">exception </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">SdescError</code><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#SdescError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.SdescError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.contrib.rpsystem.RecogError">
 <em class="property">exception </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">RecogError</code><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#RecogError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.RecogError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.contrib.rpsystem.LanguageError">
 <em class="property">exception </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">LanguageError</code><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#LanguageError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.LanguageError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.contrib.rpsystem.ordered_permutation_regex">
-<code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">ordered_permutation_regex</code><span class="sig-paren">(</span><em class="sig-param">sentence</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#ordered_permutation_regex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.ordered_permutation_regex" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">ordered_permutation_regex</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sentence</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#ordered_permutation_regex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.ordered_permutation_regex" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds a regex that matches ‘ordered permutations’ of a sentence’s
 words.</p>
 <dl class="field-list simple">
@@ -212,9 +214,9 @@ We also add regex to make sure it also accepts num-specifiers,
 like /2-tall.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.contrib.rpsystem.regex_tuple_from_key_alias">
-<code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">regex_tuple_from_key_alias</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#regex_tuple_from_key_alias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.regex_tuple_from_key_alias" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">regex_tuple_from_key_alias</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#regex_tuple_from_key_alias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.regex_tuple_from_key_alias" title="Permalink to this definition">¶</a></dt>
 <dd><p>This will build a regex tuple for any object, not just from those
 with sdesc/recog handlers. It’s used as a legacy mechanism for
 being able to mix this contrib with objects not using sdescs, but
@@ -236,9 +238,9 @@ be used to build the tuple.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.contrib.rpsystem.parse_language">
-<code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">parse_language</code><span class="sig-paren">(</span><em class="sig-param">speaker</em>, <em class="sig-param">emote</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#parse_language"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.parse_language" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">parse_language</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">speaker</span></em>, <em class="sig-param"><span class="n">emote</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#parse_language"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.parse_language" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse the emote for language. This is
 used with a plugin for handling languages.</p>
 <dl class="field-list simple">
@@ -279,9 +281,9 @@ the language skill of the listener to determine how much
 information is actually conveyed.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.contrib.rpsystem.parse_sdescs_and_recogs">
-<code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">parse_sdescs_and_recogs</code><span class="sig-paren">(</span><em class="sig-param">sender</em>, <em class="sig-param">candidates</em>, <em class="sig-param">string</em>, <em class="sig-param">search_mode=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#parse_sdescs_and_recogs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.parse_sdescs_and_recogs" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">parse_sdescs_and_recogs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sender</span></em>, <em class="sig-param"><span class="n">candidates</span></em>, <em class="sig-param"><span class="n">string</span></em>, <em class="sig-param"><span class="n">search_mode</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#parse_sdescs_and_recogs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.parse_sdescs_and_recogs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read a raw emote and parse it into an intermediary
 format for distributing to all observers.</p>
 <dl class="field-list simple">
@@ -327,9 +329,9 @@ _PREFIX-tagged structures in the emote:
 - says, “…” are</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.contrib.rpsystem.send_emote">
-<code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">send_emote</code><span class="sig-paren">(</span><em class="sig-param">sender</em>, <em class="sig-param">receivers</em>, <em class="sig-param">emote</em>, <em class="sig-param">anonymous_add='first'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#send_emote"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.send_emote" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">send_emote</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sender</span></em>, <em class="sig-param"><span class="n">receivers</span></em>, <em class="sig-param"><span class="n">emote</span></em>, <em class="sig-param"><span class="n">anonymous_add</span><span class="o">=</span><span class="default_value">'first'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#send_emote"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.send_emote" title="Permalink to this definition">¶</a></dt>
 <dd><p>Main access function for distribute an emote.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -350,9 +352,9 @@ self-referencing in the emote, this will auto-add
 </dl>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.rpsystem.SdescHandler">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">SdescHandler</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#SdescHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.SdescHandler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">SdescHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#SdescHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.SdescHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This Handler wraps all operations with sdescs. We
 need to use this since we do a lot preparations on
@@ -363,9 +365,9 @@ efficient to search for and query.</p>
 <div><p>_sdesc   - a string
 _regex  - an empty dictionary</p>
 </div></blockquote>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.SdescHandler.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#SdescHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.SdescHandler.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#SdescHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.SdescHandler.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize the handler</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -374,9 +376,9 @@ _regex  - an empty dictionary</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.SdescHandler.add">
-<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param">sdesc</em>, <em class="sig-param">max_length=60</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#SdescHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.SdescHandler.add" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sdesc</span></em>, <em class="sig-param"><span class="n">max_length</span><span class="o">=</span><span class="default_value">60</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#SdescHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.SdescHandler.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a new sdesc to object, replacing the old one.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -398,14 +400,14 @@ of control sequences before setting.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.SdescHandler.get">
 <code class="sig-name descname">get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#SdescHandler.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.SdescHandler.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simple getter. The sdesc should never be allowed to
 be empty, but if it is we must fall back to the key.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.SdescHandler.get_regex_tuple">
 <code class="sig-name descname">get_regex_tuple</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#SdescHandler.get_regex_tuple"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.SdescHandler.get_regex_tuple" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return data for sdesc/recog handling</p>
@@ -418,9 +420,9 @@ be empty, but if it is we must fall back to the key.</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.rpsystem.RecogHandler">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">RecogHandler</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#RecogHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.RecogHandler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">RecogHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#RecogHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.RecogHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This handler manages the recognition mapping
 of an Object.</p>
@@ -431,9 +433,9 @@ the following names:</p>
 _recog_obj2recog
 _recog_obj2regex</p>
 </div></blockquote>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.RecogHandler.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#RecogHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.RecogHandler.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#RecogHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.RecogHandler.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize the handler</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -442,9 +444,9 @@ _recog_obj2regex</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.RecogHandler.add">
-<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">recog</em>, <em class="sig-param">max_length=60</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#RecogHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.RecogHandler.add" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">recog</span></em>, <em class="sig-param"><span class="n">max_length</span><span class="o">=</span><span class="default_value">60</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#RecogHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.RecogHandler.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Assign a custom recog (nick) to the given object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -467,9 +469,9 @@ than <strong>max_length</strong>.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.RecogHandler.get">
-<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#RecogHandler.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.RecogHandler.get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#RecogHandler.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.RecogHandler.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get recog replacement string, if one exists, otherwise
 get sdesc and as a last resort, the object’s key.</p>
 <dl class="field-list simple">
@@ -486,7 +488,7 @@ get sdesc and as a last resort, the object’s key.</p>
 mechanism. This is useful for adding masks/hoods etc.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.RecogHandler.all">
 <code class="sig-name descname">all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#RecogHandler.all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.RecogHandler.all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a mapping of the recogs stored in handler.</p>
@@ -497,9 +499,9 @@ mechanism. This is useful for adding masks/hoods etc.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.RecogHandler.remove">
-<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#RecogHandler.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.RecogHandler.remove" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#RecogHandler.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.RecogHandler.remove" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clear recog for a given object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -508,9 +510,9 @@ mechanism. This is useful for adding masks/hoods etc.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.RecogHandler.get_regex_tuple">
-<code class="sig-name descname">get_regex_tuple</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#RecogHandler.get_regex_tuple"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.RecogHandler.get_regex_tuple" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_regex_tuple</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#RecogHandler.get_regex_tuple"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.RecogHandler.get_regex_tuple" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><em>rec (tuple)</em> – Tuple (recog_regex, obj, recog)</p>
@@ -520,47 +522,47 @@ mechanism. This is useful for adding masks/hoods etc.</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.rpsystem.RPCommand">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">RPCommand</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#RPCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.RPCommand" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">RPCommand</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#RPCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.RPCommand" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
 <p>simple parent</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.RPCommand.parse">
 <code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#RPCommand.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.RPCommand.parse" title="Permalink to this definition">¶</a></dt>
 <dd><p>strip extra whitespace</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.RPCommand.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.rpsystem.RPCommand.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.RPCommand.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.rpsystem.RPCommand.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.RPCommand.key">
 <code class="sig-name descname">key</code><em class="property"> = 'command'</em><a class="headerlink" href="#evennia.contrib.rpsystem.RPCommand.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.RPCommand.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.rpsystem.RPCommand.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.RPCommand.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'command', 'tags': '', 'text': 'simple parent'}</em><a class="headerlink" href="#evennia.contrib.rpsystem.RPCommand.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.rpsystem.CmdEmote">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">CmdEmote</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#CmdEmote"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.CmdEmote" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">CmdEmote</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#CmdEmote"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.CmdEmote" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.contrib.rpsystem.RPCommand" title="evennia.contrib.rpsystem.RPCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpsystem.RPCommand</span></code></a></p>
 <p>Emote an action, allowing dynamic replacement of
 text in the emote.</p>
@@ -578,47 +580,47 @@ strings of objects in the same room. These will be translated to
 emotes to match each person seeing it. Use “…” for saying
 things and langcode”…” without spaces to say something in
 a different language.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdEmote.key">
 <code class="sig-name descname">key</code><em class="property"> = 'emote'</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdEmote.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdEmote.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = [':']</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdEmote.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdEmote.locks">
 <code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdEmote.locks" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.CmdEmote.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#CmdEmote.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.CmdEmote.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform the emote.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdEmote.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdEmote.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdEmote.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdEmote.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdEmote.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': ':', 'category': 'general', 'key': 'emote', 'tags': '', 'text': '\n    Emote an action, allowing dynamic replacement of\n    text in the emote.\n\n    Usage:\n      emote text\n\n    Example:\n      emote /me looks around.\n      emote With a flurry /me attacks /tall man with his sword.\n      emote &quot;Hello&quot;, /me says.\n\n    Describes an event in the world. This allows the use of /ref\n    markers to replace with the short descriptions or recognized\n    strings of objects in the same room. These will be translated to\n    emotes to match each person seeing it. Use &quot;...&quot; for saying\n    things and langcode&quot;...&quot; without spaces to say something in\n    a different language.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdEmote.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.rpsystem.CmdSay">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">CmdSay</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#CmdSay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSay" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">CmdSay</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#CmdSay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSay" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.contrib.rpsystem.RPCommand" title="evennia.contrib.rpsystem.RPCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpsystem.RPCommand</span></code></a></p>
 <p>speak as your character</p>
 <dl class="simple">
@@ -626,47 +628,47 @@ a different language.</p>
 </dd>
 </dl>
 <p>Talk to those in your current location.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdSay.key">
 <code class="sig-name descname">key</code><em class="property"> = 'say'</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSay.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdSay.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['&quot;', &quot;'&quot;]</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSay.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = [&quot;'&quot;, '&quot;']</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSay.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdSay.locks">
 <code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSay.locks" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.CmdSay.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#CmdSay.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSay.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run the say command</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdSay.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSay.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdSay.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSay.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdSay.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&quot; \'', 'category': 'general', 'key': 'say', 'tags': '', 'text': '\n    speak as your character\n\n    Usage:\n      say &lt;message&gt;\n\n    Talk to those in your current location.\n    '}</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSay.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '\' &quot;', 'category': 'general', 'key': 'say', 'tags': '', 'text': '\n    speak as your character\n\n    Usage:\n      say &lt;message&gt;\n\n    Talk to those in your current location.\n    '}</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSay.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.rpsystem.CmdSdesc">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">CmdSdesc</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#CmdSdesc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSdesc" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">CmdSdesc</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#CmdSdesc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSdesc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.contrib.rpsystem.RPCommand" title="evennia.contrib.rpsystem.RPCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpsystem.RPCommand</span></code></a></p>
 <p>Assign yourself a short description (sdesc).</p>
 <dl class="simple">
@@ -674,47 +676,47 @@ a different language.</p>
 </dd>
 </dl>
 <p>Assigns a short description to yourself.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdSdesc.key">
 <code class="sig-name descname">key</code><em class="property"> = 'sdesc'</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSdesc.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdSdesc.locks">
 <code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSdesc.locks" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.CmdSdesc.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#CmdSdesc.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSdesc.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Assign the sdesc</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdSdesc.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSdesc.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdSdesc.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSdesc.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdSdesc.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSdesc.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdSdesc.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'sdesc', 'tags': '', 'text': '\n    Assign yourself a short description (sdesc).\n\n    Usage:\n      sdesc &lt;short description&gt;\n\n    Assigns a short description to yourself.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdSdesc.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.rpsystem.CmdPose">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">CmdPose</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#CmdPose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.CmdPose" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">CmdPose</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#CmdPose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.CmdPose" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.contrib.rpsystem.RPCommand" title="evennia.contrib.rpsystem.RPCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpsystem.RPCommand</span></code></a></p>
 <p>Set a static pose</p>
 <dl class="simple">
@@ -736,48 +738,48 @@ automatically. The default pose is the pose you get when using
 pose reset. Note that you can use sdescs/recogs to reference
 people in your pose, but these always appear as that person’s
 sdesc in the emote, regardless of who is seeing it.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdPose.key">
 <code class="sig-name descname">key</code><em class="property"> = 'pose'</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdPose.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.CmdPose.parse">
 <code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#CmdPose.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.CmdPose.parse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extract the “default” alternative to the pose.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.CmdPose.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#CmdPose.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.CmdPose.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create the pose</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdPose.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdPose.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdPose.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdPose.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdPose.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdPose.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdPose.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'pose', 'tags': '', 'text': &quot;\n    Set a static pose\n\n    Usage:\n        pose &lt;pose&gt;\n        pose default &lt;pose&gt;\n        pose reset\n        pose obj = &lt;pose&gt;\n        pose default obj = &lt;pose&gt;\n        pose reset obj =\n\n    Examples:\n        pose leans against the tree\n        pose is talking to the barkeep.\n        pose box = is sitting on the floor.\n\n    Set a static pose. This is the end of a full sentence that starts\n    with your sdesc. If no full stop is given, it will be added\n    automatically. The default pose is the pose you get when using\n    pose reset. Note that you can use sdescs/recogs to reference\n    people in your pose, but these always appear as that person's\n    sdesc in the emote, regardless of who is seeing it.\n\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdPose.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.rpsystem.CmdRecog">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">CmdRecog</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#CmdRecog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.CmdRecog" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">CmdRecog</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#CmdRecog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.CmdRecog" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.contrib.rpsystem.RPCommand" title="evennia.contrib.rpsystem.RPCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpsystem.RPCommand</span></code></a></p>
 <p>Recognize another person in the same room.</p>
 <dl class="simple">
@@ -791,48 +793,48 @@ forget alias</p>
 forget griatch</p>
 <p>This will assign a personal alias for a person, or forget said alias.
 Using the command without arguments will list all current recogs.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdRecog.key">
 <code class="sig-name descname">key</code><em class="property"> = 'recog'</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdRecog.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdRecog.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = ['forget', 'recognize']</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdRecog.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.CmdRecog.parse">
 <code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#CmdRecog.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.CmdRecog.parse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse for the sdesc as alias structure</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.CmdRecog.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#CmdRecog.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.CmdRecog.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Assign the recog</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdRecog.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdRecog.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdRecog.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdRecog.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdRecog.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'forget recognize', 'category': 'general', 'key': 'recog', 'tags': '', 'text': '\n    Recognize another person in the same room.\n\n    Usage:\n      recog\n      recog sdesc as alias\n      forget alias\n\n    Example:\n        recog tall man as Griatch\n        forget griatch\n\n    This will assign a personal alias for a person, or forget said alias.\n    Using the command without arguments will list all current recogs.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdRecog.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.rpsystem.CmdMask">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">CmdMask</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#CmdMask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.CmdMask" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">CmdMask</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#CmdMask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.CmdMask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.contrib.rpsystem.RPCommand" title="evennia.contrib.rpsystem.RPCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpsystem.RPCommand</span></code></a></p>
 <p>Wear a mask</p>
 <dl class="simple">
@@ -843,17 +845,17 @@ unmask</p>
 <p>This will put on a mask to hide your identity. When wearing
 a mask, your sdesc will be replaced by the sdesc you pick and
 people’s recognitions of you will be disabled.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdMask.key">
 <code class="sig-name descname">key</code><em class="property"> = 'mask'</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdMask.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdMask.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = ['unmask']</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdMask.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.CmdMask.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#CmdMask.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.CmdMask.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is the actual executing part of the command.  It is
@@ -862,29 +864,29 @@ module for which object properties are available (beyond those
 set in self.parse())</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdMask.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdMask.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdMask.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdMask.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.CmdMask.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'unmask', 'category': 'general', 'key': 'mask', 'tags': '', 'text': &quot;\n    Wear a mask\n\n    Usage:\n        mask &lt;new sdesc&gt;\n        unmask\n\n    This will put on a mask to hide your identity. When wearing\n    a mask, your sdesc will be replaced by the sdesc you pick and\n    people's recognitions of you will be disabled.\n\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.rpsystem.CmdMask.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.rpsystem.RPSystemCmdSet">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">RPSystemCmdSet</code><span class="sig-paren">(</span><em class="sig-param">cmdsetobj=None</em>, <em class="sig-param">key=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#RPSystemCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.RPSystemCmdSet" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">RPSystemCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#RPSystemCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.RPSystemCmdSet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
 <p>Mix-in for adding rp-commands to default cmdset.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.RPSystemCmdSet.at_cmdset_creation">
 <code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#RPSystemCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.RPSystemCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hook method - this should be overloaded in the inheriting
@@ -892,28 +894,28 @@ class, and should take care of populating the cmdset by use of
 self.add().</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.RPSystemCmdSet.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.rpsystem.RPSystemCmdSet'</em><a class="headerlink" href="#evennia.contrib.rpsystem.RPSystemCmdSet.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.rpsystem.ContribRPObject">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">ContribRPObject</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#ContribRPObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPObject" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">ContribRPObject</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#ContribRPObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPObject" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject</span></code></a></p>
 <p>This class is meant as a mix-in or parent for objects in an
 rp-heavy game. It implements the base functionality for poses.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.ContribRPObject.at_object_creation">
 <code class="sig-name descname">at_object_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#ContribRPObject.at_object_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPObject.at_object_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called at initial creation.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.ContribRPObject.search">
-<code class="sig-name descname">search</code><span class="sig-paren">(</span><em class="sig-param">searchdata</em>, <em class="sig-param">global_search=False</em>, <em class="sig-param">use_nicks=True</em>, <em class="sig-param">typeclass=None</em>, <em class="sig-param">location=None</em>, <em class="sig-param">attribute_name=None</em>, <em class="sig-param">quiet=False</em>, <em class="sig-param">exact=False</em>, <em class="sig-param">candidates=None</em>, <em class="sig-param">nofound_string=None</em>, <em class="sig-param">multimatch_string=None</em>, <em class="sig-param">use_dbref=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#ContribRPObject.search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPObject.search" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">searchdata</span></em>, <em class="sig-param"><span class="n">global_search</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_nicks</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">location</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">attribute_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">quiet</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">candidates</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nofound_string</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">multimatch_string</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">use_dbref</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#ContribRPObject.search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPObject.search" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns an Object matching a search string/condition, taking
 sdescs into account.</p>
 <p>Perform a standard object search in the database, handling
@@ -993,9 +995,9 @@ error, return will be <strong>None</strong>). If <strong>quiet=True</strong>, th
 messaging is assumed to be handled by the caller.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.ContribRPObject.get_display_name">
-<code class="sig-name descname">get_display_name</code><span class="sig-paren">(</span><em class="sig-param">looker</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#ContribRPObject.get_display_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPObject.get_display_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_display_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">looker</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#ContribRPObject.get_display_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPObject.get_display_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Displays the name of the object in a viewer-aware manner.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1019,9 +1021,9 @@ said object.</p>
 <p>The RPObject version doesn’t add color to its display.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.ContribRPObject.return_appearance">
-<code class="sig-name descname">return_appearance</code><span class="sig-paren">(</span><em class="sig-param">looker</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#ContribRPObject.return_appearance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPObject.return_appearance" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">return_appearance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">looker</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#ContribRPObject.return_appearance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPObject.return_appearance" title="Permalink to this definition">¶</a></dt>
 <dd><p>This formats a description. It is the hook a ‘look’ command
 should call.</p>
 <dl class="field-list simple">
@@ -1031,77 +1033,77 @@ should call.</p>
 </dl>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.contrib.rpsystem.ContribRPObject.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPObject.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DoesNotExist</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.DoesNotExist" title="evennia.objects.objects.DefaultObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject.DoesNotExist</span></code></a></p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.contrib.rpsystem.ContribRPObject.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPObject.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.MultipleObjectsReturned</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.MultipleObjectsReturned" title="evennia.objects.objects.DefaultObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject.MultipleObjectsReturned</span></code></a></p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.ContribRPObject.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.rpsystem.ContribRPObject'</em><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPObject.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.ContribRPObject.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'ContribRPObject'</em><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPObject.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.rpsystem.ContribRPRoom">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">ContribRPRoom</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#ContribRPRoom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPRoom" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">ContribRPRoom</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#ContribRPRoom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPRoom" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.contrib.rpsystem.ContribRPObject" title="evennia.contrib.rpsystem.ContribRPObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpsystem.ContribRPObject</span></code></a></p>
 <p>Dummy inheritance for rooms.</p>
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.contrib.rpsystem.ContribRPRoom.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPRoom.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpsystem.DoesNotExist</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.rpsystem.ContribRPObject.DoesNotExist" title="evennia.contrib.rpsystem.ContribRPObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpsystem.ContribRPObject.DoesNotExist</span></code></a></p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.contrib.rpsystem.ContribRPRoom.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPRoom.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpsystem.MultipleObjectsReturned</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.rpsystem.ContribRPObject.MultipleObjectsReturned" title="evennia.contrib.rpsystem.ContribRPObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpsystem.ContribRPObject.MultipleObjectsReturned</span></code></a></p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.ContribRPRoom.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.rpsystem.ContribRPRoom'</em><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPRoom.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.ContribRPRoom.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'ContribRPRoom'</em><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPRoom.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.rpsystem.ContribRPCharacter">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">ContribRPCharacter</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#ContribRPCharacter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPCharacter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpsystem.</code><code class="sig-name descname">ContribRPCharacter</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#ContribRPCharacter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPCharacter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter" title="evennia.objects.objects.DefaultCharacter"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultCharacter</span></code></a>, <a class="reference internal" href="#evennia.contrib.rpsystem.ContribRPObject" title="evennia.contrib.rpsystem.ContribRPObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpsystem.ContribRPObject</span></code></a></p>
 <p>This is a character class that has poses, sdesc and recog.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.ContribRPCharacter.sdesc">
 <code class="sig-name descname">sdesc</code><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#ContribRPCharacter.sdesc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPCharacter.sdesc" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.ContribRPCharacter.recog">
 <code class="sig-name descname">recog</code><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#ContribRPCharacter.recog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPCharacter.recog" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.ContribRPCharacter.get_display_name">
-<code class="sig-name descname">get_display_name</code><span class="sig-paren">(</span><em class="sig-param">looker</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#ContribRPCharacter.get_display_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPCharacter.get_display_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_display_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">looker</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#ContribRPCharacter.get_display_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPCharacter.get_display_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Displays the name of the object in a viewer-aware manner.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1126,15 +1128,15 @@ said object.</p>
 characters stand out from other objects.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.ContribRPCharacter.at_object_creation">
 <code class="sig-name descname">at_object_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#ContribRPCharacter.at_object_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPCharacter.at_object_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called at initial creation.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.ContribRPCharacter.at_before_say">
-<code class="sig-name descname">at_before_say</code><span class="sig-paren">(</span><em class="sig-param">message</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#ContribRPCharacter.at_before_say"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPCharacter.at_before_say" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_before_say</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#ContribRPCharacter.at_before_say"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPCharacter.at_before_say" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called before the object says or whispers anything, return modified message.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1146,9 +1148,9 @@ characters stand out from other objects.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.ContribRPCharacter.process_sdesc">
-<code class="sig-name descname">process_sdesc</code><span class="sig-paren">(</span><em class="sig-param">sdesc</em>, <em class="sig-param">obj</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#ContribRPCharacter.process_sdesc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPCharacter.process_sdesc" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">process_sdesc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sdesc</span></em>, <em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#ContribRPCharacter.process_sdesc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPCharacter.process_sdesc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Allows to customize how your sdesc is displayed (primarily by
 changing colors).</p>
 <dl class="field-list simple">
@@ -1172,9 +1174,9 @@ This is not used by default.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.ContribRPCharacter.process_recog">
-<code class="sig-name descname">process_recog</code><span class="sig-paren">(</span><em class="sig-param">recog</em>, <em class="sig-param">obj</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#ContribRPCharacter.process_recog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPCharacter.process_recog" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">process_recog</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">recog</span></em>, <em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#ContribRPCharacter.process_recog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPCharacter.process_recog" title="Permalink to this definition">¶</a></dt>
 <dd><p>Allows to customize how a recog string is displayed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1191,9 +1193,9 @@ This is not used by default.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rpsystem.ContribRPCharacter.process_language">
-<code class="sig-name descname">process_language</code><span class="sig-paren">(</span><em class="sig-param">text</em>, <em class="sig-param">speaker</em>, <em class="sig-param">language</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#ContribRPCharacter.process_language"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPCharacter.process_language" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">process_language</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em>, <em class="sig-param"><span class="n">speaker</span></em>, <em class="sig-param"><span class="n">language</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpsystem.html#ContribRPCharacter.process_language"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPCharacter.process_language" title="Permalink to this definition">¶</a></dt>
 <dd><p>Allows to process the spoken text, for example
 by obfuscating language based on your and the
 speaker’s language skills. Also a good place to
@@ -1216,24 +1218,24 @@ such as the <strong>obfuscate_language</strong> or <strong>obfuscate_whisper</st
 the evennia.contrib.rplanguage module.</p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.contrib.rpsystem.ContribRPCharacter.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPCharacter.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DoesNotExist</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpsystem.DoesNotExist</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.DoesNotExist" title="evennia.objects.objects.DefaultCharacter.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultCharacter.DoesNotExist</span></code></a>, <a class="reference internal" href="#evennia.contrib.rpsystem.ContribRPObject.DoesNotExist" title="evennia.contrib.rpsystem.ContribRPObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpsystem.ContribRPObject.DoesNotExist</span></code></a></p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.contrib.rpsystem.ContribRPCharacter.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPCharacter.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.MultipleObjectsReturned</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpsystem.MultipleObjectsReturned</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.MultipleObjectsReturned" title="evennia.objects.objects.DefaultCharacter.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultCharacter.MultipleObjectsReturned</span></code></a>, <a class="reference internal" href="#evennia.contrib.rpsystem.ContribRPObject.MultipleObjectsReturned" title="evennia.contrib.rpsystem.ContribRPObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpsystem.ContribRPObject.MultipleObjectsReturned</span></code></a></p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.ContribRPCharacter.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.rpsystem.ContribRPCharacter'</em><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPCharacter.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rpsystem.ContribRPCharacter.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'ContribRPCharacter'</em><a class="headerlink" href="#evennia.contrib.rpsystem.ContribRPCharacter.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -1243,6 +1245,7 @@ the evennia.contrib.rplanguage module.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -1287,12 +1290,13 @@ the evennia.contrib.rplanguage module.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.rpsystem</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

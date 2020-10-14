@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.contrib.tutorial_world.intro_menu &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorial_world.intro_menu</a></li> 
       </ul>
     </div>  
 
@@ -43,34 +45,34 @@ EvMenu menu-templating system.</p>
 <p>EvMenu templating is a way to create a menu using a string-format instead
 of creating all nodes manually. Of course, for full functionality one must
 still create the goto-callbacks.</p>
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.contrib.tutorial_world.intro_menu.do_nothing">
-<code class="sig-prename descclassname">evennia.contrib.tutorial_world.intro_menu.</code><code class="sig-name descname">do_nothing</code><span class="sig-paren">(</span><em class="sig-param">caller</em>, <em class="sig-param">raw_string</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/intro_menu.html#do_nothing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.do_nothing" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.tutorial_world.intro_menu.</code><code class="sig-name descname">do_nothing</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">raw_string</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/intro_menu.html#do_nothing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.do_nothing" title="Permalink to this definition">¶</a></dt>
 <dd><p>Re-runs the current node</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.contrib.tutorial_world.intro_menu.send_testing_tagged">
-<code class="sig-prename descclassname">evennia.contrib.tutorial_world.intro_menu.</code><code class="sig-name descname">send_testing_tagged</code><span class="sig-paren">(</span><em class="sig-param">caller</em>, <em class="sig-param">raw_string</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/intro_menu.html#send_testing_tagged"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.send_testing_tagged" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.tutorial_world.intro_menu.</code><code class="sig-name descname">send_testing_tagged</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">raw_string</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/intro_menu.html#send_testing_tagged"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.send_testing_tagged" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test to send a message to a pane tagged with ‘testing’ in the webclient.</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.tutorial_world.intro_menu.DemoCommandSetHelp">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_world.intro_menu.</code><code class="sig-name descname">DemoCommandSetHelp</code><span class="sig-paren">(</span><em class="sig-param">cmdsetobj=None</em>, <em class="sig-param">key=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/intro_menu.html#DemoCommandSetHelp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.DemoCommandSetHelp" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_world.intro_menu.</code><code class="sig-name descname">DemoCommandSetHelp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/intro_menu.html#DemoCommandSetHelp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.DemoCommandSetHelp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
 <p>Demo the help command</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.tutorial_world.intro_menu.DemoCommandSetHelp.key">
 <code class="sig-name descname">key</code><em class="property"> = 'Help Demo Set'</em><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.DemoCommandSetHelp.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.tutorial_world.intro_menu.DemoCommandSetHelp.priority">
 <code class="sig-name descname">priority</code><em class="property"> = 2</em><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.DemoCommandSetHelp.priority" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.tutorial_world.intro_menu.DemoCommandSetHelp.at_cmdset_creation">
 <code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/intro_menu.html#DemoCommandSetHelp.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.DemoCommandSetHelp.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hook method - this should be overloaded in the inheriting
@@ -78,45 +80,45 @@ class, and should take care of populating the cmdset by use of
 self.add().</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.tutorial_world.intro_menu.DemoCommandSetHelp.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorial_world.intro_menu.DemoCommandSetHelp'</em><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.DemoCommandSetHelp.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.contrib.tutorial_world.intro_menu.goto_command_demo_help">
-<code class="sig-prename descclassname">evennia.contrib.tutorial_world.intro_menu.</code><code class="sig-name descname">goto_command_demo_help</code><span class="sig-paren">(</span><em class="sig-param">caller</em>, <em class="sig-param">raw_string</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/intro_menu.html#goto_command_demo_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.goto_command_demo_help" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.tutorial_world.intro_menu.</code><code class="sig-name descname">goto_command_demo_help</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">raw_string</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/intro_menu.html#goto_command_demo_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.goto_command_demo_help" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets things up before going to the help-demo node</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.tutorial_world.intro_menu.DemoCommandSetComms">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_world.intro_menu.</code><code class="sig-name descname">DemoCommandSetComms</code><span class="sig-paren">(</span><em class="sig-param">cmdsetobj=None</em>, <em class="sig-param">key=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/intro_menu.html#DemoCommandSetComms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.DemoCommandSetComms" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_world.intro_menu.</code><code class="sig-name descname">DemoCommandSetComms</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/intro_menu.html#DemoCommandSetComms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.DemoCommandSetComms" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
 <p>Demo communications</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.tutorial_world.intro_menu.DemoCommandSetComms.key">
 <code class="sig-name descname">key</code><em class="property"> = 'Color Demo Set'</em><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.DemoCommandSetComms.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.tutorial_world.intro_menu.DemoCommandSetComms.priority">
 <code class="sig-name descname">priority</code><em class="property"> = 2</em><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.DemoCommandSetComms.priority" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.tutorial_world.intro_menu.DemoCommandSetComms.no_exits">
 <code class="sig-name descname">no_exits</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.DemoCommandSetComms.no_exits" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.tutorial_world.intro_menu.DemoCommandSetComms.no_objs">
 <code class="sig-name descname">no_objs</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.DemoCommandSetComms.no_objs" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.tutorial_world.intro_menu.DemoCommandSetComms.at_cmdset_creation">
 <code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/intro_menu.html#DemoCommandSetComms.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.DemoCommandSetComms.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hook method - this should be overloaded in the inheriting
@@ -124,45 +126,45 @@ class, and should take care of populating the cmdset by use of
 self.add().</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.tutorial_world.intro_menu.DemoCommandSetComms.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorial_world.intro_menu.DemoCommandSetComms'</em><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.DemoCommandSetComms.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.contrib.tutorial_world.intro_menu.goto_command_demo_comms">
-<code class="sig-prename descclassname">evennia.contrib.tutorial_world.intro_menu.</code><code class="sig-name descname">goto_command_demo_comms</code><span class="sig-paren">(</span><em class="sig-param">caller</em>, <em class="sig-param">raw_string</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/intro_menu.html#goto_command_demo_comms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.goto_command_demo_comms" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.tutorial_world.intro_menu.</code><code class="sig-name descname">goto_command_demo_comms</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">raw_string</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/intro_menu.html#goto_command_demo_comms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.goto_command_demo_comms" title="Permalink to this definition">¶</a></dt>
 <dd><p>Setup and go to the color demo node.</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.tutorial_world.intro_menu.DemoCommandSetRoom">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_world.intro_menu.</code><code class="sig-name descname">DemoCommandSetRoom</code><span class="sig-paren">(</span><em class="sig-param">cmdsetobj=None</em>, <em class="sig-param">key=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/intro_menu.html#DemoCommandSetRoom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.DemoCommandSetRoom" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_world.intro_menu.</code><code class="sig-name descname">DemoCommandSetRoom</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/intro_menu.html#DemoCommandSetRoom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.DemoCommandSetRoom" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
 <p>Demo some general in-game commands command.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.tutorial_world.intro_menu.DemoCommandSetRoom.key">
 <code class="sig-name descname">key</code><em class="property"> = 'Room Demo Set'</em><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.DemoCommandSetRoom.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.tutorial_world.intro_menu.DemoCommandSetRoom.priority">
 <code class="sig-name descname">priority</code><em class="property"> = 2</em><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.DemoCommandSetRoom.priority" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.tutorial_world.intro_menu.DemoCommandSetRoom.no_exits">
 <code class="sig-name descname">no_exits</code><em class="property"> = False</em><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.DemoCommandSetRoom.no_exits" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.tutorial_world.intro_menu.DemoCommandSetRoom.no_objs">
 <code class="sig-name descname">no_objs</code><em class="property"> = False</em><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.DemoCommandSetRoom.no_objs" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.tutorial_world.intro_menu.DemoCommandSetRoom.at_cmdset_creation">
 <code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/intro_menu.html#DemoCommandSetRoom.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.DemoCommandSetRoom.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hook method - this should be overloaded in the inheriting
@@ -170,40 +172,40 @@ class, and should take care of populating the cmdset by use of
 self.add().</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.tutorial_world.intro_menu.DemoCommandSetRoom.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorial_world.intro_menu.DemoCommandSetRoom'</em><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.DemoCommandSetRoom.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.contrib.tutorial_world.intro_menu.goto_command_demo_room">
-<code class="sig-prename descclassname">evennia.contrib.tutorial_world.intro_menu.</code><code class="sig-name descname">goto_command_demo_room</code><span class="sig-paren">(</span><em class="sig-param">caller</em>, <em class="sig-param">raw_string</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/intro_menu.html#goto_command_demo_room"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.goto_command_demo_room" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.tutorial_world.intro_menu.</code><code class="sig-name descname">goto_command_demo_room</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">raw_string</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/intro_menu.html#goto_command_demo_room"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.goto_command_demo_room" title="Permalink to this definition">¶</a></dt>
 <dd><p>Setup and go to the demo-room node. Generates a little 2-room environment
 for testing out some commands.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.contrib.tutorial_world.intro_menu.goto_cleanup_cmdsets">
-<code class="sig-prename descclassname">evennia.contrib.tutorial_world.intro_menu.</code><code class="sig-name descname">goto_cleanup_cmdsets</code><span class="sig-paren">(</span><em class="sig-param">caller</em>, <em class="sig-param">raw_strings</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/intro_menu.html#goto_cleanup_cmdsets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.goto_cleanup_cmdsets" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.tutorial_world.intro_menu.</code><code class="sig-name descname">goto_cleanup_cmdsets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">raw_strings</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/intro_menu.html#goto_cleanup_cmdsets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.goto_cleanup_cmdsets" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cleanup all cmdsets.</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.tutorial_world.intro_menu.TutorialEvMenu">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_world.intro_menu.</code><code class="sig-name descname">TutorialEvMenu</code><span class="sig-paren">(</span><em class="sig-param">caller</em>, <em class="sig-param">menudata</em>, <em class="sig-param">startnode='start'</em>, <em class="sig-param">cmdset_mergetype='Replace'</em>, <em class="sig-param">cmdset_priority=1</em>, <em class="sig-param">auto_quit=True</em>, <em class="sig-param">auto_look=True</em>, <em class="sig-param">auto_help=True</em>, <em class="sig-param">cmd_on_exit='look'</em>, <em class="sig-param">persistent=False</em>, <em class="sig-param">startnode_input=''</em>, <em class="sig-param">session=None</em>, <em class="sig-param">debug=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/intro_menu.html#TutorialEvMenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.TutorialEvMenu" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorial_world.intro_menu.</code><code class="sig-name descname">TutorialEvMenu</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">menudata</span></em>, <em class="sig-param"><span class="n">startnode</span><span class="o">=</span><span class="default_value">'start'</span></em>, <em class="sig-param"><span class="n">cmdset_mergetype</span><span class="o">=</span><span class="default_value">'Replace'</span></em>, <em class="sig-param"><span class="n">cmdset_priority</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">auto_quit</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">auto_look</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">auto_help</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">cmd_on_exit</span><span class="o">=</span><span class="default_value">'look'</span></em>, <em class="sig-param"><span class="n">persistent</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">startnode_input</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/intro_menu.html#TutorialEvMenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.TutorialEvMenu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu" title="evennia.utils.evmenu.EvMenu"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.evmenu.EvMenu</span></code></a></p>
 <p>Custom EvMenu for displaying the intro-menu</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.tutorial_world.intro_menu.TutorialEvMenu.close_menu">
 <code class="sig-name descname">close_menu</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/intro_menu.html#TutorialEvMenu.close_menu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.TutorialEvMenu.close_menu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Custom cleanup actions when closing menu</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.tutorial_world.intro_menu.TutorialEvMenu.options_formatter">
-<code class="sig-name descname">options_formatter</code><span class="sig-paren">(</span><em class="sig-param">optionslist</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/intro_menu.html#TutorialEvMenu.options_formatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.TutorialEvMenu.options_formatter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">options_formatter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">optionslist</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/intro_menu.html#TutorialEvMenu.options_formatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.TutorialEvMenu.options_formatter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Formats the option block.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -221,15 +223,16 @@ option related to this node.</p></li>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.contrib.tutorial_world.intro_menu.init_menu">
-<code class="sig-prename descclassname">evennia.contrib.tutorial_world.intro_menu.</code><code class="sig-name descname">init_menu</code><span class="sig-paren">(</span><em class="sig-param">caller</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/intro_menu.html#init_menu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.init_menu" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.tutorial_world.intro_menu.</code><code class="sig-name descname">init_menu</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorial_world/intro_menu.html#init_menu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorial_world.intro_menu.init_menu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call to initialize the menu.</p>
 </dd></dl>
 
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -257,7 +260,7 @@ option related to this node.</p></li>
    </div>
 <h3>Versions</h3>
 <ul>
-  <li><a href="../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../1.0-dev/api/evennia.contrib.tutorial_world.intro_menu.html">1.0-dev (develop branch)</a></li>
   <li><a href="evennia.contrib.tutorial_world.intro_menu.html">0.9.5 (master branch)</a></li>
 </ul>
 
@@ -274,12 +277,13 @@ option related to this node.</p></li>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorial_world.intro_menu</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

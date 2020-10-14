@@ -6,8 +6,7 @@ evennia.server.profiling
    :undoc-members:
    :show-inheritance:
 
-Modules
--------
+
 
 .. toctree::
    :maxdepth: 6

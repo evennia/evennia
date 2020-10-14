@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.utils.gametime &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.gametime</a></li> 
       </ul>
     </div>  
 
@@ -40,48 +42,48 @@
 <p>It also supplies some useful methods to convert between
 in-mud time and real-world time as well allows to get the
 total runtime of the server and the current uptime.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.utils.gametime.TimeScript">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.gametime.</code><code class="sig-name descname">TimeScript</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/gametime.html#TimeScript"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.gametime.TimeScript" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.gametime.</code><code class="sig-name descname">TimeScript</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/gametime.html#TimeScript"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.gametime.TimeScript" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript" title="evennia.scripts.scripts.DefaultScript"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript</span></code></a></p>
 <p>Gametime-sensitive script.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.gametime.TimeScript.at_script_creation">
 <code class="sig-name descname">at_script_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/gametime.html#TimeScript.at_script_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.gametime.TimeScript.at_script_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>The script is created.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.gametime.TimeScript.at_repeat">
 <code class="sig-name descname">at_repeat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/gametime.html#TimeScript.at_repeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.gametime.TimeScript.at_repeat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call the callback and reset interval.</p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.utils.gametime.TimeScript.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.utils.gametime.TimeScript.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DoesNotExist</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.DoesNotExist" title="evennia.scripts.scripts.DefaultScript.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.DoesNotExist</span></code></a></p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.utils.gametime.TimeScript.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.utils.gametime.TimeScript.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.MultipleObjectsReturned</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned" title="evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned</span></code></a></p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.utils.gametime.TimeScript.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.utils.gametime.TimeScript'</em><a class="headerlink" href="#evennia.utils.gametime.TimeScript.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.utils.gametime.TimeScript.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'TimeScript'</em><a class="headerlink" href="#evennia.utils.gametime.TimeScript.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.gametime.runtime">
 <code class="sig-prename descclassname">evennia.utils.gametime.</code><code class="sig-name descname">runtime</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/gametime.html#runtime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.gametime.runtime" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the total runtime of the server since first start (minus
@@ -101,13 +103,13 @@ downtimes)</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.gametime.server_epoch">
 <code class="sig-prename descclassname">evennia.utils.gametime.</code><code class="sig-name descname">server_epoch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/gametime.html#server_epoch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.gametime.server_epoch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the server epoch. We may need to calculate this on the fly.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.gametime.uptime">
 <code class="sig-prename descclassname">evennia.utils.gametime.</code><code class="sig-name descname">uptime</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/gametime.html#uptime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.gametime.uptime" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the current uptime of the server since last reload</p>
@@ -126,7 +128,7 @@ downtimes)</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.gametime.portal_uptime">
 <code class="sig-prename descclassname">evennia.utils.gametime.</code><code class="sig-name descname">portal_uptime</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/gametime.html#portal_uptime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.gametime.portal_uptime" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the current uptime of the portal.</p>
@@ -137,15 +139,15 @@ downtimes)</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.gametime.game_epoch">
 <code class="sig-prename descclassname">evennia.utils.gametime.</code><code class="sig-name descname">game_epoch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/gametime.html#game_epoch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.gametime.game_epoch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the game epoch.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.gametime.gametime">
-<code class="sig-prename descclassname">evennia.utils.gametime.</code><code class="sig-name descname">gametime</code><span class="sig-paren">(</span><em class="sig-param">absolute=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/gametime.html#gametime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.gametime.gametime" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.gametime.</code><code class="sig-name descname">gametime</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">absolute</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/gametime.html#gametime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.gametime.gametime" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the total gametime of the server since first start (minus downtimes)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -163,9 +165,9 @@ return to a date using Python’s standard <strong>datetime</strong> module like
 <strong>datetime.datetime.fromtimestamp(gametime(absolute=True))</strong></p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.gametime.real_seconds_until">
-<code class="sig-prename descclassname">evennia.utils.gametime.</code><code class="sig-name descname">real_seconds_until</code><span class="sig-paren">(</span><em class="sig-param">sec=None</em>, <em class="sig-param">min=None</em>, <em class="sig-param">hour=None</em>, <em class="sig-param">day=None</em>, <em class="sig-param">month=None</em>, <em class="sig-param">year=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/gametime.html#real_seconds_until"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.gametime.real_seconds_until" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.gametime.</code><code class="sig-name descname">real_seconds_until</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sec</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">min</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">hour</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">day</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">month</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">year</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/gametime.html#real_seconds_until"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.gametime.real_seconds_until" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the real seconds until game time.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -189,9 +191,9 @@ the number of seconds until it’s 5:10, then this function should
 return 300 (5 minutes).</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.gametime.schedule">
-<code class="sig-prename descclassname">evennia.utils.gametime.</code><code class="sig-name descname">schedule</code><span class="sig-paren">(</span><em class="sig-param">callback</em>, <em class="sig-param">repeat=False</em>, <em class="sig-param">sec=None</em>, <em class="sig-param">min=None</em>, <em class="sig-param">hour=None</em>, <em class="sig-param">day=None</em>, <em class="sig-param">month=None</em>, <em class="sig-param">year=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/gametime.html#schedule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.gametime.schedule" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.gametime.</code><code class="sig-name descname">schedule</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">callback</span></em>, <em class="sig-param"><span class="n">repeat</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">sec</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">min</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">hour</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">day</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">month</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">year</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/gametime.html#schedule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.gametime.schedule" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call a callback at a given in-game time.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -218,7 +220,7 @@ at the specified time.</p></li>
 schedule(func, hour=2, min=30, sec=0) # Will call the next (in-game) day at 02:30.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.gametime.reset_gametime">
 <code class="sig-prename descclassname">evennia.utils.gametime.</code><code class="sig-name descname">reset_gametime</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/gametime.html#reset_gametime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.gametime.reset_gametime" title="Permalink to this definition">¶</a></dt>
 <dd><p>Resets the game time to make it start from the current time. Note that
@@ -228,6 +230,7 @@ the epoch set by <strong>settings.TIME_GAME_EPOCH</strong> will still apply.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -272,12 +275,13 @@ the epoch set by <strong>settings.TIME_GAME_EPOCH</strong> will still apply.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.gametime</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

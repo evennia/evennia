@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.contrib.rplanguage &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.rplanguage</a></li> 
       </ul>
     </div>  
 
@@ -119,21 +121,21 @@ create fixed translations for according to the grammatical rules.
 This allows to quickly build a large corpus of translated words
 that never change (if this is desired).</p>
 </div></blockquote>
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.contrib.rplanguage.LanguageError">
 <em class="property">exception </em><code class="sig-prename descclassname">evennia.contrib.rplanguage.</code><code class="sig-name descname">LanguageError</code><a class="reference internal" href="../_modules/evennia/contrib/rplanguage.html#LanguageError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rplanguage.LanguageError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.contrib.rplanguage.LanguageExistsError">
 <em class="property">exception </em><code class="sig-prename descclassname">evennia.contrib.rplanguage.</code><code class="sig-name descname">LanguageExistsError</code><a class="reference internal" href="../_modules/evennia/contrib/rplanguage.html#LanguageExistsError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rplanguage.LanguageExistsError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.contrib.rplanguage.LanguageError" title="evennia.contrib.rplanguage.LanguageError"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rplanguage.LanguageError</span></code></a></p>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.rplanguage.LanguageHandler">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rplanguage.</code><code class="sig-name descname">LanguageHandler</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rplanguage.html#LanguageHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rplanguage.LanguageHandler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rplanguage.</code><code class="sig-name descname">LanguageHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rplanguage.html#LanguageHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rplanguage.LanguageHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript" title="evennia.scripts.scripts.DefaultScript"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript</span></code></a></p>
 <p>This is a storage class that should usually not be created on its
 own. It’s automatically created by a call to <strong>obfuscate_language</strong>
@@ -155,15 +157,15 @@ created this way.</p>
 <p>This nonsense language will partially replace the actual spoken
 language when so desired (usually because the speaker/listener
 don’t know the language well enough).</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rplanguage.LanguageHandler.at_script_creation">
 <code class="sig-name descname">at_script_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rplanguage.html#LanguageHandler.at_script_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rplanguage.LanguageHandler.at_script_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when script is first started</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rplanguage.LanguageHandler.add">
-<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param">key='default'</em>, <em class="sig-param">phonemes='ea oh ae aa eh ah ao aw ai er ey ow ia ih iy oy ua uh uw a e i u y p b t d f v t dh s z sh zh ch jh k ng g m n l r w'</em>, <em class="sig-param">grammar='v cv vc cvv vcc vcv cvcc vccv cvccv cvcvcc cvccvcv vccvccvc cvcvccvv cvcvcvcvv'</em>, <em class="sig-param">word_length_variance=0</em>, <em class="sig-param">noun_translate=False</em>, <em class="sig-param">noun_prefix=''</em>, <em class="sig-param">noun_postfix=''</em>, <em class="sig-param">vowels='eaoiuy'</em>, <em class="sig-param">manual_translations=None</em>, <em class="sig-param">auto_translations=None</em>, <em class="sig-param">force=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rplanguage.html#LanguageHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rplanguage.LanguageHandler.add" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">phonemes</span><span class="o">=</span><span class="default_value">'ea oh ae aa eh ah ao aw ai er ey ow ia ih iy oy ua uh uw a e i u y p b t d f v t dh s z sh zh ch jh k ng g m n l r w'</span></em>, <em class="sig-param"><span class="n">grammar</span><span class="o">=</span><span class="default_value">'v cv vc cvv vcc vcv cvcc vccv cvccv cvcvcc cvccvcv vccvccvc cvcvccvv cvcvcvcvv'</span></em>, <em class="sig-param"><span class="n">word_length_variance</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">noun_translate</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">noun_prefix</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">noun_postfix</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">vowels</span><span class="o">=</span><span class="default_value">'eaoiuy'</span></em>, <em class="sig-param"><span class="n">manual_translations</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">auto_translations</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">force</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rplanguage.html#LanguageHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rplanguage.LanguageHandler.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a new language. Note that you generally only need to do
 this once per language and that adding an existing language
 will re-initialize all the random components to new permanent
@@ -227,9 +229,9 @@ tend to produce the same “translation” (mostly) with the
 same input sentence.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.rplanguage.LanguageHandler.translate">
-<code class="sig-name descname">translate</code><span class="sig-paren">(</span><em class="sig-param">text</em>, <em class="sig-param">level=0.0</em>, <em class="sig-param">language='default'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rplanguage.html#LanguageHandler.translate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rplanguage.LanguageHandler.translate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">translate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">language</span><span class="o">=</span><span class="default_value">'default'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rplanguage.html#LanguageHandler.translate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rplanguage.LanguageHandler.translate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Translate the text according to the given level.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -248,33 +250,33 @@ same input sentence.</p>
 </dl>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.contrib.rplanguage.LanguageHandler.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.rplanguage.LanguageHandler.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DoesNotExist</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.DoesNotExist" title="evennia.scripts.scripts.DefaultScript.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.DoesNotExist</span></code></a></p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.contrib.rplanguage.LanguageHandler.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.rplanguage.LanguageHandler.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.MultipleObjectsReturned</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned" title="evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned</span></code></a></p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rplanguage.LanguageHandler.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.rplanguage.LanguageHandler'</em><a class="headerlink" href="#evennia.contrib.rplanguage.LanguageHandler.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.rplanguage.LanguageHandler.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'LanguageHandler'</em><a class="headerlink" href="#evennia.contrib.rplanguage.LanguageHandler.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.contrib.rplanguage.obfuscate_language">
-<code class="sig-prename descclassname">evennia.contrib.rplanguage.</code><code class="sig-name descname">obfuscate_language</code><span class="sig-paren">(</span><em class="sig-param">text</em>, <em class="sig-param">level=0.0</em>, <em class="sig-param">language='default'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rplanguage.html#obfuscate_language"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rplanguage.obfuscate_language" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.rplanguage.</code><code class="sig-name descname">obfuscate_language</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">language</span><span class="o">=</span><span class="default_value">'default'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rplanguage.html#obfuscate_language"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rplanguage.obfuscate_language" title="Permalink to this definition">¶</a></dt>
 <dd><p>Main access method for the language parser.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -294,14 +296,14 @@ the system understands.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.contrib.rplanguage.add_language">
-<code class="sig-prename descclassname">evennia.contrib.rplanguage.</code><code class="sig-name descname">add_language</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rplanguage.html#add_language"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rplanguage.add_language" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.rplanguage.</code><code class="sig-name descname">add_language</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rplanguage.html#add_language"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rplanguage.add_language" title="Permalink to this definition">¶</a></dt>
 <dd><p>Access function to creating a new language. See the docstring of
 <strong>LanguageHandler.add</strong> for list of keyword arguments.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.contrib.rplanguage.available_languages">
 <code class="sig-prename descclassname">evennia.contrib.rplanguage.</code><code class="sig-name descname">available_languages</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rplanguage.html#available_languages"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rplanguage.available_languages" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns all available language keys.</p>
@@ -313,9 +315,9 @@ languages.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.contrib.rplanguage.obfuscate_whisper">
-<code class="sig-prename descclassname">evennia.contrib.rplanguage.</code><code class="sig-name descname">obfuscate_whisper</code><span class="sig-paren">(</span><em class="sig-param">whisper</em>, <em class="sig-param">level=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rplanguage.html#obfuscate_whisper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rplanguage.obfuscate_whisper" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.rplanguage.</code><code class="sig-name descname">obfuscate_whisper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">whisper</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rplanguage.html#obfuscate_whisper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rplanguage.obfuscate_whisper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Obfuscate whisper depending on a pre-calculated level
 (that may depend on distance, listening skill etc)</p>
 <dl class="field-list simple">
@@ -334,6 +336,7 @@ means fully obscured.</p></li>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -378,12 +381,13 @@ means fully obscured.</p></li>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.rplanguage</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

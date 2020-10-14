@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.server.portal.rss &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.rss</a></li> 
       </ul>
     </div>  
 
@@ -39,14 +41,14 @@
 <p>RSS parser for Evennia</p>
 <p>This connects an RSS feed to an in-game Evennia channel, sending messages
 to the channel whenever the feed updates.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.server.portal.rss.RSSReader">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.rss.</code><code class="sig-name descname">RSSReader</code><span class="sig-paren">(</span><em class="sig-param">factory</em>, <em class="sig-param">url</em>, <em class="sig-param">rate</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/rss.html#RSSReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.rss.RSSReader" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.rss.</code><code class="sig-name descname">RSSReader</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">factory</span></em>, <em class="sig-param"><span class="n">url</span></em>, <em class="sig-param"><span class="n">rate</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/rss.html#RSSReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.rss.RSSReader" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.server.session.Session</span></code></a></p>
 <p>A simple RSS reader using the feedparser module.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.rss.RSSReader.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">factory</em>, <em class="sig-param">url</em>, <em class="sig-param">rate</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/rss.html#RSSReader.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.rss.RSSReader.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">factory</span></em>, <em class="sig-param"><span class="n">url</span></em>, <em class="sig-param"><span class="n">rate</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/rss.html#RSSReader.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.rss.RSSReader.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize the reader.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -59,15 +61,15 @@ to the channel whenever the feed updates.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.rss.RSSReader.get_new">
 <code class="sig-name descname">get_new</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/rss.html#RSSReader.get_new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.rss.RSSReader.get_new" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns list of new items.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.rss.RSSReader.disconnect">
-<code class="sig-name descname">disconnect</code><span class="sig-paren">(</span><em class="sig-param">reason=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/rss.html#RSSReader.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.rss.RSSReader.disconnect" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">disconnect</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reason</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/rss.html#RSSReader.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.rss.RSSReader.disconnect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Disconnect from feed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -76,9 +78,9 @@ to the channel whenever the feed updates.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.rss.RSSReader.data_in">
-<code class="sig-name descname">data_in</code><span class="sig-paren">(</span><em class="sig-param">text=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/rss.html#RSSReader.data_in"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.rss.RSSReader.data_in" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">data_in</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/rss.html#RSSReader.data_in"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.rss.RSSReader.data_in" title="Permalink to this definition">¶</a></dt>
 <dd><p>Data RSS -&gt; Evennia.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
@@ -90,9 +92,9 @@ to the channel whenever the feed updates.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.rss.RSSReader.update">
-<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param">init=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/rss.html#RSSReader.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.rss.RSSReader.update" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">init</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/rss.html#RSSReader.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.rss.RSSReader.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request the latest version of feed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -107,14 +109,14 @@ on slow connections.</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.server.portal.rss.RSSBotFactory">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.rss.</code><code class="sig-name descname">RSSBotFactory</code><span class="sig-paren">(</span><em class="sig-param">sessionhandler</em>, <em class="sig-param">uid=None</em>, <em class="sig-param">url=None</em>, <em class="sig-param">rate=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/rss.html#RSSBotFactory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.rss.RSSBotFactory" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.rss.</code><code class="sig-name descname">RSSBotFactory</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sessionhandler</span></em>, <em class="sig-param"><span class="n">uid</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">url</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rate</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/rss.html#RSSBotFactory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.rss.RSSBotFactory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Initializes new bots.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.rss.RSSBotFactory.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">sessionhandler</em>, <em class="sig-param">uid=None</em>, <em class="sig-param">url=None</em>, <em class="sig-param">rate=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/rss.html#RSSBotFactory.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.rss.RSSBotFactory.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sessionhandler</span></em>, <em class="sig-param"><span class="n">uid</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">url</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rate</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/rss.html#RSSBotFactory.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.rss.RSSBotFactory.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize the bot.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -128,7 +130,7 @@ on slow connections.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.rss.RSSBotFactory.start">
 <code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/rss.html#RSSBotFactory.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.rss.RSSBotFactory.start" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called by portalsessionhandler. Starts the bot.</p>
@@ -139,6 +141,7 @@ on slow connections.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -183,12 +186,13 @@ on slow connections.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.rss</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

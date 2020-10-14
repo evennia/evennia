@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.contrib.ingame_python.scripts &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.ingame_python.scripts</a></li> 
       </ul>
     </div>  
 
@@ -37,22 +39,22 @@
   <div class="section" id="module-evennia.contrib.ingame_python.scripts">
 <span id="evennia-contrib-ingame-python-scripts"></span><h1>evennia.contrib.ingame_python.scripts<a class="headerlink" href="#module-evennia.contrib.ingame_python.scripts" title="Permalink to this headline">¶</a></h1>
 <p>Scripts for the in-game Python system.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.ingame_python.scripts.EventHandler">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.ingame_python.scripts.</code><code class="sig-name descname">EventHandler</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#EventHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.ingame_python.scripts.</code><code class="sig-name descname">EventHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#EventHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript" title="evennia.scripts.scripts.DefaultScript"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript</span></code></a></p>
 <p>The event handler that contains all events in a global script.</p>
 <p>This script shouldn’t be created more than once.  It contains
 event (in a non-persistent attribute) and callbacks (in a
 persistent attribute).  The script method would help adding,
 editing and deleting these events and callbacks.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.scripts.EventHandler.at_script_creation">
 <code class="sig-name descname">at_script_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#EventHandler.at_script_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler.at_script_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hook called when the script is created.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.scripts.EventHandler.at_start">
 <code class="sig-name descname">at_start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#EventHandler.at_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler.at_start" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set up the event system when starting.</p>
@@ -68,9 +70,9 @@ tasks:</p>
 </ul>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.scripts.EventHandler.get_events">
-<code class="sig-name descname">get_events</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#EventHandler.get_events"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler.get_events" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_events</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#EventHandler.get_events"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler.get_events" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a dictionary of events on this object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -89,9 +91,9 @@ connected object.  This is useful to get the global list
 of events for a typeclass that has no object yet.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.scripts.EventHandler.get_variable">
-<code class="sig-name descname">get_variable</code><span class="sig-paren">(</span><em class="sig-param">variable_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#EventHandler.get_variable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler.get_variable" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_variable</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">variable_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#EventHandler.get_variable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler.get_variable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the variable defined in the locals.</p>
 <p>This can be very useful to check the value of a variable that can be modified in an event, and whose value will be used in code.  This system allows additional customization.</p>
 <dl class="field-list simple">
@@ -115,9 +117,9 @@ mean the same thing.</p>
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.scripts.EventHandler.get_callbacks">
-<code class="sig-name descname">get_callbacks</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#EventHandler.get_callbacks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler.get_callbacks" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_callbacks</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#EventHandler.get_callbacks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler.get_callbacks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a dictionary of the object’s callbacks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -134,9 +136,9 @@ when several objects would share callbacks.</p>
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.scripts.EventHandler.add_callback">
-<code class="sig-name descname">add_callback</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">callback_name</em>, <em class="sig-param">code</em>, <em class="sig-param">author=None</em>, <em class="sig-param">valid=False</em>, <em class="sig-param">parameters=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#EventHandler.add_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler.add_callback" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_callback</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">callback_name</span></em>, <em class="sig-param"><span class="n">code</span></em>, <em class="sig-param"><span class="n">author</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">valid</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">parameters</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#EventHandler.add_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler.add_callback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add the specified callback.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -156,9 +158,9 @@ when several objects would share callbacks.</p>
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.scripts.EventHandler.edit_callback">
-<code class="sig-name descname">edit_callback</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">callback_name</em>, <em class="sig-param">number</em>, <em class="sig-param">code</em>, <em class="sig-param">author=None</em>, <em class="sig-param">valid=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#EventHandler.edit_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler.edit_callback" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">edit_callback</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">callback_name</span></em>, <em class="sig-param"><span class="n">number</span></em>, <em class="sig-param"><span class="n">code</span></em>, <em class="sig-param"><span class="n">author</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">valid</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#EventHandler.edit_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler.edit_callback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Edit the specified callback.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -181,9 +183,9 @@ when several objects would share callbacks.</p>
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.scripts.EventHandler.del_callback">
-<code class="sig-name descname">del_callback</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">callback_name</em>, <em class="sig-param">number</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#EventHandler.del_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler.del_callback" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">del_callback</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">callback_name</span></em>, <em class="sig-param"><span class="n">number</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#EventHandler.del_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler.del_callback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete the specified callback.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -199,9 +201,9 @@ when several objects would share callbacks.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.scripts.EventHandler.accept_callback">
-<code class="sig-name descname">accept_callback</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">callback_name</em>, <em class="sig-param">number</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#EventHandler.accept_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler.accept_callback" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">accept_callback</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">callback_name</span></em>, <em class="sig-param"><span class="n">number</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#EventHandler.accept_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler.accept_callback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Valid a callback.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -214,9 +216,9 @@ when several objects would share callbacks.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.scripts.EventHandler.call">
-<code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">callback_name</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#EventHandler.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler.call" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">callback_name</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#EventHandler.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler.call" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call the connected callbacks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -240,9 +242,9 @@ False otherwise.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.scripts.EventHandler.handle_error">
-<code class="sig-name descname">handle_error</code><span class="sig-paren">(</span><em class="sig-param">callback</em>, <em class="sig-param">trace</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#EventHandler.handle_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler.handle_error" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">handle_error</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">callback</span></em>, <em class="sig-param"><span class="n">trace</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#EventHandler.handle_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler.handle_error" title="Permalink to this definition">¶</a></dt>
 <dd><p>Handle an error in a callback.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -259,9 +261,9 @@ the character who last updated the callback, if connected.
 If not, display to the everror channel.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.scripts.EventHandler.add_event">
-<code class="sig-name descname">add_event</code><span class="sig-paren">(</span><em class="sig-param">typeclass</em>, <em class="sig-param">name</em>, <em class="sig-param">variables</em>, <em class="sig-param">help_text</em>, <em class="sig-param">custom_call</em>, <em class="sig-param">custom_add</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#EventHandler.add_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler.add_event" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_event</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">typeclass</span></em>, <em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">variables</span></em>, <em class="sig-param"><span class="n">help_text</span></em>, <em class="sig-param"><span class="n">custom_call</span></em>, <em class="sig-param"><span class="n">custom_add</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#EventHandler.add_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler.add_event" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a new event for a defined typeclass.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -279,9 +281,9 @@ a callback is added.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.scripts.EventHandler.set_task">
-<code class="sig-name descname">set_task</code><span class="sig-paren">(</span><em class="sig-param">seconds</em>, <em class="sig-param">obj</em>, <em class="sig-param">callback_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#EventHandler.set_task"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler.set_task" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seconds</span></em>, <em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">callback_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#EventHandler.set_task"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler.set_task" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set and schedule a task to run.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -304,42 +306,42 @@ class methods, objects inside an instance and so on will
 not be kept in the locals dictionary.</p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.contrib.ingame_python.scripts.EventHandler.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DoesNotExist</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.DoesNotExist" title="evennia.scripts.scripts.DefaultScript.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.DoesNotExist</span></code></a></p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.contrib.ingame_python.scripts.EventHandler.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.MultipleObjectsReturned</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned" title="evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned</span></code></a></p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.ingame_python.scripts.EventHandler.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.ingame_python.scripts.EventHandler'</em><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.ingame_python.scripts.EventHandler.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'EventHandler'</em><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.EventHandler.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.ingame_python.scripts.TimeEventScript">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.ingame_python.scripts.</code><code class="sig-name descname">TimeEventScript</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#TimeEventScript"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.TimeEventScript" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.ingame_python.scripts.</code><code class="sig-name descname">TimeEventScript</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#TimeEventScript"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.TimeEventScript" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript" title="evennia.scripts.scripts.DefaultScript"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript</span></code></a></p>
 <p>Gametime-sensitive script.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.scripts.TimeEventScript.at_script_creation">
 <code class="sig-name descname">at_script_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#TimeEventScript.at_script_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.TimeEventScript.at_script_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>The script is created.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.ingame_python.scripts.TimeEventScript.at_repeat">
 <code class="sig-name descname">at_repeat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#TimeEventScript.at_repeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.TimeEventScript.at_repeat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call the event and reset interval.</p>
@@ -353,33 +355,33 @@ to restart more than once, and a script that is reloaded should
 restart only twice.</p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.contrib.ingame_python.scripts.TimeEventScript.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.TimeEventScript.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DoesNotExist</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.DoesNotExist" title="evennia.scripts.scripts.DefaultScript.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.DoesNotExist</span></code></a></p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.contrib.ingame_python.scripts.TimeEventScript.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.TimeEventScript.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.MultipleObjectsReturned</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned" title="evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned</span></code></a></p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.ingame_python.scripts.TimeEventScript.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.ingame_python.scripts.TimeEventScript'</em><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.TimeEventScript.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.ingame_python.scripts.TimeEventScript.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'TimeEventScript'</em><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.TimeEventScript.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.contrib.ingame_python.scripts.complete_task">
-<code class="sig-prename descclassname">evennia.contrib.ingame_python.scripts.</code><code class="sig-name descname">complete_task</code><span class="sig-paren">(</span><em class="sig-param">task_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#complete_task"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.complete_task" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.ingame_python.scripts.</code><code class="sig-name descname">complete_task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/ingame_python/scripts.html#complete_task"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.ingame_python.scripts.complete_task" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mark the task in the event handler as complete.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -395,6 +397,7 @@ restart only twice.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -439,12 +442,13 @@ restart only twice.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.ingame_python.scripts</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

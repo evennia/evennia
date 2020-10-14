@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.typeclasses.managers &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.typeclasses.managers</a></li> 
       </ul>
     </div>  
 
@@ -39,14 +41,14 @@
 <p>This implements the common managers that are used by the
 abstract models in dbobjects.py (and which are thus shared by
 all Attributes and TypedObjects).</p>
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.typeclasses.managers.TypedObjectManager">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.typeclasses.managers.</code><code class="sig-name descname">TypedObjectManager</code><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.typeclasses.managers.</code><code class="sig-name descname">TypedObjectManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.utils.idmapper.manager.html#evennia.utils.idmapper.manager.SharedMemoryManager" title="evennia.utils.idmapper.manager.SharedMemoryManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.idmapper.manager.SharedMemoryManager</span></code></a></p>
 <p>Common ObjectManager for all dbobjects.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.typeclasses.managers.TypedObjectManager.get_attribute">
-<code class="sig-name descname">get_attribute</code><span class="sig-paren">(</span><em class="sig-param">key=None</em>, <em class="sig-param">category=None</em>, <em class="sig-param">value=None</em>, <em class="sig-param">strvalue=None</em>, <em class="sig-param">obj=None</em>, <em class="sig-param">attrtype=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.get_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.get_attribute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">value</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">strvalue</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">attrtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.get_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.get_attribute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return Attribute objects by key, by category, by value, by strvalue, by
 object (it is stored on) or with a combination of those criteria.</p>
 <dl class="field-list simple">
@@ -76,9 +78,9 @@ By default this is either <strong>None</strong> (normal Attributes) or
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.typeclasses.managers.TypedObjectManager.get_nick">
-<code class="sig-name descname">get_nick</code><span class="sig-paren">(</span><em class="sig-param">key=None</em>, <em class="sig-param">category=None</em>, <em class="sig-param">value=None</em>, <em class="sig-param">strvalue=None</em>, <em class="sig-param">obj=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.get_nick"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.get_nick" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_nick</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">value</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">strvalue</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.get_nick"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.get_nick" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a nick, in parallel to <strong>get_attribute</strong>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -100,9 +102,9 @@ keyword and will take precedence if given.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.typeclasses.managers.TypedObjectManager.get_by_attribute">
-<code class="sig-name descname">get_by_attribute</code><span class="sig-paren">(</span><em class="sig-param">key=None</em>, <em class="sig-param">category=None</em>, <em class="sig-param">value=None</em>, <em class="sig-param">strvalue=None</em>, <em class="sig-param">attrtype=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.get_by_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.get_by_attribute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_by_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">value</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">strvalue</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">attrtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.get_by_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.get_by_attribute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return objects having attributes with the given key, category,
 value, strvalue or combination of those criteria.</p>
 <dl class="field-list simple">
@@ -131,9 +133,9 @@ By default this is either <strong>None</strong> (normal Attributes) or
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.typeclasses.managers.TypedObjectManager.get_by_nick">
-<code class="sig-name descname">get_by_nick</code><span class="sig-paren">(</span><em class="sig-param">key=None</em>, <em class="sig-param">nick=None</em>, <em class="sig-param">category='inputline'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.get_by_nick"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.get_by_nick" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_by_nick</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nick</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">'inputline'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.get_by_nick"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.get_by_nick" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get object based on its key or nick.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -150,9 +152,9 @@ to search for.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.typeclasses.managers.TypedObjectManager.get_tag">
-<code class="sig-name descname">get_tag</code><span class="sig-paren">(</span><em class="sig-param">key=None</em>, <em class="sig-param">category=None</em>, <em class="sig-param">obj=None</em>, <em class="sig-param">tagtype=None</em>, <em class="sig-param">global_search=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.get_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.get_tag" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_tag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tagtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">global_search</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.get_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.get_tag" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return Tag objects by key, by category, by object (it is
 stored on) or with a combination of those criteria.</p>
 <dl class="field-list simple">
@@ -175,9 +177,9 @@ not just tags on this object</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.typeclasses.managers.TypedObjectManager.get_permission">
-<code class="sig-name descname">get_permission</code><span class="sig-paren">(</span><em class="sig-param">key=None</em>, <em class="sig-param">category=None</em>, <em class="sig-param">obj=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.get_permission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.get_permission" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_permission</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.get_permission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.get_permission" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a permission from the database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -193,9 +195,9 @@ not just tags on this object</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.typeclasses.managers.TypedObjectManager.get_alias">
-<code class="sig-name descname">get_alias</code><span class="sig-paren">(</span><em class="sig-param">key=None</em>, <em class="sig-param">category=None</em>, <em class="sig-param">obj=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.get_alias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.get_alias" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_alias</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.get_alias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.get_alias" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get an alias from the database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -211,9 +213,9 @@ not just tags on this object</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.typeclasses.managers.TypedObjectManager.get_by_tag">
-<code class="sig-name descname">get_by_tag</code><span class="sig-paren">(</span><em class="sig-param">key=None</em>, <em class="sig-param">category=None</em>, <em class="sig-param">tagtype=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.get_by_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.get_by_tag" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_by_tag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tagtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.get_by_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.get_by_tag" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return objects having tags with a given key or category or combination of the two.
 Also accepts multiple tags/category/tagtype</p>
 <dl class="field-list simple">
@@ -247,9 +249,9 @@ than <strong>key</strong>.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.typeclasses.managers.TypedObjectManager.get_by_permission">
-<code class="sig-name descname">get_by_permission</code><span class="sig-paren">(</span><em class="sig-param">key=None</em>, <em class="sig-param">category=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.get_by_permission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.get_by_permission" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_by_permission</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.get_by_permission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.get_by_permission" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return objects having permissions with a given key or category or
 combination of the two.</p>
 <dl class="field-list simple">
@@ -265,9 +267,9 @@ combination of the two.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.typeclasses.managers.TypedObjectManager.get_by_alias">
-<code class="sig-name descname">get_by_alias</code><span class="sig-paren">(</span><em class="sig-param">key=None</em>, <em class="sig-param">category=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.get_by_alias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.get_by_alias" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_by_alias</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.get_by_alias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.get_by_alias" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return objects having aliases with a given key or category or
 combination of the two.</p>
 <dl class="field-list simple">
@@ -283,9 +285,9 @@ combination of the two.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.typeclasses.managers.TypedObjectManager.create_tag">
-<code class="sig-name descname">create_tag</code><span class="sig-paren">(</span><em class="sig-param">key=None</em>, <em class="sig-param">category=None</em>, <em class="sig-param">data=None</em>, <em class="sig-param">tagtype=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.create_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.create_tag" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">create_tag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tagtype</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.create_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.create_tag" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new Tag of the base type associated with this
 object.  This makes sure to create case-insensitive tags.
 If the exact same tag configuration (key+category+tagtype+dbmodel)
@@ -311,9 +313,9 @@ information about the tag (like a help text), not to carry
 any information about the tagged objects themselves.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.typeclasses.managers.TypedObjectManager.dbref">
-<code class="sig-name descname">dbref</code><span class="sig-paren">(</span><em class="sig-param">dbref</em>, <em class="sig-param">reqhash=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.dbref"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.dbref" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">dbref</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dbref</span></em>, <em class="sig-param"><span class="n">reqhash</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.dbref"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.dbref" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determing if input is a valid dbref.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -332,9 +334,9 @@ to be considered a valid hash.</p></li>
 either a string ‘#N’ or an integer N.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.typeclasses.managers.TypedObjectManager.get_id">
-<code class="sig-name descname">get_id</code><span class="sig-paren">(</span><em class="sig-param">dbref</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.get_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.get_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dbref</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.get_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.get_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find object with given dbref.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -346,9 +348,9 @@ either a string ‘#N’ or an integer N.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.typeclasses.managers.TypedObjectManager.dbref_search">
-<code class="sig-name descname">dbref_search</code><span class="sig-paren">(</span><em class="sig-param">dbref</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.dbref_search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.dbref_search" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">dbref_search</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dbref</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.dbref_search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.dbref_search" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias to get_id.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -360,9 +362,9 @@ either a string ‘#N’ or an integer N.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.typeclasses.managers.TypedObjectManager.get_dbref_range">
-<code class="sig-name descname">get_dbref_range</code><span class="sig-paren">(</span><em class="sig-param">min_dbref=None</em>, <em class="sig-param">max_dbref=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.get_dbref_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.get_dbref_range" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_dbref_range</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">min_dbref</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">max_dbref</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.get_dbref_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.get_dbref_range" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get objects within a certain range of dbrefs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -382,9 +384,9 @@ either a string ‘#N’ or an integer N.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.typeclasses.managers.TypedObjectManager.get_typeclass_totals">
-<code class="sig-name descname">get_typeclass_totals</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span> &#x2192; object<a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.get_typeclass_totals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.get_typeclass_totals" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_typeclass_totals</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; object<a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.get_typeclass_totals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.get_typeclass_totals" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a queryset of typeclass composition statistics.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -399,7 +401,7 @@ the percentage of objects associated with the typeclass.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.typeclasses.managers.TypedObjectManager.object_totals">
 <code class="sig-name descname">object_totals</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.object_totals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.object_totals" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get info about database statistics.</p>
@@ -417,9 +419,9 @@ object having that typeclass set on themselves).</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.typeclasses.managers.TypedObjectManager.typeclass_search">
-<code class="sig-name descname">typeclass_search</code><span class="sig-paren">(</span><em class="sig-param">typeclass</em>, <em class="sig-param">include_children=False</em>, <em class="sig-param">include_parents=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.typeclass_search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.typeclass_search" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">typeclass_search</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">typeclass</span></em>, <em class="sig-param"><span class="n">include_children</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">include_parents</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/managers.html#TypedObjectManager.typeclass_search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.managers.TypedObjectManager.typeclass_search" title="Permalink to this definition">¶</a></dt>
 <dd><p>Searches through all objects returning those which has a
 certain typeclass. If location is set, limit search to objects
 in that location.</p>
@@ -446,6 +448,7 @@ Mutually exclusive to <strong>include_children</strong>.</p></li>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -490,12 +493,13 @@ Mutually exclusive to <strong>include_children</strong>.</p></li>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.typeclasses.managers</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.prototypes.prototypes &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.prototypes.prototypes</a></li> 
       </ul>
     </div>  
 
@@ -38,22 +40,22 @@
 <span id="evennia-prototypes-prototypes"></span><h1>evennia.prototypes.prototypes<a class="headerlink" href="#module-evennia.prototypes.prototypes" title="Permalink to this headline">¶</a></h1>
 <p>Handling storage of prototypes, both database-based ones (DBPrototypes) and those defined in modules
 (Read-only prototypes). Also contains utility functions, formatters and manager functions.</p>
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.prototypes.prototypes.PermissionError">
 <em class="property">exception </em><code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">PermissionError</code><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#PermissionError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.PermissionError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.prototypes.prototypes.ValidationError">
 <em class="property">exception </em><code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">ValidationError</code><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#ValidationError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.ValidationError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></p>
 <p>Raised on prototype validation errors</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.prototypes.prototypes.homogenize_prototype">
-<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">homogenize_prototype</code><span class="sig-paren">(</span><em class="sig-param">prototype</em>, <em class="sig-param">custom_keys=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#homogenize_prototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.homogenize_prototype" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">homogenize_prototype</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prototype</span></em>, <em class="sig-param"><span class="n">custom_keys</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#homogenize_prototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.homogenize_prototype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Homogenize the more free-form prototype supported pre Evennia 0.7 into the stricter form.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -74,50 +76,50 @@ the default reserved keys.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.prototypes.prototypes.DbPrototype">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">DbPrototype</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#DbPrototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.DbPrototype" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">DbPrototype</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#DbPrototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.DbPrototype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript" title="evennia.scripts.scripts.DefaultScript"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript</span></code></a></p>
 <p>This stores a single prototype, in an Attribute <strong>prototype</strong>.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.prototypes.prototypes.DbPrototype.at_script_creation">
 <code class="sig-name descname">at_script_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#DbPrototype.at_script_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.DbPrototype.at_script_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Only called once, when script is first created.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.prototypes.prototypes.DbPrototype.prototype">
 <em class="property">property </em><code class="sig-name descname">prototype</code><a class="headerlink" href="#evennia.prototypes.prototypes.DbPrototype.prototype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make sure to decouple from db!</p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.prototypes.prototypes.DbPrototype.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.prototypes.prototypes.DbPrototype.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DoesNotExist</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.DoesNotExist" title="evennia.scripts.scripts.DefaultScript.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.DoesNotExist</span></code></a></p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.prototypes.prototypes.DbPrototype.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.prototypes.prototypes.DbPrototype.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.MultipleObjectsReturned</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned" title="evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned</span></code></a></p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.prototypes.prototypes.DbPrototype.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.prototypes.prototypes.DbPrototype'</em><a class="headerlink" href="#evennia.prototypes.prototypes.DbPrototype.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.prototypes.prototypes.DbPrototype.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'DbPrototype'</em><a class="headerlink" href="#evennia.prototypes.prototypes.DbPrototype.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.prototypes.prototypes.save_prototype">
-<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">save_prototype</code><span class="sig-paren">(</span><em class="sig-param">prototype</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#save_prototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.save_prototype" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">save_prototype</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prototype</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#save_prototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.save_prototype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create/Store a prototype persistently.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -138,9 +140,9 @@ is expected to have valid permissions.</p>
 </div>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.prototypes.prototypes.create_prototype">
-<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">create_prototype</code><span class="sig-paren">(</span><em class="sig-param">prototype</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.prototypes.prototypes.create_prototype" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">create_prototype</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prototype</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.prototypes.prototypes.create_prototype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create/Store a prototype persistently.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -161,9 +163,9 @@ is expected to have valid permissions.</p>
 </div>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.prototypes.prototypes.delete_prototype">
-<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">delete_prototype</code><span class="sig-paren">(</span><em class="sig-param">prototype_key</em>, <em class="sig-param">caller=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#delete_prototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.delete_prototype" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">delete_prototype</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prototype_key</span></em>, <em class="sig-param"><span class="n">caller</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#delete_prototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.delete_prototype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete a stored prototype</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -182,9 +184,9 @@ Note that no locks will be checked if**caller** is not passed.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.prototypes.prototypes.search_prototype">
-<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">search_prototype</code><span class="sig-paren">(</span><em class="sig-param">key=None</em>, <em class="sig-param">tags=None</em>, <em class="sig-param">require_single=False</em>, <em class="sig-param">return_iterators=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#search_prototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.search_prototype" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">search_prototype</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">require_single</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">return_iterators</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#search_prototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.search_prototype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find prototypes based on key and/or tags, or all prototypes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
@@ -225,9 +227,9 @@ be found as a match.</p>
 </div>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.prototypes.prototypes.search_objects_with_prototype">
-<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">search_objects_with_prototype</code><span class="sig-paren">(</span><em class="sig-param">prototype_key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#search_objects_with_prototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.search_objects_with_prototype" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">search_objects_with_prototype</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prototype_key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#search_objects_with_prototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.search_objects_with_prototype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve all object instances created by a given prototype.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -239,46 +241,46 @@ be found as a match.</p>
 </dl>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.prototypes.prototypes.PrototypeEvMore">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">PrototypeEvMore</code><span class="sig-paren">(</span><em class="sig-param">caller</em>, <em class="sig-param">*args</em>, <em class="sig-param">session=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#PrototypeEvMore"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.PrototypeEvMore" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">PrototypeEvMore</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#PrototypeEvMore"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.PrototypeEvMore" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.utils.evmore.html#evennia.utils.evmore.EvMore" title="evennia.utils.evmore.EvMore"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.evmore.EvMore</span></code></a></p>
 <p>Listing 1000+ prototypes can be very slow. So we customize EvMore to
 display an EvTable per paginated page rather than to try creating an
 EvTable for the entire dataset and then paginate it.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.prototypes.prototypes.PrototypeEvMore.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">caller</em>, <em class="sig-param">*args</em>, <em class="sig-param">session=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#PrototypeEvMore.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.PrototypeEvMore.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#PrototypeEvMore.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.PrototypeEvMore.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Store some extra properties on the EvMore class</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.prototypes.prototypes.PrototypeEvMore.init_pages">
-<code class="sig-name descname">init_pages</code><span class="sig-paren">(</span><em class="sig-param">inp</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#PrototypeEvMore.init_pages"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.PrototypeEvMore.init_pages" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">init_pages</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inp</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#PrototypeEvMore.init_pages"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.PrototypeEvMore.init_pages" title="Permalink to this definition">¶</a></dt>
 <dd><p>This will be initialized with a tuple (mod_prototype_list, paginated_db_query)
 and we must handle these separately since they cannot be paginated in the same
 way. We will build the prototypes so that the db-prototypes come first (they
 are likely the most volatile), followed by the mod-prototypes.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.prototypes.prototypes.PrototypeEvMore.prototype_paginator">
-<code class="sig-name descname">prototype_paginator</code><span class="sig-paren">(</span><em class="sig-param">pageno</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#PrototypeEvMore.prototype_paginator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.PrototypeEvMore.prototype_paginator" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">prototype_paginator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pageno</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#PrototypeEvMore.prototype_paginator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.PrototypeEvMore.prototype_paginator" title="Permalink to this definition">¶</a></dt>
 <dd><p>The listing is separated in db/mod prototypes, so we need to figure out which
 one to pick based on the page number. Also, pageno starts from 0.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.prototypes.prototypes.PrototypeEvMore.page_formatter">
-<code class="sig-name descname">page_formatter</code><span class="sig-paren">(</span><em class="sig-param">page</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#PrototypeEvMore.page_formatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.PrototypeEvMore.page_formatter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">page_formatter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">page</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#PrototypeEvMore.page_formatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.PrototypeEvMore.page_formatter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Input is a queryset page from django.Paginator</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.prototypes.prototypes.list_prototypes">
-<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">list_prototypes</code><span class="sig-paren">(</span><em class="sig-param">caller</em>, <em class="sig-param">key=None</em>, <em class="sig-param">tags=None</em>, <em class="sig-param">show_non_use=False</em>, <em class="sig-param">show_non_edit=True</em>, <em class="sig-param">session=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#list_prototypes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.list_prototypes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">list_prototypes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show_non_use</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">show_non_edit</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#list_prototypes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.list_prototypes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Collate a list of found prototypes based on search criteria and access.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -298,9 +300,9 @@ None: If no matches were found. In this case the caller has already been notifie
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.prototypes.prototypes.validate_prototype">
-<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">validate_prototype</code><span class="sig-paren">(</span><em class="sig-param">prototype</em>, <em class="sig-param">protkey=None</em>, <em class="sig-param">protparents=None</em>, <em class="sig-param">is_prototype_base=True</em>, <em class="sig-param">strict=True</em>, <em class="sig-param">_flags=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#validate_prototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.validate_prototype" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">validate_prototype</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prototype</span></em>, <em class="sig-param"><span class="n">protkey</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">protparents</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">is_prototype_base</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">strict</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">_flags</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#validate_prototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.validate_prototype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run validation on a prototype, checking for inifinite regress.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -328,9 +330,9 @@ with (it may still be useful as a mix-in prototype).</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.prototypes.prototypes.protfunc_parser">
-<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">protfunc_parser</code><span class="sig-paren">(</span><em class="sig-param">value</em>, <em class="sig-param">available_functions=None</em>, <em class="sig-param">testing=False</em>, <em class="sig-param">stacktrace=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#protfunc_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.protfunc_parser" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">protfunc_parser</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">available_functions</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">testing</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">stacktrace</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#protfunc_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.protfunc_parser" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse a prototype value string for a protfunc and process it.</p>
 <p>Available protfuncs are specified as callables in one of the modules of
 <strong>settings.PROTFUNC_MODULES</strong>, or specified on the command line.</p>
@@ -371,7 +373,7 @@ eventual object #dbrefs in the output from the protfunc.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.prototypes.prototypes.format_available_protfuncs">
 <code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">format_available_protfuncs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#format_available_protfuncs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.format_available_protfuncs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all protfuncs in a pretty-formatted form.</p>
@@ -382,9 +384,9 @@ eventual object #dbrefs in the output from the protfunc.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.prototypes.prototypes.prototype_to_str">
-<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">prototype_to_str</code><span class="sig-paren">(</span><em class="sig-param">prototype</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#prototype_to_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.prototype_to_str" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">prototype_to_str</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prototype</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#prototype_to_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.prototype_to_str" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format a prototype to a nice string representation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -393,9 +395,9 @@ eventual object #dbrefs in the output from the protfunc.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.prototypes.prototypes.check_permission">
-<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">check_permission</code><span class="sig-paren">(</span><em class="sig-param">prototype_key</em>, <em class="sig-param">action</em>, <em class="sig-param">default=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#check_permission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.check_permission" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">check_permission</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prototype_key</span></em>, <em class="sig-param"><span class="n">action</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#check_permission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.check_permission" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper function to check access to actions on given prototype.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -411,9 +413,9 @@ eventual object #dbrefs in the output from the protfunc.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.prototypes.prototypes.init_spawn_value">
-<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">init_spawn_value</code><span class="sig-paren">(</span><em class="sig-param">value</em>, <em class="sig-param">validator=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#init_spawn_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.init_spawn_value" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">init_spawn_value</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">validator</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#init_spawn_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.init_spawn_value" title="Permalink to this definition">¶</a></dt>
 <dd><p>Analyze the prototype value and produce a value useful at the point of spawning.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -433,21 +435,22 @@ validator (callable, optional): If given, this will be called with the value to<
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.prototypes.prototypes.value_to_obj_or_any">
-<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">value_to_obj_or_any</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#value_to_obj_or_any"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.value_to_obj_or_any" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">value_to_obj_or_any</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#value_to_obj_or_any"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.value_to_obj_or_any" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert value(s) to Object if possible, otherwise keep original value</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.prototypes.prototypes.value_to_obj">
-<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">value_to_obj</code><span class="sig-paren">(</span><em class="sig-param">value</em>, <em class="sig-param">force=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#value_to_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.value_to_obj" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">value_to_obj</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">force</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#value_to_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.value_to_obj" title="Permalink to this definition">¶</a></dt>
 <dd><p>Always convert value(s) to Object, or None</p>
 </dd></dl>
 
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -492,12 +495,13 @@ validator (callable, optional): If given, this will be called with the value to<
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.prototypes.prototypes</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

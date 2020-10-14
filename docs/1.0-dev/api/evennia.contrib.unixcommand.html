@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.contrib.unixcommand &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.unixcommand</a></li> 
       </ul>
     </div>  
 
@@ -92,16 +94,16 @@ to override two methods:</p>
 </div>
 <p>To see the full power of argparse and the types of supported options, visit
 [the documentation of argparse](<a class="reference external" href="https://docs.python.org/2/library/argparse.html">https://docs.python.org/2/library/argparse.html</a>).</p>
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.contrib.unixcommand.ParseError">
 <em class="property">exception </em><code class="sig-prename descclassname">evennia.contrib.unixcommand.</code><code class="sig-name descname">ParseError</code><a class="reference internal" href="../_modules/evennia/contrib/unixcommand.html#ParseError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.unixcommand.ParseError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 <p>An error occurred during parsing.</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.unixcommand.UnixCommandParser">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.unixcommand.</code><code class="sig-name descname">UnixCommandParser</code><span class="sig-paren">(</span><em class="sig-param">prog</em>, <em class="sig-param">description=''</em>, <em class="sig-param">epilog=''</em>, <em class="sig-param">command=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/unixcommand.html#UnixCommandParser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.unixcommand.UnixCommandParser" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.unixcommand.</code><code class="sig-name descname">UnixCommandParser</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prog</span></em>, <em class="sig-param"><span class="n">description</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">epilog</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">command</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/unixcommand.html#UnixCommandParser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.unixcommand.UnixCommandParser" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">argparse.ArgumentParser</span></code></p>
 <p>A modifier command parser for unix commands.</p>
 <p>This parser is used to replace <strong>argparse.ArgumentParser</strong>.  It
@@ -110,9 +112,9 @@ the caller.  Some features (like the “brutal exit” of the original
 parser) are disabled or replaced.  This parser is used by UnixCommand
 and creating one directly isn’t recommended nor necessary.  Even
 adding a sub-command will use this replaced parser automatically.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.unixcommand.UnixCommandParser.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">prog</em>, <em class="sig-param">description=''</em>, <em class="sig-param">epilog=''</em>, <em class="sig-param">command=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/unixcommand.html#UnixCommandParser.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.unixcommand.UnixCommandParser.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prog</span></em>, <em class="sig-param"><span class="n">description</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">epilog</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">command</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/unixcommand.html#UnixCommandParser.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.unixcommand.UnixCommandParser.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Build a UnixCommandParser with a link to the command using it.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -139,7 +141,7 @@ sub-commands, this class will be used.</p>
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.unixcommand.UnixCommandParser.format_usage">
 <code class="sig-name descname">format_usage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/unixcommand.html#UnixCommandParser.format_usage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.unixcommand.UnixCommandParser.format_usage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the usage line.</p>
@@ -150,7 +152,7 @@ in order to avoid unintentional color codes.</p>
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.unixcommand.UnixCommandParser.format_help">
 <code class="sig-name descname">format_help</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/unixcommand.html#UnixCommandParser.format_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.unixcommand.UnixCommandParser.format_help" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the parser help, including its epilog.</p>
@@ -162,9 +164,9 @@ in the epilog (the command docstring) are supported.</p>
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.unixcommand.UnixCommandParser.print_usage">
-<code class="sig-name descname">print_usage</code><span class="sig-paren">(</span><em class="sig-param">file=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/unixcommand.html#UnixCommandParser.print_usage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.unixcommand.UnixCommandParser.print_usage" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">print_usage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/unixcommand.html#UnixCommandParser.print_usage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.unixcommand.UnixCommandParser.print_usage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print the usage to the caller.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -179,9 +181,9 @@ command’s caller.</p>
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.unixcommand.UnixCommandParser.print_help">
-<code class="sig-name descname">print_help</code><span class="sig-paren">(</span><em class="sig-param">file=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/unixcommand.html#UnixCommandParser.print_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.unixcommand.UnixCommandParser.print_help" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">print_help</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/unixcommand.html#UnixCommandParser.print_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.unixcommand.UnixCommandParser.print_help" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print the help to the caller.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -198,9 +200,9 @@ command’s caller.</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.unixcommand.HelpAction">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.unixcommand.</code><code class="sig-name descname">HelpAction</code><span class="sig-paren">(</span><em class="sig-param">option_strings</em>, <em class="sig-param">dest</em>, <em class="sig-param">nargs=None</em>, <em class="sig-param">const=None</em>, <em class="sig-param">default=None</em>, <em class="sig-param">type=None</em>, <em class="sig-param">choices=None</em>, <em class="sig-param">required=False</em>, <em class="sig-param">help=None</em>, <em class="sig-param">metavar=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/unixcommand.html#HelpAction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.unixcommand.HelpAction" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.unixcommand.</code><code class="sig-name descname">HelpAction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">option_strings</span></em>, <em class="sig-param"><span class="n">dest</span></em>, <em class="sig-param"><span class="n">nargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">const</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">type</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">choices</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">required</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">help</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">metavar</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/unixcommand.html#HelpAction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.unixcommand.HelpAction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">argparse.Action</span></code></p>
 <p>Override the -h/–help action in the default parser.</p>
 <p>Using the default -h/–help will call the exit function in different
@@ -208,9 +210,9 @@ ways, preventing the entire help message to be provided.  Hence
 this override.</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.unixcommand.UnixCommand">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.unixcommand.</code><code class="sig-name descname">UnixCommand</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/unixcommand.html#UnixCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.unixcommand.UnixCommand" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.unixcommand.</code><code class="sig-name descname">UnixCommand</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/unixcommand.html#UnixCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.unixcommand.UnixCommand" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
 <p>Unix-type commands, supporting short and long options.</p>
 <p>This command syntax uses the Unix-style commands with short options
@@ -240,15 +242,15 @@ accordingly.  The <strong>argparse</strong> module provides a default ‘-h’ o
 ‘–help’ option on the command.  Typing <a href="#id1"><span class="problematic" id="id2">|</span></a>whelp commandname|n will
 display the same as <a href="#id3"><span class="problematic" id="id4">|</span></a>wcommandname -h|n, though this behavior can
 be changed.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.unixcommand.UnixCommand.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/unixcommand.html#UnixCommand.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.unixcommand.UnixCommand.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/unixcommand.html#UnixCommand.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.unixcommand.UnixCommand.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>The lockhandler works the same as for objects.
 optional kwargs will be set as properties on the Command at runtime,
 overloading evential same-named class properties.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.unixcommand.UnixCommand.init_parser">
 <code class="sig-name descname">init_parser</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/unixcommand.html#UnixCommand.init_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.unixcommand.UnixCommand.init_parser" title="Permalink to this definition">¶</a></dt>
 <dd><p>Configure the argument parser, adding in options.</p>
@@ -261,15 +263,15 @@ use its <strong>add_argument</strong> method.</p>
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.unixcommand.UnixCommand.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/unixcommand.html#UnixCommand.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.unixcommand.UnixCommand.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override to handle the command execution.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.unixcommand.UnixCommand.get_help">
-<code class="sig-name descname">get_help</code><span class="sig-paren">(</span><em class="sig-param">caller</em>, <em class="sig-param">cmdset</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/unixcommand.html#UnixCommand.get_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.unixcommand.UnixCommand.get_help" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_help</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">cmdset</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/unixcommand.html#UnixCommand.get_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.unixcommand.UnixCommand.get_help" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the help message for this command and this caller.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -284,7 +286,7 @@ use its <strong>add_argument</strong> method.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.unixcommand.UnixCommand.parse">
 <code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/unixcommand.html#UnixCommand.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.unixcommand.UnixCommand.parse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process arguments provided in <strong>self.args</strong>.</p>
@@ -295,27 +297,27 @@ use its <strong>add_argument</strong> method.</p>
 </div>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.unixcommand.UnixCommand.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.unixcommand.UnixCommand.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.unixcommand.UnixCommand.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.unixcommand.UnixCommand.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.unixcommand.UnixCommand.key">
 <code class="sig-name descname">key</code><em class="property"> = 'command'</em><a class="headerlink" href="#evennia.contrib.unixcommand.UnixCommand.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.unixcommand.UnixCommand.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.unixcommand.UnixCommand.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.unixcommand.UnixCommand.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'command', 'tags': '', 'text': '\n    Unix-type commands, supporting short and long options.\n\n    This command syntax uses the Unix-style commands with short options\n    (-X) and long options (--something).  The `argparse` module is\n    used to parse the command.\n\n    In order to use it, you should override two methods:\n    - `init_parser`: this method is called when the command is created.\n      It can be used to set options in the parser.  `self.parser`\n      contains the `argparse.ArgumentParser`, so you can add arguments\n      here.\n    - `func`: this method is called to execute the command, but after\n      the parser has checked the arguments given to it are valid.\n      You can access the namespace of valid arguments in `self.opts`\n      at this point.\n\n    The help of UnixCommands is derived from the docstring, in a\n    slightly different way than usual: the first line of the docstring\n    is used to represent the program description (the very short\n    line at the top of the help message).  The other lines below are\n    used as the program\'s &quot;epilog&quot;, displayed below the options.  It\n    means in your docstring, you don\'t have to write the options.\n    They will be automatically provided by the parser and displayed\n    accordingly.  The `argparse` module provides a default \'-h\' or\n    \'--help\' option on the command.  Typing |whelp commandname|n will\n    display the same as |wcommandname -h|n, though this behavior can\n    be changed.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.unixcommand.UnixCommand.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -325,6 +327,7 @@ use its <strong>add_argument</strong> method.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -369,12 +372,13 @@ use its <strong>add_argument</strong> method.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.unixcommand</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

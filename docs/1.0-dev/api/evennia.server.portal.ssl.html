@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.server.portal.ssl &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.ssl</a></li> 
       </ul>
     </div>  
 
@@ -38,29 +40,29 @@
 <span id="evennia-server-portal-ssl"></span><h1>evennia.server.portal.ssl<a class="headerlink" href="#module-evennia.server.portal.ssl" title="Permalink to this headline">¶</a></h1>
 <p>This is a simple context factory for auto-creating
 SSL keys and certificates.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.server.portal.ssl.SSLProtocol">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.ssl.</code><code class="sig-name descname">SSLProtocol</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssl.html#SSLProtocol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.ssl.SSLProtocol" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.ssl.</code><code class="sig-name descname">SSLProtocol</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssl.html#SSLProtocol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.ssl.SSLProtocol" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.server.portal.telnet.html#evennia.server.portal.telnet.TelnetProtocol" title="evennia.server.portal.telnet.TelnetProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.server.portal.telnet.TelnetProtocol</span></code></a></p>
 <p>Communication is the same as telnet, except data transfer
 is done with encryption.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.ssl.SSLProtocol.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssl.html#SSLProtocol.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.ssl.SSLProtocol.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssl.html#SSLProtocol.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.ssl.SSLProtocol.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.server.portal.ssl.verify_SSL_key_and_cert">
-<code class="sig-prename descclassname">evennia.server.portal.ssl.</code><code class="sig-name descname">verify_SSL_key_and_cert</code><span class="sig-paren">(</span><em class="sig-param">keyfile</em>, <em class="sig-param">certfile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssl.html#verify_SSL_key_and_cert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.ssl.verify_SSL_key_and_cert" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.portal.ssl.</code><code class="sig-name descname">verify_SSL_key_and_cert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">keyfile</span></em>, <em class="sig-param"><span class="n">certfile</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssl.html#verify_SSL_key_and_cert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.ssl.verify_SSL_key_and_cert" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function looks for RSA key and certificate in the current
 directory. If files ssl.key and ssl.cert does not exist, they
 are created.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.server.portal.ssl.getSSLContext">
 <code class="sig-prename descclassname">evennia.server.portal.ssl.</code><code class="sig-name descname">getSSLContext</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssl.html#getSSLContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.ssl.getSSLContext" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is called by the portal when creating the SSL context
@@ -80,6 +82,7 @@ server-side.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -124,12 +127,13 @@ server-side.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.ssl</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

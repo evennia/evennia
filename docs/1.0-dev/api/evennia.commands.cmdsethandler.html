@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.commands.cmdsethandler &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdsethandler</a></li> 
       </ul>
     </div>  
 
@@ -89,9 +91,9 @@ so that we are back at defaults (and can throw rocks again).</p>
 can then implement separate sets for different situations. For
 example, you can have a ‘On a boat’ set, onto which you then tack on
 the ‘Fishing’ set. Fishing from a boat? No problem!</p>
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.commands.cmdsethandler.import_cmdset">
-<code class="sig-prename descclassname">evennia.commands.cmdsethandler.</code><code class="sig-name descname">import_cmdset</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">cmdsetobj</em>, <em class="sig-param">emit_to_obj=None</em>, <em class="sig-param">no_logging=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdsethandler.html#import_cmdset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdsethandler.import_cmdset" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.commands.cmdsethandler.</code><code class="sig-name descname">import_cmdset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">cmdsetobj</span></em>, <em class="sig-param"><span class="n">emit_to_obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">no_logging</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdsethandler.html#import_cmdset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdsethandler.import_cmdset" title="Permalink to this definition">¶</a></dt>
 <dd><p>This helper function is used by the cmdsethandler to load a cmdset
 instance from a python module, given a python_path. It’s usually accessed
 through the cmdsethandler’s add() and add_default() methods.
@@ -122,9 +124,9 @@ for the benefit of the handler.</p>
 </dl>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.commands.cmdsethandler.CmdSetHandler">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.cmdsethandler.</code><code class="sig-name descname">CmdSetHandler</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">init_true=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdsethandler.html#CmdSetHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.cmdsethandler.</code><code class="sig-name descname">CmdSetHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">init_true</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdsethandler.html#CmdSetHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>The CmdSetHandler is always stored on an object, this object is supplied
 as an argument.</p>
@@ -133,9 +135,9 @@ This is the set the game engine will retrieve when determining which
 commands are available to the object. The cmdset_stack holds a history of
 all CmdSets to allow the handler to remove/add cmdsets at will. Doing so
 will re-calculate the ‘current’ cmdset.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.cmdsethandler.CmdSetHandler.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">init_true=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdsethandler.html#CmdSetHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">init_true</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdsethandler.html#CmdSetHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is called whenever an object is recreated.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -149,9 +151,9 @@ and loads the current cmdset.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.cmdsethandler.CmdSetHandler.update">
-<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param">init_mode=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdsethandler.html#CmdSetHandler.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler.update" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">init_mode</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdsethandler.html#CmdSetHandler.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Re-adds all sets in the handler to have an updated current</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -171,9 +173,9 @@ game the responsibility of keeping <strong>.current</strong> upt-to-date belongs
 to the central <strong>cmdhandler.get_and_merge_cmdsets()</strong>!</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.cmdsethandler.CmdSetHandler.add">
-<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param">cmdset</em>, <em class="sig-param">emit_to_obj=None</em>, <em class="sig-param">permanent=False</em>, <em class="sig-param">default_cmdset=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdsethandler.html#CmdSetHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler.add" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdset</span></em>, <em class="sig-param"><span class="n">emit_to_obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">permanent</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">default_cmdset</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdsethandler.html#CmdSetHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a cmdset to the handler, on top of the old ones, unless it
 is set as the default one (it will then end up at the bottom of the stack)</p>
 <dl class="field-list simple">
@@ -201,9 +203,9 @@ than the handler. Not sure when this would be useful, but
 it’s a ‘quirk’ that has to be documented.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.cmdsethandler.CmdSetHandler.add_default">
-<code class="sig-name descname">add_default</code><span class="sig-paren">(</span><em class="sig-param">cmdset</em>, <em class="sig-param">emit_to_obj=None</em>, <em class="sig-param">permanent=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdsethandler.html#CmdSetHandler.add_default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler.add_default" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_default</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdset</span></em>, <em class="sig-param"><span class="n">emit_to_obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">permanent</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdsethandler.html#CmdSetHandler.add_default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler.add_default" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shortcut for adding a default cmdset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -216,9 +218,9 @@ it’s a ‘quirk’ that has to be documented.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.cmdsethandler.CmdSetHandler.remove">
-<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param">cmdset=None</em>, <em class="sig-param">default_cmdset=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdsethandler.html#CmdSetHandler.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler.remove" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdset</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">default_cmdset</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdsethandler.html#CmdSetHandler.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler.remove" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove a cmdset from the  handler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -235,9 +237,9 @@ default cmdset (at the bottom of the stack).</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.cmdsethandler.CmdSetHandler.delete">
-<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param">cmdset=None</em>, <em class="sig-param">default_cmdset=False</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler.delete" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdset</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">default_cmdset</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove a cmdset from the  handler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -254,19 +256,19 @@ default cmdset (at the bottom of the stack).</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.cmdsethandler.CmdSetHandler.remove_default">
 <code class="sig-name descname">remove_default</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdsethandler.html#CmdSetHandler.remove_default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler.remove_default" title="Permalink to this definition">¶</a></dt>
 <dd><p>This explicitly deletes only the default cmdset.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.cmdsethandler.CmdSetHandler.delete_default">
 <code class="sig-name descname">delete_default</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler.delete_default" title="Permalink to this definition">¶</a></dt>
 <dd><p>This explicitly deletes only the default cmdset.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.cmdsethandler.CmdSetHandler.get">
 <code class="sig-name descname">get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdsethandler.html#CmdSetHandler.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all cmdsets.</p>
@@ -277,7 +279,7 @@ default cmdset (at the bottom of the stack).</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.cmdsethandler.CmdSetHandler.all">
 <code class="sig-name descname">all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler.all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all cmdsets.</p>
@@ -288,16 +290,16 @@ default cmdset (at the bottom of the stack).</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.cmdsethandler.CmdSetHandler.clear">
 <code class="sig-name descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdsethandler.html#CmdSetHandler.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler.clear" title="Permalink to this definition">¶</a></dt>
 <dd><p>Removes all Command Sets from the handler except the default one
 (use <strong>self.remove_default</strong> to remove that).</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.cmdsethandler.CmdSetHandler.has">
-<code class="sig-name descname">has</code><span class="sig-paren">(</span><em class="sig-param">cmdset</em>, <em class="sig-param">must_be_default=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdsethandler.html#CmdSetHandler.has"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler.has" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">has</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdset</span></em>, <em class="sig-param"><span class="n">must_be_default</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdsethandler.html#CmdSetHandler.has"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler.has" title="Permalink to this definition">¶</a></dt>
 <dd><p>checks so the cmdsethandler contains a given cmdset</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -314,9 +316,9 @@ the checked cmdset is the default one.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.cmdsethandler.CmdSetHandler.has_cmdset">
-<code class="sig-name descname">has_cmdset</code><span class="sig-paren">(</span><em class="sig-param">cmdset</em>, <em class="sig-param">must_be_default=False</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler.has_cmdset" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">has_cmdset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdset</span></em>, <em class="sig-param"><span class="n">must_be_default</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler.has_cmdset" title="Permalink to this definition">¶</a></dt>
 <dd><p>checks so the cmdsethandler contains a given cmdset</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -333,7 +335,7 @@ the checked cmdset is the default one.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.cmdsethandler.CmdSetHandler.reset">
 <code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdsethandler.html#CmdSetHandler.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdsethandler.CmdSetHandler.reset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Force reload of all cmdsets in handler. This should be called
@@ -346,6 +348,7 @@ handled automatically by &#64;reload).</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -390,12 +393,13 @@ handled automatically by &#64;reload).</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdsethandler</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

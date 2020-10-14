@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.utils.containers &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.containers</a></li> 
       </ul>
     </div>  
 
@@ -42,7 +44,7 @@ represent Singletons and acts as a convenient place to find resources (
 available as properties on the singleton)</p>
 <p>evennia.GLOBAL_SCRIPTS
 evennia.OPTION_CLASSES</p>
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.utils.containers.Container">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.utils.containers.</code><code class="sig-name descname">Container</code><a class="reference internal" href="../_modules/evennia/utils/containers.html#Container"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.containers.Container" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
@@ -50,27 +52,27 @@ evennia.OPTION_CLASSES</p>
 properties can be acquired as a property on it. This is generally
 considered a read-only affair.</p>
 <p>The container is initialized by a list of modules containing callables.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.utils.containers.Container.storage_modules">
 <code class="sig-name descname">storage_modules</code><em class="property"> = []</em><a class="headerlink" href="#evennia.utils.containers.Container.storage_modules" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.containers.Container.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/containers.html#Container.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.containers.Container.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read data from module.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.containers.Container.load_data">
 <code class="sig-name descname">load_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/containers.html#Container.load_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.containers.Container.load_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delayed import to avoid eventual circular imports from inside
 the storage modules.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.containers.Container.get">
-<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">default=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/containers.html#Container.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.containers.Container.get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/containers.html#Container.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.containers.Container.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrive data by key (in case of not knowing it beforehand).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -85,7 +87,7 @@ the storage modules.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.containers.Container.all">
 <code class="sig-name descname">all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/containers.html#Container.all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.containers.Container.all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all stored data</p>
@@ -98,20 +100,20 @@ the storage modules.</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.utils.containers.OptionContainer">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.utils.containers.</code><code class="sig-name descname">OptionContainer</code><a class="reference internal" href="../_modules/evennia/utils/containers.html#OptionContainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.containers.OptionContainer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.utils.containers.Container" title="evennia.utils.containers.Container"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.containers.Container</span></code></a></p>
 <p>Loads and stores the final list of OPTION CLASSES.</p>
 <p>Can access these as properties or dictionary-contents.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.utils.containers.OptionContainer.storage_modules">
 <code class="sig-name descname">storage_modules</code><em class="property"> = ['evennia.utils.optionclasses']</em><a class="headerlink" href="#evennia.utils.containers.OptionContainer.storage_modules" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.utils.containers.GlobalScriptContainer">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.utils.containers.</code><code class="sig-name descname">GlobalScriptContainer</code><a class="reference internal" href="../_modules/evennia/utils/containers.html#GlobalScriptContainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.containers.GlobalScriptContainer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.utils.containers.Container" title="evennia.utils.containers.Container"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.containers.Container</span></code></a></p>
@@ -126,14 +128,14 @@ evennia.GLOBAL_SCRIPTS.scriptname</p>
 <p>This does not use much of the BaseContainer since it’s not loading
 callables from settings but a custom dict of tuples.</p>
 </div>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.containers.GlobalScriptContainer.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/containers.html#GlobalScriptContainer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.containers.GlobalScriptContainer.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Note: We must delay loading of typeclasses since this module may get
 initialized before Scripts are actually initialized.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.containers.GlobalScriptContainer.start">
 <code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/containers.html#GlobalScriptContainer.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.containers.GlobalScriptContainer.start" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called last in evennia.__init__ to initialize the container late
@@ -142,16 +144,16 @@ initialized before Scripts are actually initialized.</p>
 make sure to auto-load time-based scripts.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.containers.GlobalScriptContainer.load_data">
 <code class="sig-name descname">load_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/containers.html#GlobalScriptContainer.load_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.containers.GlobalScriptContainer.load_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>This delayed import avoids trying to load Scripts before they are
 initialized.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.containers.GlobalScriptContainer.get">
-<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">default=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/containers.html#GlobalScriptContainer.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.containers.GlobalScriptContainer.get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/containers.html#GlobalScriptContainer.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.containers.GlobalScriptContainer.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrive data by key (in case of not knowing it beforehand). Any
 scripts that are in settings.GLOBAL_SCRIPTS that are not found
 will be recreated on-demand.</p>
@@ -169,7 +171,7 @@ at all on this container (i.e it cannot be loaded at all).</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.containers.GlobalScriptContainer.all">
 <code class="sig-name descname">all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/containers.html#GlobalScriptContainer.all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.containers.GlobalScriptContainer.all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all global scripts. Note that this will not auto-start
@@ -186,6 +188,7 @@ scripts defined in settings.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -230,12 +233,13 @@ scripts defined in settings.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.containers</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

@@ -24,3 +24,21 @@ This section contains information useful to world builders.
 ### The Tutorial world
 
 - [Introduction and setup](./Tutorial-World-Introduction)
+
+
+```toctree::
+    :hidden:
+
+    Default-Command-Help
+    Building-Quickstart
+    Building-Permissions
+    TextTags
+    Connection-Screen
+    Batch-Processors
+    Batch-Command-Processor
+    Batch-Code-Processor
+    Spawner-and-Prototypes
+    Zones
+    Tutorial-World-Introduction
+
+```

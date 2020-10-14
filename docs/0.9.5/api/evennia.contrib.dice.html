@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.contrib.dice &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.dice</a></li> 
       </ul>
     </div>  
 
@@ -56,9 +58,9 @@ at_cmdset_creation():</p>
 <div><p>self.add(dice.CmdDice())</p>
 </div></blockquote>
 <p>After a reload the dice (or roll) command will be available in-game.</p>
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.contrib.dice.roll_dice">
-<code class="sig-prename descclassname">evennia.contrib.dice.</code><code class="sig-name descname">roll_dice</code><span class="sig-paren">(</span><em class="sig-param">dicenum</em>, <em class="sig-param">dicetype</em>, <em class="sig-param">modifier=None</em>, <em class="sig-param">conditional=None</em>, <em class="sig-param">return_tuple=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/dice.html#roll_dice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.dice.roll_dice" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.dice.</code><code class="sig-name descname">roll_dice</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dicenum</span></em>, <em class="sig-param"><span class="n">dicetype</span></em>, <em class="sig-param"><span class="n">modifier</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">conditional</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">return_tuple</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/dice.html#roll_dice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.dice.roll_dice" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is a standard dice roller.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -114,9 +116,9 @@ print roll_dice(2, 20, (‘-‘, 2), conditional=(‘&gt;=’, 10), return_tuple
 &lt;&lt;&lt; (8, False, 2, (4, 6)) # roll was 4 + 6 - 2 = 8</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.dice.CmdDice">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.dice.</code><code class="sig-name descname">CmdDice</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/dice.html#CmdDice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.dice.CmdDice" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.dice.</code><code class="sig-name descname">CmdDice</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/dice.html#CmdDice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.dice.CmdDice" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
 <p>roll dice</p>
 <dl class="simple">
@@ -139,57 +141,57 @@ only if the final result is above 8. If a success condition is given, the
 outcome (pass/fail) will be echoed along with how much it succeeded/failed
 with. The hidden/secret switches will hide all or parts of the roll from
 everyone but the person rolling.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.dice.CmdDice.key">
 <code class="sig-name descname">key</code><em class="property"> = 'dice'</em><a class="headerlink" href="#evennia.contrib.dice.CmdDice.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.dice.CmdDice.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = ['roll', '&#64;dice']</em><a class="headerlink" href="#evennia.contrib.dice.CmdDice.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.dice.CmdDice.locks">
 <code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.dice.CmdDice.locks" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.dice.CmdDice.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/dice.html#CmdDice.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.dice.CmdDice.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mostly parsing for calling the dice roller function</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.dice.CmdDice.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.dice.CmdDice.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.dice.CmdDice.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.dice.CmdDice.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.dice.CmdDice.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'roll &#64;dice', 'category': 'general', 'key': 'dice', 'tags': '', 'text': &quot;\n    roll dice\n\n    Usage:\n      dice[/switch] &lt;nr&gt;d&lt;sides&gt; [modifier] [success condition]\n\n    Switch:\n      hidden - tell the room the roll is being done, but don't show the result\n      secret - don't inform the room about neither roll nor result\n\n    Examples:\n      dice 3d6 + 4\n      dice 1d100 - 2 &lt; 50\n\n    This will roll the given number of dice with given sides and modifiers.\n    So e.g. 2d6 + 3 means to 'roll a 6-sided die 2 times and add the result,\n    then add 3 to the total'.\n    Accepted modifiers are +, -, * and /.\n    A success condition is given as normal Python conditionals\n    (&lt;,&gt;,&lt;=,&gt;=,==,!=). So e.g. 2d6 + 3 &gt; 10 means that the roll will succeed\n    only if the final result is above 8. If a success condition is given, the\n    outcome (pass/fail) will be echoed along with how much it succeeded/failed\n    with. The hidden/secret switches will hide all or parts of the roll from\n    everyone but the person rolling.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.dice.CmdDice.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.dice.DiceCmdSet">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.dice.</code><code class="sig-name descname">DiceCmdSet</code><span class="sig-paren">(</span><em class="sig-param">cmdsetobj=None</em>, <em class="sig-param">key=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/dice.html#DiceCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.dice.DiceCmdSet" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.dice.</code><code class="sig-name descname">DiceCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/dice.html#DiceCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.dice.DiceCmdSet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
 <p>a small cmdset for testing purposes.
 Add with &#64;py self.cmdset.add(“contrib.dice.DiceCmdSet”)</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.dice.DiceCmdSet.at_cmdset_creation">
 <code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/dice.html#DiceCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.dice.DiceCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when set is created</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.dice.DiceCmdSet.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.dice.DiceCmdSet'</em><a class="headerlink" href="#evennia.contrib.dice.DiceCmdSet.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -199,6 +201,7 @@ Add with &#64;py self.cmdset.add(“contrib.dice.DiceCmdSet”)</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -243,12 +246,13 @@ Add with &#64;py self.cmdset.add(“contrib.dice.DiceCmdSet”)</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.dice</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

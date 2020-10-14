@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.contrib.slow_exit &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.slow_exit</a></li> 
       </ul>
     </div>  
 
@@ -58,44 +60,44 @@ movement will be lost in a server reload. This is acceptable for most
 game types - to simulate longer travel times (more than the couple of
 seconds assumed here), a more persistent variant using Scripts or the
 TickerHandler might be better.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.slow_exit.SlowExit">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.slow_exit.</code><code class="sig-name descname">SlowExit</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/slow_exit.html#SlowExit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.slow_exit.SlowExit" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.slow_exit.</code><code class="sig-name descname">SlowExit</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/slow_exit.html#SlowExit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.slow_exit.SlowExit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit" title="evennia.objects.objects.DefaultExit"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultExit</span></code></a></p>
 <p>This overloads the way moving happens.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.slow_exit.SlowExit.at_traverse">
-<code class="sig-name descname">at_traverse</code><span class="sig-paren">(</span><em class="sig-param">traversing_object</em>, <em class="sig-param">target_location</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/slow_exit.html#SlowExit.at_traverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.slow_exit.SlowExit.at_traverse" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_traverse</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">traversing_object</span></em>, <em class="sig-param"><span class="n">target_location</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/slow_exit.html#SlowExit.at_traverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.slow_exit.SlowExit.at_traverse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implements the actual traversal, using utils.delay to delay the move_to.</p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.contrib.slow_exit.SlowExit.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.slow_exit.SlowExit.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DoesNotExist</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.DoesNotExist" title="evennia.objects.objects.DefaultExit.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultExit.DoesNotExist</span></code></a></p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.contrib.slow_exit.SlowExit.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.slow_exit.SlowExit.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.MultipleObjectsReturned</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.MultipleObjectsReturned" title="evennia.objects.objects.DefaultExit.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultExit.MultipleObjectsReturned</span></code></a></p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.slow_exit.SlowExit.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.slow_exit.SlowExit'</em><a class="headerlink" href="#evennia.contrib.slow_exit.SlowExit.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.slow_exit.SlowExit.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'SlowExit'</em><a class="headerlink" href="#evennia.contrib.slow_exit.SlowExit.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.slow_exit.CmdSetSpeed">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.slow_exit.</code><code class="sig-name descname">CmdSetSpeed</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/slow_exit.html#CmdSetSpeed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.slow_exit.CmdSetSpeed" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.slow_exit.</code><code class="sig-name descname">CmdSetSpeed</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/slow_exit.html#CmdSetSpeed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.slow_exit.CmdSetSpeed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
 <p>set your movement speed</p>
 <dl class="simple">
@@ -105,42 +107,42 @@ TickerHandler might be better.</p>
 <p>This will set your movement speed, determining how long time
 it takes to traverse exits. If no speed is set, ‘walk’ speed
 is assumed.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.slow_exit.CmdSetSpeed.key">
 <code class="sig-name descname">key</code><em class="property"> = 'setspeed'</em><a class="headerlink" href="#evennia.contrib.slow_exit.CmdSetSpeed.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.slow_exit.CmdSetSpeed.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/slow_exit.html#CmdSetSpeed.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.slow_exit.CmdSetSpeed.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simply sets an Attribute used by the SlowExit above.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.slow_exit.CmdSetSpeed.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.slow_exit.CmdSetSpeed.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.slow_exit.CmdSetSpeed.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.slow_exit.CmdSetSpeed.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.slow_exit.CmdSetSpeed.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.slow_exit.CmdSetSpeed.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.slow_exit.CmdSetSpeed.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'setspeed', 'tags': '', 'text': &quot;\n    set your movement speed\n\n    Usage:\n      setspeed stroll|walk|run|sprint\n\n    This will set your movement speed, determining how long time\n    it takes to traverse exits. If no speed is set, 'walk' speed\n    is assumed.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.slow_exit.CmdSetSpeed.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.slow_exit.CmdStop">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.slow_exit.</code><code class="sig-name descname">CmdStop</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/slow_exit.html#CmdStop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.slow_exit.CmdStop" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.slow_exit.</code><code class="sig-name descname">CmdStop</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/slow_exit.html#CmdStop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.slow_exit.CmdStop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
 <p>stop moving</p>
 <dl class="simple">
@@ -148,34 +150,34 @@ is assumed.</p>
 </dd>
 </dl>
 <p>Stops the current movement, if any.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.slow_exit.CmdStop.key">
 <code class="sig-name descname">key</code><em class="property"> = 'stop'</em><a class="headerlink" href="#evennia.contrib.slow_exit.CmdStop.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.slow_exit.CmdStop.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/slow_exit.html#CmdStop.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.slow_exit.CmdStop.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is a very simple command, using the
 stored deferred from the exit traversal above.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.slow_exit.CmdStop.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.slow_exit.CmdStop.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.slow_exit.CmdStop.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.slow_exit.CmdStop.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.slow_exit.CmdStop.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.slow_exit.CmdStop.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.slow_exit.CmdStop.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'stop', 'tags': '', 'text': '\n    stop moving\n\n    Usage:\n      stop\n\n    Stops the current movement, if any.\n    '}</em><a class="headerlink" href="#evennia.contrib.slow_exit.CmdStop.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -185,6 +187,7 @@ stored deferred from the exit traversal above.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -229,12 +232,13 @@ stored deferred from the exit traversal above.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.slow_exit</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

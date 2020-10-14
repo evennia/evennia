@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.server.portal.webclient_ajax &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.webclient_ajax</a></li> 
       </ul>
     </div>  
 
@@ -52,13 +54,13 @@ handle these requests and act as a gateway
 to sessions connected over the webclient.</p>
 </dd>
 </dl>
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.server.portal.webclient_ajax.LazyEncoder">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.webclient_ajax.</code><code class="sig-name descname">LazyEncoder</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">skipkeys=False</em>, <em class="sig-param">ensure_ascii=True</em>, <em class="sig-param">check_circular=True</em>, <em class="sig-param">allow_nan=True</em>, <em class="sig-param">sort_keys=False</em>, <em class="sig-param">indent=None</em>, <em class="sig-param">separators=None</em>, <em class="sig-param">default=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#LazyEncoder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.LazyEncoder" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.webclient_ajax.</code><code class="sig-name descname">LazyEncoder</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">skipkeys</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">ensure_ascii</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">check_circular</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">allow_nan</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">sort_keys</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">indent</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">separators</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#LazyEncoder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.LazyEncoder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">json.encoder.JSONEncoder</span></code></p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient_ajax.LazyEncoder.default">
-<code class="sig-name descname">default</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#LazyEncoder.default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.LazyEncoder.default" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">default</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#LazyEncoder.default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.LazyEncoder.default" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implement this method in a subclass such that it returns
 a serializable object for <strong>**o**</strong>, or calls the base implementation
 (to raise a <strong>**TypeError**</strong>).</p>
@@ -79,35 +81,35 @@ implement default like this:</p>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.server.portal.webclient_ajax.jsonify">
-<code class="sig-prename descclassname">evennia.server.portal.webclient_ajax.</code><code class="sig-name descname">jsonify</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#jsonify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.jsonify" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.portal.webclient_ajax.</code><code class="sig-name descname">jsonify</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#jsonify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.jsonify" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.server.portal.webclient_ajax.AjaxWebClient">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.webclient_ajax.</code><code class="sig-name descname">AjaxWebClient</code><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClient" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.web.resource.Resource</span></code></p>
 <p>An ajax/comet long-polling transport</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.server.portal.webclient_ajax.AjaxWebClient.isLeaf">
 <code class="sig-name descname">isLeaf</code><em class="property"> = True</em><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClient.isLeaf" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.server.portal.webclient_ajax.AjaxWebClient.allowedMethods">
 <code class="sig-name descname">allowedMethods</code><em class="property"> = ('POST',)</em><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClient.allowedMethods" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient_ajax.AjaxWebClient.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClient.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClient.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient_ajax.AjaxWebClient.get_client_sessid">
-<code class="sig-name descname">get_client_sessid</code><span class="sig-paren">(</span><em class="sig-param">request</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClient.get_client_sessid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClient.get_client_sessid" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_client_sessid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClient.get_client_sessid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClient.get_client_sessid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper to get the client session id out of the request.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -119,15 +121,15 @@ implement default like this:</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient_ajax.AjaxWebClient.at_login">
 <code class="sig-name descname">at_login</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClient.at_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClient.at_login" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when this session gets authenticated by the server.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient_ajax.AjaxWebClient.lineSend">
-<code class="sig-name descname">lineSend</code><span class="sig-paren">(</span><em class="sig-param">csessid</em>, <em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClient.lineSend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClient.lineSend" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">lineSend</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">csessid</span></em>, <em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClient.lineSend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClient.lineSend" title="Permalink to this definition">¶</a></dt>
 <dd><p>This adds the data to the buffer and/or sends it to the client
 as soon as possible.</p>
 <dl class="field-list simple">
@@ -140,9 +142,9 @@ as soon as possible.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient_ajax.AjaxWebClient.client_disconnect">
-<code class="sig-name descname">client_disconnect</code><span class="sig-paren">(</span><em class="sig-param">csessid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClient.client_disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClient.client_disconnect" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">client_disconnect</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">csessid</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClient.client_disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClient.client_disconnect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Disconnect session with given csessid.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -151,9 +153,9 @@ as soon as possible.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient_ajax.AjaxWebClient.mode_init">
-<code class="sig-name descname">mode_init</code><span class="sig-paren">(</span><em class="sig-param">request</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClient.mode_init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClient.mode_init" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">mode_init</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClient.mode_init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClient.mode_init" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is called by render_POST when the client requests an init
 mode operation (at startup)</p>
 <dl class="field-list simple">
@@ -163,16 +165,16 @@ mode operation (at startup)</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient_ajax.AjaxWebClient.mode_keepalive">
-<code class="sig-name descname">mode_keepalive</code><span class="sig-paren">(</span><em class="sig-param">request</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClient.mode_keepalive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClient.mode_keepalive" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">mode_keepalive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClient.mode_keepalive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClient.mode_keepalive" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is called by render_POST when the
 client is replying to the keepalive.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient_ajax.AjaxWebClient.mode_input">
-<code class="sig-name descname">mode_input</code><span class="sig-paren">(</span><em class="sig-param">request</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClient.mode_input"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClient.mode_input" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">mode_input</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClient.mode_input"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClient.mode_input" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is called by render_POST when the client
 is sending data to the server.</p>
 <dl class="field-list simple">
@@ -182,9 +184,9 @@ is sending data to the server.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient_ajax.AjaxWebClient.mode_receive">
-<code class="sig-name descname">mode_receive</code><span class="sig-paren">(</span><em class="sig-param">request</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClient.mode_receive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClient.mode_receive" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">mode_receive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClient.mode_receive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClient.mode_receive" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is called by render_POST when the client is telling us
 that it is ready to receive data as soon as it is available.
 This is the basis of a long-polling (comet) mechanism: the
@@ -196,9 +198,9 @@ server will wait to reply until data is available.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient_ajax.AjaxWebClient.mode_close">
-<code class="sig-name descname">mode_close</code><span class="sig-paren">(</span><em class="sig-param">request</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClient.mode_close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClient.mode_close" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">mode_close</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClient.mode_close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClient.mode_close" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is called by render_POST when the client is signalling
 that it is about to be closed.</p>
 <dl class="field-list simple">
@@ -208,9 +210,9 @@ that it is about to be closed.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient_ajax.AjaxWebClient.render_POST">
-<code class="sig-name descname">render_POST</code><span class="sig-paren">(</span><em class="sig-param">request</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClient.render_POST"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClient.render_POST" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">render_POST</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClient.render_POST"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClient.render_POST" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function is what Twisted calls with POST requests coming
 in from the ajax client. The requests should be tagged with
 different modes depending on what needs to be done, such as
@@ -226,18 +228,18 @@ there is actual data available.</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.webclient_ajax.</code><code class="sig-name descname">AjaxWebClientSession</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.webclient_ajax.</code><code class="sig-name descname">AjaxWebClientSession</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.server.session.Session</span></code></a></p>
 <p>This represents a session running in an AjaxWebclient.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession.get_client_session">
 <code class="sig-name descname">get_client_session</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.get_client_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.get_client_session" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the Client browser session (used for auto-login based on browser session)</p>
@@ -253,9 +255,9 @@ there is actual data available.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession.disconnect">
-<code class="sig-name descname">disconnect</code><span class="sig-paren">(</span><em class="sig-param">reason='Server disconnected.'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.disconnect" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">disconnect</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reason</span><span class="o">=</span><span class="default_value">'Server disconnected.'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.disconnect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Disconnect from server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -264,14 +266,14 @@ there is actual data available.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession.at_login">
 <code class="sig-name descname">at_login</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.at_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.at_login" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession.data_in">
-<code class="sig-name descname">data_in</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.data_in"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.data_in" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">data_in</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.data_in"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.data_in" title="Permalink to this definition">¶</a></dt>
 <dd><p>Data User -&gt; Evennia</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
@@ -280,9 +282,9 @@ there is actual data available.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession.data_out">
-<code class="sig-name descname">data_out</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.data_out"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.data_out" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">data_out</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.data_out"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.data_out" title="Permalink to this definition">¶</a></dt>
 <dd><p>Data Evennia -&gt; User</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
@@ -291,9 +293,9 @@ there is actual data available.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession.send_text">
-<code class="sig-name descname">send_text</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.send_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.send_text" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">send_text</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.send_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.send_text" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send text data. This will pre-process the text for
 color-replacement, conversion to html etc.</p>
 <dl class="field-list simple">
@@ -310,14 +312,14 @@ color-replacement, conversion to html etc.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession.send_prompt">
-<code class="sig-name descname">send_prompt</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.send_prompt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.send_prompt" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">send_prompt</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.send_prompt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.send_prompt" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient_ajax.AjaxWebClientSession.send_default">
-<code class="sig-name descname">send_default</code><span class="sig-paren">(</span><em class="sig-param">cmdname</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.send_default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.send_default" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">send_default</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdname</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient_ajax.html#AjaxWebClientSession.send_default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient_ajax.AjaxWebClientSession.send_default" title="Permalink to this definition">¶</a></dt>
 <dd><p>Data Evennia -&gt; User.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -339,6 +341,7 @@ client instead.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -383,12 +386,13 @@ client instead.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.webclient_ajax</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>
