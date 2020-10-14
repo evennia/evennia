@@ -154,3 +154,60 @@ _Hints for new users more familiar with other game engines._
 muds and Evennia.
 - [Evennia for MUSH Users](./Evennia-for-MUSH-Users) - an introduction to Evennia for those accustomed
 to MUSH-style servers.
+
+
+```toctree::
+    :hidden:
+
+    Game-Planning
+    Building-Quickstart
+    Understanding-Color-Tags
+    Tutorial-World-Introduction
+    Building-a-mech-tutorial
+    Version-Control
+    Python-basic-introduction
+    Python-basic-tutorial-part-two
+    First-Steps-Coding
+    Tutorial-for-basic-MUSH-like-game
+    Adding-Command-Tutorial
+    Parsing-command-arguments,-theory-and-best-practices
+    Adding-Object-Typeclass-Tutorial
+    Tutorial-Searching-For-Objects
+    Weather-Tutorial
+    Tutorial-Aggressive-NPCs
+    Tutorial-NPCs-listening
+    Tutorial-Vehicles
+    NPC-shop-Tutorial
+    Static-In-Game-Map
+    Dynamic-In-Game-Map
+    Unit-Testing
+    Implementing-a-game-rule-system
+    Turn-based-Combat-System
+    Evennia-for-roleplaying-sessions
+    Coding-FAQ
+    Command-Prompt
+    Zones
+    Manually-Configuring-Color
+    EvMenu
+    Command-Duration
+    Command-Cooldown
+    Mass-and-weight-for-objects
+    Default-Exit-Errors
+    Tutorial-Tweeting-Game-Stats
+    Gametime-Tutorial
+    Coordinates
+    Customize-channels
+    Dialogues-in-events
+    A-voice-operated-elevator-using-events
+    Add-a-simple-new-web-page
+    Web-Tutorial
+    Bootstrap-&-Evennia
+    Web-Character-View-Tutorial
+    Help-System-Tutorial
+    Add-a-wiki-on-your-website
+    Web-Character-Generation
+    Bootstrap-Components-and-Utilities
+    Evennia-for-Diku-Users
+    Evennia-for-MUSH-Users
+
+```
