@@ -256,7 +256,7 @@ class EvMore:
 
         self._npages = 1
         self._paginator = self.paginator_index
-        self._page_formatter = str
+        self._page_formatter = page_formatter
 
         # set up individual pages for different sessions
         height = max(4, session.protocol_flags.get("SCREENHEIGHT", {0: _SCREEN_HEIGHT})[0] - 4)
