@@ -320,7 +320,7 @@ let goldenlayout = (function () {
         }
 
         // store the current layout to the local list of layouts
-        Object.assign( evenniaGoldenLayouts, { [name] : myLayout.toConfig() });
+        evenniaGoldenLayouts[name] = myLayout.toConfig();
         activeLayoutName = name;
 
         // upload it to the server
@@ -347,7 +347,7 @@ let goldenlayout = (function () {
 
         // update localstorage
         localStorage.setItem( "evenniaGoldenLayoutSavedState", JSON.stringify(myLayout.toConfig()) );
-        localStorage.setItem( "evenniaGoldenLayoutSavedStateName", JSON.stringify( activeLayoutName ) );
+        localStorage.setItem( "evenniaGoldenLayoutSavedStateName", activeLayoutName );
     }
 
 
@@ -708,7 +708,10 @@ let goldenlayout = (function () {
             // Overwrite the global-variable configuration from 
             //     webclient/js/plugins/goldenlayout_default_config.js
             //         with the version from localstorage
-            Object.assign( evenniaGoldenLayouts, { activeLayoutName : JSON.parse(savedState) } );
+            evenniaGoldenLayouts[activeLayoutName] = JSON.parse(savedState);
+        } else {
+            localStorage.setItem( "evenniaGoldenLayoutSavedState", JSON.stringify( window.goldenlayout_config ) );
+            localStorage.setItem( "evenniaGoldenLayoutSavedStateName", "default-modified" );
         }
 
         myLayout = new window.GoldenLayout( evenniaGoldenLayouts[activeLayoutName], mainsub );
