@@ -390,13 +390,15 @@ table caption span.caption-number {
 table caption span.caption-text {
 }
 
+
 table.docutils td, table.docutils th {
     padding: 1px 8px 1px 5px;
-    border-top: 0;
-    border-left: 0;
-    border-right: 0;
+    border-top: 1px solid #aaa;
+    border-left: 1px solid #aaa;
+    border-right: 1px solid #aaa;
     border-bottom: 1px solid #aaa;
 }
+
 
 table.footnote td, table.footnote th {
     border: 0 !important;
@@ -425,6 +427,19 @@ th > p:last-child,
 td > p:last-child {
     margin-bottom: 0px;
 }
+
+thead {
+  border-bottom: 2px solid #aaa;
+}
+
+.row-odd {
+  background: #edeee4;
+}
+
+.row-even {
+  background: #f4f4ed;
+}
+
 
 /* -- figures --------------------------------------------------------------- */
 
