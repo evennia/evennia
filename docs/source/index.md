@@ -35,3 +35,15 @@ time.
 [icon_devel]: https://raw.githubusercontent.com/wiki/evennia/evennia/images/technical.png
 [icon_tutorial]: https://raw.githubusercontent.com/wiki/evennia/evennia/images/living1.png
 [icon_API]: https://raw.githubusercontent.com/wiki/evennia/evennia/images/python3.png
+
+
+```toctree::
+    :hidden:
+
+    Getting-Started
+    Administrative-Docs
+    Developer-Central
+    Tutorials
+    Contributing-Docs 
+
+```
