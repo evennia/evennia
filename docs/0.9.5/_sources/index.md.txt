@@ -1,10 +1,11 @@
-# VERSION WARNING
+```important::
 
-> This is the static v0.95 documentation of Evennia, originally converted from the old
-> [evennia wiki](https://github.com/evennia/evennia/wiki/) at 2020-10-11 18:06:03.062022.
-> While we will fix outright mistakes, minor typos and visual conversion issues will _not_ be 
-> addressed in this version.
-> A new new refactored version of the docs are being prepared for the v3.0 of the documentation. 
+    This is the v0.9.5 documentation of Evennia, originally converted from the old
+    `evennia wiki <https://github.com/evennia/evennia/wiki>`_ at 2020-10-11 18:06:03.062022.
+    While we will fix outright mistakes, minor typos and visual conversion issues will **not** be 
+    addressed in this version.
+    A new and refactored version of the docs is being prepared for version 1.0 of Evennia.
+```
 
 # Evennia Documentation
 
@@ -22,7 +23,8 @@ time.
 - The [Builder Docs](./Builder-Docs) helps for starting to build a game world using Evennia.
 - The [Developer Central](./Developer-Central) describes how Evennia works and is used by coders.
 - The [Tutorials & Examples](./Tutorials) contains help pages on a step-by-step or tutorial format.
-- The [API](api:evennia) documentation is created from the latest source code.
+- The [Documentation-Contributing](./Contributing-Docs) page helps with how to write and contribute to these docs.
+- The [API](./Evennia-API) documentation is created from the latest source code.
 - The [TOC](./toc) lists all regular documentation pages.
 
 [group]: https://groups.google.com/forum/#%21forum/evennia
@@ -33,3 +35,15 @@ time.
 [icon_devel]: https://raw.githubusercontent.com/wiki/evennia/evennia/images/technical.png
 [icon_tutorial]: https://raw.githubusercontent.com/wiki/evennia/evennia/images/living1.png
 [icon_API]: https://raw.githubusercontent.com/wiki/evennia/evennia/images/python3.png
+
+
+```toctree::
+    :hidden:
+
+    Getting-Started
+    Administrative-Docs
+    Developer-Central
+    Tutorials
+    Contributing-Docs 
+
+```

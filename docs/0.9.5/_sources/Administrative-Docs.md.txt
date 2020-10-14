@@ -44,3 +44,33 @@ Settings](https://github.com/evennia/evennia/blob/master/evennia/settings_defaul
 - [Setting up your work environment with version control](./Version-Control)
 - [First steps coding with Evennia](./First-Steps-Coding)
 - [Setting up a continuous integration build environment](./Continuous-Integration)
+
+
+```toctree::
+    :hidden:
+
+    Choosing-An-SQL-Server
+    Getting-Started
+    Running-Evennia-in-Docker
+    Start-Stop-Reload
+    Updating-Your-Game
+    Online-Setup
+    Evennia-Game-Index
+    Server-Conf
+    Internationalization
+    Apache-Config
+    Text-Encodings
+    Connection-Screen
+    Guest-Logins
+    IRC
+    RSS
+    Grapevine
+    How-to-connect-Evennia-to-Twitter
+    Client-Support-Grid
+    Building-Permissions
+    Banning
+    Version-Control
+    First-Steps-Coding
+    Continuous-Integration 
+
+```

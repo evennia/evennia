@@ -6,8 +6,7 @@ evennia.server.portal
    :undoc-members:
    :show-inheritance:
 
-Modules
--------
+
 
 .. toctree::
    :maxdepth: 6

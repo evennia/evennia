@@ -6,8 +6,7 @@ evennia.server
    :undoc-members:
    :show-inheritance:
 
-Modules
--------
+
 
 .. toctree::
    :maxdepth: 6
@@ -30,8 +29,6 @@ Modules
    evennia.server.validators
    evennia.server.webserver
 
-Packages/folders
-----------------
 
 .. toctree::
    :maxdepth: 6

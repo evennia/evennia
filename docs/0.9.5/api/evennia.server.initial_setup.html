@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.server.initial_setup &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.initial_setup</a></li> 
       </ul>
     </div>  
 
@@ -40,25 +42,25 @@
 time the game starts. It will create some default channels, objects, and
 other things.</p>
 <p>Everything starts at handle_setup()</p>
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.server.initial_setup.get_god_account">
 <code class="sig-prename descclassname">evennia.server.initial_setup.</code><code class="sig-name descname">get_god_account</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/initial_setup.html#get_god_account"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.initial_setup.get_god_account" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates the god user and don’t take no for an answer.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.server.initial_setup.create_objects">
 <code class="sig-prename descclassname">evennia.server.initial_setup.</code><code class="sig-name descname">create_objects</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/initial_setup.html#create_objects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.initial_setup.create_objects" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates the #1 account and Limbo room.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.server.initial_setup.create_channels">
 <code class="sig-prename descclassname">evennia.server.initial_setup.</code><code class="sig-name descname">create_channels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/initial_setup.html#create_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.initial_setup.create_channels" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates some sensible default channels.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.server.initial_setup.at_initial_setup">
 <code class="sig-prename descclassname">evennia.server.initial_setup.</code><code class="sig-name descname">at_initial_setup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/initial_setup.html#at_initial_setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.initial_setup.at_initial_setup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Custom hook for users to overload some or all parts of the initial
@@ -67,13 +69,13 @@ srun a module settings.AT_INITIAL_SETUP_HOOK_MODULE and will fail
 silently if this does not exist or fails to load.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.server.initial_setup.collectstatic">
 <code class="sig-prename descclassname">evennia.server.initial_setup.</code><code class="sig-name descname">collectstatic</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/initial_setup.html#collectstatic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.initial_setup.collectstatic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run collectstatic to make sure all web assets are loaded.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.server.initial_setup.reset_server">
 <code class="sig-prename descclassname">evennia.server.initial_setup.</code><code class="sig-name descname">reset_server</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/initial_setup.html#reset_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.initial_setup.reset_server" title="Permalink to this definition">¶</a></dt>
 <dd><p>We end the initialization by resetting the server. This makes sure
@@ -82,9 +84,9 @@ particularly it cleans all caches for the special objects.  It
 also checks so the warm-reset mechanism works as it should.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.server.initial_setup.handle_setup">
-<code class="sig-prename descclassname">evennia.server.initial_setup.</code><code class="sig-name descname">handle_setup</code><span class="sig-paren">(</span><em class="sig-param">last_step</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/initial_setup.html#handle_setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.initial_setup.handle_setup" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.server.initial_setup.</code><code class="sig-name descname">handle_setup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">last_step</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/initial_setup.html#handle_setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.initial_setup.handle_setup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Main logic for the module. It allows for restarting the
 initialization at any point if one of the modules should crash.</p>
 <dl class="field-list simple">
@@ -99,6 +101,7 @@ steps need to be redone.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -143,12 +146,13 @@ steps need to be redone.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.initial_setup</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

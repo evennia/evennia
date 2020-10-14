@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.server.webserver &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.webserver</a></li> 
       </ul>
     </div>  
 
@@ -44,14 +46,14 @@ that too if desired).</p>
 application.</p>
 <p>(Lots of thanks to <a class="reference external" href="http://github.com/clemesha/twisted-wsgi-django">http://github.com/clemesha/twisted-wsgi-django</a> for
 a great example/aid on how to do this.)</p>
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.server.webserver.LockableThreadPool">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.webserver.</code><code class="sig-name descname">LockableThreadPool</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#LockableThreadPool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.LockableThreadPool" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.server.webserver.</code><code class="sig-name descname">LockableThreadPool</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#LockableThreadPool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.LockableThreadPool" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.python.threadpool.ThreadPool</span></code></p>
 <p>Threadpool that can be locked from accepting new requests.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.webserver.LockableThreadPool.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#LockableThreadPool.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.LockableThreadPool.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#LockableThreadPool.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.LockableThreadPool.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new threadpool.</p>
 <p>&#64;param minthreads: minimum number of threads in the pool
 &#64;type minthreads: L{int}</p>
@@ -61,26 +63,26 @@ a great example/aid on how to do this.)</p>
 &#64;type name: native L{str}</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.webserver.LockableThreadPool.lock">
 <code class="sig-name descname">lock</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#LockableThreadPool.lock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.LockableThreadPool.lock" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.webserver.LockableThreadPool.callInThread">
-<code class="sig-name descname">callInThread</code><span class="sig-paren">(</span><em class="sig-param">func</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#LockableThreadPool.callInThread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.LockableThreadPool.callInThread" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">callInThread</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#LockableThreadPool.callInThread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.LockableThreadPool.callInThread" title="Permalink to this definition">¶</a></dt>
 <dd><p>called in the main reactor thread. Makes sure the pool
 is not locked before continuing.</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.server.webserver.HTTPChannelWithXForwardedFor">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.server.webserver.</code><code class="sig-name descname">HTTPChannelWithXForwardedFor</code><a class="reference internal" href="../_modules/evennia/server/webserver.html#HTTPChannelWithXForwardedFor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.HTTPChannelWithXForwardedFor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.web.http.HTTPChannel</span></code></p>
 <p>HTTP xforward class</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.webserver.HTTPChannelWithXForwardedFor.allHeadersReceived">
 <code class="sig-name descname">allHeadersReceived</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#HTTPChannelWithXForwardedFor.allHeadersReceived"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.HTTPChannelWithXForwardedFor.allHeadersReceived" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check to see if this is a reverse proxied connection.</p>
@@ -88,13 +90,13 @@ is not locked before continuing.</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.server.webserver.EvenniaReverseProxyResource">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.server.webserver.</code><code class="sig-name descname">EvenniaReverseProxyResource</code><span class="sig-paren">(</span><em class="sig-param">host</em>, <em class="sig-param">port</em>, <em class="sig-param">path</em>, <em class="sig-param">reactor=&lt;twisted.internet.epollreactor.EPollReactor object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#EvenniaReverseProxyResource"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.EvenniaReverseProxyResource" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.web.proxy.ReverseProxyResource</span></code></p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.webserver.EvenniaReverseProxyResource.getChild">
-<code class="sig-name descname">getChild</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">request</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#EvenniaReverseProxyResource.getChild"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.EvenniaReverseProxyResource.getChild" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getChild</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">request</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#EvenniaReverseProxyResource.getChild"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.EvenniaReverseProxyResource.getChild" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create and return a proxy resource with the same proxy configuration
 as this one, except that its path also contains the segment given by
 path at the end.</p>
@@ -111,9 +113,9 @@ path at the end.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.webserver.EvenniaReverseProxyResource.render">
-<code class="sig-name descname">render</code><span class="sig-paren">(</span><em class="sig-param">request</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#EvenniaReverseProxyResource.render"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.EvenniaReverseProxyResource.render" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">render</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#EvenniaReverseProxyResource.render"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.EvenniaReverseProxyResource.render" title="Permalink to this definition">¶</a></dt>
 <dd><p>Render a request by forwarding it to the proxied server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -127,16 +129,16 @@ path at the end.</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.server.webserver.DjangoWebRoot">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.webserver.</code><code class="sig-name descname">DjangoWebRoot</code><span class="sig-paren">(</span><em class="sig-param">pool</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#DjangoWebRoot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.DjangoWebRoot" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.server.webserver.</code><code class="sig-name descname">DjangoWebRoot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pool</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#DjangoWebRoot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.DjangoWebRoot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.web.resource.Resource</span></code></p>
 <p>This creates a web root (/) that Django
 understands by tweaking the way
 child instances are recognized.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.webserver.DjangoWebRoot.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">pool</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#DjangoWebRoot.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.DjangoWebRoot.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pool</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#DjangoWebRoot.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.DjangoWebRoot.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Setup the django+twisted resource.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -145,7 +147,7 @@ child instances are recognized.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.webserver.DjangoWebRoot.empty_threadpool">
 <code class="sig-name descname">empty_threadpool</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#DjangoWebRoot.empty_threadpool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.DjangoWebRoot.empty_threadpool" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts our _pending_requests list of deferreds into a DeferredList</p>
@@ -156,9 +158,9 @@ child instances are recognized.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.webserver.DjangoWebRoot.getChild">
-<code class="sig-name descname">getChild</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">request</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#DjangoWebRoot.getChild"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.DjangoWebRoot.getChild" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getChild</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">request</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#DjangoWebRoot.getChild"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.DjangoWebRoot.getChild" title="Permalink to this definition">¶</a></dt>
 <dd><p>To make things work we nudge the url tree to make this the
 root.</p>
 <dl class="field-list simple">
@@ -177,59 +179,60 @@ on a server reload.</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.server.webserver.Website">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.webserver.</code><code class="sig-name descname">Website</code><span class="sig-paren">(</span><em class="sig-param">resource</em>, <em class="sig-param">requestFactory=None</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#Website"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.Website" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.server.webserver.</code><code class="sig-name descname">Website</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">resource</span></em>, <em class="sig-param"><span class="n">requestFactory</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#Website"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.Website" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.web.server.Site</span></code></p>
 <p>This class will only log http requests if settings.DEBUG is True.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.server.webserver.Website.noisy">
 <code class="sig-name descname">noisy</code><em class="property"> = False</em><a class="headerlink" href="#evennia.server.webserver.Website.noisy" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.webserver.Website.logPrefix">
 <code class="sig-name descname">logPrefix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#Website.logPrefix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.Website.logPrefix" title="Permalink to this definition">¶</a></dt>
 <dd><p>How to be named in logs</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.webserver.Website.log">
-<code class="sig-name descname">log</code><span class="sig-paren">(</span><em class="sig-param">request</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#Website.log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.Website.log" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#Website.log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.Website.log" title="Permalink to this definition">¶</a></dt>
 <dd><p>Conditional logging</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.server.webserver.WSGIWebServer">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.webserver.</code><code class="sig-name descname">WSGIWebServer</code><span class="sig-paren">(</span><em class="sig-param">pool</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#WSGIWebServer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.WSGIWebServer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.server.webserver.</code><code class="sig-name descname">WSGIWebServer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pool</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#WSGIWebServer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.WSGIWebServer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.application.internet.TCPServer</span></code></p>
 <p>This is a WSGI webserver. It makes sure to start
 the threadpool after the service itself started,
 so as to register correctly with the twisted daemon.</p>
 <p>call with WSGIWebServer(threadpool, port, wsgi_resource)</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.webserver.WSGIWebServer.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">pool</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#WSGIWebServer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.WSGIWebServer.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pool</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#WSGIWebServer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.WSGIWebServer.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>This just stores the threadpool.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pool</strong> (<em>ThreadPool</em>) – The twisted threadpool.</p></li>
-<li><p><strong>kwargs</strong> (<em>args</em><em>,</em>) – Passed on to the TCPServer.</p></li>
+<li><p><strong>args</strong> (<em>any</em>) – Passed on to the TCPServer.</p></li>
+<li><p><strong>kwargs</strong> (<em>any</em>) – Passed on to the TCPServer.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.webserver.WSGIWebServer.startService">
 <code class="sig-name descname">startService</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#WSGIWebServer.startService"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.WSGIWebServer.startService" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start the pool after the service starts.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.webserver.WSGIWebServer.stopService">
 <code class="sig-name descname">stopService</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#WSGIWebServer.stopService"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.WSGIWebServer.stopService" title="Permalink to this definition">¶</a></dt>
 <dd><p>Safely stop the pool after the service stops.</p>
@@ -237,14 +240,14 @@ so as to register correctly with the twisted daemon.</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.server.webserver.PrivateStaticRoot">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.webserver.</code><code class="sig-name descname">PrivateStaticRoot</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">defaultType='text/html'</em>, <em class="sig-param">ignoredExts=()</em>, <em class="sig-param">registry=None</em>, <em class="sig-param">allowExt=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#PrivateStaticRoot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.PrivateStaticRoot" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.server.webserver.</code><code class="sig-name descname">PrivateStaticRoot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">defaultType</span><span class="o">=</span><span class="default_value">'text/html'</span></em>, <em class="sig-param"><span class="n">ignoredExts</span><span class="o">=</span><span class="default_value">()</span></em>, <em class="sig-param"><span class="n">registry</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">allowExt</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#PrivateStaticRoot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.PrivateStaticRoot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.web.static.File</span></code></p>
 <p>This overrides the default static file resource so as to not make the
 directory listings public (that is, if you go to /media or /static you
 won’t see an index of all static/media files on the server).</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.webserver.PrivateStaticRoot.directoryListing">
 <code class="sig-name descname">directoryListing</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/webserver.html#PrivateStaticRoot.directoryListing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.webserver.PrivateStaticRoot.directoryListing" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a resource that generates an HTML listing of the
@@ -258,6 +261,7 @@ directory this path represents.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -302,12 +306,13 @@ directory this path represents.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.webserver</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

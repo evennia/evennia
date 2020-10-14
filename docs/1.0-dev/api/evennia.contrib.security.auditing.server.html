@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.contrib.security.auditing.server &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.security.auditing.server</a></li> 
       </ul>
     </div>  
 
@@ -40,7 +42,7 @@
 Extension of the stock ServerSession that yields objects representing
 user inputs and system outputs.</p>
 <p>Evennia contribution - Johnny 2017</p>
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.security.auditing.server.AuditedServerSession">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.security.auditing.server.</code><code class="sig-name descname">AuditedServerSession</code><a class="reference internal" href="../_modules/evennia/contrib/security/auditing/server.html#AuditedServerSession"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.security.auditing.server.AuditedServerSession" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.server.serversession.html#evennia.server.serversession.ServerSession" title="evennia.server.serversession.ServerSession"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.server.serversession.ServerSession</span></code></a></p>
@@ -54,9 +56,9 @@ which might contain sensitive data (create, connect, &#64;password). These comma
 have their arguments masked by default, but you must mask or mask any
 custom commands of your own that handle sensitive information.</p>
 <p>See README.md for installation/configuration instructions.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.security.auditing.server.AuditedServerSession.audit">
-<code class="sig-name descname">audit</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/security/auditing/server.html#AuditedServerSession.audit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.security.auditing.server.AuditedServerSession.audit" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">audit</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/security/auditing/server.html#AuditedServerSession.audit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.security.auditing.server.AuditedServerSession.audit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extracts messages and system data from a Session object upon message
 send or receive.</p>
 <dl class="field-list simple">
@@ -78,9 +80,9 @@ lists. Server sends messages to client as string.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.security.auditing.server.AuditedServerSession.mask">
-<code class="sig-name descname">mask</code><span class="sig-paren">(</span><em class="sig-param">msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/security/auditing/server.html#AuditedServerSession.mask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.security.auditing.server.AuditedServerSession.mask" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">mask</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/security/auditing/server.html#AuditedServerSession.mask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.security.auditing.server.AuditedServerSession.mask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Masks potentially sensitive user information within messages before
 writing to log. Recording cleartext password attempts is bad policy.</p>
 <dl class="field-list simple">
@@ -93,9 +95,9 @@ writing to log. Recording cleartext password attempts is bad policy.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.security.auditing.server.AuditedServerSession.data_out">
-<code class="sig-name descname">data_out</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/security/auditing/server.html#AuditedServerSession.data_out"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.security.auditing.server.AuditedServerSession.data_out" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">data_out</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/security/auditing/server.html#AuditedServerSession.data_out"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.security.auditing.server.AuditedServerSession.data_out" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generic hook for sending data out through the protocol.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
@@ -104,9 +106,9 @@ writing to log. Recording cleartext password attempts is bad policy.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.security.auditing.server.AuditedServerSession.data_in">
-<code class="sig-name descname">data_in</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/security/auditing/server.html#AuditedServerSession.data_in"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.security.auditing.server.AuditedServerSession.data_in" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">data_in</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/security/auditing/server.html#AuditedServerSession.data_in"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.security.auditing.server.AuditedServerSession.data_in" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hook for protocols to send incoming data to the engine.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
@@ -120,6 +122,7 @@ writing to log. Recording cleartext password attempts is bad policy.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -164,12 +167,13 @@ writing to log. Recording cleartext password attempts is bad policy.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.security.auditing.server</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

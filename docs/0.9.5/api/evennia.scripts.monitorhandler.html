@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.scripts.monitorhandler &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.scripts.monitorhandler</a></li> 
       </ul>
     </div>  
 
@@ -51,19 +53,19 @@ functionality:</p>
 </dl>
 </li>
 </ul>
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.scripts.monitorhandler.MonitorHandler">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.scripts.monitorhandler.</code><code class="sig-name descname">MonitorHandler</code><a class="reference internal" href="../_modules/evennia/scripts/monitorhandler.html#MonitorHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.monitorhandler.MonitorHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This is a resource singleton that allows for registering
 callbacks for when a field or Attribute is updated (saved).</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.monitorhandler.MonitorHandler.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/monitorhandler.html#MonitorHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.monitorhandler.MonitorHandler.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize the handler.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.monitorhandler.MonitorHandler.save">
 <code class="sig-name descname">save</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/monitorhandler.html#MonitorHandler.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.monitorhandler.MonitorHandler.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Store our monitors to the database. This is called
@@ -72,9 +74,9 @@ by the server process.</p>
 intermediary save format ((obj,fieldname, idstring, callback, kwargs), …)</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.monitorhandler.MonitorHandler.restore">
-<code class="sig-name descname">restore</code><span class="sig-paren">(</span><em class="sig-param">server_reload=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/monitorhandler.html#MonitorHandler.restore"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.monitorhandler.MonitorHandler.restore" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">restore</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">server_reload</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/monitorhandler.html#MonitorHandler.restore"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.monitorhandler.MonitorHandler.restore" title="Permalink to this definition">¶</a></dt>
 <dd><p>Restore our monitors after a reload. This is called
 by the server process.</p>
 <dl class="field-list simple">
@@ -86,15 +88,15 @@ non-persistent tickers must be killed.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.monitorhandler.MonitorHandler.at_update">
-<code class="sig-name descname">at_update</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">fieldname</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/monitorhandler.html#MonitorHandler.at_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.monitorhandler.MonitorHandler.at_update" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_update</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">fieldname</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/monitorhandler.html#MonitorHandler.at_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.monitorhandler.MonitorHandler.at_update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called by the field as it saves.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.monitorhandler.MonitorHandler.add">
-<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">fieldname</em>, <em class="sig-param">callback</em>, <em class="sig-param">idstring=''</em>, <em class="sig-param">persistent=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/monitorhandler.html#MonitorHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.monitorhandler.MonitorHandler.add" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">fieldname</span></em>, <em class="sig-param"><span class="n">callback</span></em>, <em class="sig-param"><span class="n">idstring</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">persistent</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/monitorhandler.html#MonitorHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.monitorhandler.MonitorHandler.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add monitoring to a given field or Attribute. A field must
 be specified with the full db_* name or it will be assumed
 to be an Attribute (so <strong>db_key</strong>, not just <strong>key</strong>).</p>
@@ -124,21 +126,21 @@ all kwargs must be possible to pickle!</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.monitorhandler.MonitorHandler.remove">
-<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">fieldname</em>, <em class="sig-param">idstring=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/monitorhandler.html#MonitorHandler.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.monitorhandler.MonitorHandler.remove" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">fieldname</span></em>, <em class="sig-param"><span class="n">idstring</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/monitorhandler.html#MonitorHandler.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.monitorhandler.MonitorHandler.remove" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove a monitor.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.monitorhandler.MonitorHandler.clear">
 <code class="sig-name descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/monitorhandler.html#MonitorHandler.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.monitorhandler.MonitorHandler.clear" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete all monitors.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.monitorhandler.MonitorHandler.all">
-<code class="sig-name descname">all</code><span class="sig-paren">(</span><em class="sig-param">obj=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/monitorhandler.html#MonitorHandler.all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.monitorhandler.MonitorHandler.all" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">all</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/monitorhandler.html#MonitorHandler.all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.monitorhandler.MonitorHandler.all" title="Permalink to this definition">¶</a></dt>
 <dd><p>List all monitors or all monitors of a given object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -155,6 +157,7 @@ all kwargs must be possible to pickle!</p></li>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -199,12 +202,13 @@ all kwargs must be possible to pickle!</p></li>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.scripts.monitorhandler</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.server.portal.telnet &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.telnet</a></li> 
       </ul>
     </div>  
 
@@ -40,17 +42,17 @@
 <p>This depends on a generic session module that implements
 the actual login procedure of the game, tracks
 sessions etc.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.server.portal.telnet.TelnetServerFactory">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.telnet.</code><code class="sig-name descname">TelnetServerFactory</code><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetServerFactory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetServerFactory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.internet.protocol.ServerFactory</span></code></p>
 <p>This is only to name this better in logs</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.server.portal.telnet.TelnetServerFactory.noisy">
 <code class="sig-name descname">noisy</code><em class="property"> = False</em><a class="headerlink" href="#evennia.server.portal.telnet.TelnetServerFactory.noisy" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.telnet.TelnetServerFactory.logPrefix">
 <code class="sig-name descname">logPrefix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetServerFactory.logPrefix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetServerFactory.logPrefix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Describe this factory for log messages.</p>
@@ -58,33 +60,33 @@ sessions etc.</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.server.portal.telnet.TelnetProtocol">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.telnet.</code><code class="sig-name descname">TelnetProtocol</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.telnet.</code><code class="sig-name descname">TelnetProtocol</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.conch.telnet.Telnet</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.conch.telnet.StatefulTelnetProtocol</span></code>, <a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.server.session.Session</span></code></a></p>
 <p>Each player connecting over telnet (ie using most traditional mud
 clients) gets a telnet protocol instance assigned to them.  All
 communication between game and player goes through here.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.telnet.TelnetProtocol.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.telnet.TelnetProtocol.dataReceived">
-<code class="sig-name descname">dataReceived</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.dataReceived"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.dataReceived" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">dataReceived</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.dataReceived"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.dataReceived" title="Permalink to this definition">¶</a></dt>
 <dd><p>Unused by default, but a good place to put debug printouts
 of incoming data.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.telnet.TelnetProtocol.connectionMade">
 <code class="sig-name descname">connectionMade</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.connectionMade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.connectionMade" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is called when the connection is first established.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.telnet.TelnetProtocol.toggle_nop_keepalive">
 <code class="sig-name descname">toggle_nop_keepalive</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.toggle_nop_keepalive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.toggle_nop_keepalive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Allow to toggle the NOP keepalive for those sad clients that
@@ -93,24 +95,24 @@ protocol_flag NOPKEEPALIVE (settable e.g. by the default
 <strong>&#64;option</strong> command).</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.telnet.TelnetProtocol.handshake_done">
-<code class="sig-name descname">handshake_done</code><span class="sig-paren">(</span><em class="sig-param">timeout=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.handshake_done"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.handshake_done" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">handshake_done</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.handshake_done"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.handshake_done" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is called by all telnet extensions once they are finished.
 When all have reported, a sync with the server is performed.
 The system will force-call this sync after a small time to handle
 clients that don’t reply to handshakes at all.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.telnet.TelnetProtocol.at_login">
 <code class="sig-name descname">at_login</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.at_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.at_login" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when this session gets authenticated by the server.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.telnet.TelnetProtocol.enableRemote">
-<code class="sig-name descname">enableRemote</code><span class="sig-paren">(</span><em class="sig-param">option</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.enableRemote"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.enableRemote" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">enableRemote</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">option</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.enableRemote"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.enableRemote" title="Permalink to this definition">¶</a></dt>
 <dd><p>This sets up the remote-activated options we allow for this protocol.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -122,9 +124,9 @@ clients that don’t reply to handshakes at all.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.telnet.TelnetProtocol.disableRemote">
-<code class="sig-name descname">disableRemote</code><span class="sig-paren">(</span><em class="sig-param">option</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.disableRemote"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.disableRemote" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">disableRemote</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">option</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.disableRemote"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.disableRemote" title="Permalink to this definition">¶</a></dt>
 <dd><p>Signal a programming error by raising an exception.</p>
 <p>L{enableRemote} must return true for the given value of C{option} in
 order for this method to be called.  If a subclass of L{Telnet}
@@ -133,9 +135,9 @@ also override disableRemote tto disable those options.</p>
 <p>&#64;raise NotImplementedError: Always raised.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.telnet.TelnetProtocol.enableLocal">
-<code class="sig-name descname">enableLocal</code><span class="sig-paren">(</span><em class="sig-param">option</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.enableLocal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.enableLocal" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">enableLocal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">option</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.enableLocal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.enableLocal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call to allow the activation of options for this protocol</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -147,9 +149,9 @@ also override disableRemote tto disable those options.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.telnet.TelnetProtocol.disableLocal">
-<code class="sig-name descname">disableLocal</code><span class="sig-paren">(</span><em class="sig-param">option</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.disableLocal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.disableLocal" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">disableLocal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">option</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.disableLocal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.disableLocal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Disable a given option locally.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -158,9 +160,9 @@ also override disableRemote tto disable those options.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.telnet.TelnetProtocol.connectionLost">
-<code class="sig-name descname">connectionLost</code><span class="sig-paren">(</span><em class="sig-param">reason</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.connectionLost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.connectionLost" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">connectionLost</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reason</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.connectionLost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.connectionLost" title="Permalink to this definition">¶</a></dt>
 <dd><p>this is executed when the connection is lost for whatever
 reason. it can also be called directly, from the disconnect
 method</p>
@@ -171,9 +173,9 @@ method</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.telnet.TelnetProtocol.applicationDataReceived">
-<code class="sig-name descname">applicationDataReceived</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.applicationDataReceived"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.applicationDataReceived" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">applicationDataReceived</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.applicationDataReceived"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.applicationDataReceived" title="Permalink to this definition">¶</a></dt>
 <dd><p>Telnet method called when non-telnet-command data is coming in
 over the telnet connection. We pass it on to the game engine
 directly.</p>
@@ -184,9 +186,9 @@ directly.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.telnet.TelnetProtocol.sendLine">
-<code class="sig-name descname">sendLine</code><span class="sig-paren">(</span><em class="sig-param">line</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.sendLine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.sendLine" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sendLine</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">line</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.sendLine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.sendLine" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hook overloading the one used by linereceiver.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -195,9 +197,9 @@ directly.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.telnet.TelnetProtocol.disconnect">
-<code class="sig-name descname">disconnect</code><span class="sig-paren">(</span><em class="sig-param">reason=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.disconnect" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">disconnect</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reason</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.disconnect" title="Permalink to this definition">¶</a></dt>
 <dd><p>generic hook for the engine to call in order to
 disconnect this protocol.</p>
 <dl class="field-list simple">
@@ -207,9 +209,9 @@ disconnect this protocol.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.telnet.TelnetProtocol.data_in">
-<code class="sig-name descname">data_in</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.data_in"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.data_in" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">data_in</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.data_in"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.data_in" title="Permalink to this definition">¶</a></dt>
 <dd><p>Data User -&gt; Evennia</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
@@ -218,9 +220,9 @@ disconnect this protocol.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.telnet.TelnetProtocol.data_out">
-<code class="sig-name descname">data_out</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.data_out"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.data_out" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">data_out</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.data_out"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.data_out" title="Permalink to this definition">¶</a></dt>
 <dd><p>Data Evennia -&gt; User</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
@@ -229,9 +231,9 @@ disconnect this protocol.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.telnet.TelnetProtocol.send_text">
-<code class="sig-name descname">send_text</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.send_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.send_text" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">send_text</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.send_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.send_text" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send text data. This is an in-band telnet operation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -264,15 +266,15 @@ Note that it must be actively turned back on again!</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.telnet.TelnetProtocol.send_prompt">
-<code class="sig-name descname">send_prompt</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.send_prompt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.send_prompt" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">send_prompt</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.send_prompt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.send_prompt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send a prompt - a text without a line end. See send_text for argument options.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.telnet.TelnetProtocol.send_default">
-<code class="sig-name descname">send_default</code><span class="sig-paren">(</span><em class="sig-param">cmdname</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.send_default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.send_default" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">send_default</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdname</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/telnet.html#TelnetProtocol.send_default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.telnet.TelnetProtocol.send_default" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send other oob data</p>
 </dd></dl>
 
@@ -281,6 +283,7 @@ Note that it must be actively turned back on again!</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -325,12 +328,13 @@ Note that it must be actively turned back on again!</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.telnet</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

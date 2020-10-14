@@ -106,3 +106,65 @@ over time
 [online-form]: https://docs.google.com/spreadsheet/viewform?hl=en_US&formkey=dGN0VlJXMWpCT3VHaHpscDE
 zY1RoZGc6MQ#gid=0
 [issues]: https://github.com/evennia/evennia/issues
+
+
+```toctree::
+    :hidden:
+   
+    Coding-Introduction
+    Licensing
+    Contributing
+    Using-MUX-as-a-Standard
+    Version-Control
+    Using-Travis
+    Game-Planning
+    First-Steps-Coding
+    Internationalization
+    Quirks
+    Setting-up-PyCharm
+    Directory-Overview
+    Evennia-API
+    Execute-Python-Code
+    Portal-And-Server
+    Sessions
+    Server-Conf 
+    Messagepath
+    OOB
+    Inputfuncs
+    Custom-Protocols
+    New-Models
+    Unit-Testing
+    Profiling
+    Debugging
+    Command-System
+    Commands
+    Command-Sets
+    Help-System
+    Typeclasses
+    Objects
+    Accounts 
+    Communications
+    Scripts
+    TickerHandler
+    Coding-Utils
+    MonitorHandler
+    Attributes
+    Nicks
+    Tags
+    Web-Features
+    Webclient
+    Web-Tutorial
+    Locks
+    Signals
+    Coding-Utils
+    EvMenu
+    EvMore
+    EvEditor
+    Spawner-and-Prototypes
+    TextTags
+    Async-Process
+    API-refactoring
+    Docs-refactoring
+    Webclient-brainstorm 
+
+```

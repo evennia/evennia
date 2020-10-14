@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.utils.inlinefuncs &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.inlinefuncs</a></li> 
       </ul>
     </div>  
 
@@ -87,9 +89,9 @@ error message.</p></li>
 blocks, will lead to the entire string remaining unparsed. Inlineparsing should
 never traceback.</p>
 <hr class="docutils" />
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.inlinefuncs.random">
-<code class="sig-prename descclassname">evennia.utils.inlinefuncs.</code><code class="sig-name descname">random</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#random"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.random" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.inlinefuncs.</code><code class="sig-name descname">random</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#random"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.random" title="Permalink to this definition">¶</a></dt>
 <dd><p>Inlinefunc. Returns a random number between
 0 and 1, from 0 to a maximum value, or within a given range (inclusive).</p>
 <dl class="field-list simple">
@@ -114,9 +116,9 @@ given range.</p>
 <strong>$random(5, 10)</strong></p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.inlinefuncs.pad">
-<code class="sig-prename descclassname">evennia.utils.inlinefuncs.</code><code class="sig-name descname">pad</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#pad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.pad" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.inlinefuncs.</code><code class="sig-name descname">pad</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#pad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.pad" title="Permalink to this definition">¶</a></dt>
 <dd><p>Inlinefunc. Pads text to given width.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -137,9 +139,9 @@ space.</p></li>
 <p><strong>$pad(text, width, align, fillchar)</strong></p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.inlinefuncs.crop">
-<code class="sig-prename descclassname">evennia.utils.inlinefuncs.</code><code class="sig-name descname">crop</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#crop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.crop" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.inlinefuncs.</code><code class="sig-name descname">crop</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#crop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.crop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Inlinefunc. Crops ingoing text to given widths.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -159,9 +161,9 @@ of the string was cropped. Defaults to <strong>[…]</strong>.</p></li>
 <p><strong>$crop(text, width=78, suffix=’[…]’)</strong></p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.inlinefuncs.space">
-<code class="sig-prename descclassname">evennia.utils.inlinefuncs.</code><code class="sig-name descname">space</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#space"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.space" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.inlinefuncs.</code><code class="sig-name descname">space</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#space"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.space" title="Permalink to this definition">¶</a></dt>
 <dd><p>Inlinefunc. Inserts an arbitrary number of spaces. Defaults to 4 spaces.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -175,9 +177,9 @@ of the string was cropped. Defaults to <strong>[…]</strong>.</p></li>
 <p><strong>$space(20)</strong></p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.inlinefuncs.clr">
-<code class="sig-prename descclassname">evennia.utils.inlinefuncs.</code><code class="sig-name descname">clr</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#clr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.clr" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.inlinefuncs.</code><code class="sig-name descname">clr</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#clr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.clr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Inlinefunc. Colorizes nested text.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -197,20 +199,20 @@ to <strong>|n</strong> (reset-color).</p></li>
 <p><strong>$clr(startclr, text, endclr)</strong></p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.inlinefuncs.null">
-<code class="sig-prename descclassname">evennia.utils.inlinefuncs.</code><code class="sig-name descname">null</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#null"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.null" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.inlinefuncs.</code><code class="sig-name descname">null</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#null"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.null" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.inlinefuncs.nomatch">
-<code class="sig-prename descclassname">evennia.utils.inlinefuncs.</code><code class="sig-name descname">nomatch</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#nomatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.nomatch" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.inlinefuncs.</code><code class="sig-name descname">nomatch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#nomatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.nomatch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Default implementation of nomatch returns the function as-is as a string.</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.utils.inlinefuncs.ParseStack">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.inlinefuncs.</code><code class="sig-name descname">ParseStack</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#ParseStack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.ParseStack" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.inlinefuncs.</code><code class="sig-name descname">ParseStack</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#ParseStack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.ParseStack" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></p>
 <p>Custom stack that always concatenates strings together when the
 strings are added next to one another. Tuples are stored
@@ -223,29 +225,29 @@ None
 string + string,
 tuple,
 string + string]</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.inlinefuncs.ParseStack.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#ParseStack.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.ParseStack.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#ParseStack.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.ParseStack.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.inlinefuncs.ParseStack.append">
-<code class="sig-name descname">append</code><span class="sig-paren">(</span><em class="sig-param">item</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#ParseStack.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.ParseStack.append" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">append</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#ParseStack.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.ParseStack.append" title="Permalink to this definition">¶</a></dt>
 <dd><p>The stack will merge strings, add other things as normal</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.utils.inlinefuncs.InlinefuncError">
 <em class="property">exception </em><code class="sig-prename descclassname">evennia.utils.inlinefuncs.</code><code class="sig-name descname">InlinefuncError</code><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#InlinefuncError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.InlinefuncError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.inlinefuncs.parse_inlinefunc">
-<code class="sig-prename descclassname">evennia.utils.inlinefuncs.</code><code class="sig-name descname">parse_inlinefunc</code><span class="sig-paren">(</span><em class="sig-param">string</em>, <em class="sig-param">strip=False</em>, <em class="sig-param">available_funcs=None</em>, <em class="sig-param">stacktrace=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#parse_inlinefunc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.parse_inlinefunc" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.inlinefuncs.</code><code class="sig-name descname">parse_inlinefunc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em>, <em class="sig-param"><span class="n">strip</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">available_funcs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">stacktrace</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#parse_inlinefunc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.parse_inlinefunc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse the incoming string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -268,9 +270,9 @@ it. It is passed to the inlinefunc.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.inlinefuncs.raw">
-<code class="sig-prename descclassname">evennia.utils.inlinefuncs.</code><code class="sig-name descname">raw</code><span class="sig-paren">(</span><em class="sig-param">string</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#raw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.raw" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.inlinefuncs.</code><code class="sig-name descname">raw</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#raw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.raw" title="Permalink to this definition">¶</a></dt>
 <dd><p>Escape all inlinefuncs in a string so they won’t get parsed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -279,15 +281,15 @@ it. It is passed to the inlinefunc.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.utils.inlinefuncs.NickTemplateInvalid">
 <em class="property">exception </em><code class="sig-prename descclassname">evennia.utils.inlinefuncs.</code><code class="sig-name descname">NickTemplateInvalid</code><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#NickTemplateInvalid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.NickTemplateInvalid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.inlinefuncs.initialize_nick_templates">
-<code class="sig-prename descclassname">evennia.utils.inlinefuncs.</code><code class="sig-name descname">initialize_nick_templates</code><span class="sig-paren">(</span><em class="sig-param">in_template</em>, <em class="sig-param">out_template</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#initialize_nick_templates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.initialize_nick_templates" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.inlinefuncs.</code><code class="sig-name descname">initialize_nick_templates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_template</span></em>, <em class="sig-param"><span class="n">out_template</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#initialize_nick_templates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.initialize_nick_templates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize the nick templates for matching and remapping a string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -311,9 +313,9 @@ replacement using the standard .format method.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.inlinefuncs.parse_nick_template">
-<code class="sig-prename descclassname">evennia.utils.inlinefuncs.</code><code class="sig-name descname">parse_nick_template</code><span class="sig-paren">(</span><em class="sig-param">string</em>, <em class="sig-param">template_regex</em>, <em class="sig-param">outtemplate</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#parse_nick_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.parse_nick_template" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.inlinefuncs.</code><code class="sig-name descname">parse_nick_template</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em>, <em class="sig-param"><span class="n">template_regex</span></em>, <em class="sig-param"><span class="n">outtemplate</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/inlinefuncs.html#parse_nick_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.inlinefuncs.parse_nick_template" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse a text using a template and map it to another template</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -332,6 +334,7 @@ etc to match the regex.</p></li>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -376,12 +379,13 @@ etc to match the regex.</p></li>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.inlinefuncs</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.utils.search &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.search</a></li> 
       </ul>
     </div>  
 
@@ -53,9 +55,9 @@ there is only one match) unless noted otherwise.</p>
 </dl>
 <p>&gt; from evennia.objects.models import ObjectDB
 &gt; match = Object.objects.get_object_with_account(…)</p>
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.search.search_object">
-<code class="sig-prename descclassname">evennia.utils.search.</code><code class="sig-name descname">search_object</code><span class="sig-paren">(</span><em class="sig-param">searchdata</em>, <em class="sig-param">attribute_name=None</em>, <em class="sig-param">typeclass=None</em>, <em class="sig-param">candidates=None</em>, <em class="sig-param">exact=True</em>, <em class="sig-param">use_dbref=True</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.search.search_object" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.search.</code><code class="sig-name descname">search_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">searchdata</span></em>, <em class="sig-param"><span class="n">attribute_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">candidates</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">use_dbref</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.search.search_object" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search as an object globally or in a list of candidates and
 return results. The result is always an Object. Always returns
 a list.</p>
@@ -98,9 +100,9 @@ on the form #dbref and treat it like any string.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.search.search_account">
-<code class="sig-prename descclassname">evennia.utils.search.</code><code class="sig-name descname">search_account</code><span class="sig-paren">(</span><em class="sig-param">ostring</em>, <em class="sig-param">exact=True</em>, <em class="sig-param">typeclass=None</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.search.search_account" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.search.</code><code class="sig-name descname">search_account</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ostring</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.search.search_account" title="Permalink to this definition">¶</a></dt>
 <dd><p>Searches for a particular account by name or
 database id.</p>
 <dl class="field-list simple">
@@ -118,9 +120,9 @@ accounts of this typeclass.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.search.search_script">
-<code class="sig-prename descclassname">evennia.utils.search.</code><code class="sig-name descname">search_script</code><span class="sig-paren">(</span><em class="sig-param">ostring</em>, <em class="sig-param">obj=None</em>, <em class="sig-param">only_timed=False</em>, <em class="sig-param">typeclass=None</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.search.search_script" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.search.</code><code class="sig-name descname">search_script</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ostring</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">only_timed</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.search.search_script" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search for a particular script.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -136,9 +138,9 @@ on a timer.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.search.search_message">
-<code class="sig-prename descclassname">evennia.utils.search.</code><code class="sig-name descname">search_message</code><span class="sig-paren">(</span><em class="sig-param">sender=None</em>, <em class="sig-param">receiver=None</em>, <em class="sig-param">freetext=None</em>, <em class="sig-param">dbref=None</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.search.search_message" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.search.</code><code class="sig-name descname">search_message</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sender</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">receiver</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">freetext</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dbref</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.search.search_message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search the message database for particular messages. At least
 one of the arguments must be given to do a search.</p>
 <dl class="field-list simple">
@@ -161,9 +163,9 @@ always gives only one match.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.search.search_channel">
-<code class="sig-prename descclassname">evennia.utils.search.</code><code class="sig-name descname">search_channel</code><span class="sig-paren">(</span><em class="sig-param">ostring</em>, <em class="sig-param">exact=True</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.search.search_channel" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.search.</code><code class="sig-name descname">search_channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ostring</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.search.search_channel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search the channel database for a particular channel.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -176,9 +178,9 @@ case sensitive) match.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.search.search_help_entry">
-<code class="sig-prename descclassname">evennia.utils.search.</code><code class="sig-name descname">search_help_entry</code><span class="sig-paren">(</span><em class="sig-param">ostring</em>, <em class="sig-param">help_category=None</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.search.search_help_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.search.</code><code class="sig-name descname">search_help_entry</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ostring</span></em>, <em class="sig-param"><span class="n">help_category</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.search.search_help_entry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve a search entry object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -190,9 +192,9 @@ case sensitive) match.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.search.search_tag">
-<code class="sig-prename descclassname">evennia.utils.search.</code><code class="sig-name descname">search_tag</code><span class="sig-paren">(</span><em class="sig-param">key=None</em>, <em class="sig-param">category=None</em>, <em class="sig-param">tagtype=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.search.search_tag" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.search.</code><code class="sig-name descname">search_tag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tagtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.search.search_tag" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find object based on tag or category.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -220,39 +222,9 @@ matches were found.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="evennia.utils.search.search_account_tag">
-<code class="sig-prename descclassname">evennia.utils.search.</code><code class="sig-name descname">search_account_tag</code><span class="sig-paren">(</span><em class="sig-param">key=None</em>, <em class="sig-param">category=None</em>, <em class="sig-param">tagtype=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/search.html#search_account_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.search.search_account_tag" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find account based on tag or category.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>str</em><em>, </em><em>optional</em>) – The tag key to search for.</p></li>
-<li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – The category of tag
-to search for. If not set, uncategorized
-tags will be searched.</p></li>
-<li><p><strong>tagtype</strong> (<em>str</em><em>, </em><em>optional</em>) – ‘type’ of Tag, by default
-this is either <strong>None</strong> (a normal Tag), <strong>alias</strong> or
-<strong>permission</strong>. This always apply to all queried tags.</p></li>
-<li><p><strong>kwargs</strong> (<em>any</em>) – Other optional parameter that may be supported
-by the manager method.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>matches (list)</em> –</p>
-<dl class="simple">
-<dt>List of Accounts with tags matching</dt><dd><p>the search criteria, or an empty list if no
-matches were found.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.search.search_script_tag">
-<code class="sig-prename descclassname">evennia.utils.search.</code><code class="sig-name descname">search_script_tag</code><span class="sig-paren">(</span><em class="sig-param">key=None</em>, <em class="sig-param">category=None</em>, <em class="sig-param">tagtype=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/search.html#search_script_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.search.search_script_tag" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.search.</code><code class="sig-name descname">search_script_tag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tagtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/search.html#search_script_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.search.search_script_tag" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find script based on tag or category.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -280,9 +252,39 @@ matches were found.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
+<dt id="evennia.utils.search.search_account_tag">
+<code class="sig-prename descclassname">evennia.utils.search.</code><code class="sig-name descname">search_account_tag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tagtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/search.html#search_account_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.search.search_account_tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find account based on tag or category.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em><em>, </em><em>optional</em>) – The tag key to search for.</p></li>
+<li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – The category of tag
+to search for. If not set, uncategorized
+tags will be searched.</p></li>
+<li><p><strong>tagtype</strong> (<em>str</em><em>, </em><em>optional</em>) – ‘type’ of Tag, by default
+this is either <strong>None</strong> (a normal Tag), <strong>alias</strong> or
+<strong>permission</strong>. This always apply to all queried tags.</p></li>
+<li><p><strong>kwargs</strong> (<em>any</em>) – Other optional parameter that may be supported
+by the manager method.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>matches (list)</em> –</p>
+<dl class="simple">
+<dt>List of Accounts with tags matching</dt><dd><p>the search criteria, or an empty list if no
+matches were found.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="evennia.utils.search.search_channel_tag">
-<code class="sig-prename descclassname">evennia.utils.search.</code><code class="sig-name descname">search_channel_tag</code><span class="sig-paren">(</span><em class="sig-param">key=None</em>, <em class="sig-param">category=None</em>, <em class="sig-param">tagtype=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/search.html#search_channel_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.search.search_channel_tag" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.search.</code><code class="sig-name descname">search_channel_tag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tagtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/search.html#search_channel_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.search.search_channel_tag" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find channel based on tag or category.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -313,6 +315,7 @@ matches were found.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -357,12 +360,13 @@ matches were found.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.search</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

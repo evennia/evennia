@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.contrib.multidescer &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.multidescer</a></li> 
       </ul>
     </div>  
 
@@ -53,16 +55,16 @@ class and add a line <strong>self.add(CmdMultiDesc())</strong> to the end
 of it.</p>
 <p>Reload the server and you should have the +desc command available (it
 will replace the default <strong>desc</strong> command).</p>
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.contrib.multidescer.DescValidateError">
 <em class="property">exception </em><code class="sig-prename descclassname">evennia.contrib.multidescer.</code><code class="sig-name descname">DescValidateError</code><a class="reference internal" href="../_modules/evennia/contrib/multidescer.html#DescValidateError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.multidescer.DescValidateError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></p>
 <p>Used for tracebacks from desc systems</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.multidescer.CmdMultiDesc">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.multidescer.</code><code class="sig-name descname">CmdMultiDesc</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/multidescer.html#CmdMultiDesc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.multidescer.CmdMultiDesc" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.multidescer.</code><code class="sig-name descname">CmdMultiDesc</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/multidescer.html#CmdMultiDesc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.multidescer.CmdMultiDesc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
 <p>Manage multiple descriptions</p>
 <dl class="simple">
@@ -81,39 +83,39 @@ will replace the default <strong>desc</strong> command).</p>
 any keys not matching an actual description will be inserted
 as plain text. Use e.g. ansi line break ||/ to add a new
 paragraph and + + or ansi space ||_ to add extra whitespace.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.multidescer.CmdMultiDesc.key">
 <code class="sig-name descname">key</code><em class="property"> = '+desc'</em><a class="headerlink" href="#evennia.contrib.multidescer.CmdMultiDesc.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.multidescer.CmdMultiDesc.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = ['desc']</em><a class="headerlink" href="#evennia.contrib.multidescer.CmdMultiDesc.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.multidescer.CmdMultiDesc.locks">
 <code class="sig-name descname">locks</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.multidescer.CmdMultiDesc.locks" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.multidescer.CmdMultiDesc.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.multidescer.CmdMultiDesc.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.multidescer.CmdMultiDesc.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/multidescer.html#CmdMultiDesc.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.multidescer.CmdMultiDesc.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implements the multidescer.  We will use <strong>db.desc</strong> for the
 description in use and <strong>db.multidesc</strong> to store all descriptions.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.multidescer.CmdMultiDesc.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.multidescer.CmdMultiDesc.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.multidescer.CmdMultiDesc.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'desc', 'category': 'general', 'key': '+desc', 'tags': '', 'text': '\n    Manage multiple descriptions\n\n    Usage:\n        +desc [key]                - show current desc desc with &lt;key&gt;\n        +desc &lt;key&gt; = &lt;text&gt;       - add/replace desc with &lt;key&gt;\n        +desc/list                 - list descriptions (abbreviated)\n        +desc/list/full            - list descriptions (full texts)\n        +desc/edit &lt;key&gt;           - add/edit desc &lt;key&gt; in line editor\n        +desc/del &lt;key&gt;            - delete desc &lt;key&gt;\n        +desc/swap &lt;key1&gt;-&lt;key2&gt;   - swap positions of &lt;key1&gt; and &lt;key2&gt; in list\n        +desc/set &lt;key&gt; [+key+...] - set desc as default or combine multiple descs\n\n    Notes:\n        When combining multiple descs with +desc/set &lt;key&gt; + &lt;key2&gt; + ...,\n        any keys not matching an actual description will be inserted\n        as plain text. Use e.g. ansi line break ||/ to add a new\n        paragraph and + + or ansi space ||_ to add extra whitespace.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.multidescer.CmdMultiDesc.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -123,6 +125,7 @@ description in use and <strong>db.multidesc</strong> to store all descriptions.<
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -167,12 +170,13 @@ description in use and <strong>db.multidesc</strong> to store all descriptions.<
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.multidescer</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

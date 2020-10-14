@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.contrib.gendersub &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.gendersub</a></li> 
       </ul>
     </div>  
 
@@ -67,67 +69,67 @@ based on the one being addressed. Capitalization will be retained.</p>
 setting.DEFAULT_CHARACTER to point to this class.</p>
 <p>The <strong>&#64;gender</strong> command is used to set the gender. It needs to be added to the
 default cmdset before it becomes available.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.gendersub.SetGender">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.gendersub.</code><code class="sig-name descname">SetGender</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/gendersub.html#SetGender"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.gendersub.SetGender" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.gendersub.</code><code class="sig-name descname">SetGender</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/gendersub.html#SetGender"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.gendersub.SetGender" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
 <p>Sets gender on yourself</p>
 <dl class="simple">
 <dt>Usage:</dt><dd><p>&#64;gender male||female||neutral||ambiguous</p>
 </dd>
 </dl>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.gendersub.SetGender.key">
 <code class="sig-name descname">key</code><em class="property"> = '&#64;gender'</em><a class="headerlink" href="#evennia.contrib.gendersub.SetGender.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.gendersub.SetGender.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = ['&#64;sex']</em><a class="headerlink" href="#evennia.contrib.gendersub.SetGender.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.gendersub.SetGender.locks">
 <code class="sig-name descname">locks</code><em class="property"> = 'cmd:all();call:all()'</em><a class="headerlink" href="#evennia.contrib.gendersub.SetGender.locks" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.gendersub.SetGender.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/gendersub.html#SetGender.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.gendersub.SetGender.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implements the command.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.gendersub.SetGender.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.gendersub.SetGender.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.gendersub.SetGender.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();call:all()'</em><a class="headerlink" href="#evennia.contrib.gendersub.SetGender.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.gendersub.SetGender.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;sex', 'category': 'general', 'key': '&#64;gender', 'tags': '', 'text': '\n    Sets gender on yourself\n\n    Usage:\n      &#64;gender male||female||neutral||ambiguous\n\n    '}</em><a class="headerlink" href="#evennia.contrib.gendersub.SetGender.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.gendersub.GenderCharacter">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.gendersub.</code><code class="sig-name descname">GenderCharacter</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/gendersub.html#GenderCharacter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.gendersub.GenderCharacter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.gendersub.</code><code class="sig-name descname">GenderCharacter</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/gendersub.html#GenderCharacter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.gendersub.GenderCharacter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter" title="evennia.objects.objects.DefaultCharacter"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultCharacter</span></code></a></p>
 <p>This is a Character class aware of gender.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.gendersub.GenderCharacter.at_object_creation">
 <code class="sig-name descname">at_object_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/gendersub.html#GenderCharacter.at_object_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.gendersub.GenderCharacter.at_object_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called once when the object is created.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.gendersub.GenderCharacter.msg">
-<code class="sig-name descname">msg</code><span class="sig-paren">(</span><em class="sig-param">text=None</em>, <em class="sig-param">from_obj=None</em>, <em class="sig-param">session=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/gendersub.html#GenderCharacter.msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.gendersub.GenderCharacter.msg" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">msg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">from_obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/gendersub.html#GenderCharacter.msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.gendersub.GenderCharacter.msg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Emits something to a session attached to the object.
 Overloads the default msg() implementation to include
 gender-aware markers in output.</p>
@@ -151,24 +153,24 @@ force send regardless of MULTISESSION_MODE.</p></li>
 All extra kwargs will be passed on to the protocol.</p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.contrib.gendersub.GenderCharacter.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.gendersub.GenderCharacter.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DoesNotExist</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.DoesNotExist" title="evennia.objects.objects.DefaultCharacter.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultCharacter.DoesNotExist</span></code></a></p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.contrib.gendersub.GenderCharacter.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.gendersub.GenderCharacter.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.MultipleObjectsReturned</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.MultipleObjectsReturned" title="evennia.objects.objects.DefaultCharacter.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultCharacter.MultipleObjectsReturned</span></code></a></p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.gendersub.GenderCharacter.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.gendersub.GenderCharacter'</em><a class="headerlink" href="#evennia.contrib.gendersub.GenderCharacter.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.gendersub.GenderCharacter.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'GenderCharacter'</em><a class="headerlink" href="#evennia.contrib.gendersub.GenderCharacter.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -178,6 +180,7 @@ All extra kwargs will be passed on to the protocol.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -222,12 +225,13 @@ All extra kwargs will be passed on to the protocol.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.gendersub</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

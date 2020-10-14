@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.locks.lockhandler &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.locks.lockhandler</a></li> 
       </ul>
     </div>  
 
@@ -135,22 +137,15 @@ typeclassed objects. The default perm() lock function uses them,
 taking into account settings.PERMISSION_HIERARCHY. Also, the
 restricted &#64;perm command sets them, but otherwise they are identical
 to any other identifier you can use.</p>
-<dl class="exception">
-<dt id="evennia.locks.lockhandler.LockException">
-<em class="property">exception </em><code class="sig-prename descclassname">evennia.locks.lockhandler.</code><code class="sig-name descname">LockException</code><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockhandler.LockException" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
-<p>Raised during an error in a lock.</p>
-</dd></dl>
-
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.locks.lockhandler.LockHandler">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.locks.lockhandler.</code><code class="sig-name descname">LockHandler</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockhandler.LockHandler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.locks.lockhandler.</code><code class="sig-name descname">LockHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockhandler.LockHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This handler should be attached to all objects implementing
 permission checks, under the property ‘lockhandler’.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.locks.lockhandler.LockHandler.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockhandler.LockHandler.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockhandler.LockHandler.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads and pre-caches all relevant locks and their functions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -162,9 +157,9 @@ permission checks, under the property ‘lockhandler’.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.locks.lockhandler.LockHandler.cache_lock_bypass">
-<code class="sig-name descname">cache_lock_bypass</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.cache_lock_bypass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockhandler.LockHandler.cache_lock_bypass" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">cache_lock_bypass</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.cache_lock_bypass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockhandler.LockHandler.cache_lock_bypass" title="Permalink to this definition">¶</a></dt>
 <dd><p>We cache superuser bypass checks here for efficiency. This
 needs to be re-run when an account is assigned to a character.
 We need to grant access to superusers. We need to check both
@@ -179,9 +174,9 @@ yet been fully finalized)</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.locks.lockhandler.LockHandler.add">
-<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param">lockstring</em>, <em class="sig-param">validate_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockhandler.LockHandler.add" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lockstring</span></em>, <em class="sig-param"><span class="n">validate_only</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockhandler.LockHandler.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a new lockstring to handler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -206,9 +201,9 @@ don’t actually store it.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.locks.lockhandler.LockHandler.validate">
-<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param">lockstring</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockhandler.LockHandler.validate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lockstring</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockhandler.LockHandler.validate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate lockstring syntactically, without saving it.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -220,9 +215,9 @@ don’t actually store it.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.locks.lockhandler.LockHandler.replace">
-<code class="sig-name descname">replace</code><span class="sig-paren">(</span><em class="sig-param">lockstring</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.replace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockhandler.LockHandler.replace" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">replace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lockstring</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.replace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockhandler.LockHandler.replace" title="Permalink to this definition">¶</a></dt>
 <dd><p>Replaces the lockstring entirely.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -238,9 +233,9 @@ If so, the old string is recovered.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.locks.lockhandler.LockHandler.get">
-<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param">access_type=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockhandler.LockHandler.get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">access_type</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockhandler.LockHandler.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the full lockstring or the lockstring of a particular
 access type.</p>
 <dl class="field-list simple">
@@ -258,7 +253,7 @@ access type.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.locks.lockhandler.LockHandler.all">
 <code class="sig-name descname">all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockhandler.LockHandler.all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return all lockstrings</p>
@@ -269,9 +264,9 @@ access type.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.locks.lockhandler.LockHandler.remove">
-<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param">access_type</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockhandler.LockHandler.remove" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">access_type</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockhandler.LockHandler.remove" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove a particular lock from the handler</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -288,9 +283,9 @@ access type.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.locks.lockhandler.LockHandler.delete">
-<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param">access_type</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.locks.lockhandler.LockHandler.delete" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">access_type</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.locks.lockhandler.LockHandler.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove a particular lock from the handler</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -307,22 +302,22 @@ access type.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.locks.lockhandler.LockHandler.clear">
 <code class="sig-name descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockhandler.LockHandler.clear" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove all locks in the handler.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.locks.lockhandler.LockHandler.reset">
 <code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockhandler.LockHandler.reset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the reset flag, so the the lock will be re-cached at next
 checking.  This is usually called by &#64;reload.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.locks.lockhandler.LockHandler.append">
-<code class="sig-name descname">append</code><span class="sig-paren">(</span><em class="sig-param">access_type</em>, <em class="sig-param">lockstring</em>, <em class="sig-param">op='or'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockhandler.LockHandler.append" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">append</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">access_type</span></em>, <em class="sig-param"><span class="n">lockstring</span></em>, <em class="sig-param"><span class="n">op</span><span class="o">=</span><span class="default_value">'or'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockhandler.LockHandler.append" title="Permalink to this definition">¶</a></dt>
 <dd><p>Append a lock definition to access_type if it doesn’t already exist.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -343,9 +338,9 @@ the system to auto-add things like Admin-override access.</p>
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.locks.lockhandler.LockHandler.check">
-<code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param">accessing_obj</em>, <em class="sig-param">access_type</em>, <em class="sig-param">default=False</em>, <em class="sig-param">no_superuser_bypass=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockhandler.LockHandler.check" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">accessing_obj</span></em>, <em class="sig-param"><span class="n">access_type</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">no_superuser_bypass</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockhandler.LockHandler.check" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks a lock of the correct type by passing execution off to
 the lock function(s).</p>
 <dl class="field-list simple">
@@ -377,9 +372,9 @@ be) no way to sneak in malign code in it. Only “safe” lock
 functions (as defined by your settings) are executed.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.locks.lockhandler.LockHandler.check_lockstring">
-<code class="sig-name descname">check_lockstring</code><span class="sig-paren">(</span><em class="sig-param">accessing_obj</em>, <em class="sig-param">lockstring</em>, <em class="sig-param">no_superuser_bypass=False</em>, <em class="sig-param">default=False</em>, <em class="sig-param">access_type=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.check_lockstring"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockhandler.LockHandler.check_lockstring" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">check_lockstring</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">accessing_obj</span></em>, <em class="sig-param"><span class="n">lockstring</span></em>, <em class="sig-param"><span class="n">no_superuser_bypass</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">access_type</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.check_lockstring"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockhandler.LockHandler.check_lockstring" title="Permalink to this definition">¶</a></dt>
 <dd><p>Do a direct check against a lockstring (‘atype:func()..’),
 without any intermediary storage on the accessed object.</p>
 <dl class="field-list simple">
@@ -408,9 +403,17 @@ among the locks defined by <strong>lockstring</strong>.</p></li>
 
 </dd></dl>
 
+<dl class="py exception">
+<dt id="evennia.locks.lockhandler.LockException">
+<em class="property">exception </em><code class="sig-prename descclassname">evennia.locks.lockhandler.</code><code class="sig-name descname">LockException</code><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.locks.lockhandler.LockException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised during an error in a lock.</p>
+</dd></dl>
+
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -455,12 +458,13 @@ among the locks defined by <strong>lockstring</strong>.</p></li>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.locks.lockhandler</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

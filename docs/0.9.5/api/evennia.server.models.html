@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.server.models &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.models</a></li> 
       </ul>
     </div>  
 
@@ -40,9 +42,9 @@
 <p>This holds persistent server configuration flags.</p>
 <p>Config values should usually be set through the
 manager’s conf() method.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.server.models.ServerConfig">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.models.</code><code class="sig-name descname">ServerConfig</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/models.html#ServerConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.models.ServerConfig" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.server.models.</code><code class="sig-name descname">ServerConfig</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/models.html#ServerConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.models.ServerConfig" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.utils.idmapper.models.html#evennia.utils.idmapper.models.WeakSharedMemoryModel" title="evennia.utils.idmapper.models.WeakSharedMemoryModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.idmapper.models.WeakSharedMemoryModel</span></code></a></p>
 <p>On-the fly storage of global settings.</p>
 <p>Properties defined on ServerConfig:</p>
@@ -52,40 +54,40 @@ manager’s conf() method.</p>
 <li><p>value: Value stored in key. This is a pickled storage.</p></li>
 </ul>
 </div></blockquote>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.server.models.ServerConfig.db_key">
 <code class="sig-name descname">db_key</code><a class="headerlink" href="#evennia.server.models.ServerConfig.db_key" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.server.models.ServerConfig.db_value">
 <code class="sig-name descname">db_value</code><a class="headerlink" href="#evennia.server.models.ServerConfig.db_value" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.server.models.ServerConfig.objects">
 <code class="sig-name descname">objects</code><em class="property"> = &lt;evennia.server.manager.ServerConfigManager object&gt;</em><a class="headerlink" href="#evennia.server.models.ServerConfig.objects" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.models.ServerConfig.key">
 <em class="property">property </em><code class="sig-name descname">key</code><a class="headerlink" href="#evennia.server.models.ServerConfig.key" title="Permalink to this definition">¶</a></dt>
 <dd><p>Getter. Allows for value = self.key</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.models.ServerConfig.value">
 <em class="property">property </em><code class="sig-name descname">value</code><a class="headerlink" href="#evennia.server.models.ServerConfig.value" title="Permalink to this definition">¶</a></dt>
 <dd><p>Getter. Allows for value = self.value</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.models.ServerConfig.store">
-<code class="sig-name descname">store</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/models.html#ServerConfig.store"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.models.ServerConfig.store" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">store</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/models.html#ServerConfig.store"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.models.ServerConfig.store" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrap the storage.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -97,31 +99,31 @@ object the first time, the query is executed.</p>
 </dl>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.server.models.ServerConfig.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.server.models.ServerConfig.DoesNotExist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.server.models.ServerConfig.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.server.models.ServerConfig.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.server.models.ServerConfig.id">
 <code class="sig-name descname">id</code><a class="headerlink" href="#evennia.server.models.ServerConfig.id" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.server.models.ServerConfig.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.server.models.ServerConfig'</em><a class="headerlink" href="#evennia.server.models.ServerConfig.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.server.models.ServerConfig.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'WeakSharedMemoryModelBase'</em><a class="headerlink" href="#evennia.server.models.ServerConfig.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -131,6 +133,7 @@ object the first time, the query is executed.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -175,12 +178,13 @@ object the first time, the query is executed.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.models</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

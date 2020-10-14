@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.scripts.models &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.scripts.models</a></li> 
       </ul>
     </div>  
 
@@ -58,9 +60,9 @@ start combat or enter a dark room.</p></li>
 commands are available at a particular time</p></li>
 <li><p>Give the account/object a time-limited bonus/effect</p></li>
 </ul>
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.scripts.models.ScriptDB">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.scripts.models.</code><code class="sig-name descname">ScriptDB</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/models.html#ScriptDB"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.models.ScriptDB" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.scripts.models.</code><code class="sig-name descname">ScriptDB</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/models.html#ScriptDB"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.models.ScriptDB" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject" title="evennia.typeclasses.models.TypedObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.typeclasses.models.TypedObject</span></code></a></p>
 <p>The Script database representation.</p>
 <dl class="simple">
@@ -84,14 +86,14 @@ persistent - if script should survive a server reboot
 is_active - bool if script is currently running</p>
 </dd>
 </dl>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.scripts.models.ScriptDB.db_desc">
 <code class="sig-name descname">db_desc</code><a class="headerlink" href="#evennia.scripts.models.ScriptDB.db_desc" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.scripts.models.ScriptDB.db_obj">
 <code class="sig-name descname">db_obj</code><a class="headerlink" href="#evennia.scripts.models.ScriptDB.db_obj" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related object on the forward side of a many-to-one or
@@ -104,7 +106,7 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <p><strong>**Child.parent**</strong> is a <strong>**ForwardManyToOneDescriptor**</strong> instance.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.scripts.models.ScriptDB.db_account">
 <code class="sig-name descname">db_account</code><a class="headerlink" href="#evennia.scripts.models.ScriptDB.db_account" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related object on the forward side of a many-to-one or
@@ -117,47 +119,47 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <p><strong>**Child.parent**</strong> is a <strong>**ForwardManyToOneDescriptor**</strong> instance.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.scripts.models.ScriptDB.db_interval">
 <code class="sig-name descname">db_interval</code><a class="headerlink" href="#evennia.scripts.models.ScriptDB.db_interval" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.scripts.models.ScriptDB.db_start_delay">
 <code class="sig-name descname">db_start_delay</code><a class="headerlink" href="#evennia.scripts.models.ScriptDB.db_start_delay" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.scripts.models.ScriptDB.db_repeats">
 <code class="sig-name descname">db_repeats</code><a class="headerlink" href="#evennia.scripts.models.ScriptDB.db_repeats" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.scripts.models.ScriptDB.db_persistent">
 <code class="sig-name descname">db_persistent</code><a class="headerlink" href="#evennia.scripts.models.ScriptDB.db_persistent" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.scripts.models.ScriptDB.db_is_active">
 <code class="sig-name descname">db_is_active</code><a class="headerlink" href="#evennia.scripts.models.ScriptDB.db_is_active" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.scripts.models.ScriptDB.objects">
 <code class="sig-name descname">objects</code><em class="property"> = &lt;evennia.scripts.manager.ScriptDBManager object&gt;</em><a class="headerlink" href="#evennia.scripts.models.ScriptDB.objects" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.models.ScriptDB.obj">
 <em class="property">property </em><code class="sig-name descname">obj</code><a class="headerlink" href="#evennia.scripts.models.ScriptDB.obj" title="Permalink to this definition">¶</a></dt>
 <dd><p>Property wrapper that homogenizes access to either the
@@ -165,7 +167,7 @@ db_account or db_obj field, using the same object property
 name.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.models.ScriptDB.object">
 <em class="property">property </em><code class="sig-name descname">object</code><a class="headerlink" href="#evennia.scripts.models.ScriptDB.object" title="Permalink to this definition">¶</a></dt>
 <dd><p>Property wrapper that homogenizes access to either the
@@ -173,32 +175,32 @@ db_account or db_obj field, using the same object property
 name.</p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.scripts.models.ScriptDB.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.scripts.models.ScriptDB.DoesNotExist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.scripts.models.ScriptDB.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.scripts.models.ScriptDB.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.models.ScriptDB.account">
 <em class="property">property </em><code class="sig-name descname">account</code><a class="headerlink" href="#evennia.scripts.models.ScriptDB.account" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for getting database field <strong>db_account</strong>.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.scripts.models.ScriptDB.db_account_id">
 <code class="sig-name descname">db_account_id</code><a class="headerlink" href="#evennia.scripts.models.ScriptDB.db_account_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.scripts.models.ScriptDB.db_attributes">
 <code class="sig-name descname">db_attributes</code><a class="headerlink" href="#evennia.scripts.models.ScriptDB.db_attributes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related objects manager on the forward and reverse sides of
@@ -214,14 +216,14 @@ instances.</p>
 class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.scripts.models.ScriptDB.db_obj_id">
 <code class="sig-name descname">db_obj_id</code><a class="headerlink" href="#evennia.scripts.models.ScriptDB.db_obj_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.scripts.models.ScriptDB.db_tags">
 <code class="sig-name descname">db_tags</code><a class="headerlink" href="#evennia.scripts.models.ScriptDB.db_tags" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related objects manager on the forward and reverse sides of
@@ -237,53 +239,53 @@ instances.</p>
 class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.models.ScriptDB.desc">
 <em class="property">property </em><code class="sig-name descname">desc</code><a class="headerlink" href="#evennia.scripts.models.ScriptDB.desc" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for getting database field <strong>db_desc</strong>.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.models.ScriptDB.get_next_by_db_date_created">
 <code class="sig-name descname">get_next_by_db_date_created</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.DateTimeField: db_date_created&gt;</em>, <em class="sig-param">is_next=True</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.scripts.models.ScriptDB.get_next_by_db_date_created" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.models.ScriptDB.get_previous_by_db_date_created">
 <code class="sig-name descname">get_previous_by_db_date_created</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.DateTimeField: db_date_created&gt;</em>, <em class="sig-param">is_next=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.scripts.models.ScriptDB.get_previous_by_db_date_created" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.scripts.models.ScriptDB.id">
 <code class="sig-name descname">id</code><a class="headerlink" href="#evennia.scripts.models.ScriptDB.id" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.models.ScriptDB.interval">
 <em class="property">property </em><code class="sig-name descname">interval</code><a class="headerlink" href="#evennia.scripts.models.ScriptDB.interval" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for getting database field <strong>db_interval</strong>.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.models.ScriptDB.is_active">
 <em class="property">property </em><code class="sig-name descname">is_active</code><a class="headerlink" href="#evennia.scripts.models.ScriptDB.is_active" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for getting database field <strong>db_is_active</strong>.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.scripts.models.ScriptDB.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.scripts.models.ScriptDB'</em><a class="headerlink" href="#evennia.scripts.models.ScriptDB.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.models.ScriptDB.persistent">
 <em class="property">property </em><code class="sig-name descname">persistent</code><a class="headerlink" href="#evennia.scripts.models.ScriptDB.persistent" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for getting database field <strong>db_persistent</strong>.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.scripts.models.ScriptDB.receiver_script_set">
 <code class="sig-name descname">receiver_script_set</code><a class="headerlink" href="#evennia.scripts.models.ScriptDB.receiver_script_set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related objects manager on the forward and reverse sides of
@@ -299,13 +301,13 @@ instances.</p>
 class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.models.ScriptDB.repeats">
 <em class="property">property </em><code class="sig-name descname">repeats</code><a class="headerlink" href="#evennia.scripts.models.ScriptDB.repeats" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for getting database field <strong>db_repeats</strong>.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.scripts.models.ScriptDB.sender_script_set">
 <code class="sig-name descname">sender_script_set</code><a class="headerlink" href="#evennia.scripts.models.ScriptDB.sender_script_set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related objects manager on the forward and reverse sides of
@@ -321,13 +323,13 @@ instances.</p>
 class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.models.ScriptDB.start_delay">
 <em class="property">property </em><code class="sig-name descname">start_delay</code><a class="headerlink" href="#evennia.scripts.models.ScriptDB.start_delay" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for getting database field <strong>db_start_delay</strong>.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.scripts.models.ScriptDB.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'SharedMemoryModelBase'</em><a class="headerlink" href="#evennia.scripts.models.ScriptDB.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -337,6 +339,7 @@ class built by <strong>**create_forward_many_to_many_manager()**</strong> define
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -381,12 +384,13 @@ class built by <strong>**create_forward_many_to_many_manager()**</strong> define
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.scripts.models</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

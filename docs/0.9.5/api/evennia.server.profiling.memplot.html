@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.server.profiling.memplot &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.profiling.memplot</a></li> 
       </ul>
     </div>  
 
@@ -40,41 +42,41 @@
 <p>Data will be saved to game/logs/memoryusage.log. Note that
 the script will append to this file if it already exists.</p>
 <p>Call this module directly to plot the log (requires matplotlib and numpy).</p>
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.server.profiling.memplot.Memplot">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.profiling.memplot.</code><code class="sig-name descname">Memplot</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/memplot.html#Memplot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.memplot.Memplot" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.server.profiling.memplot.</code><code class="sig-name descname">Memplot</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/memplot.html#Memplot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.memplot.Memplot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript" title="evennia.scripts.scripts.DefaultScript"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript</span></code></a></p>
 <p>Describes a memory plotting action.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.profiling.memplot.Memplot.at_script_creation">
 <code class="sig-name descname">at_script_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/memplot.html#Memplot.at_script_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.memplot.Memplot.at_script_creation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called at script creation</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.profiling.memplot.Memplot.at_repeat">
 <code class="sig-name descname">at_repeat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/profiling/memplot.html#Memplot.at_repeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.profiling.memplot.Memplot.at_repeat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Regularly save memory statistics.</p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.server.profiling.memplot.Memplot.DoesNotExist">
 <em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.server.profiling.memplot.Memplot.DoesNotExist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DoesNotExist</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.DoesNotExist" title="evennia.scripts.scripts.DefaultScript.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.DoesNotExist</span></code></a></p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="evennia.server.profiling.memplot.Memplot.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.server.profiling.memplot.Memplot.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.MultipleObjectsReturned</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned" title="evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned</span></code></a></p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.server.profiling.memplot.Memplot.path">
 <code class="sig-name descname">path</code><em class="property"> = 'evennia.server.profiling.memplot.Memplot'</em><a class="headerlink" href="#evennia.server.profiling.memplot.Memplot.path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.server.profiling.memplot.Memplot.typename">
 <code class="sig-name descname">typename</code><em class="property"> = 'Memplot'</em><a class="headerlink" href="#evennia.server.profiling.memplot.Memplot.typename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -84,6 +86,7 @@ the script will append to this file if it already exists.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -128,12 +131,13 @@ the script will append to this file if it already exists.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.profiling.memplot</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

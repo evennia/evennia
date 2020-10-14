@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.commands.cmdhandler &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdhandler</a></li> 
       </ul>
     </div>  
 
@@ -79,16 +81,9 @@ will be available to the command coder at run-time.</p></li>
 <ol class="arabic simple" start="13">
 <li><p>Return deferred that will fire with the return from <strong>cmdobj.func()</strong> (unused by default).</p></li>
 </ol>
-<dl class="exception">
-<dt id="evennia.commands.cmdhandler.InterruptCommand">
-<em class="property">exception </em><code class="sig-prename descclassname">evennia.commands.cmdhandler.</code><code class="sig-name descname">InterruptCommand</code><a class="reference internal" href="../_modules/evennia/commands/command.html#InterruptCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdhandler.InterruptCommand" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
-<p>Cleanly interrupt a command.</p>
-</dd></dl>
-
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.commands.cmdhandler.cmdhandler">
-<code class="sig-prename descclassname">evennia.commands.cmdhandler.</code><code class="sig-name descname">cmdhandler</code><span class="sig-paren">(</span><em class="sig-param">called_by</em>, <em class="sig-param">raw_string</em>, <em class="sig-param">_testing=False</em>, <em class="sig-param">callertype='session'</em>, <em class="sig-param">session=None</em>, <em class="sig-param">cmdobj=None</em>, <em class="sig-param">cmdobj_key=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdhandler.html#cmdhandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdhandler.cmdhandler" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.commands.cmdhandler.</code><code class="sig-name descname">cmdhandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">called_by</span></em>, <em class="sig-param"><span class="n">raw_string</span></em>, <em class="sig-param"><span class="n">_testing</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">callertype</span><span class="o">=</span><span class="default_value">'session'</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cmdobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cmdobj_key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdhandler.html#cmdhandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdhandler.cmdhandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is the main mechanism that handles any string sent to the engine.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -135,9 +130,17 @@ default Evennia.</p>
 </dl>
 </dd></dl>
 
+<dl class="py exception">
+<dt id="evennia.commands.cmdhandler.InterruptCommand">
+<em class="property">exception </em><code class="sig-prename descclassname">evennia.commands.cmdhandler.</code><code class="sig-name descname">InterruptCommand</code><a class="reference internal" href="../_modules/evennia/commands/command.html#InterruptCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdhandler.InterruptCommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Cleanly interrupt a command.</p>
+</dd></dl>
+
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -182,12 +185,13 @@ default Evennia.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdhandler</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

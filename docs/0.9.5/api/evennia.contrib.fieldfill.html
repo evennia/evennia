@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.contrib.fieldfill &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.fieldfill</a></li> 
       </ul>
     </div>  
 
@@ -192,14 +194,14 @@ the field to False or True.</p>
 </div></blockquote>
 </dd>
 </dl>
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.fieldfill.FieldEvMenu">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.fieldfill.</code><code class="sig-name descname">FieldEvMenu</code><span class="sig-paren">(</span><em class="sig-param">caller</em>, <em class="sig-param">menudata</em>, <em class="sig-param">startnode='start'</em>, <em class="sig-param">cmdset_mergetype='Replace'</em>, <em class="sig-param">cmdset_priority=1</em>, <em class="sig-param">auto_quit=True</em>, <em class="sig-param">auto_look=True</em>, <em class="sig-param">auto_help=True</em>, <em class="sig-param">cmd_on_exit='look'</em>, <em class="sig-param">persistent=False</em>, <em class="sig-param">startnode_input=''</em>, <em class="sig-param">session=None</em>, <em class="sig-param">debug=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#FieldEvMenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.FieldEvMenu" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.fieldfill.</code><code class="sig-name descname">FieldEvMenu</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">menudata</span></em>, <em class="sig-param"><span class="n">startnode</span><span class="o">=</span><span class="default_value">'start'</span></em>, <em class="sig-param"><span class="n">cmdset_mergetype</span><span class="o">=</span><span class="default_value">'Replace'</span></em>, <em class="sig-param"><span class="n">cmdset_priority</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">auto_quit</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">auto_look</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">auto_help</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">cmd_on_exit</span><span class="o">=</span><span class="default_value">'look'</span></em>, <em class="sig-param"><span class="n">persistent</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">startnode_input</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#FieldEvMenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.FieldEvMenu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu" title="evennia.utils.evmenu.EvMenu"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.evmenu.EvMenu</span></code></a></p>
 <p>Custom EvMenu type with its own node formatter - removes extraneous lines</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.fieldfill.FieldEvMenu.node_formatter">
-<code class="sig-name descname">node_formatter</code><span class="sig-paren">(</span><em class="sig-param">nodetext</em>, <em class="sig-param">optionstext</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#FieldEvMenu.node_formatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.FieldEvMenu.node_formatter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">node_formatter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodetext</span></em>, <em class="sig-param"><span class="n">optionstext</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#FieldEvMenu.node_formatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.FieldEvMenu.node_formatter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Formats the entirety of the node.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -217,9 +219,9 @@ the field to False or True.</p>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.contrib.fieldfill.init_fill_field">
-<code class="sig-prename descclassname">evennia.contrib.fieldfill.</code><code class="sig-name descname">init_fill_field</code><span class="sig-paren">(</span><em class="sig-param">formtemplate</em>, <em class="sig-param">caller</em>, <em class="sig-param">formcallback</em>, <em class="sig-param">pretext=''</em>, <em class="sig-param">posttext=''</em>, <em class="sig-param">submitcmd='submit'</em>, <em class="sig-param">borderstyle='cells'</em>, <em class="sig-param">formhelptext=None</em>, <em class="sig-param">persistent=False</em>, <em class="sig-param">initial_formdata=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#init_fill_field"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.init_fill_field" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.fieldfill.</code><code class="sig-name descname">init_fill_field</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">formtemplate</span></em>, <em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">formcallback</span></em>, <em class="sig-param"><span class="n">pretext</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">posttext</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">submitcmd</span><span class="o">=</span><span class="default_value">'submit'</span></em>, <em class="sig-param"><span class="n">borderstyle</span><span class="o">=</span><span class="default_value">'cells'</span></em>, <em class="sig-param"><span class="n">formhelptext</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">persistent</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">initial_formdata</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#init_fill_field"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.init_fill_field" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes a menu presenting a player with a fillable form - once the form
 is submitted, the data will be passed as a dictionary to your chosen
 function.</p>
@@ -250,17 +252,17 @@ data dynamically before calling init_fill_field.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.contrib.fieldfill.menunode_fieldfill">
-<code class="sig-prename descclassname">evennia.contrib.fieldfill.</code><code class="sig-name descname">menunode_fieldfill</code><span class="sig-paren">(</span><em class="sig-param">caller</em>, <em class="sig-param">raw_string</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#menunode_fieldfill"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.menunode_fieldfill" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.fieldfill.</code><code class="sig-name descname">menunode_fieldfill</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">raw_string</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#menunode_fieldfill"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.menunode_fieldfill" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is an EvMenu node, which calls itself over and over in order to
 allow a player to enter values into a fillable form. When the form is
 submitted, the form data is passed to a callback as a dictionary.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.contrib.fieldfill.form_template_to_dict">
-<code class="sig-prename descclassname">evennia.contrib.fieldfill.</code><code class="sig-name descname">form_template_to_dict</code><span class="sig-paren">(</span><em class="sig-param">formtemplate</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#form_template_to_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.form_template_to_dict" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.fieldfill.</code><code class="sig-name descname">form_template_to_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">formtemplate</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#form_template_to_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.form_template_to_dict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes a dictionary of form data from the given list-of-dictionaries
 form template, as formatted above.</p>
 <dl class="field-list simple">
@@ -273,9 +275,9 @@ form template, as formatted above.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.contrib.fieldfill.display_formdata">
-<code class="sig-prename descclassname">evennia.contrib.fieldfill.</code><code class="sig-name descname">display_formdata</code><span class="sig-paren">(</span><em class="sig-param">formtemplate</em>, <em class="sig-param">formdata</em>, <em class="sig-param">pretext=''</em>, <em class="sig-param">posttext=''</em>, <em class="sig-param">borderstyle='cells'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#display_formdata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.display_formdata" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.fieldfill.</code><code class="sig-name descname">display_formdata</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">formtemplate</span></em>, <em class="sig-param"><span class="n">formdata</span></em>, <em class="sig-param"><span class="n">pretext</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">posttext</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">borderstyle</span><span class="o">=</span><span class="default_value">'cells'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#display_formdata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.display_formdata" title="Permalink to this definition">¶</a></dt>
 <dd><p>Displays a form’s current data as a table. Used in the form menu.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -293,9 +295,9 @@ borderstyle (str): EvTable’s border style.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.contrib.fieldfill.verify_online_player">
-<code class="sig-prename descclassname">evennia.contrib.fieldfill.</code><code class="sig-name descname">verify_online_player</code><span class="sig-paren">(</span><em class="sig-param">caller</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#verify_online_player"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.verify_online_player" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.fieldfill.</code><code class="sig-name descname">verify_online_player</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#verify_online_player"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.verify_online_player" title="Permalink to this definition">¶</a></dt>
 <dd><p>Example ‘verify function’ that matches player input to an online character
 or else rejects their input as invalid.</p>
 <dl class="field-list simple">
@@ -318,9 +320,9 @@ made.</p>
 </dl>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.contrib.fieldfill.CmdTestMenu">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.fieldfill.</code><code class="sig-name descname">CmdTestMenu</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#CmdTestMenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.CmdTestMenu" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.fieldfill.</code><code class="sig-name descname">CmdTestMenu</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#CmdTestMenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.CmdTestMenu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
 <p>This test command will initialize a menu that presents you with a form.
 You can fill out the fields of this form in any order, and then type in
@@ -335,42 +337,42 @@ quit
 send</p>
 </dd>
 </dl>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.fieldfill.CmdTestMenu.key">
 <code class="sig-name descname">key</code><em class="property"> = 'testmenu'</em><a class="headerlink" href="#evennia.contrib.fieldfill.CmdTestMenu.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.contrib.fieldfill.CmdTestMenu.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#CmdTestMenu.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.CmdTestMenu.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>This performs the actual command.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.fieldfill.CmdTestMenu.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.fieldfill.CmdTestMenu.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.fieldfill.CmdTestMenu.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.fieldfill.CmdTestMenu.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.fieldfill.CmdTestMenu.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.fieldfill.CmdTestMenu.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.contrib.fieldfill.CmdTestMenu.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'testmenu', 'tags': '', 'text': &quot;\n    This test command will initialize a menu that presents you with a form.\n    You can fill out the fields of this form in any order, and then type in\n    'send' to send a message to another online player, which will reach them\n    after a delay you specify.\n\n    Usage:\n       &lt;field&gt; = &lt;new value&gt;\n       clear &lt;field&gt;\n       help\n       look\n       quit\n       send\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.fieldfill.CmdTestMenu.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.contrib.fieldfill.sendmessage">
-<code class="sig-prename descclassname">evennia.contrib.fieldfill.</code><code class="sig-name descname">sendmessage</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">text</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#sendmessage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.sendmessage" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.fieldfill.</code><code class="sig-name descname">sendmessage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">text</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#sendmessage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.sendmessage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Callback to send a message to a player.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -382,9 +384,9 @@ send</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.contrib.fieldfill.init_delayed_message">
-<code class="sig-prename descclassname">evennia.contrib.fieldfill.</code><code class="sig-name descname">init_delayed_message</code><span class="sig-paren">(</span><em class="sig-param">caller</em>, <em class="sig-param">formdata</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#init_delayed_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.init_delayed_message" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.contrib.fieldfill.</code><code class="sig-name descname">init_delayed_message</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">formdata</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/fieldfill.html#init_delayed_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.fieldfill.init_delayed_message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes a delayed message, using data from the example form.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -399,6 +401,7 @@ send</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -443,12 +446,13 @@ send</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.fieldfill</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

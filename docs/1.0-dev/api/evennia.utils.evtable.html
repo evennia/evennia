@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.utils.evtable &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.evtable</a></li> 
       </ul>
     </div>  
 
@@ -129,18 +131,18 @@ cell will not “bleed”, but it also means that eventual colour outside the ta
 will not transfer “across” a table, you need to re-set the color to have it
 appear on both sides of the table string.</p>
 <hr class="docutils" />
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.utils.evtable.ANSITextWrapper">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.evtable.</code><code class="sig-name descname">ANSITextWrapper</code><span class="sig-paren">(</span><em class="sig-param">width=70</em>, <em class="sig-param">initial_indent=''</em>, <em class="sig-param">subsequent_indent=''</em>, <em class="sig-param">expand_tabs=True</em>, <em class="sig-param">replace_whitespace=True</em>, <em class="sig-param">fix_sentence_endings=False</em>, <em class="sig-param">break_long_words=True</em>, <em class="sig-param">drop_whitespace=True</em>, <em class="sig-param">break_on_hyphens=True</em>, <em class="sig-param">tabsize=8</em>, <em class="sig-param">*</em>, <em class="sig-param">max_lines=None</em>, <em class="sig-param">placeholder=' [...]'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#ANSITextWrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.ANSITextWrapper" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.evtable.</code><code class="sig-name descname">ANSITextWrapper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">70</span></em>, <em class="sig-param"><span class="n">initial_indent</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">subsequent_indent</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">expand_tabs</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">replace_whitespace</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">fix_sentence_endings</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">break_long_words</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">drop_whitespace</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">break_on_hyphens</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">tabsize</span><span class="o">=</span><span class="default_value">8</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">max_lines</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">placeholder</span><span class="o">=</span><span class="default_value">' [...]'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#ANSITextWrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.ANSITextWrapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">textwrap.TextWrapper</span></code></p>
 <p>This is a wrapper work class for handling strings with ANSI tags
 in it.  It overloads the standard library <strong>TextWrapper</strong> class and
 is used internally in <strong>EvTable</strong> and has no public methods.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.evtable.wrap">
-<code class="sig-prename descclassname">evennia.utils.evtable.</code><code class="sig-name descname">wrap</code><span class="sig-paren">(</span><em class="sig-param">text</em>, <em class="sig-param">width=78</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#wrap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.wrap" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.evtable.</code><code class="sig-name descname">wrap</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">78</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#wrap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.wrap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrap a single paragraph of text, returning a list of wrapped lines.</p>
 <p>Reformat the single paragraph in ‘text’ so it fits in lines of no
 more than ‘width’ columns, and return a list of wrapped lines.  By
@@ -162,9 +164,9 @@ all other whitespace characters (including newline) are converted to</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.utils.evtable.fill">
-<code class="sig-prename descclassname">evennia.utils.evtable.</code><code class="sig-name descname">fill</code><span class="sig-paren">(</span><em class="sig-param">text</em>, <em class="sig-param">width=78</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#fill"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.fill" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.evtable.</code><code class="sig-name descname">fill</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">78</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#fill"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.fill" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fill a single paragraph of text, returning a new string.</p>
 <p>Reformat the single paragraph in ‘text’ to fit in lines of no more
 than ‘width’ columns, and return a new string containing the entire
@@ -186,16 +188,16 @@ whitespace characters converted to space.</p>
 </dl>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.utils.evtable.EvCell">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.evtable.</code><code class="sig-name descname">EvCell</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvCell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvCell" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.evtable.</code><code class="sig-name descname">EvCell</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvCell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvCell" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Holds a single data cell for the table. A cell has a certain width
 and height and contains one or more lines of data. It can shrink
 and resize as needed.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.evtable.EvCell.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvCell.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvCell.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvCell.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvCell.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>data</strong> (<em>str</em>) – The un-padded data of the entry.</p>
@@ -258,7 +260,7 @@ small.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.evtable.EvCell.get_min_height">
 <code class="sig-name descname">get_min_height</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvCell.get_min_height"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvCell.get_min_height" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the minimum possible height of cell, including at least
@@ -270,7 +272,7 @@ one line for data.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.evtable.EvCell.get_min_width">
 <code class="sig-name descname">get_min_width</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvCell.get_min_width"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvCell.get_min_width" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the minimum possible width of cell, including at least one
@@ -282,7 +284,7 @@ character-width for data.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.evtable.EvCell.get_height">
 <code class="sig-name descname">get_height</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvCell.get_height"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvCell.get_height" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get natural height of cell, including padding.</p>
@@ -293,7 +295,7 @@ character-width for data.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.evtable.EvCell.get_width">
 <code class="sig-name descname">get_width</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvCell.get_width"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvCell.get_width" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get natural width of cell, including padding.</p>
@@ -304,9 +306,9 @@ character-width for data.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.evtable.EvCell.replace_data">
-<code class="sig-name descname">replace_data</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvCell.replace_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvCell.replace_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">replace_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvCell.replace_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvCell.replace_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Replace cell data. This causes a full reformat of the cell.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -318,9 +320,9 @@ character-width for data.</p>
 <strong>EvCell.__init__</strong>.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.evtable.EvCell.reformat">
-<code class="sig-name descname">reformat</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvCell.reformat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvCell.reformat" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">reformat</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvCell.reformat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvCell.reformat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reformat the EvCell with new options</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
@@ -333,7 +335,7 @@ the options or the data given.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.evtable.EvCell.get">
 <code class="sig-name descname">get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvCell.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvCell.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get data, padded and aligned in the form of a list of lines.</p>
@@ -341,18 +343,18 @@ the options or the data given.</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.utils.evtable.EvColumn">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.evtable.</code><code class="sig-name descname">EvColumn</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvColumn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvColumn" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.evtable.</code><code class="sig-name descname">EvColumn</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvColumn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvColumn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This class holds a list of Cells to represent a column of a table.
 It holds operations and settings that affect <em>all</em> cells in the
 column.</p>
 <p>Columns are not intended to be used stand-alone; they should be
 incorporated into an EvTable (like EvCells)</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.evtable.EvColumn.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvColumn.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvColumn.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvColumn.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvColumn.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>for each row in the column</strong> (<a class="reference internal" href="evennia.utils.optionclasses.html#evennia.utils.optionclasses.Text" title="evennia.utils.optionclasses.Text"><em>Text</em></a>) – </p>
@@ -367,9 +369,9 @@ incorporated into an EvTable (like EvCells)</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.evtable.EvColumn.add_rows">
-<code class="sig-name descname">add_rows</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvColumn.add_rows"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvColumn.add_rows" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_rows</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvColumn.add_rows"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvColumn.add_rows" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add new cells to column. They will be inserted as
 a series of rows. It will inherit the options
 of the rest of the column’s cells (use update to change
@@ -390,9 +392,9 @@ of the column.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.evtable.EvColumn.reformat">
-<code class="sig-name descname">reformat</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvColumn.reformat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvColumn.reformat" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">reformat</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvColumn.reformat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvColumn.reformat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Change the options for the column.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
@@ -401,9 +403,9 @@ of the column.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.evtable.EvColumn.reformat_cell">
-<code class="sig-name descname">reformat_cell</code><span class="sig-paren">(</span><em class="sig-param">index</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvColumn.reformat_cell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvColumn.reformat_cell" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">reformat_cell</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvColumn.reformat_cell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvColumn.reformat_cell" title="Permalink to this definition">¶</a></dt>
 <dd><p>reformat cell at given index, keeping column options if
 necessary.</p>
 <dl class="field-list simple">
@@ -419,15 +421,15 @@ starting from 0 for the first row to Nrows-1.</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.utils.evtable.EvTable">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.evtable.</code><code class="sig-name descname">EvTable</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvTable" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.evtable.</code><code class="sig-name descname">EvTable</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvTable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>The table class holds a list of EvColumns, each consisting of EvCells so
 that the result is a 2D matrix.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.evtable.EvTable.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvTable.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvTable.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvTable.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvTable.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>texts for the table.</strong> (<em>Header</em>) – </p>
@@ -493,9 +495,9 @@ of <strong>EcCell.__init__</strong> are also available. These will be passed dow
 to every cell in the table.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.evtable.EvTable.add_header">
-<code class="sig-name descname">add_header</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvTable.add_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvTable.add_header" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_header</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvTable.add_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvTable.add_header" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add header to table. This is a number of texts to be put at
 the top of the table. They will replace an existing header.</p>
 <dl class="field-list simple">
@@ -511,9 +513,9 @@ the top of the table. They will replace an existing header.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.evtable.EvTable.add_column">
-<code class="sig-name descname">add_column</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvTable.add_column"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvTable.add_column" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_column</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvTable.add_column"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvTable.add_column" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a column to table. If there are more rows in new column
 than there are rows in the current table, the table will
 expand with empty rows in the other columns. If too few, the
@@ -536,9 +538,9 @@ of the table. Uses Python indexing (so first column is <strong>xpos=0</strong>)<
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.evtable.EvTable.add_row">
-<code class="sig-name descname">add_row</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvTable.add_row"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvTable.add_row" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_row</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvTable.add_row"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvTable.add_row" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a row to table (not a header). If there are more cells in
 the given row than there are cells in the current table the
 table will be expanded with empty columns to match. These will
@@ -561,9 +563,9 @@ Uses Python indexing (so first row is <strong>ypos=0</strong>)</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.evtable.EvTable.reformat">
-<code class="sig-name descname">reformat</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvTable.reformat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvTable.reformat" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">reformat</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvTable.reformat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvTable.reformat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Force a re-shape of the entire table.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
@@ -572,9 +574,9 @@ Uses Python indexing (so first row is <strong>ypos=0</strong>)</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.evtable.EvTable.reformat_column">
-<code class="sig-name descname">reformat_column</code><span class="sig-paren">(</span><em class="sig-param">index</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvTable.reformat_column"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvTable.reformat_column" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">reformat_column</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvTable.reformat_column"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvTable.reformat_column" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sends custom options to a specific column in the table.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -590,7 +592,7 @@ given from 0 to Ncolumns-1.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.utils.evtable.EvTable.get">
 <code class="sig-name descname">get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evtable.html#EvTable.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evtable.EvTable.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return lines of table as a list.</p>
@@ -606,6 +608,7 @@ given from 0 to Ncolumns-1.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -650,12 +653,13 @@ given from 0 to Ncolumns-1.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.evtable</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

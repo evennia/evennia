@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.commands.cmdparser &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdparser</a></li> 
       </ul>
     </div>  
 
@@ -40,9 +42,9 @@
 <strong>settings.COMMAND_PARSER</strong> to a Python path to a module containing the
 replacing cmdparser function. The replacement parser must accept the
 same inputs as the default one.</p>
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.commands.cmdparser.create_match">
-<code class="sig-prename descclassname">evennia.commands.cmdparser.</code><code class="sig-name descname">create_match</code><span class="sig-paren">(</span><em class="sig-param">cmdname</em>, <em class="sig-param">string</em>, <em class="sig-param">cmdobj</em>, <em class="sig-param">raw_cmdname</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdparser.html#create_match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdparser.create_match" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.commands.cmdparser.</code><code class="sig-name descname">create_match</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdname</span></em>, <em class="sig-param"><span class="n">string</span></em>, <em class="sig-param"><span class="n">cmdobj</span></em>, <em class="sig-param"><span class="n">raw_cmdname</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdparser.html#create_match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdparser.create_match" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds a command match by splitting the incoming string and
 evaluating the quality of the match.</p>
 <dl class="field-list simple">
@@ -72,9 +74,9 @@ the cmdname unmodified by eventual prefix-stripping.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.commands.cmdparser.build_matches">
-<code class="sig-prename descclassname">evennia.commands.cmdparser.</code><code class="sig-name descname">build_matches</code><span class="sig-paren">(</span><em class="sig-param">raw_string</em>, <em class="sig-param">cmdset</em>, <em class="sig-param">include_prefixes=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdparser.html#build_matches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdparser.build_matches" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.commands.cmdparser.</code><code class="sig-name descname">build_matches</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raw_string</span></em>, <em class="sig-param"><span class="n">cmdset</span></em>, <em class="sig-param"><span class="n">include_prefixes</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdparser.html#build_matches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdparser.build_matches" title="Permalink to this definition">¶</a></dt>
 <dd><p>Build match tuples by matching raw_string against available commands.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -92,9 +94,9 @@ in the match, otherwise strip them before matching.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.commands.cmdparser.try_num_prefixes">
-<code class="sig-prename descclassname">evennia.commands.cmdparser.</code><code class="sig-name descname">try_num_prefixes</code><span class="sig-paren">(</span><em class="sig-param">raw_string</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdparser.html#try_num_prefixes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdparser.try_num_prefixes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.commands.cmdparser.</code><code class="sig-name descname">try_num_prefixes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raw_string</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdparser.html#try_num_prefixes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdparser.try_num_prefixes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test if user tried to separate multi-matches with a number separator
 (default 1-name, 2-name etc). This is usually called last, if no other
 match was found.</p>
@@ -119,9 +121,9 @@ than one ‘ball’ object), will lead to a multimatch and this function
 will parse <strong>“2-ball”</strong> and return <strong>(2, “ball”)</strong>.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.commands.cmdparser.cmdparser">
-<code class="sig-prename descclassname">evennia.commands.cmdparser.</code><code class="sig-name descname">cmdparser</code><span class="sig-paren">(</span><em class="sig-param">raw_string</em>, <em class="sig-param">cmdset</em>, <em class="sig-param">caller</em>, <em class="sig-param">match_index=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdparser.html#cmdparser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdparser.cmdparser" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.commands.cmdparser.</code><code class="sig-name descname">cmdparser</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raw_string</span></em>, <em class="sig-param"><span class="n">cmdset</span></em>, <em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">match_index</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdparser.html#cmdparser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.cmdparser.cmdparser" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function is called by the cmdhandler once it has
 gathered and merged all valid cmdsets valid for this particular parsing.</p>
 <dl class="field-list simple">
@@ -161,6 +163,7 @@ the remaining arguments, and the matched cmdobject from the cmdset.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -205,12 +208,13 @@ the remaining arguments, and the matched cmdobject from the cmdset.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdparser</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

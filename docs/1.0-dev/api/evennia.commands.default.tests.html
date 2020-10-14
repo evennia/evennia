@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.commands.default.tests &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.tests</a></li> 
       </ul>
     </div>  
 
@@ -44,14 +46,14 @@ main test suite started with</p>
 <blockquote>
 <div><p>&gt; python game/manage.py test.</p>
 </div></blockquote>
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.commands.default.tests.CommandTest">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.tests.</code><code class="sig-name descname">CommandTest</code><span class="sig-paren">(</span><em class="sig-param">methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#CommandTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.CommandTest" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.tests.</code><code class="sig-name descname">CommandTest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#CommandTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.CommandTest" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTest" title="evennia.utils.test_resources.EvenniaTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.EvenniaTest</span></code></a></p>
 <p>Tests a command</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.CommandTest.call">
-<code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param">cmdobj</em>, <em class="sig-param">args</em>, <em class="sig-param">msg=None</em>, <em class="sig-param">cmdset=None</em>, <em class="sig-param">noansi=True</em>, <em class="sig-param">caller=None</em>, <em class="sig-param">receiver=None</em>, <em class="sig-param">cmdstring=None</em>, <em class="sig-param">obj=None</em>, <em class="sig-param">inputs=None</em>, <em class="sig-param">raw_string=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#CommandTest.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.CommandTest.call" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdobj</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">msg</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cmdset</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">noansi</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">caller</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">receiver</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cmdstring</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">raw_string</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#CommandTest.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.CommandTest.call" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test a command by assigning all the needed
 properties to cmdobj and  running</p>
 <blockquote>
@@ -71,452 +73,452 @@ output sent to caller.msg in the game</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.commands.default.tests.TestGeneral">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.tests.</code><code class="sig-name descname">TestGeneral</code><span class="sig-paren">(</span><em class="sig-param">methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestGeneral"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestGeneral" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.tests.</code><code class="sig-name descname">TestGeneral</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestGeneral"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestGeneral" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.tests.CommandTest" title="evennia.commands.default.tests.CommandTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.tests.CommandTest</span></code></a></p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestGeneral.test_look">
 <code class="sig-name descname">test_look</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestGeneral.test_look"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestGeneral.test_look" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestGeneral.test_home">
 <code class="sig-name descname">test_home</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestGeneral.test_home"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestGeneral.test_home" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestGeneral.test_inventory">
 <code class="sig-name descname">test_inventory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestGeneral.test_inventory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestGeneral.test_inventory" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestGeneral.test_pose">
 <code class="sig-name descname">test_pose</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestGeneral.test_pose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestGeneral.test_pose" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestGeneral.test_nick">
 <code class="sig-name descname">test_nick</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestGeneral.test_nick"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestGeneral.test_nick" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestGeneral.test_get_and_drop">
 <code class="sig-name descname">test_get_and_drop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestGeneral.test_get_and_drop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestGeneral.test_get_and_drop" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestGeneral.test_give">
 <code class="sig-name descname">test_give</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestGeneral.test_give"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestGeneral.test_give" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestGeneral.test_mux_command">
 <code class="sig-name descname">test_mux_command</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestGeneral.test_mux_command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestGeneral.test_mux_command" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestGeneral.test_say">
 <code class="sig-name descname">test_say</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestGeneral.test_say"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestGeneral.test_say" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestGeneral.test_whisper">
 <code class="sig-name descname">test_whisper</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestGeneral.test_whisper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestGeneral.test_whisper" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestGeneral.test_access">
 <code class="sig-name descname">test_access</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestGeneral.test_access"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestGeneral.test_access" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.commands.default.tests.TestHelp">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.tests.</code><code class="sig-name descname">TestHelp</code><span class="sig-paren">(</span><em class="sig-param">methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestHelp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestHelp" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.tests.</code><code class="sig-name descname">TestHelp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestHelp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestHelp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.tests.CommandTest" title="evennia.commands.default.tests.CommandTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.tests.CommandTest</span></code></a></p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestHelp.setUp">
 <code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestHelp.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestHelp.setUp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets up testing environment</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestHelp.tearDown">
 <code class="sig-name descname">tearDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestHelp.tearDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestHelp.tearDown" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hook method for deconstructing the test fixture after testing it.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestHelp.test_help">
 <code class="sig-name descname">test_help</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestHelp.test_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestHelp.test_help" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestHelp.test_set_help">
 <code class="sig-name descname">test_set_help</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestHelp.test_set_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestHelp.test_set_help" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.commands.default.tests.TestSystem">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.tests.</code><code class="sig-name descname">TestSystem</code><span class="sig-paren">(</span><em class="sig-param">methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestSystem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestSystem" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.tests.</code><code class="sig-name descname">TestSystem</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestSystem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestSystem" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.tests.CommandTest" title="evennia.commands.default.tests.CommandTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.tests.CommandTest</span></code></a></p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestSystem.test_py">
 <code class="sig-name descname">test_py</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestSystem.test_py"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestSystem.test_py" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestSystem.test_scripts">
 <code class="sig-name descname">test_scripts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestSystem.test_scripts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestSystem.test_scripts" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestSystem.test_objects">
 <code class="sig-name descname">test_objects</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestSystem.test_objects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestSystem.test_objects" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestSystem.test_about">
 <code class="sig-name descname">test_about</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestSystem.test_about"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestSystem.test_about" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestSystem.test_server_load">
 <code class="sig-name descname">test_server_load</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestSystem.test_server_load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestSystem.test_server_load" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.commands.default.tests.TestAdmin">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.tests.</code><code class="sig-name descname">TestAdmin</code><span class="sig-paren">(</span><em class="sig-param">methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestAdmin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestAdmin" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.tests.</code><code class="sig-name descname">TestAdmin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestAdmin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestAdmin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.tests.CommandTest" title="evennia.commands.default.tests.CommandTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.tests.CommandTest</span></code></a></p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestAdmin.test_emit">
 <code class="sig-name descname">test_emit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestAdmin.test_emit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestAdmin.test_emit" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestAdmin.test_perm">
 <code class="sig-name descname">test_perm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestAdmin.test_perm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestAdmin.test_perm" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestAdmin.test_wall">
 <code class="sig-name descname">test_wall</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestAdmin.test_wall"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestAdmin.test_wall" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestAdmin.test_ban">
 <code class="sig-name descname">test_ban</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestAdmin.test_ban"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestAdmin.test_ban" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestAdmin.test_force">
 <code class="sig-name descname">test_force</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestAdmin.test_force"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestAdmin.test_force" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.commands.default.tests.TestAccount">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.tests.</code><code class="sig-name descname">TestAccount</code><span class="sig-paren">(</span><em class="sig-param">methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestAccount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestAccount" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.tests.</code><code class="sig-name descname">TestAccount</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestAccount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestAccount" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.tests.CommandTest" title="evennia.commands.default.tests.CommandTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.tests.CommandTest</span></code></a></p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestAccount.test_ooc_look">
 <code class="sig-name descname">test_ooc_look</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestAccount.test_ooc_look"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestAccount.test_ooc_look" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestAccount.test_ooc">
 <code class="sig-name descname">test_ooc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestAccount.test_ooc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestAccount.test_ooc" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestAccount.test_ic">
 <code class="sig-name descname">test_ic</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestAccount.test_ic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestAccount.test_ic" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestAccount.test_ic__other_object">
 <code class="sig-name descname">test_ic__other_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestAccount.test_ic__other_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestAccount.test_ic__other_object" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestAccount.test_ic__nonaccess">
 <code class="sig-name descname">test_ic__nonaccess</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestAccount.test_ic__nonaccess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestAccount.test_ic__nonaccess" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestAccount.test_password">
 <code class="sig-name descname">test_password</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestAccount.test_password"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestAccount.test_password" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestAccount.test_option">
 <code class="sig-name descname">test_option</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestAccount.test_option"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestAccount.test_option" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestAccount.test_who">
 <code class="sig-name descname">test_who</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestAccount.test_who"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestAccount.test_who" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestAccount.test_quit">
 <code class="sig-name descname">test_quit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestAccount.test_quit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestAccount.test_quit" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestAccount.test_sessions">
 <code class="sig-name descname">test_sessions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestAccount.test_sessions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestAccount.test_sessions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestAccount.test_color_test">
 <code class="sig-name descname">test_color_test</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestAccount.test_color_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestAccount.test_color_test" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestAccount.test_char_create">
 <code class="sig-name descname">test_char_create</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestAccount.test_char_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestAccount.test_char_create" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestAccount.test_char_delete">
 <code class="sig-name descname">test_char_delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestAccount.test_char_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestAccount.test_char_delete" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestAccount.test_quell">
 <code class="sig-name descname">test_quell</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestAccount.test_quell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestAccount.test_quell" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.commands.default.tests.TestBuilding">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.tests.</code><code class="sig-name descname">TestBuilding</code><span class="sig-paren">(</span><em class="sig-param">methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBuilding"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBuilding" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.tests.</code><code class="sig-name descname">TestBuilding</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBuilding"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBuilding" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.tests.CommandTest" title="evennia.commands.default.tests.CommandTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.tests.CommandTest</span></code></a></p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestBuilding.test_create">
 <code class="sig-name descname">test_create</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBuilding.test_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBuilding.test_create" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestBuilding.test_examine">
 <code class="sig-name descname">test_examine</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBuilding.test_examine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBuilding.test_examine" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestBuilding.test_set_obj_alias">
 <code class="sig-name descname">test_set_obj_alias</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBuilding.test_set_obj_alias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBuilding.test_set_obj_alias" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestBuilding.test_copy">
 <code class="sig-name descname">test_copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBuilding.test_copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBuilding.test_copy" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestBuilding.test_attribute_commands">
 <code class="sig-name descname">test_attribute_commands</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBuilding.test_attribute_commands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBuilding.test_attribute_commands" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestBuilding.test_nested_attribute_commands">
 <code class="sig-name descname">test_nested_attribute_commands</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBuilding.test_nested_attribute_commands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBuilding.test_nested_attribute_commands" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestBuilding.test_split_nested_attr">
 <code class="sig-name descname">test_split_nested_attr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBuilding.test_split_nested_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBuilding.test_split_nested_attr" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestBuilding.test_do_nested_lookup">
 <code class="sig-name descname">test_do_nested_lookup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBuilding.test_do_nested_lookup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBuilding.test_do_nested_lookup" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestBuilding.test_name">
 <code class="sig-name descname">test_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBuilding.test_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBuilding.test_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestBuilding.test_desc">
 <code class="sig-name descname">test_desc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBuilding.test_desc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBuilding.test_desc" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestBuilding.test_empty_desc">
 <code class="sig-name descname">test_empty_desc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBuilding.test_empty_desc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBuilding.test_empty_desc" title="Permalink to this definition">¶</a></dt>
 <dd><p>empty desc sets desc as ‘’</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestBuilding.test_desc_default_to_room">
 <code class="sig-name descname">test_desc_default_to_room</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBuilding.test_desc_default_to_room"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBuilding.test_desc_default_to_room" title="Permalink to this definition">¶</a></dt>
 <dd><p>no rhs changes room’s desc</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestBuilding.test_destroy">
 <code class="sig-name descname">test_destroy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBuilding.test_destroy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBuilding.test_destroy" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestBuilding.test_destroy_sequence">
 <code class="sig-name descname">test_destroy_sequence</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBuilding.test_destroy_sequence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBuilding.test_destroy_sequence" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestBuilding.test_dig">
 <code class="sig-name descname">test_dig</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBuilding.test_dig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBuilding.test_dig" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestBuilding.test_tunnel">
 <code class="sig-name descname">test_tunnel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBuilding.test_tunnel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBuilding.test_tunnel" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestBuilding.test_tunnel_exit_typeclass">
 <code class="sig-name descname">test_tunnel_exit_typeclass</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBuilding.test_tunnel_exit_typeclass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBuilding.test_tunnel_exit_typeclass" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestBuilding.test_exit_commands">
 <code class="sig-name descname">test_exit_commands</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBuilding.test_exit_commands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBuilding.test_exit_commands" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestBuilding.test_set_home">
 <code class="sig-name descname">test_set_home</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBuilding.test_set_home"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBuilding.test_set_home" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestBuilding.test_list_cmdsets">
 <code class="sig-name descname">test_list_cmdsets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBuilding.test_list_cmdsets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBuilding.test_list_cmdsets" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestBuilding.test_typeclass">
 <code class="sig-name descname">test_typeclass</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBuilding.test_typeclass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBuilding.test_typeclass" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestBuilding.test_lock">
 <code class="sig-name descname">test_lock</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBuilding.test_lock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBuilding.test_lock" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestBuilding.test_find">
 <code class="sig-name descname">test_find</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBuilding.test_find"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBuilding.test_find" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestBuilding.test_script">
 <code class="sig-name descname">test_script</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBuilding.test_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBuilding.test_script" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestBuilding.test_teleport">
 <code class="sig-name descname">test_teleport</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBuilding.test_teleport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBuilding.test_teleport" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestBuilding.test_tag">
 <code class="sig-name descname">test_tag</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBuilding.test_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBuilding.test_tag" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestBuilding.test_spawn">
 <code class="sig-name descname">test_spawn</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBuilding.test_spawn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBuilding.test_spawn" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.commands.default.tests.TestComms">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.tests.</code><code class="sig-name descname">TestComms</code><span class="sig-paren">(</span><em class="sig-param">methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestComms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestComms" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.tests.</code><code class="sig-name descname">TestComms</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestComms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestComms" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.tests.CommandTest" title="evennia.commands.default.tests.CommandTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.tests.CommandTest</span></code></a></p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestComms.setUp">
 <code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestComms.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestComms.setUp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets up testing environment</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestComms.test_toggle_com">
 <code class="sig-name descname">test_toggle_com</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestComms.test_toggle_com"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestComms.test_toggle_com" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestComms.test_channels">
 <code class="sig-name descname">test_channels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestComms.test_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestComms.test_channels" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestComms.test_all_com">
 <code class="sig-name descname">test_all_com</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestComms.test_all_com"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestComms.test_all_com" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestComms.test_clock">
 <code class="sig-name descname">test_clock</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestComms.test_clock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestComms.test_clock" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestComms.test_cdesc">
 <code class="sig-name descname">test_cdesc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestComms.test_cdesc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestComms.test_cdesc" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestComms.test_cemit">
 <code class="sig-name descname">test_cemit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestComms.test_cemit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestComms.test_cemit" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestComms.test_cwho">
 <code class="sig-name descname">test_cwho</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestComms.test_cwho"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestComms.test_cwho" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestComms.test_page">
 <code class="sig-name descname">test_page</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestComms.test_page"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestComms.test_page" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestComms.test_cboot">
 <code class="sig-name descname">test_cboot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestComms.test_cboot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestComms.test_cboot" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestComms.test_cdestroy">
 <code class="sig-name descname">test_cdestroy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestComms.test_cdestroy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestComms.test_cdestroy" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.commands.default.tests.TestBatchProcess">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.tests.</code><code class="sig-name descname">TestBatchProcess</code><span class="sig-paren">(</span><em class="sig-param">methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBatchProcess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBatchProcess" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.tests.</code><code class="sig-name descname">TestBatchProcess</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBatchProcess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBatchProcess" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.tests.CommandTest" title="evennia.commands.default.tests.CommandTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.tests.CommandTest</span></code></a></p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestBatchProcess.test_batch_commands">
 <code class="sig-name descname">test_batch_commands</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestBatchProcess.test_batch_commands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestBatchProcess.test_batch_commands" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.commands.default.tests.CmdInterrupt">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.tests.</code><code class="sig-name descname">CmdInterrupt</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#CmdInterrupt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.CmdInterrupt" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.tests.</code><code class="sig-name descname">CmdInterrupt</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#CmdInterrupt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.CmdInterrupt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
 <p>Base command</p>
 <dl class="simple">
@@ -568,12 +570,12 @@ overriding the method ‘get_help’ of a command: by default, this
 method returns cmd.__doc__ (that is, this very docstring, or
 the docstring of your command).  You can, however, extend or
 replace this without disabling auto_help.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.default.tests.CmdInterrupt.key">
 <code class="sig-name descname">key</code><em class="property"> = 'interrupt'</em><a class="headerlink" href="#evennia.commands.default.tests.CmdInterrupt.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.CmdInterrupt.parse">
 <code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#CmdInterrupt.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.CmdInterrupt.parse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Once the cmdhandler has identified this as the command we
@@ -585,7 +587,7 @@ for which object properties are available to use (notably
 self.args).</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.CmdInterrupt.func">
 <code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#CmdInterrupt.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.CmdInterrupt.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is the actual executing part of the command.  It is
@@ -594,67 +596,67 @@ module for which object properties are available (beyond those
 set in self.parse())</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.default.tests.CmdInterrupt.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.commands.default.tests.CmdInterrupt.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.default.tests.CmdInterrupt.help_category">
 <code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.commands.default.tests.CmdInterrupt.help_category" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.default.tests.CmdInterrupt.lock_storage">
 <code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.commands.default.tests.CmdInterrupt.lock_storage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.commands.default.tests.CmdInterrupt.search_index_entry">
 <code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'interrupt', 'tags': '', 'text': '\n    Base command\n\n    Usage:\n      command [args]\n\n    This is the base command class. Inherit from this\n    to create new commands.\n\n    The cmdhandler makes the following variables available to the\n    command methods (so you can always assume them to be there):\n    self.caller - the game object calling the command\n    self.cmdstring - the command name used to trigger this command (allows\n                     you to know which alias was used, for example)\n    cmd.args - everything supplied to the command following the cmdstring\n               (this is usually what is parsed in self.parse())\n    cmd.cmdset - the cmdset from which this command was matched (useful only\n                seldomly, notably for help-type commands, to create dynamic\n                help entries and lists)\n    cmd.obj - the object on which this command is defined. If a default command,\n                 this is usually the same as caller.\n    cmd.rawstring - the full raw string input, including any args and no parsing.\n\n    The following class properties can/should be defined on your child class:\n\n    key - identifier for command (e.g. &quot;look&quot;)\n    aliases - (optional) list of aliases (e.g. [&quot;l&quot;, &quot;loo&quot;])\n    locks - lock string (default is &quot;cmd:all()&quot;)\n    help_category - how to organize this help entry in help system\n                    (default is &quot;General&quot;)\n    auto_help - defaults to True. Allows for turning off auto-help generation\n    arg_regex - (optional) raw string regex defining how the argument part of\n                the command should look in order to match for this command\n                (e.g. must it be a space between cmdname and arg?)\n    auto_help_display_key - (optional) if given, this replaces the string shown\n        in the auto-help listing. This is particularly useful for system-commands\n        whose actual key is not really meaningful.\n\n    (Note that if auto_help is on, this initial string is also used by the\n    system to create the help entry for the command, so it\'s a good idea to\n    format it similar to this one).  This behavior can be changed by\n    overriding the method \'get_help\' of a command: by default, this\n    method returns cmd.__doc__ (that is, this very docstring, or\n    the docstring of your command).  You can, however, extend or\n    replace this without disabling auto_help.\n    '}</em><a class="headerlink" href="#evennia.commands.default.tests.CmdInterrupt.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.commands.default.tests.TestInterruptCommand">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.tests.</code><code class="sig-name descname">TestInterruptCommand</code><span class="sig-paren">(</span><em class="sig-param">methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestInterruptCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestInterruptCommand" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.tests.</code><code class="sig-name descname">TestInterruptCommand</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestInterruptCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestInterruptCommand" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.tests.CommandTest" title="evennia.commands.default.tests.CommandTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.tests.CommandTest</span></code></a></p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestInterruptCommand.test_interrupt_command">
 <code class="sig-name descname">test_interrupt_command</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestInterruptCommand.test_interrupt_command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestInterruptCommand.test_interrupt_command" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.commands.default.tests.TestUnconnectedCommand">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.tests.</code><code class="sig-name descname">TestUnconnectedCommand</code><span class="sig-paren">(</span><em class="sig-param">methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestUnconnectedCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestUnconnectedCommand" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.tests.</code><code class="sig-name descname">TestUnconnectedCommand</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestUnconnectedCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestUnconnectedCommand" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.tests.CommandTest" title="evennia.commands.default.tests.CommandTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.tests.CommandTest</span></code></a></p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestUnconnectedCommand.test_info_command">
 <code class="sig-name descname">test_info_command</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestUnconnectedCommand.test_info_command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestUnconnectedCommand.test_info_command" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.commands.default.tests.TestSystemCommands">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.tests.</code><code class="sig-name descname">TestSystemCommands</code><span class="sig-paren">(</span><em class="sig-param">methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestSystemCommands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestSystemCommands" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.tests.</code><code class="sig-name descname">TestSystemCommands</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestSystemCommands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestSystemCommands" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.commands.default.tests.CommandTest" title="evennia.commands.default.tests.CommandTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.tests.CommandTest</span></code></a></p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestSystemCommands.test_simple_defaults">
 <code class="sig-name descname">test_simple_defaults</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestSystemCommands.test_simple_defaults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestSystemCommands.test_simple_defaults" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestSystemCommands.test_multimatch">
 <code class="sig-name descname">test_multimatch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestSystemCommands.test_multimatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestSystemCommands.test_multimatch" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.commands.default.tests.TestSystemCommands.test_channelcommand">
-<code class="sig-name descname">test_channelcommand</code><span class="sig-paren">(</span><em class="sig-param">mock_channeldb</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestSystemCommands.test_channelcommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestSystemCommands.test_channelcommand" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_channelcommand</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mock_channeldb</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/tests.html#TestSystemCommands.test_channelcommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.tests.TestSystemCommands.test_channelcommand" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -662,6 +664,7 @@ set in self.parse())</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -706,12 +709,13 @@ set in self.parse())</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.tests</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

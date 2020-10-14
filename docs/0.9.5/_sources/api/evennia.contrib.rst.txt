@@ -6,8 +6,7 @@ evennia.contrib
    :undoc-members:
    :show-inheritance:
 
-Modules
--------
+
 
 .. toctree::
    :maxdepth: 6
@@ -39,8 +38,6 @@ Modules
    evennia.contrib.unixcommand
    evennia.contrib.wilderness
 
-Packages/folders
-----------------
 
 .. toctree::
    :maxdepth: 6

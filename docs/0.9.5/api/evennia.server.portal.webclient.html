@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.server.portal.webclient &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.webclient</a></li> 
       </ul>
     </div>  
 
@@ -45,23 +47,23 @@ It is used together with evennia/web/media/javascript/evennia_websocket_webclien
 <p>which represents an “inputfunc” to be called on the Evennia side with <em>args, **kwargs.
 The most common inputfunc is “text”, which takes just the text input
 from the command line and interprets it as an Evennia Command: **[“text”, [“look”], {}]*</em></p>
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.server.portal.webclient.WebSocketClient">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.webclient.</code><code class="sig-name descname">WebSocketClient</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient.html#WebSocketClient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient.WebSocketClient" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.webclient.</code><code class="sig-name descname">WebSocketClient</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient.html#WebSocketClient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient.WebSocketClient" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">autobahn.twisted.websocket.WebSocketServerProtocol</span></code>, <a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.server.session.Session</span></code></a></p>
 <p>Implements the server-side of the Websocket connection.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.server.portal.webclient.WebSocketClient.nonce">
 <code class="sig-name descname">nonce</code><em class="property"> = None</em><a class="headerlink" href="#evennia.server.portal.webclient.WebSocketClient.nonce" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient.WebSocketClient.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient.html#WebSocketClient.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient.WebSocketClient.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient.html#WebSocketClient.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient.WebSocketClient.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient.WebSocketClient.get_client_session">
 <code class="sig-name descname">get_client_session</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient.html#WebSocketClient.get_client_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient.WebSocketClient.get_client_session" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the Client browser session (used for auto-login based on browser session)</p>
@@ -77,15 +79,15 @@ from the command line and interprets it as an Evennia Command: **[“text”, [�
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient.WebSocketClient.onOpen">
 <code class="sig-name descname">onOpen</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient.html#WebSocketClient.onOpen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient.WebSocketClient.onOpen" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is called when the WebSocket connection is fully established.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient.WebSocketClient.disconnect">
-<code class="sig-name descname">disconnect</code><span class="sig-paren">(</span><em class="sig-param">reason=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient.html#WebSocketClient.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient.WebSocketClient.disconnect" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">disconnect</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reason</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient.html#WebSocketClient.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient.WebSocketClient.disconnect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generic hook for the engine to call in order to
 disconnect this protocol.</p>
 <dl class="field-list simple">
@@ -95,9 +97,9 @@ disconnect this protocol.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient.WebSocketClient.onClose">
-<code class="sig-name descname">onClose</code><span class="sig-paren">(</span><em class="sig-param">wasClean</em>, <em class="sig-param">code=None</em>, <em class="sig-param">reason=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient.html#WebSocketClient.onClose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient.WebSocketClient.onClose" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">onClose</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">wasClean</span></em>, <em class="sig-param"><span class="n">code</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">reason</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient.html#WebSocketClient.onClose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient.WebSocketClient.onClose" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is executed when the connection is lost for whatever
 reason. it can also be called directly, from the disconnect
 method.</p>
@@ -112,9 +114,9 @@ method.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient.WebSocketClient.onMessage">
-<code class="sig-name descname">onMessage</code><span class="sig-paren">(</span><em class="sig-param">payload</em>, <em class="sig-param">isBinary</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient.html#WebSocketClient.onMessage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient.WebSocketClient.onMessage" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">onMessage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">payload</span></em>, <em class="sig-param"><span class="n">isBinary</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient.html#WebSocketClient.onMessage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient.WebSocketClient.onMessage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Callback fired when a complete WebSocket message was received.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -127,9 +129,9 @@ UTF-8 encoded text.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient.WebSocketClient.sendLine">
-<code class="sig-name descname">sendLine</code><span class="sig-paren">(</span><em class="sig-param">line</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient.html#WebSocketClient.sendLine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient.WebSocketClient.sendLine" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sendLine</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">line</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient.html#WebSocketClient.sendLine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient.WebSocketClient.sendLine" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send data to client.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -138,14 +140,14 @@ UTF-8 encoded text.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient.WebSocketClient.at_login">
 <code class="sig-name descname">at_login</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient.html#WebSocketClient.at_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient.WebSocketClient.at_login" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient.WebSocketClient.data_in">
-<code class="sig-name descname">data_in</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient.html#WebSocketClient.data_in"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient.WebSocketClient.data_in" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">data_in</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient.html#WebSocketClient.data_in"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient.WebSocketClient.data_in" title="Permalink to this definition">¶</a></dt>
 <dd><p>Data User &gt; Evennia.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -166,9 +168,9 @@ session should be disconnected.</p>
 this point.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient.WebSocketClient.send_text">
-<code class="sig-name descname">send_text</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient.html#WebSocketClient.send_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient.WebSocketClient.send_text" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">send_text</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient.html#WebSocketClient.send_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient.WebSocketClient.send_text" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send text data. This will pre-process the text for
 color-replacement, conversion to html etc.</p>
 <dl class="field-list simple">
@@ -185,14 +187,14 @@ color-replacement, conversion to html etc.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient.WebSocketClient.send_prompt">
-<code class="sig-name descname">send_prompt</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient.html#WebSocketClient.send_prompt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient.WebSocketClient.send_prompt" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">send_prompt</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient.html#WebSocketClient.send_prompt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient.WebSocketClient.send_prompt" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.webclient.WebSocketClient.send_default">
-<code class="sig-name descname">send_default</code><span class="sig-paren">(</span><em class="sig-param">cmdname</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient.html#WebSocketClient.send_default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient.WebSocketClient.send_default" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">send_default</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdname</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/webclient.html#WebSocketClient.send_default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.webclient.WebSocketClient.send_default" title="Permalink to this definition">¶</a></dt>
 <dd><p>Data Evennia -&gt; User.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -214,6 +216,7 @@ client instead.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -258,12 +261,13 @@ client instead.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.webclient</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

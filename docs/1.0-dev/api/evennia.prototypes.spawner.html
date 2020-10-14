@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.prototypes.spawner &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.prototypes.spawner</a></li> 
       </ul>
     </div>  
 
@@ -164,16 +166,16 @@ Such prototypes are considered ‘read-only’ to the system and can only be mod
 in code. To replace a default prototype, add the same-name prototype in a
 custom module read later in the settings.PROTOTYPE_MODULES list. To remove a default
 prototype, override its name with an empty dict.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.prototypes.spawner.Unset">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.prototypes.spawner.</code><code class="sig-name descname">Unset</code><a class="reference internal" href="../_modules/evennia/prototypes/spawner.html#Unset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.spawner.Unset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Helper class representing a non-set diff element.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.prototypes.spawner.flatten_prototype">
-<code class="sig-prename descclassname">evennia.prototypes.spawner.</code><code class="sig-name descname">flatten_prototype</code><span class="sig-paren">(</span><em class="sig-param">prototype</em>, <em class="sig-param">validate=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/spawner.html#flatten_prototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.spawner.flatten_prototype" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.spawner.</code><code class="sig-name descname">flatten_prototype</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prototype</span></em>, <em class="sig-param"><span class="n">validate</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/spawner.html#flatten_prototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.spawner.flatten_prototype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Produce a ‘flattened’ prototype, where all prototype parents in the inheritance tree have been
 merged into a final prototype.</p>
 <dl class="field-list simple">
@@ -189,9 +191,9 @@ merged into a final prototype.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.prototypes.spawner.prototype_from_object">
-<code class="sig-prename descclassname">evennia.prototypes.spawner.</code><code class="sig-name descname">prototype_from_object</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/spawner.html#prototype_from_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.spawner.prototype_from_object" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.spawner.</code><code class="sig-name descname">prototype_from_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/spawner.html#prototype_from_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.spawner.prototype_from_object" title="Permalink to this definition">¶</a></dt>
 <dd><p>Guess a minimal prototype from an existing object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -203,9 +205,9 @@ merged into a final prototype.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.prototypes.spawner.prototype_diff">
-<code class="sig-prename descclassname">evennia.prototypes.spawner.</code><code class="sig-name descname">prototype_diff</code><span class="sig-paren">(</span><em class="sig-param">prototype1</em>, <em class="sig-param">prototype2</em>, <em class="sig-param">maxdepth=2</em>, <em class="sig-param">homogenize=False</em>, <em class="sig-param">implicit_keep=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/spawner.html#prototype_diff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.spawner.prototype_diff" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.spawner.</code><code class="sig-name descname">prototype_diff</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prototype1</span></em>, <em class="sig-param"><span class="n">prototype2</span></em>, <em class="sig-param"><span class="n">maxdepth</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">homogenize</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">implicit_keep</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/spawner.html#prototype_diff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.spawner.prototype_diff" title="Permalink to this definition">¶</a></dt>
 <dd><p>A ‘detailed’ diff specifies differences down to individual sub-sections
 of the prototype, like individual attributes, permissions etc. It is used
 by the menu to allow a user to customize what should be kept.</p>
@@ -240,9 +242,9 @@ instruction can be one of “REMOVE”, “ADD”, “UPDATE” or “KEEP”.</
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.prototypes.spawner.flatten_diff">
-<code class="sig-prename descclassname">evennia.prototypes.spawner.</code><code class="sig-name descname">flatten_diff</code><span class="sig-paren">(</span><em class="sig-param">diff</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/spawner.html#flatten_diff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.spawner.flatten_diff" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.spawner.</code><code class="sig-name descname">flatten_diff</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diff</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/spawner.html#flatten_diff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.spawner.flatten_diff" title="Permalink to this definition">¶</a></dt>
 <dd><p>For spawning, a ‘detailed’ diff is not necessary, rather we just want instructions on how to
 handle each root key.</p>
 <dl class="field-list simple">
@@ -282,9 +284,9 @@ individual instructions. A detailed diff can have the following instructions:</p
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.prototypes.spawner.prototype_diff_from_object">
-<code class="sig-prename descclassname">evennia.prototypes.spawner.</code><code class="sig-name descname">prototype_diff_from_object</code><span class="sig-paren">(</span><em class="sig-param">prototype</em>, <em class="sig-param">obj</em>, <em class="sig-param">implicit_keep=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/spawner.html#prototype_diff_from_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.spawner.prototype_diff_from_object" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.spawner.</code><code class="sig-name descname">prototype_diff_from_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prototype</span></em>, <em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">implicit_keep</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/spawner.html#prototype_diff_from_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.spawner.prototype_diff_from_object" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a simple diff for a prototype compared to an object which may or may not already have a
 prototype (or has one but changed locally). For more complex migratations a manual diff may be
 needed.</p>
@@ -326,9 +328,9 @@ prototype does not specify the location, it will not be unset.</p>
 </div></blockquote>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.prototypes.spawner.format_diff">
-<code class="sig-prename descclassname">evennia.prototypes.spawner.</code><code class="sig-name descname">format_diff</code><span class="sig-paren">(</span><em class="sig-param">diff</em>, <em class="sig-param">minimal=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/spawner.html#format_diff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.spawner.format_diff" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.spawner.</code><code class="sig-name descname">format_diff</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">diff</span></em>, <em class="sig-param"><span class="n">minimal</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/spawner.html#format_diff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.spawner.format_diff" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reformat a diff for presentation. This is a shortened version
 of the olc _format_diff_text_and_options without the options.</p>
 <dl class="field-list simple">
@@ -344,9 +346,9 @@ of the olc _format_diff_text_and_options without the options.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.prototypes.spawner.batch_update_objects_with_prototype">
-<code class="sig-prename descclassname">evennia.prototypes.spawner.</code><code class="sig-name descname">batch_update_objects_with_prototype</code><span class="sig-paren">(</span><em class="sig-param">prototype</em>, <em class="sig-param">diff=None</em>, <em class="sig-param">objects=None</em>, <em class="sig-param">exact=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/spawner.html#batch_update_objects_with_prototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.spawner.batch_update_objects_with_prototype" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.spawner.</code><code class="sig-name descname">batch_update_objects_with_prototype</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prototype</span></em>, <em class="sig-param"><span class="n">diff</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">objects</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/spawner.html#batch_update_objects_with_prototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.spawner.batch_update_objects_with_prototype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update existing objects with the latest version of the prototype.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -371,9 +373,9 @@ between the  object and the prototype but is usually impractical.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.prototypes.spawner.batch_create_object">
-<code class="sig-prename descclassname">evennia.prototypes.spawner.</code><code class="sig-name descname">batch_create_object</code><span class="sig-paren">(</span><em class="sig-param">*objparams</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/spawner.html#batch_create_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.spawner.batch_create_object" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.spawner.</code><code class="sig-name descname">batch_create_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">objparams</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/spawner.html#batch_create_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.spawner.batch_create_object" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is a cut-down version of the create_object() function,
 optimized for speed. It does NOT check and convert various input
 so make sure the spawned Typeclass works before using this!</p>
@@ -430,9 +432,9 @@ is intended for calling custom handlers etc.</p>
 unprivileged users!</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="evennia.prototypes.spawner.spawn">
-<code class="sig-prename descclassname">evennia.prototypes.spawner.</code><code class="sig-name descname">spawn</code><span class="sig-paren">(</span><em class="sig-param">*prototypes</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/spawner.html#spawn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.spawner.spawn" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.spawner.</code><code class="sig-name descname">spawn</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">prototypes</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/spawner.html#spawn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.spawner.spawn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Spawn a number of prototyped objects.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -473,6 +475,7 @@ custom <strong>prototype_parents</strong> are given to this function.</p></li>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -517,12 +520,13 @@ custom <strong>prototype_parents</strong> are given to this function.</p></li>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.prototypes.spawner</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

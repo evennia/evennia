@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.scripts.tickerhandler &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.scripts.tickerhandler</a></li> 
       </ul>
     </div>  
 
@@ -88,16 +90,16 @@ custom classes</p>
 <p>If one wants to duplicate TICKER_HANDLER’s auto-saving feature in
 a  custom handler one can make a custom <strong>AT_STARTSTOP_MODULE</strong> entry to
 call the handler’s <strong>save()</strong> and <strong>restore()</strong> methods when the server reboots.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.scripts.tickerhandler.Ticker">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.scripts.tickerhandler.</code><code class="sig-name descname">Ticker</code><span class="sig-paren">(</span><em class="sig-param">interval</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#Ticker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.Ticker" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.scripts.tickerhandler.</code><code class="sig-name descname">Ticker</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">interval</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#Ticker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.Ticker" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Represents a repeatedly running task that calls
 hooks repeatedly. Overload <strong>_callback</strong> to change the
 way it operates.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.tickerhandler.Ticker.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">interval</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#Ticker.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.Ticker.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">interval</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#Ticker.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.Ticker.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set up the ticker</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -106,9 +108,9 @@ way it operates.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.tickerhandler.Ticker.validate">
-<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param">start_delay=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#Ticker.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.Ticker.validate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start_delay</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#Ticker.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.Ticker.validate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start/stop the task depending on how many subscribers we have
 using it.</p>
 <dl class="field-list simple">
@@ -118,9 +120,9 @@ using it.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.tickerhandler.Ticker.add">
-<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param">store_key</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#Ticker.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.Ticker.add" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">store_key</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#Ticker.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.Ticker.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sign up a subscriber to this ticker.
 :param store_key: Unique storage hash for this ticker subscription.
 :type store_key: str
@@ -135,9 +137,9 @@ used to delay the start of the trigger instead of
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.tickerhandler.Ticker.remove">
-<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param">store_key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#Ticker.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.Ticker.remove" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">store_key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#Ticker.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.Ticker.remove" title="Permalink to this definition">¶</a></dt>
 <dd><p>Unsubscribe object from this ticker</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -146,7 +148,7 @@ used to delay the start of the trigger instead of
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.tickerhandler.Ticker.stop">
 <code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#Ticker.stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.Ticker.stop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Kill the Task, regardless of subscriptions.</p>
@@ -154,28 +156,28 @@ used to delay the start of the trigger instead of
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.scripts.tickerhandler.TickerPool">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.scripts.tickerhandler.</code><code class="sig-name descname">TickerPool</code><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#TickerPool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.TickerPool" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This maintains a pool of
 <strong>evennia.scripts.scripts.ExtendedLoopingCall</strong> tasks for calling
 subscribed objects at given times.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.scripts.tickerhandler.TickerPool.ticker_class">
 <code class="sig-name descname">ticker_class</code><a class="headerlink" href="#evennia.scripts.tickerhandler.TickerPool.ticker_class" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#evennia.scripts.tickerhandler.Ticker" title="evennia.scripts.tickerhandler.Ticker"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ticker</span></code></a></p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.tickerhandler.TickerPool.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#TickerPool.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.TickerPool.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize the pool.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.tickerhandler.TickerPool.add">
-<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param">store_key</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#TickerPool.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.TickerPool.add" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">store_key</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#TickerPool.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.TickerPool.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add new ticker subscriber.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -187,9 +189,9 @@ subscribed objects at given times.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.tickerhandler.TickerPool.remove">
-<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param">store_key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#TickerPool.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.TickerPool.remove" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">store_key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#TickerPool.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.TickerPool.remove" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove subscription from pool.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -198,9 +200,9 @@ subscribed objects at given times.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.tickerhandler.TickerPool.stop">
-<code class="sig-name descname">stop</code><span class="sig-paren">(</span><em class="sig-param">interval=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#TickerPool.stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.TickerPool.stop" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">stop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">interval</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#TickerPool.stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.TickerPool.stop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Stop all scripts in pool. This is done at server reload since
 restoring the pool will automatically re-populate the pool.</p>
 <dl class="field-list simple">
@@ -213,22 +215,22 @@ interval.</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.scripts.tickerhandler.TickerHandler">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.scripts.tickerhandler.</code><code class="sig-name descname">TickerHandler</code><span class="sig-paren">(</span><em class="sig-param">save_name='ticker_storage'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#TickerHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.TickerHandler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.scripts.tickerhandler.</code><code class="sig-name descname">TickerHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">save_name</span><span class="o">=</span><span class="default_value">'ticker_storage'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#TickerHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.TickerHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>The Tickerhandler maintains a pool of tasks for subscribing
 objects to various tick rates.  The pool maintains creation
 instructions and and re-applies them at a server restart.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="evennia.scripts.tickerhandler.TickerHandler.ticker_pool_class">
 <code class="sig-name descname">ticker_pool_class</code><a class="headerlink" href="#evennia.scripts.tickerhandler.TickerHandler.ticker_pool_class" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#evennia.scripts.tickerhandler.TickerPool" title="evennia.scripts.tickerhandler.TickerPool"><code class="xref py py-class docutils literal notranslate"><span class="pre">TickerPool</span></code></a></p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.tickerhandler.TickerHandler.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">save_name='ticker_storage'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#TickerHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.TickerHandler.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">save_name</span><span class="o">=</span><span class="default_value">'ticker_storage'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#TickerHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.TickerHandler.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize handler</p>
 <dl class="simple">
 <dt>save_name (str, optional): The name of the ServerConfig</dt><dd><p>instance to store the handler state persistently.</p>
@@ -236,7 +238,7 @@ instructions and and re-applies them at a server restart.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.tickerhandler.TickerHandler.save">
 <code class="sig-name descname">save</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#TickerHandler.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.TickerHandler.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save ticker_storage as a serialized string into a temporary
@@ -245,9 +247,9 @@ by server when it shuts down, the current timer of each ticker
 will be saved so it can start over from that point.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.tickerhandler.TickerHandler.restore">
-<code class="sig-name descname">restore</code><span class="sig-paren">(</span><em class="sig-param">server_reload=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#TickerHandler.restore"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.TickerHandler.restore" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">restore</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">server_reload</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#TickerHandler.restore"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.TickerHandler.restore" title="Permalink to this definition">¶</a></dt>
 <dd><p>Restore ticker_storage from database and re-initialize the
 handler from storage. This is triggered by the server at
 restart.</p>
@@ -260,9 +262,9 @@ non-persistent tickers must be killed.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.tickerhandler.TickerHandler.add">
-<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param">interval=60</em>, <em class="sig-param">callback=None</em>, <em class="sig-param">idstring=''</em>, <em class="sig-param">persistent=True</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#TickerHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.TickerHandler.add" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">interval</span><span class="o">=</span><span class="default_value">60</span></em>, <em class="sig-param"><span class="n">callback</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">idstring</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">persistent</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#TickerHandler.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.TickerHandler.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add subscription to tickerhandler</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -280,7 +282,10 @@ the same time interval and callback.</p></li>
 <li><p><strong>persistent</strong> (<em>bool</em><em>, </em><em>optional</em>) – A ticker will always survive
 a server reload. If this is unset, the ticker will be
 deleted by a server shutdown.</p></li>
-<li><p><strong>kwargs</strong> (<em>args</em><em>,</em>) – These will be passed into the
+<li><p><strong>args</strong> (<em>optional</em>) – These will be passed into the
+callback every time it is called. This must be data possible
+to pickle!</p></li>
+<li><p><strong>kwargs</strong> (<em>optional</em>) – These will be passed into the
 callback every time it is called. This must be data possible
 to pickle!</p></li>
 </ul>
@@ -304,9 +309,9 @@ unique storage key for saving. These must thus all be supplied
 when wanting to modify/remove the ticker later.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.tickerhandler.TickerHandler.remove">
-<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param">interval=60</em>, <em class="sig-param">callback=None</em>, <em class="sig-param">idstring=''</em>, <em class="sig-param">persistent=True</em>, <em class="sig-param">store_key=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#TickerHandler.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.TickerHandler.remove" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">interval</span><span class="o">=</span><span class="default_value">60</span></em>, <em class="sig-param"><span class="n">callback</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">idstring</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">persistent</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">store_key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#TickerHandler.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.TickerHandler.remove" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove ticker subscription from handler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -329,9 +334,9 @@ this is used to identify the ticker.</p></li>
 but if the <strong>store_key</strong> is explicitly given, this is used instead.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.tickerhandler.TickerHandler.clear">
-<code class="sig-name descname">clear</code><span class="sig-paren">(</span><em class="sig-param">interval=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#TickerHandler.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.TickerHandler.clear" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">clear</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">interval</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#TickerHandler.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.TickerHandler.clear" title="Permalink to this definition">¶</a></dt>
 <dd><p>Stop/remove tickers from handler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -343,9 +348,9 @@ but if the <strong>store_key</strong> is explicitly given, this is used instead.
 non-db objects.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.tickerhandler.TickerHandler.all">
-<code class="sig-name descname">all</code><span class="sig-paren">(</span><em class="sig-param">interval=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#TickerHandler.all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.TickerHandler.all" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">all</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">interval</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#TickerHandler.all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.TickerHandler.all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all subscriptions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -364,7 +369,7 @@ non-db objects.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.scripts.tickerhandler.TickerHandler.all_display">
 <code class="sig-name descname">all_display</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/tickerhandler.html#TickerHandler.all_display"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.tickerhandler.TickerHandler.all_display" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all tickers on an easily displayable form.</p>
@@ -380,6 +385,7 @@ non-db objects.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -424,12 +430,13 @@ non-db objects.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.scripts.tickerhandler</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

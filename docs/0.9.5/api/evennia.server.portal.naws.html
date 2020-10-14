@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>evennia.server.portal.naws &#8212; Evennia 0.9.5 documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,7 +26,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.naws</a></li> 
       </ul>
     </div>  
 
@@ -41,15 +43,15 @@
 <a class="reference external" href="https://www.ietf.org/rfc/rfc1073.txt">https://www.ietf.org/rfc/rfc1073.txt</a></p>
 <p>NAWS allows telnet clients to report their current window size to the
 client and update it when the size changes</p>
-<dl class="class">
+<dl class="py class">
 <dt id="evennia.server.portal.naws.Naws">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.naws.</code><code class="sig-name descname">Naws</code><span class="sig-paren">(</span><em class="sig-param">protocol</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/naws.html#Naws"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.naws.Naws" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.server.portal.naws.</code><code class="sig-name descname">Naws</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">protocol</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/naws.html#Naws"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.naws.Naws" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Implements the NAWS protocol. Add this to a variable on the telnet
 protocol to set it up.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.naws.Naws.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">protocol</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/naws.html#Naws.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.naws.Naws.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">protocol</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/naws.html#Naws.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.naws.Naws.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>initialize NAWS by storing protocol on ourselves and calling
 the client to see if it supports NAWS.</p>
 <dl class="field-list simple">
@@ -59,9 +61,9 @@ the client to see if it supports NAWS.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.naws.Naws.no_naws">
-<code class="sig-name descname">no_naws</code><span class="sig-paren">(</span><em class="sig-param">option</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/naws.html#Naws.no_naws"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.naws.Naws.no_naws" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">no_naws</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">option</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/naws.html#Naws.no_naws"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.naws.Naws.no_naws" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when client is not reporting NAWS. This is the normal
 operation.</p>
 <dl class="field-list simple">
@@ -71,9 +73,9 @@ operation.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.naws.Naws.do_naws">
-<code class="sig-name descname">do_naws</code><span class="sig-paren">(</span><em class="sig-param">option</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/naws.html#Naws.do_naws"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.naws.Naws.do_naws" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">do_naws</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">option</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/naws.html#Naws.do_naws"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.naws.Naws.do_naws" title="Permalink to this definition">¶</a></dt>
 <dd><p>Client wants to negotiate all the NAWS information.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -82,9 +84,9 @@ operation.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="evennia.server.portal.naws.Naws.negotiate_sizes">
-<code class="sig-name descname">negotiate_sizes</code><span class="sig-paren">(</span><em class="sig-param">options</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/naws.html#Naws.negotiate_sizes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.naws.Naws.negotiate_sizes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">negotiate_sizes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">options</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/naws.html#Naws.negotiate_sizes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.naws.Naws.negotiate_sizes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Step through the NAWS handshake.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -98,6 +100,7 @@ operation.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -142,12 +145,13 @@ operation.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 0.9.5</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.naws</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, The Evennia developer community.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>
