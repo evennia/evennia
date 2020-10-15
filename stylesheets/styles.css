@@ -27,7 +27,7 @@ time, mark, audio, video {
 /* Base text styles */
 
 body {
-  padding:10px 50px 0 0;
+  padding: 0px;
   font-family:"Open Sans", Helvetica, Arial, sans-serif;
 	font-size: 14px;
 	color: #232323;
@@ -35,7 +35,8 @@ body {
 	margin: 0;
 	line-height: 1.8em;
 	-webkit-font-smoothing: antialiased;
-
+  background-image: url("../images/grey.jpg");
+  background-attachment: fixed;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -222,7 +223,7 @@ td {
 header {
 	background-color: #d7d6d4;
 	color: #2C2C2C;
-  width:170px;
+  width:160px;
   float:left;
   position:fixed;
 	-webkit-border-top-right-radius: 4px;
@@ -231,13 +232,14 @@ header {
 	-moz-border-radius-bottomright: 4px;
 	border-top-right-radius: 4px;
 	border-bottom-right-radius: 4px;
-	padding: 34px 25px 22px 50px;
+	padding: 34px 25px 35px 50px;
 	margin: -10px 25px 0 0;
 	-webkit-font-smoothing: antialiased;
 	height: 94vh;
+  opacity: 0.9;
 }
 
-p.header {
+p.header {22px
 	font-size: 16px;
 }
 
@@ -325,16 +327,22 @@ a.buttons {
 /* Section - for main page content */
 
 section {
-  width:650px;
+  width:675px;
   float:right;
   padding-bottom:50px;
+  background-color: #f4f3f1;
+  opacity: 0.9;
+  padding-left: 31px;
+  padding-right: 19px;
+  position: revert;
+  border-radius: 60px;
 }
 
 
 /* Footer */
 
 footer {
-  width:170px;
+  width:160px;
   float:left;
   position:fixed;
   bottom:10px;
@@ -353,35 +361,32 @@ footer {
     position:static;
     width:auto;
     height:auto;
+    margin:0px
   }
-
 
 	footer {
 		border-top: 1px solid #ccc;
 		margin:0 84px 0 50px;
-		padding:0;
+		padding:0px;
     height:auto;
 	}
 
   section {
     padding:20px 84px 20px 50px;
-    margin:0 0 20px;
   }
 
   header a small {
     display:inline;
   }
 
-  header ul {
-    position:absolute;
-    right:130px;
-    top:84px;
+  header ul, header p.view {
+    position:static;
   }
 
   .linksection {
     position: absolute;
-    top: -57px;
-    right: -21px;
+    top: 20px;
+    right: 20px;
   }
 
 }
@@ -392,13 +397,11 @@ footer {
   }
 
   header {
-    padding:10px 20px 0;
-		margin-right: 0;
+    padding:-10px 20px 0 20px;
   }
 
 	section {
-    padding:10px 0 10px 20px;
-    margin:0 0 30px;
+    padding:10px -1px 10px 20px;
   }
 
 	footer {
@@ -412,7 +415,7 @@ footer {
   .linksection {
     position: absolute;
     top: 20px;
-    right: 84px;
+    right: 20px;
   }
 
   div.linksection > ul > li {
@@ -423,31 +426,15 @@ footer {
 
 @media print, screen and (max-width: 480px) {
 
-  header ul li.download {
-    display:none;
-  }
-
-  header {
-    position: relative;
-    left:-9999px;
-    height: 148px;
-  }
-
-  .logo {
-    position: relative;
-    left: 9999px;
-    top: 35px;
-  }
-
-  div.linksection {
-    margin-bottom: 0px;
-    position: relative;
-    left: 10150px;
-    top: -229px;
-  }
 
   div.linksection > ul > li {
     margin-bottom: 1px;
+  }
+
+  .linksection {
+    position: absolute;
+    top: 20px;
+    right: 20px;
   }
 
 	footer {
@@ -460,11 +447,36 @@ footer {
 
 }
 
+@media print, screen and (max-width: 400px) {
+
+  header > h1.header, 
+  header > p.header,
+  .logo {
+    display: none;
+  }
+
+
+  header {
+    height: 15vh;
+  }
+
+}
+
 
 @media print {
+
+  div.linksection {
+    margin-bottom: 0px;
+    position: relative;
+    left: 10150px;
+    top: -229px;
+    display: none;
+  }
+
   body {
     padding:0.4in;
     font-size:12pt;
     color:#444;
+    background-color: #fff;
   }
 }
