@@ -734,6 +734,30 @@ class EvMenu:
         Call a node-like callable, with a variable number of raw_string, *args, **kwargs, all of
         which should work also if not present (only `caller` is always required). Return its result.
 
+        Viable node-like callable forms:
+        ::
+
+            _callname(caller)
+            _callname(caller, raw_string)
+            _callname(caller, **kwargs)
+            _callname(caller, raw_string, **kwargs)
+
+        If this is a node:
+
+        - `caller` is the one using the menu.
+        - `raw_string` is the users exact input on the *previous* node.
+        - `**kwargs` is either passed through the previous node or returned
+          along with the node name from the goto-callable leading to this node.
+
+        If this is a goto-callable:
+
+        - `caller` is the one using the menu.
+        - `raw_string` is the user's exact input when chosing the option that triggered
+          this goto-callable.
+        - `**kwargs` is any extra dict passed to the callable in the option
+          definition, or (if no explit kwarg was given to the callable) the
+          previous node's kwarg, if any.
+
         """
         try:
             try:
