@@ -55,7 +55,7 @@ CREATION_THROTTLE = Throttle(
     name='creation', limit=settings.CREATION_THROTTLE_LIMIT, timeout=settings.CREATION_THROTTLE_TIMEOUT
 )
 LOGIN_THROTTLE = Throttle(
-    name='authentication', limit=settings.LOGIN_THROTTLE_LIMIT, timeout=settings.LOGIN_THROTTLE_TIMEOUT
+    name='login', limit=settings.LOGIN_THROTTLE_LIMIT, timeout=settings.LOGIN_THROTTLE_TIMEOUT
 )
 
 
