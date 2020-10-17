@@ -148,7 +148,6 @@ img {
   max-width: 650px;
   padding: 5px;
   margin: 10px 0 32px 0;
-  border: 1px solid #ccc;
 }
 
 p img {
@@ -159,6 +158,15 @@ p img {
   text-align: center;
   border: none;
   opacity: 0.6;
+}
+
+
+.img.floatleft {
+  float: left;
+}
+
+.img.floatright {
+  float: right;
 }
 
 
@@ -208,6 +216,7 @@ td {
  }
 
 
+
 /* Wrapper */
 .wrapper {
   width:960px;
@@ -236,7 +245,9 @@ header {
 	margin: -10px 25px 0 0;
 	-webkit-font-smoothing: antialiased;
 	height: 94vh;
-  opacity: 0.9;
+  opacity: 0.8;
+  border-radius: 60px;
+}
 }
 
 p.header {22px
@@ -451,6 +462,7 @@ footer {
 
   header > h1.header, 
   header > p.header,
+  .img,
   .logo {
     display: none;
   }
