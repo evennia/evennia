@@ -45,70 +45,156 @@
         <h1>
 <a name="evennia-mudmu-creation-system" class="anchor" href="#evennia-mudmu-creation-system"><span class="octicon octicon-link"></span></a>Evennia MUD/MU* Creation System</h1>
 
-<p><em>Evennia</em> is an open-source Python-based MUD/MU* server/codebase using modern technologies. Evennia allows creators to design and flesh out text-based massively-multiplayer online games with great freedom.</p>
+<p><em>Evennia</em> is an open-source Python-based framework, codebase and
+server for creating text-based multiplayer online games (a MUD/MU* etc) using modern
+technologies and tools.</p>
 
 <h2>
-<a name="features-and-philosophy" class="anchor"
-  href="#features-and-philosophy"><span class="octicon
-    octicon-link"></span></a>Features and Philosophy</h2>
+<a name="installation" class="anchor"
+  href="#installation"><span class="octicon
+    octicon-link"></span></a>Live demo</h2>
+
+<img class="img floatright" src="images/book.png" alt="Book">
+<p>
+<a href="https://demo.evennia.com">https://demo.evennia.com</a> sports an
+almost vanilla install of a default Evennia server. It has the tutorial world
+and a few extra thing to experience and try out. Use it to get a taste for
+what's possible. You can also ask questions in our support channel directly
+from inside the demo!</p>
+
+
+<h2>
+<a name="installation" class="anchor"
+  href="#installation"><span class="octicon
+    octicon-link"></span></a>Installation</h2>
+
+Evennia is installed by cloning and installing its repo from 
+<a href="https://github.com/evennia/evennia">github</a>. The 
+<a href="docs/latest/Getting-Started.html">Getting Started</a> instructions will 
+help you get things set up. Once installed, creating your new game is quick:
+
+<div class="codeblock">
+  <code>
+    evennia --init mygame<br>
+    cd mygame<br>
+    evennia start
+  </code>
+</div>
+
+You can now browse your new game's website and play locally in your browser at 
+<a href="http://127.0.0.1:4001">http://localhost:4001</a>. You can also 
+connect to it with a traditional third-party MUD client on <code>localhost, port 4000</code>.
+
+  <img class="img screenshot" src="images/evennia_screenshot.jpg" alt="Screenshot">
+  <div class="screenshot-caption">
+     An example of a default Evennia install (hover to enlarge). Top left:
+     Running server just started.  Top right: Default website served by
+     Evennia. Bottom left: Game open in included HTML5 webclient. Bottom right:
+     Game open in traditional telnet client
+     (<a href="https://tintin.mudhalla.net/">tintin++</a>).
+  </div>
+
+<h2><a name="overview" class="anchor"
+  href="#overview"><span class="octicon
+    octicon-link"></span></a>Overview</h2>
 
 <img class="img floatleft" src="images/inkwell.png" alt="Inkwell">
 
-<p>Evennia aims to supply a bare-bones MU* codebase that allows vast
-flexibility for game designers while taking care of all the gritty networking
-and database-handling behind the scenes. Evennia offers an easy API for
-handling persistent objects, time-dependent scripting and all the other
-low-level features needed to create a MU*. The idea is to allow the mud-coder
-to concentrate solely on designing the parts and systems of the mud that makes
-it uniquely fit their ideas.</p>
+<p>Evennia aims to take care of all the gritty networking, database-handling
+and minutae that all online games need. The idea is to allow you, the game
+developer, to concentrate solely on designing the game systems. We try to get
+out of your way as much as possible.</p>
 
-<p>Coding in Evennia is primarily done by normal Python modules, making the
-codebase extremely flexible. The code is heavily documented and you use Python
-classes to represent your objects, scripts and players. The database layer is
-abstracted away.</p>
+<p>Evennia is game-agnostic. So we have no opinions on what style of play or
+genre of game you should make. We don't prescribe any skills, classes, races or
+other things that will be specific for your game anyway. Indeed, people have
+used Evennia for non-MU*s as well - it's very suitable for wild experimenting
+and fast prototyping!</p>
+
+<p>Some game concepts and systems are more common than others though. For these
+we offer a growing library of optional code-snippets and bigger game systems
+you can build from, copy or be inspired by. These are mostly contributed by our
+very friendly developer community.</p> 
+
+<p>Finally, we have tried to make Evennia's code as readable and
+well-documented as possible, should you need to dive in. We have also 
+spent a lot of time on our <a href="docs/latest/index.html">extensive documentation</a>,
+all in order to to help you get productive in Evennia with less fuss.</p>
+
+
+<h2><a name="default-content" class="anchor"
+  href="#default-content"><span class="octicon
+    octicon-link"></span></a>Default Content</h2>
+
+<p>Whereas your Evennia game starts out with no game-specific content, it's not
+empty! Out of the box you get a 'talker'-style game: You can create rooms and
+items, pick up stuff, talk to people, walk around, do light roleplay with
+emotes ... all the base things you expect.</p>
+
+<p>Here are some of the default resources and tools available out of the box:</p>
+
+<ul>
+  <li>Classes for persistent objects, exits, rooms and characters.</li>
+  <li>Separation between character and their accounts (multi-character play, if desired)</li>
+  <li>In-game channels and chats (including linking to external chat channels)
+  <li>About 90 commands for administration, building, chatting, basic roleplay etc</li>
+  <li>Available commands and even their function can vary with circumstance and game state</li>
+  <li>Delays, tickers, timers (fully asynchronous, no threading so no risk of race conditions)</li>
+  <li>In-game menu-creation system</li>
+  <li>Prototype system, for making variations of objects (like monsters or items) without new classes</li>
+  <li>Lock and access mini-language for very flexible access control</li>
+  <li>Tutorial-world with examples</li>
+  <li>Easy storage of custom data on all game objects</li>
+  <li>Search, creation, and a large number of coding utilities</li>
+  <li>The <code>contrib/</code> folder with optional full systems and shorter snippets</li>
+</ul>
 
 <img class="img floatright" src="images/dice.png" alt="Dice">
 
-<p>Evennia offers extensive connectivity options. A single server instance may
-offer connections over Telnet, SSH, SSL and HTTP. The latter is possible since
-Evennia is also its own web server: A default website as well as a
-browser-based comet-style mud client comes as part of the package (<a
-href="https://github.com/evennia/evennia/wiki/Screenshot">screenshot</a>). Due
-to our Django and Twisted foundations, web integration is a snap since the same
-code that powers the game may also be used to run its web presence (you may use
-a third-party webserver too if you prefer though). Evennia in-game channels can
-also be interlinked with external IRC and IMC2 channels so players can chat
-with people "outside" the game.</p>
+<p>Coding in Evennia is primarily done by normal Python modules, making the
+codebase extremely flexible - you don't tweak the library itself, you just
+override the defaults and tell Evennia where to find your changes.</p>
 
-<img class="img floatleft" src="images/ships.png" alt="Book">
+<p>You use Python classes to represent your objects,
+scripts and players. The database layer is mostly abstracted away but if you
+want you can also leverage the full power of Django's mature ORM.</p>
 
-<p>Whereas Evennia is intended to be customized to almost any level you like,
-we do offer some defaults you can build from. The code base comes with basic
-classes for objects, exits, rooms and characters. There is also a default
-command set for handling administration, building, chat channels, poses and so
-on. This is enough to run a 'Talker' or some other social-style game out of the
-box. Stock Evennia is however deliberately void of any game-world-specific
-systems. So you won't find any AI codes, mobs, skill systems, races or combat
-stats in the default distribution (we might expand our contributions folder
-with optional plugins in the future though).</p>
+<h2><a name="some server features" class="anchor"
+  href="#some-server-features"><span class="octicon
+    octicon-link"></span></a>Some server features</h2>
 
-<p>If this piqued your interest, there is also a <a
-  href="docs/latest/Evennia-Introduction.html">lengthier
-  introduction</a> to Evennia to read.</p>
+  <ul>
+    <li>HTML5 webclient (websocket with ajax/comet fallback)</li>
+    <li>Telnet, Telnet+SSL, SSH</li>
+    <li>Website via own webserver (HTTP, HTTPS with external proxy)</li>
+    <li>Game channels links to IRC, Grapevine</li>
+    <li>RSS feed, Twitter feed (with snippet from docs)</li>
+    <li>Different databases supported via Django: Sqlite3, PostgreSQL, MySQL ...</li>
+    <li>MUD-specific telnet protocols supported:</li>
+      <ul> 
+        <li>GMCP and MSDP out-of-band protocols</li>
+        <li>MXP (inline links only)</li>
+        <li>ANSI and XTerm256 color support</li>
+        <li>MSSP status for websites tracking MUDs</li>
+        <li>NAWS, TTYPE, MCCP etc ...</li>
+      </ul>
+      <li>Based on Django and Twisted, both well-supported and hardened Python projects</i>
+      <li>Asynchronous, event-driven architecture without risk of race-conditions</i>
+      <li>Reload server without disconnecting players</li>
+      <li>Extendable protocols for adding custom integrations</li>
+  </ul>
 
-<h2>
-<a name="current-status" class="anchor" href="#current-status"><span
-    class="octicon octicon-link"></span></a>Current Status</h2>
 
-<p>The codebase is currently in <strong>Beta</strong>. While development
-continues, Evennia is already stable enough to be suitable for prototyping and
-development of your own games.</p>
+<img class="img floatleft" src="images/ships.png" alt="Ships">
 
 <h2>
 <a name="more-information" class="anchor" href="#more-information"><span
     class="octicon octicon-link"></span></a>More Information</h2>
 
-<img class="img floatleft" src="images/book.png" alt="Book">
+<p>If this piqued your interest, there is a <a
+  href="docs/latest/Evennia-Introduction.html">lengthier
+  introduction</a> to Evennia to read.</p>
+
 
 <p>To learn how to get your hands on the code base, the <a
   href="docs/latest/Getting-Started.html">Getting Started</a> page is the way to go. Otherwise you could browse the <a
