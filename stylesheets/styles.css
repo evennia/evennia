@@ -418,22 +418,19 @@ footer {
   }
 
   header, section {
+    float: none;
     position:static;
     width:auto;
     height:auto;
     margin:0px
   }
 
-  header {
-    float: none; 
-  }
-
   footer {
-    margin-top: 40px; 
+    margin-top: 0px; 
   } 
 
   section {
-    padding:20px 84px 20px 50px;
+    padding:20px 84px 100px 50px;
   }
 
   header a small {
