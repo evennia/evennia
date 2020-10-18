@@ -11,6 +11,7 @@
     <link href='https://fonts.googleapis.com/css?family=Open Sans' rel='stylesheet'>
     <link href='https://fonts.googleapis.com/css?family=Arvo' rel='stylesheet'>
     <script src="javascripts/scale.fix.js"></script>
+    <script src="javascripts/newsfeed.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <meta name="description" content="Evennia is a modern Python library and server for creating text-based
         multi-player games and virtual worlds (also known as MUD, MUSH, MU, MUX, MUCK, etc).
@@ -27,7 +28,7 @@
         <img class="logo" src="images/evennia_logo.png" alt="Evennia logo">
         </p>
         <h1 class="header">Evennia</h1>
-        <p class="header">The Python MU* Development Library</p>
+        <p class="header header-text">The Python MU* Development Library</p>
 
         <div class="linksection">
         <ul>
@@ -39,6 +40,16 @@
           <li><a class="buttons" href="http://evennia.blogspot.com/">Dev Blog</a></li>
         </ul>
         </div>
+
+        <div class="newsfeed">
+          <h3>Latest events</h3>
+          <div id="latest-events" class="eventslist">
+            <div class="events-fetch">
+              Fetching events ...
+            </div>
+          </div>
+        </div>
+
 
       </header>
       <section>
@@ -61,7 +72,6 @@ almost vanilla install of a default Evennia server. It has the tutorial world
 and a few extra thing to experience and try out. Use it to get a taste for
 what's possible. You can also ask questions in our support channel directly
 from inside the demo!</p>
-
 
 <h2>
 <a name="installation" class="anchor"
@@ -101,9 +111,9 @@ connect to it with a traditional third-party MUD client on <code>localhost, port
 <img class="img floatleft" src="images/inkwell.png" alt="Inkwell">
 
 <p>Evennia aims to take care of all the gritty networking, database-handling
-and minutae that all online games need. The idea is to allow you, the game
-developer, to concentrate solely on designing the game systems. We try to get
-out of your way as much as possible.</p>
+and other boring details that all MU*s games need. The idea is to allow you,
+the game developer, to concentrate solely on designing the game systems. We try
+to get out of your way as much as possible.</p>
 
 <p>Evennia is game-agnostic. So we have no opinions on what style of play or
 genre of game you should make. We don't prescribe any skills, classes, races or
@@ -146,7 +156,7 @@ emotes ... all the base things you expect.</p>
   <li>Tutorial-world with examples</li>
   <li>Easy storage of custom data on all game objects</li>
   <li>Search, creation, and a large number of coding utilities</li>
-  <li>The <code>contrib/</code> folder with optional full systems and shorter snippets</li>
+  <li>A <code>contrib/</code> folder with optional full systems and shorter snippets</li>
 </ul>
 
 <img class="img floatright" src="images/dice.png" alt="Dice">
@@ -201,12 +211,17 @@ want you can also leverage the full power of Django's mature ORM.</p>
 href="docs/latest/index.html">Documentation</a> or why
 not come join the <a href="http://www.evennia.com">Evennia Community</a>.
 Welcome! </p>
-      </section>
       <footer>
-        <p><small></small></p>
+        <p><small>
+          (Images ©<a href="https://www.deviantart.com/griatch-art">Griatch</a>)  
+        </small></p>
+
       </footer>
+      </section>
     </div>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-		
+    <script type="text/javascript">
+      fetchGithubData(); 
+	  </script>	
   </body>
 </html>
