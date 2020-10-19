@@ -1,4 +1,4 @@
-# API Summary 
+# API Summary
 
 [evennia](api:evennia) - library root
 - [evennia.accounts](api:evennia.accounts) - the out-of-character entities representing players
@@ -75,6 +75,7 @@ The flat API is defined in `__init__.py` [viewable here](github:evennia/__init__
 - [evennia.EvMenu](api:evennia.utils.evmenu#evennia.utils.evmenu.EvMenu) - menu system ([docs](Components/EvMenu))
 - [evennia.EvTable](api:evennia.utils.evtable#evennia.utils.evtable.EvTable) - text table creater
 - [evennia.EvForm](api:evennia.utils.evform#evennia.utils.evform.EvForm) - text form creator
+- Evennia.EvMore - text paginator
 - [evennia.EvEditor](api:evennia.utils.eveditor#evennia.utils.eveditor.EvEditor) - in game text line editor ([docs](Components/EvEditor))
 
 ### Global singleton handlers

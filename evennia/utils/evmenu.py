@@ -163,8 +163,6 @@ reaching a node without any options.
 For a menu demo, import `CmdTestMenu` from this module and add it to
 your default cmdset. Run it with this module, like `testmenu evennia.utils.evmenu`.
 
-----
-
 
 ## Menu generation from template string
 
@@ -179,9 +177,12 @@ EvMenu:
 For maximum flexibility you can inject normally-created nodes in the menu tree
 before passing it to EvMenu. If that's not needed, you can also create a menu
 in one step with:
-::
+
+```python
 
     evmenu.template2menu(caller, menu_template, goto_callables)
+
+```
 
 The `goto_callables` is a mapping `{"funcname": callable, ...}`, where each
 callable must be a module-global function on the form
@@ -260,10 +261,11 @@ strings is only needed if wanting to pass strippable spaces, otherwise the
 key:values will be converted to strings/numbers with literal_eval before passed
 into the callable.
 
-The `> ` option takes a glob or regex to perform different actions depending on user
-input. Make sure to sort these in increasing order of generality since they
-will be tested in sequence.
+The \\> option takes a glob or regex to perform different actions depending
+on user input. Make sure to sort these in increasing order of generality since
+they will be tested in sequence.
 
+----
 
 """
 

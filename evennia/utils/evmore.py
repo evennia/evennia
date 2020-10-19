@@ -7,17 +7,20 @@ the text (the name comes from the traditional 'more' unix command).
 
 To use, simply pass the text through the EvMore object:
 
-```python
-from evennia.utils.evmore import EvMore
 
-text = some_long_text_output()
-EvMore(caller, text, always_page=False, session=None, justify_kwargs=None, **kwargs)
+```python
+
+    from evennia.utils.evmore import EvMore
+
+    text = some_long_text_output()
+    EvMore(caller, text, always_page=False, session=None, justify_kwargs=None, **kwargs)
 ```
 
 One can also use the convenience function `msg` from this module to avoid
 having to set up the `EvMenu` object manually:
 
 ```python
+
     from evennia.utils import evmore
 
     text = some_long_text_output()
@@ -153,20 +156,22 @@ class EvMore(object):
     ):
 
         """
-        Initialization of the EvMore pager
+        Initialization of the EvMore pager.
 
         Args:
             caller (Object or Account): Entity reading the text.
             inp (str, EvTable, Paginator or iterator): The text or data to put under paging.
+
                 - If a string, paginage normally. If this text contains
-                   one or more `\f` format symbol, automatic pagination and justification
-                   are force-disabled and page-breaks will only happen after each `\f`.
+                  one or more `\\\\f` format symbol, automatic pagination and justification
+                  are force-disabled and page-breaks will only happen after each `\\\\f`.
                 - If `EvTable`, the EvTable will be paginated with the same
-                   setting on each page if it is too long. The table
-                   decorations will be considered in the size of the page.
+                  setting on each page if it is too long. The table
+                  decorations will be considered in the size of the page.
                 - Otherwise `inp` is converted to an iterator, where each step is
-                   expected to be a line in the final display. Each line
-                   will be run through `iter_callable`.
+                  expected to be a line in the final display. Each line
+                  will be run through `iter_callable`.
+
             always_page (bool, optional): If `False`, the
                 pager will only kick in if `inp` is too big
                 to fit the screen.
@@ -445,14 +450,15 @@ class EvMore(object):
 
         Notes:
             If overridden, this method must perform the following  actions:
+
             - read and re-store `self._data` (the incoming data set) if needed for pagination to work.
             - set `self._npages` to the total number of pages. Default is 1.
             - set `self._paginator` to a callable that will take a page number 1...N and return
-                the data to display on that page (not any decorations or next/prev buttons). If only
-                wanting to change the paginator, override `self.paginator` instead.
+              the data to display on that page (not any decorations or next/prev buttons). If only
+              wanting to change the paginator, override `self.paginator` instead.
             - set `self._page_formatter` to a callable that will receive the page from `self._paginator`
-                and format it with one element per line. Default is `str`. Or override `self.page_formatter`
-                directly instead.
+              and format it with one element per line. Default is `str`. Or override `self.page_formatter`
+              directly instead.
 
             By default, helper methods are called that perform these actions
             depending on supported inputs.
@@ -528,6 +534,7 @@ def msg(
 ):
     """
     EvMore-supported version of msg, mimicking the normal msg method.
+
     """
     EvMore(
         caller,
