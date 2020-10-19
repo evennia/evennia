@@ -23,7 +23,7 @@
 - Add `tags.has()` method for checking if an object has a tag or tags (PR by ChrisLR)
 
 
-### Evennia 0.95 (master)
+### Evennia 0.9.5 (master)
 - `is_typeclass(obj (Object), exact (bool))` now defaults to exact=False
 - `py` command now reroutes stdout to output results in-game client. `py`
 without arguments starts a full interactive Python console.
